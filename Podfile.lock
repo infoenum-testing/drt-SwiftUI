@@ -1,0 +1,24 @@
+PODS:
+  - Alamofire (5.10.2)
+  - IQAPIClient (4.0.1):
+    - Alamofire (~> 5)
+  - KeychainSwift (20.0.0)
+
+DEPENDENCIES:
+  - IQAPIClient
+  - KeychainSwift (~> 20.0)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - IQAPIClient
+    - KeychainSwift
+
+SPEC CHECKSUMS:
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  IQAPIClient: 68ff59a1d89f70f677c80d96c9ba06cf6933a932
+  KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
+
+PODFILE CHECKSUM: 08d7553339f460dcaef616fba8eae001856654cd
+
+COCOAPODS: 1.16.2
