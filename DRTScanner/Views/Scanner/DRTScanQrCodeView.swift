@@ -19,7 +19,7 @@ struct DRTScanQrCodeView: View {
             
             if let scannedCode = scannerViewModel.scannedCode {
                 VStack {
-                    Text("Scanned QR Code:")
+                    Text(StringConstants.Common.scannedQrCode)
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()

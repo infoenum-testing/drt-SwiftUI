@@ -59,7 +59,7 @@ struct LookupResultCardOrPhoneView: View {
                         .padding(.leading, 20)
                         
                         Spacer()
-                        Text("Total Results:")
+                        Text(StringConstants.Common.totalResults)
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
@@ -103,6 +103,13 @@ struct LookupResultCardOrPhoneView: View {
                 await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
                 self.orders = creditCardViewModel.orders
             }
+            .padding(.top, 5)
+
+            Text("\(StringConstants.Common.phoneNumber) \(result.phone ?? "")")
+                .font(.custom("Verlag-Bold", size: 22))
+                .foregroundColor(Color.showCodeText)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 10)
         }
     }
 }

@@ -54,14 +54,14 @@ struct LookupOrderResultView: View {
                         }.padding(.leading, 20)
                         
                         Spacer()
-                        Text(order.buyerName?.uppercased() ?? "NO ORDER FOUND")
+                        Text(order.buyerName?.uppercased() ?? StringConstants.Common.noOrderFound)
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
                         Spacer()
                     }
                     HStack(alignment: .center) {
-                        Text("ORDER \(order.orderId ?? 0)")
+                        Text("\(StringConstants.Common.Order) \(order.orderId ?? 0)")
                             .font(Font.custom("Verlag-Bold", size: 15))
                             .foregroundColor(Color.customWhite)
                         Text("CC \(order.cc ?? "")")
@@ -74,7 +74,7 @@ struct LookupOrderResultView: View {
 
                 VStack {
                     if seats.isEmpty {
-                        Text("Loading seat information...")
+                        Text(StringConstants.Common.loadingSeatInformation)
                             .foregroundColor(.gray)
                             .padding()
                     } else {
@@ -91,7 +91,7 @@ struct LookupOrderResultView: View {
             .background(Color.customWhite)
         .ignoresSafeArea()
         .task {
-            await viewModel.fetchSeats(c: "289-6385", q: inputText)
+            await viewModel.fetchSeats(c: StringConstants.Common.inputCode, q: inputText)
             self.orders = viewModel.orders
             self.seats = viewModel.seatsModel
         }

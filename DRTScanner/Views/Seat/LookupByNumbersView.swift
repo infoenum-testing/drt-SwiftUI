@@ -146,7 +146,7 @@ struct LookupByNumbersView: View {
                     )
                 }
             } else {
-                LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: "Orders not found.", order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+                LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
             }
         }
     }

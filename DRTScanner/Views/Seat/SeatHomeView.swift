@@ -31,31 +31,31 @@ struct SeatHomeView: View {
                     
                     ScrollView {
                         VStack(spacing: 1) {
-                            CustomCellView(imageName: "order_number_icon", title: "Look UP By", subtitle: "ORDER NUMBER", buttonImage: "right_side_arrow") {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 selectedLookupType = .orderNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: "last_name_icon", title: "Look UP By", subtitle: "NAME",  buttonImage: "right_side_arrow") {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.name,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 selectedLookupByName = .name
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlertByName = true
                                 }
                             }
-                            CustomCellView(imageName: "phone_number_icon", title: "Look UP By", subtitle: "PHONE NUMBER",  buttonImage: "right_side_arrow") {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 selectedLookupType = .phoneNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: "credit_card_icon", title: "Look UP By", subtitle: "CREDIT CARD",  buttonImage: "right_side_arrow") {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 selectedLookupType = .creditCard
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: "seat_icon", title: "Look UP By", subtitle: "SEAT", bottomLineColor: .customWhite,  buttonImage: "right_side_arrow") {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat , bottomLineColor: .customWhite,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlertBySeat = true
                                 }
@@ -68,10 +68,10 @@ struct SeatHomeView: View {
                 ToolbarItem(placement: .principal) {
                     ZStack {
                         VStack{
-                            Text("Dance Recital Ticketing")
+                            Text(StringConstants.SeatHomeView.danceRecitalTicketing)
                                 .font(Font.custom("Verlag-Book", size: 12))
                                 .foregroundColor(.customWhite)
-                            Text("2016 DANCE NATIONALS")
+                            Text(StringConstants.SeatHomeView.danceNationals)
                                 .font(Font.custom("Verlag-Bold", size: 18))
                                 .foregroundColor(.customWhite)
                         }
@@ -110,63 +110,66 @@ struct SeatHomeView: View {
         }
 
         .customAlert(isPresented: $showAlert) {
-            VStack(alignment: .center) {
-                HStack {
-                    Spacer()
-                    Text("Confirm")
-                        .padding(.leading, 20)
-                        .font(Font.custom("Verlag-Bold", size: 30))
-                        .foregroundColor(.white)
-                        .padding(.bottom, 10)
-                        .padding(.top, 20)
+                    GeometryReader { geometry in
+                        VStack(alignment: .center) {
+                            HStack {
+                                Spacer()
+                                Text(StringConstants.Common.confirm)
+                                    .padding(.leading, 20)
+                                    .font(Font.custom("Verlag-Bold", size: 30))
+                                    .foregroundColor(.white)
+                                    .padding(.bottom, 10)
+                                    .padding(.top, 20)
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showAlert = false
+                                    }
+                                }) {
+                                    Image("Popup_cross_btn")
+                                }
+                            }
 
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showAlert = false
+                            VStack {
+                                Text(StringConstants.SeatHomeView.areYouSureYouWantToLogout)
+                                    .font(Font.custom("Verlag-Book", size: 18))
+                                    .foregroundColor(.white)
+                                    .padding([.leading, .trailing, .bottom])
+                            }
+
+                            HStack {
+                                Text(StringConstants.Common.logout)
+                                    .font(Font.custom("Verlag-Bold", size: 20))
+                                    .foregroundColor(.showCodeText)
+                                    .padding(.leading, 30)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showAlert = false
+                                            showSeatView = false
+                                            // DRTUser.logout()
+                                            showSeatView = false
+                                        }
+                                    }
+                                Spacer()
+                                Text(StringConstants.Common.cancel)
+                                    .font(Font.custom("Verlag-Bold", size: 20))
+                                    .foregroundColor(.showCodeText)
+                                    .padding(.trailing, 30)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showAlert = false
+                                        }
+                                    }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
                         }
-                    }) {
-                        Image("Popup_cross_btn")
+                        .padding(.top, 100)
+                        .padding(.trailing, 20)
+                        .background(Color.showCodeButton)
+                        .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 0)
                     }
                 }
-
-                VStack {
-                    Text("Are you sure you want to logout?")
-                        .font(Font.custom("Verlag-Book", size: 18))
-                        .foregroundColor(.white)
-                        .padding([.leading, .trailing, .bottom])
-                }
-
-                HStack {
-                    Text("Logout")
-                        .font(Font.custom("Verlag-Bold", size: 20))
-                        .foregroundColor(.showCodeText)
-                        .padding(.leading, 30)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = false
-                                showSeatView = false
-                                //DRTUser.logout()
-                                showSeatView = false
-                            }
-                        }
-                    Spacer()
-                    Text("Cancel")
-                        .font(Font.custom("Verlag-Bold", size: 20))
-                        .foregroundColor(.showCodeText)
-                        .padding(.trailing, 30)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = false
-                            }
-                        }
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-            }
-            .padding()
-            .background(Color.showCodeButton)
-        }
     }
 }
 

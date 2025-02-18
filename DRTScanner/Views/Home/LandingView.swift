@@ -110,13 +110,13 @@ struct LandingView: View {
                     
                     if viewModel.isValidCode {
                         HStack {
-                            Text("Merchandise")
+                            Text(StringConstants.LandingView.merchandise)
                                 .font(Font.custom("Verlag-Bold", size: 20))
                                 .foregroundColor(.showCodeText)
                                 .padding(.leading, 30)
                             Spacer()
                             
-                            Text("Seat")
+                            Text(StringConstants.LandingView.seat)
                                 .font(Font.custom("Verlag-Bold", size: 20))
                                 .foregroundColor(.showCodeText)
                                 .padding(.trailing, 50)

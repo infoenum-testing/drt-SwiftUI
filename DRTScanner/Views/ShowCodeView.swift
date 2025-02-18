@@ -41,7 +41,7 @@ struct ShowCodeView: View {
                     }
                     Spacer()
                     
-                    TextField("Show Code", text: $showCode)
+                    TextField(StringConstants.Common.showCode, text: $showCode)
                         .font(Font.custom("Verlag-Bold", size: 42))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.white)

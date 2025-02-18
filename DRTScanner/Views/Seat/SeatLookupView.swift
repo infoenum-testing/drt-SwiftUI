@@ -35,7 +35,7 @@ struct SeatLookupView: View {
                     Image("left_side_arrow")
                 }
                 
-                TextField("Seat", text: .constant(seatDisplayText))
+                TextField(StringConstants.LandingView.seat, text: .constant(seatDisplayText))
                     .font(.custom("Verlag-Bold", size: 42))
                     .foregroundColor(.customWhite)
                     .padding(.leading, 10)
@@ -56,7 +56,7 @@ struct SeatLookupView: View {
                 Button(action: {
                     print("Continue button tapped")
                 }) {
-                    Text("CONTINUE")
+                    Text(StringConstants.Common.continueText)
                         .font(.custom("Verlag-Bold", size: 36))
                         .foregroundColor(.customWhite)
                         .frame(width: 400, height: 60)

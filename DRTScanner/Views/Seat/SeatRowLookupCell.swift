@@ -12,7 +12,7 @@ struct SeatRowLookupCell: View {
     var selectedSeat: String
     var body: some View {
         HStack {
-            Text("Row")
+            Text(StringConstants.Common.row)
                 .font(.custom("Verlag-Book", size: 27))
                 .foregroundColor(Color.showCodeText)
                 .frame(maxWidth: .infinity, alignment: .leading)

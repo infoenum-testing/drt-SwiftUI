@@ -29,23 +29,23 @@ struct EditOrderView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Edit Order Details")) {
-                    TextField("Buyer Name", text: $buyerName)
-                    TextField("CC", text: $cc)
-                    TextField("Phone", text: $phone)
+                Section(header: Text(StringConstants.Common.editOrderDetails)) {
+                    TextField(StringConstants.Common.buyerName, text: $buyerName)
+                    TextField(StringConstants.Common.cc, text: $cc)
+                    TextField(StringConstants.Common.phone, text: $phone)
                 }
             }
-            .navigationBarTitle("Edit Order", displayMode: .inline)
+            .navigationBarTitle(StringConstants.Common.editOrder, displayMode: .inline)
             .navigationBarItems(
-                leading: Button("Cancel") {
+                leading: Button(StringConstants.Common.cancel) {
                     presentationMode.wrappedValue.dismiss()
                 },
-                trailing: Button("Save") {
+                trailing: Button(StringConstants.Common.save) {
                     let updatedAttributes: [String: Any] = [
-                        "oid": order.oid ?? NSNumber(value: 1),
-                        "buyer_name": buyerName,
-                        "cc": cc,
-                        "phone": phone
+                        StringConstants.Attributes.oid: order.oid ?? NSNumber(value: 1),
+                        StringConstants.Attributes.buyerName: buyerName,
+                        StringConstants.Attributes.cc: cc,
+                        StringConstants.Attributes.phone: phone
                     ]
                     onUpdate(updatedAttributes)
                     presentationMode.wrappedValue.dismiss()
