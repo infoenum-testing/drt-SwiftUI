@@ -12,8 +12,54 @@ class DRTDatabaseManager {
     
     var managedObjectContext: NSManagedObjectContext?
     
+    static let shared: DRTDatabaseManager = {
+        let context = PersistenceController.shared.container.viewContext
+        return DRTDatabaseManager(context: context)
+    }()
+    
     init(context: NSManagedObjectContext) {
         self.managedObjectContext = context
+    }
+    
+    static func modelURL() -> URL? {
+        if let modelURL = Bundle.main.url(forResource: "DRT_Scanner", withExtension: IQModelExtension.momd) {
+            return modelURL
+        }
+        return Bundle.main.url(forResource: "DRT_Scanner", withExtension: IQModelExtension.mom)
+    }
+    
+    func allRecordsSortByAttribute(_ attribute: String?, fromTable table: String) -> [Any] {
+        var sortDescriptor: NSSortDescriptor?
+        
+        if let attribute = attribute, !attribute.isEmpty {
+            sortDescriptor = NSSortDescriptor(key: attribute, ascending: true)
+        }
+        
+        return allObjectsFromTable(table, sortDescriptor: sortDescriptor)
+        
+    }
+    
+    func allObjectsFromTable(_ tableName: String, sortDescriptor: NSSortDescriptor?) -> [Any] {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: tableName)
+        
+        if let sortDescriptor = sortDescriptor {
+            fetchRequest.sortDescriptors = [sortDescriptor]
+        }
+        
+        do {
+            let results = try managedObjectContext?.fetch(fetchRequest)
+            return results ?? []
+        } catch {
+            print("Error fetching records: \(error)")
+            return []
+        }
+    }
+    
+    
+    func deleteAllTableRecord(_ table: String) {
+    }
+    
+    func insertStatsRecordInStatsTable(_ stats: [String: Any]) {
     }
     
     func createOrder(orderAttributes: [String: Any], context: NSManagedObjectContext, completion: @escaping (Bool) -> Void) {

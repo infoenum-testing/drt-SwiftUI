@@ -32,6 +32,20 @@ extension IQAPIClient {
     }
     
     @discardableResult
+    static func getLookUpByPhone(code: String , orderNumber: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrderModel, Error>) -> Void) -> DataRequest? {
+        let path = APIPath.lookUpByPhone.rawValue
+        let param: [String: Any] = ["c" : code, "q" : orderNumber, "devicename" : ""]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
+    static func getLookUpByName(code: String , orderName: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrderModel, Error>) -> Void) -> DataRequest? {
+        let path = APIPath.lookUpByname.rawValue
+        let param: [String: Any] = ["c" : code, "q" : orderName, "devicename" : ""]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
     static func getOrderDetail(code: String , oId: Int, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrderDetailModel, Error>) -> Void) -> DataRequest? {
         let path = APIPath.orderDetail.rawValue
         let param: [String: Any] = ["c" : code, "sid" : "289", "oid" : oId, "type" : "seats"]

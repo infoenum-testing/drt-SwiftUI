@@ -35,7 +35,7 @@ struct CreateOrderView: View {
                     presentationMode.wrappedValue.dismiss()
                 },
                 trailing: Button("Save") {
-                    guard let oidNumber = Int(oid) else { return }  // Ensure OID is valid
+                    guard let oidNumber = Int(oid) else { return }
 
                     let orderAttributes: [String: Any] = [
                         "oid": NSNumber(value: oidNumber),

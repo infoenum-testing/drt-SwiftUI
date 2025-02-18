@@ -75,7 +75,7 @@ struct SeatHomeView: View {
                                 .font(Font.custom("Verlag-Bold", size: 18))
                                 .foregroundColor(.customWhite)
                         }
-                    }
+                    }.padding()
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
@@ -94,9 +94,8 @@ struct SeatHomeView: View {
                         Image("menu_triger")
                     }
                 }
-            }
+            }.frame(height: 100)
         }
-        .navigationBarHidden(isSideMenuPresented)
         .customSheetView(isPresented: $showLookupAlert) {
             LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.showCodeButton).padding(.top, 0)
         }

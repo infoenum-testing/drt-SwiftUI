@@ -20,4 +20,6 @@ public enum APIPath: String {
     case lookUpByOrder = "/orders/by-number"
     case orderDetail = "/order"
     case lookUpByCreditCard = "orders/by-cc"
+    case lookUpByPhone = "orders/by-phone"
+    case lookUpByname = "orders/by-name"
 }

@@ -1,22 +1,18 @@
 //
-//  LookupResultCardOrPhoneView.swift
+//  LookupByNameResultView.swift
 //  DRTScanner
 //
-//  Created by IE Mac 05 on 13/02/25.
+//  Created by IE Mac 05 on 17/02/25.
 //
 
 import SwiftUI
 
-struct LookupResultCardOrPhoneView: View {
+struct LookupByNameResultView: View {
     let inputText: String
     var dismissAction: () -> Void
-    @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel()
-    @StateObject private var phoneViewModel = LookupByPhoneResultViewModel()
-    @StateObject private var viewModel = LookupByOrderResultViewModel()
-    @State private var isSheetPresented: Bool = false
+    @StateObject private var viewModel = LookupByNameResultViewModel()
     @State private var orders: [Orders] = []
     let errorMessage: String?
-    let lookupType: LookupType
     let order: Orders
 
     var body: some View {
@@ -39,13 +35,12 @@ struct LookupResultCardOrPhoneView: View {
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Bold", size: 30))
                             .padding(.trailing, 20)
-                        
                         Spacer()
                     }
                 }
-                .padding([.top, .bottom], 50)
+                .padding()
                 .background(Color.showCodeButton)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack {
                     HStack(alignment: .center) {
@@ -66,7 +61,7 @@ struct LookupResultCardOrPhoneView: View {
                         Spacer()
                     }
                 }
-               .padding([.top, .bottom], 20)
+                .padding([.bottom, .top])
                 .background(Color.showCodeButton)
                 .frame(maxWidth: .infinity)
 
@@ -80,8 +75,7 @@ struct LookupResultCardOrPhoneView: View {
                             ForEach(orders, id: \.orderId) { seat in
                                 LookupCellView(result: order) { orderId in
                                     Task {
-//                                        await viewModel.fetchSeats(c: "289-6385", q: String(24241))
-//                                        isSheetPresented = true
+                                    //    await viewModel.fetchSeats(c: "289-6385", q: String(order.orderId ?? 0))
                                     }
                                 }
                             }
@@ -92,17 +86,46 @@ struct LookupResultCardOrPhoneView: View {
                 }
             }
         }
-        .frame(maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.customWhite)
-        .ignoresSafeArea()
+      //  .ignoresSafeArea()
         .task {
-            if lookupType == .phoneNumber {
-                await phoneViewModel.fetchSeats(c: "289-6385", q: inputText)
-                self.orders = phoneViewModel.orders
-            } else {
-                await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
-                self.orders = creditCardViewModel.orders
-            }
+            await viewModel.fetchSeats(c: "289-6385", q: inputText)
+            self.orders = viewModel.orders
         }
     }
 }
+//
+//
+//struct LookupNameCellView: View {
+//    var result: Orders
+//    
+//    var body: some View {
+//        VStack(alignment: .center) {
+//            Text(result.buyerName ?? "")
+//                .font(.custom("Verlag-Black", size: 24))
+//                .foregroundColor(Color.showCodeText)
+//                .frame(maxWidth: .infinity, alignment: .center)
+//                .padding(.top, 20)
+//
+//            HStack {
+//
+//                Text("ORDER: \(result.orderId ?? 0)")
+//                    .font(.custom("Verlag-Bold", size: 15))
+//                    .foregroundColor(Color.showCodeText)
+//                
+//                Text("CC: \(result.cc ?? "")")
+//                    .font(.custom("Verlag-Bold", size: 15))
+//                    .foregroundColor(Color.showCodeText)
+//            }
+//            .padding(.top, 5)
+//
+//            Text("PHONE NUMBER: \(result.phone ?? "")")
+//                .font(.custom("Verlag-Bold", size: 15))
+//                .foregroundColor(Color.showCodeText)
+//                .frame(maxWidth: .infinity, alignment: .center)
+//                .padding(.top, 10)
+//        }
+//        .padding(10)
+//    }
+//}

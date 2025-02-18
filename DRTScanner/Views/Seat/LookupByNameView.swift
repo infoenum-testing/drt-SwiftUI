@@ -5,7 +5,6 @@
 //  Created by IE Mac 05 on 07/02/25.
 //
 
-import SwiftUICore
 import SwiftUI
 
 enum LookupByName {
@@ -16,6 +15,11 @@ struct LookupByNameView: View {
     @Environment(\.dismiss) var dismiss
     @State private var inputText: String = ""
     @Binding var isPresented: Bool
+    @State private var showResultView: Bool = false
+    @State private var order: [Orders] = []
+    @State private var isOKButtonClicked: Bool = false
+    @State private var clickedButton: String? = nil
+    @StateObject var viewModel = LookupByNameResultViewModel()
     let lookupType: LookupByName
     let buttons = [
         ["A", "B", "C", "D"],
@@ -26,18 +30,18 @@ struct LookupByNameView: View {
         ["U", "V", "W", "X"],
         ["Y", "Z", ".", "OK"]
     ]
-
+    
     var placeholderText: String {
         switch lookupType {
         case .name:
-        return "NAME"
+            return "NAME"
+        }
     }
-    }
-
+    
     var isOKButtonEnabled: Bool {
         return !inputText.isEmpty
     }
-
+    
     var body: some View {
         VStack {
             HStack(alignment: .center){
@@ -73,11 +77,21 @@ struct LookupByNameView: View {
                     GridRow {
                         ForEach(row, id: \.self) { button in
                             HStack {
-                                Text(button)
-                                    .font(Font.custom("Verlag-Bold", size: 50))
-                                    .frame(width: 100, height: 90)
-                                    .background(button == "OK" ? Color.showCodeButton : Color.customWhite)
-                                    .foregroundColor(button == "OK" ? .white : .showCodeText)
+                                ZStack {
+                                    if button == "OK" {
+                                        Image(isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn")
+                                            .resizable()
+                                    } else {
+                                        Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")
+                                            .resizable()
+                                    }
+                                    
+                                    Text(button)
+                                        .font(Font.custom("Verlag-Bold", size: 50))
+                                        .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .frame(width: 100, height: 90)
                             }
                             .onTapGesture {
                                 handleButtonTap(button)
@@ -86,16 +100,36 @@ struct LookupByNameView: View {
                     }
                 }
             }
+        } .customSheetView(isPresented: $showResultView) {
+            if let firstOrder = order.first {
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: nil, order: firstOrder)
+            } else {
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false}, errorMessage: "Not found", order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+            }
         }
     }
-    
     private func handleButtonTap(_ button: String) {
         if button == "OK" {
             if isOKButtonEnabled {
-                print("Proceeding with name: \(inputText)")
+                isOKButtonClicked.toggle()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isOKButtonClicked.toggle()
+                }
+                showResultView = true
+                Task {
+                    await viewModel.fetchSeats(c: "289-6385", q: inputText)
+                    DispatchQueue.main.async {
+                        self.order = viewModel.orders
+                    }
+                }
             }
         } else {
+            clickedButton = button
             inputText.append(button)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                clickedButton = nil
+            }
         }
     }
 }
