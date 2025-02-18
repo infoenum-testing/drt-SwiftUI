@@ -20,28 +20,26 @@ struct CreateOrderView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Order Details")) {
-                    TextField("OID", text: $oid)
-                        .keyboardType(.numberPad)
-                    TextField("Buyer Name", text: $buyerName)
-                    TextField("CC", text: $cc)
-                    TextField("Phone", text: $phone)
-                        .keyboardType(.phonePad)
+                Section(header: Text(StringConstants.Common.orderDetails)) {
+                    TextField(StringConstants.Common.oID, text: $oid).keyboardType(.numberPad)
+                    TextField(StringConstants.Common.buyerName, text: $buyerName)
+                    TextField(StringConstants.Common.cc, text: $cc)
+                    TextField(StringConstants.Common.phone, text: $phone).keyboardType(.phonePad)
                 }
             }
-            .navigationBarTitle("Create Order", displayMode: .inline)
+            .navigationBarTitle(StringConstants.Common.createOrder, displayMode: .inline)
             .navigationBarItems(
-                leading: Button("Cancel") {
+                leading: Button(StringConstants.Common.cancel) {
                     presentationMode.wrappedValue.dismiss()
                 },
-                trailing: Button("Save") {
+                trailing: Button(StringConstants.Common.save) {
                     guard let oidNumber = Int(oid) else { return }  // Ensure OID is valid
 
                     let orderAttributes: [String: Any] = [
-                        "oid": NSNumber(value: oidNumber),
-                        "buyer_name": buyerName,
-                        "cc": cc,
-                        "phone": phone
+                        StringConstants.Attributes.oid : NSNumber(value: oidNumber),
+                        StringConstants.Attributes.buyerName : buyerName,
+                        StringConstants.Attributes.cc : cc,
+                        StringConstants.Attributes.phone : phone
                     ]
                     onCreate(orderAttributes)
                     presentationMode.wrappedValue.dismiss()

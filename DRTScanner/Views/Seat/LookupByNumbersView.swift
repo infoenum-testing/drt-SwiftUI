@@ -118,7 +118,7 @@ struct LookupByNumbersView: View {
             } else if let firstOrder = order.first {
                 LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: nil, order: firstOrder)
             } else {
-                LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: "Orders not found.", order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+                LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
             }
         }
     }
@@ -127,7 +127,7 @@ struct LookupByNumbersView: View {
         if button == "OK", isOKButtonEnabled {
             Task {
                 do {
-                    await viewModel.fetchSeats(c: "289-6385", q: inputText)
+                    await viewModel.fetchSeats(c: StringConstants.Common.inputCode, q: inputText)
                     
                     DispatchQueue.main.async {
                         if let firstOrder = viewModel.orders.first {

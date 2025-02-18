@@ -23,22 +23,22 @@ struct ContentView: View {
     var body: some View {
         VStack {
             if orders.isEmpty {
-                Text("No orders available.")
+                Text(StringConstants.Common.noOrdersAvailable)
                     .padding()
             }
 
             List(orders, id: \.oid) { order in
                 VStack(alignment: .leading) {
-                    Text(order.buyer_name ?? "Unknown")
-                    Text("OID: \(order.oid ?? 1)")
-                    Text("CC: \(order.cc ?? "Unknown")")
-                    Text("Phone: \(order.phone ?? "Unknown")")
+                    Text(order.buyer_name ?? StringConstants.Common.unknown)
+                    Text("\(StringConstants.Common.oID) \(order.oid ?? 1)")
+                    Text("\(StringConstants.Common.cc) \(order.cc ?? StringConstants.Common.unknown)")
+                    Text("\(StringConstants.Common.phone) \(order.phone ?? StringConstants.Common.unknown)")
                 }
                 .contextMenu {
                     Button(action: {
                         deleteOrder(order: order)
                     }) {
-                        Text("Delete Order")
+                        Text(StringConstants.Common.deleteOrder)
                         Image(systemName: "trash")
                     }
 
@@ -46,13 +46,13 @@ struct ContentView: View {
                         selectedOrder = order
                         isEditing = true
                     }) {
-                        Text("Edit Order")
+                        Text(StringConstants.Common.editOrder)
                         Image(systemName: "pencil")
                     }
                 }
             }
 
-            Button("Add Order") {
+            Button(StringConstants.Common.addOrder) {
                 isCreating = true
             }
             .padding()

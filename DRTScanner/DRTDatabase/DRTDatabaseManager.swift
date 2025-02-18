@@ -20,10 +20,10 @@ class DRTDatabaseManager {
         context.perform {
             let order = Order(context: context)
             
-            order.oid = orderAttributes["oid"] as? NSNumber
-            order.buyer_name = orderAttributes["buyer_name"] as? String
-            order.cc = orderAttributes["cc"] as? String
-            order.phone = orderAttributes["phone"] as? String
+            order.oid = orderAttributes[StringConstants.Attributes.oid] as? NSNumber
+            order.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
+            order.cc = orderAttributes[StringConstants.Attributes.cc] as? String
+            order.phone = orderAttributes[StringConstants.Attributes.phone] as? String
             
             do {
                 try context.save()
@@ -39,13 +39,13 @@ class DRTDatabaseManager {
     func updateOrder(orderAttributes: [String: Any], context: NSManagedObjectContext, completion: @escaping (Bool) -> Void) {
         context.perform {
             let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "oid == %@", orderAttributes["oid"] as? NSNumber ?? 0)
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.oid, orderAttributes[StringConstants.Attributes.oid] as? NSNumber ?? 0)
             
             do {
                 if let order = try context.fetch(fetchRequest).first {
-                    order.buyer_name = orderAttributes["buyer_name"] as? String
-                    order.cc = orderAttributes["cc"] as? String
-                    order.phone = orderAttributes["phone"] as? String
+                    order.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
+                    order.cc = orderAttributes[StringConstants.Attributes.cc] as? String
+                    order.phone = orderAttributes[StringConstants.Attributes.phone] as? String
                     
                     try context.save()
                     print("Order updated successfully!")
@@ -115,31 +115,31 @@ class DRTDatabaseManager {
             return nil
         }
         
-        if let barcode = seatAttributes["barcode"] as? String {
+        if let barcode = seatAttributes[StringConstants.Attributes.barcode] as? String {
             let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "barcode == %@", barcode)
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.barcode, barcode)
             
             do {
                 let existingSeats = try context.fetch(fetchRequest)
                 
                 if let existingSeat = existingSeats.first {
-                    existingSeat.row = seatAttributes["row"] as? String
-                    existingSeat.seat = seatAttributes["seat"] as? String
-                    existingSeat.section = seatAttributes["section"] as? String
-                    existingSeat.qrCode = seatAttributes["qrCode"] as? String
-                    existingSeat.handicapped = seatAttributes["handicapped"] as? NSNumber
-                    existingSeat.date_scanned = seatAttributes["date_scanned"] as? Date
+                    existingSeat.row = seatAttributes[StringConstants.Attributes.row] as? String
+                    existingSeat.seat = seatAttributes[StringConstants.Attributes.seat] as? String
+                    existingSeat.section = seatAttributes[StringConstants.Attributes.section] as? String
+                    existingSeat.qrCode = seatAttributes[StringConstants.Attributes.qrCode] as? String
+                    existingSeat.handicapped = seatAttributes[StringConstants.Attributes.handicapped] as? NSNumber
+                    existingSeat.date_scanned = seatAttributes[StringConstants.Attributes.datesScanned] as? Date
                     
                     return existingSeat
                 } else {
                     let newSeat = Seat(context: context)
-                    newSeat.barcode = seatAttributes["barcode"] as? String
-                    newSeat.row = seatAttributes["row"] as? String
-                    newSeat.seat = seatAttributes["seat"] as? String
-                    newSeat.section = seatAttributes["section"] as? String
-                    newSeat.qrCode = seatAttributes["qrCode"] as? String
-                    newSeat.handicapped = seatAttributes["handicapped"] as? NSNumber
-                    newSeat.date_scanned = seatAttributes["date_scanned"] as? Date
+                    newSeat.barcode = seatAttributes[StringConstants.Formate.barcode] as? String
+                    newSeat.row = seatAttributes[StringConstants.Attributes.row] as? String
+                    newSeat.seat = seatAttributes[StringConstants.Attributes.seat] as? String
+                    newSeat.section = seatAttributes[StringConstants.Attributes.section] as? String
+                    newSeat.qrCode = seatAttributes[StringConstants.Attributes.qrCode] as? String
+                    newSeat.handicapped = seatAttributes[StringConstants.Attributes.handicapped] as? NSNumber
+                    newSeat.date_scanned = seatAttributes[StringConstants.Attributes.datesScanned] as? Date
                     
                     return newSeat
                 }
@@ -159,13 +159,13 @@ class DRTDatabaseManager {
         }
         
         let newSeat = Seat(context: context)
-        newSeat.barcode = seatAttributes["barcode"] as? String
-        newSeat.row = seatAttributes["row"] as? String
-        newSeat.seat = seatAttributes["seat"] as? String
-        newSeat.section = seatAttributes["section"] as? String
-        newSeat.qrCode = seatAttributes["qrCode"] as? String
-        newSeat.handicapped = seatAttributes["handicapped"] as? NSNumber
-        newSeat.date_scanned = seatAttributes["date_scanned"] as? Date
+        newSeat.barcode = seatAttributes[StringConstants.Formate.barcode] as? String
+        newSeat.row = seatAttributes[StringConstants.Attributes.row] as? String
+        newSeat.seat = seatAttributes[StringConstants.Attributes.seat] as? String
+        newSeat.section = seatAttributes[StringConstants.Attributes.section] as? String
+        newSeat.qrCode = seatAttributes[StringConstants.Attributes.qrCode] as? String
+        newSeat.handicapped = seatAttributes[StringConstants.Attributes.handicapped] as? NSNumber
+        newSeat.date_scanned = seatAttributes[StringConstants.Attributes.datesScanned] as? Date
         
         do {
             try context.save()
@@ -199,11 +199,11 @@ class DRTDatabaseManager {
     func insertShowRecord(in context: NSManagedObjectContext, showAttributes: [String: Any]) -> Show? {
         let show = Show(context: context)
         
-        show.show_id = showAttributes["show_id"] as? String
-        show.message = showAttributes["message"] as? String
-        show.show_dt = showAttributes["show_dt"] as? String
-        show.studio_id = showAttributes["studio_id"] as? String
-        show.valid = showAttributes["valid"] as? NSNumber
+        show.show_id = showAttributes[StringConstants.Attributes.showId] as? String
+        show.message = showAttributes[StringConstants.Attributes.message] as? String
+        show.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+        show.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+        show.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
         
         do {
             try context.save()
@@ -222,29 +222,29 @@ class DRTDatabaseManager {
         }
         
         // Check if a Show with the given show_id already exists
-        if let showId = showAttributes["show_id"] as? String {
+        if let showId = showAttributes[StringConstants.Attributes.showId] as? String {
             let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "show_id == %@", showId)
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.showId, showId)
             
             do {
                 let existingShows = try context.fetch(fetchRequest)
                 
                 if let existingShow = existingShows.first {
                     // Update the existing show record
-                    existingShow.message = showAttributes["message"] as? String
-                    existingShow.show_dt = showAttributes["show_dt"] as? String
-                    existingShow.studio_id = showAttributes["studio_id"] as? String
-                    existingShow.valid = showAttributes["valid"] as? NSNumber
+                    existingShow.message = showAttributes[StringConstants.Attributes.message] as? String
+                    existingShow.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+                    existingShow.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+                    existingShow.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
                     
                     return existingShow
                 } else {
                     // Insert new show record if it doesn't exist
                     let newShow = Show(context: context)
                     newShow.show_id = showId
-                    newShow.message = showAttributes["message"] as? String
-                    newShow.show_dt = showAttributes["show_dt"] as? String
-                    newShow.studio_id = showAttributes["studio_id"] as? String
-                    newShow.valid = showAttributes["valid"] as? NSNumber
+                    newShow.message = showAttributes[StringConstants.Attributes.message] as? String
+                    newShow.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+                    newShow.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+                    newShow.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
                     
                     return newShow
                 }
@@ -264,27 +264,27 @@ class DRTDatabaseManager {
         }
         
         // Check if an Order with the given oid already exists
-        if let orderId = orderAttributes["oid"] as? String {
+        if let orderId = orderAttributes[StringConstants.Attributes.oid] as? String {
             let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "oid == %@", orderId)
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.oid, orderId)
             
             do {
                 let existingOrders = try context.fetch(fetchRequest)
                 
                 if let existingOrder = existingOrders.first {
                     // Update the existing order record
-                    existingOrder.buyer_name = orderAttributes["buyer_name"] as? String
-                    existingOrder.cc = orderAttributes["cc"] as? String
-                    existingOrder.phone = orderAttributes["phone"] as? String
+                    existingOrder.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
+                    existingOrder.cc = orderAttributes[StringConstants.Attributes.cc] as? String
+                    existingOrder.phone = orderAttributes[StringConstants.Attributes.phone] as? String
                     
                     return existingOrder
                 } else {
                     // Insert new order record if it doesn't exist
                     let newOrder = Order(context: context)
-                    newOrder.oid = orderAttributes["oid"] as? NSNumber
-                    newOrder.buyer_name = orderAttributes["buyer_name"] as? String
-                    newOrder.cc = orderAttributes["cc"] as? String
-                    newOrder.phone = orderAttributes["phone"] as? String
+                    newOrder.oid = orderAttributes[StringConstants.Attributes.oid] as? NSNumber
+                    newOrder.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
+                    newOrder.cc = orderAttributes[StringConstants.Attributes.cc] as? String
+                    newOrder.phone = orderAttributes[StringConstants.Attributes.phone] as? String
                     
                     return newOrder
                 }
@@ -299,20 +299,20 @@ class DRTDatabaseManager {
     
     
     func insertOrUpdateShowRecord(in context: NSManagedObjectContext, showAttributes: [String: Any]) -> Show? {
-        let showID = showAttributes["show_id"] as? String ?? ""
+        let showID = showAttributes[StringConstants.Attributes.showId] as? String ?? ""
         
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "show_id == %@", showID)
+        fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.showId, showID)
         
         do {
             let results = try context.fetch(fetchRequest)
             let show = results.first ?? Show(context: context) // Use existing or create new
             
             show.show_id = showID
-            show.message = showAttributes["message"] as? String
-            show.show_dt = showAttributes["show_dt"] as? String
-            show.studio_id = showAttributes["studio_id"] as? String
-            show.valid = showAttributes["valid"] as? NSNumber
+            show.message = showAttributes[StringConstants.Attributes.message] as? String
+            show.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+            show.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+            show.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
             
             try context.save()
             print("Show record inserted/updated successfully!")
@@ -324,10 +324,10 @@ class DRTDatabaseManager {
     }
     
     func updateShowRecord(_ show: Show, in context: NSManagedObjectContext, showAttributes: [String: Any]) -> Show? {
-        show.message = showAttributes["message"] as? String
-        show.show_dt = showAttributes["show_dt"] as? String
-        show.studio_id = showAttributes["studio_id"] as? String
-        show.valid = showAttributes["valid"] as? NSNumber
+        show.message = showAttributes[StringConstants.Attributes.message] as? String
+        show.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+        show.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+        show.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
         
         do {
             try context.save()
@@ -368,13 +368,13 @@ class DRTDatabaseManager {
     
     // MARK: - Insert or Update Stats Record
     func insertUpdateStatsRecord(statsAttributes: [String: Any], context: NSManagedObjectContext) -> Stats? {
-        guard let seatsKey = statsAttributes["seats"] as? NSNumber else {
+        guard let seatsKey = statsAttributes[StringConstants.Attributes.seats] as? NSNumber else {
             print("Missing seats key")
             return nil
         }
         
         let fetchRequest: NSFetchRequest<Stats> = Stats.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "total_seats == %@", seatsKey)
+        fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.totalSeats, seatsKey)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -448,13 +448,13 @@ class DRTDatabaseManager {
     
     // MARK: - Insert or Update Skin Record
     func insertUpdateSkinRecord(skinAttributes: [String: Any], context: NSManagedObjectContext) -> Skin? {
-        guard let logoHref = skinAttributes["logo_href"] as? String else {
+        guard let logoHref = skinAttributes[StringConstants.Attributes.logoHref] as? String else {
             print("Missing logo_href key")
             return nil
         }
         
         let fetchRequest: NSFetchRequest<Skin> = Skin.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "logo_href == %@", logoHref)
+        fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.logoHref, logoHref)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -499,22 +499,22 @@ class DRTDatabaseManager {
     
     // MARK: - Helper Method to Update Skin Object
     private func updateSkinObject(_ skin: Skin, with attributes: [String: Any]) {
-        if let backgroundHref = attributes["background_href"] as? String {
+        if let backgroundHref = attributes[StringConstants.Attributes.backgroundHref] as? String {
             skin.background_href = backgroundHref
         }
-        if let color1Bg = attributes["color_1_bg"] as? String {
+        if let color1Bg = attributes[StringConstants.Attributes.color_1_bg] as? String {
             skin.color_1_bg = color1Bg
         }
-        if let color1Text = attributes["color_1_text"] as? String {
+        if let color1Text = attributes[StringConstants.Attributes.color_1_text] as? String {
             skin.color_1_text = color1Text
         }
-        if let color2Bg = attributes["color_2_bg"] as? String {
+        if let color2Bg = attributes[StringConstants.Attributes.color_2_bg] as? String {
             skin.color_2_bg = color2Bg
         }
-        if let color2Text = attributes["color_2_text"] as? String {
+        if let color2Text = attributes[StringConstants.Attributes.color_2_text] as? String {
             skin.color_2_text = color2Text
         }
-        if let logoHref = attributes["logo_href"] as? String {
+        if let logoHref = attributes[StringConstants.Attributes.logoHref] as? String {
             skin.logo_href = logoHref
         }
     }
@@ -534,13 +534,13 @@ class DRTDatabaseManager {
     
     // MARK: - Insert or Update Poster Record
     func insertUpdatePosterRecord(posterAttributes: [String: Any], context: NSManagedObjectContext) -> Poster? {
-        guard let posterHref = posterAttributes["href"] as? String else {
+        guard let posterHref = posterAttributes[StringConstants.Attributes.href] as? String else {
             print("Missing href key")
             return nil
         }
         
         let fetchRequest: NSFetchRequest<Poster> = Poster.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "href == %@", posterHref)
+        fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.href, posterHref)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -585,13 +585,13 @@ class DRTDatabaseManager {
     
     // MARK: - Helper Method to Update Poster Object
     private func updatePosterObject(_ poster: Poster, with attributes: [String: Any]) {
-        if let height = attributes["height"] as? NSNumber {
+        if let height = attributes[StringConstants.Attributes.height] as? NSNumber {
             poster.height = height
         }
-        if let href = attributes["href"] as? String {
+        if let href = attributes[StringConstants.Attributes.href] as? String {
             poster.href = href
         }
-        if let width = attributes["width"] as? NSNumber {
+        if let width = attributes[StringConstants.Attributes.width] as? NSNumber {
             poster.width = width
         }
     }
@@ -611,13 +611,13 @@ class DRTDatabaseManager {
     
     // MARK: - Insert or Update Scan Record
     func insertUpdateScanRecord(scanAttributes: [String: Any], context: NSManagedObjectContext) -> Scan? {
-        guard let barcode = scanAttributes["barcode"] as? String else {
+        guard let barcode = scanAttributes[StringConstants.Attributes.barcode] as? String else {
             print("Missing barcode key")
             return nil
         }
         
         let fetchRequest: NSFetchRequest<Scan> = Scan.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "barcode == %@", barcode)
+        fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.barcode, barcode)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -649,16 +649,16 @@ class DRTDatabaseManager {
     
     // MARK: - Helper Method to Update Scan Object
     private func updateScanObject(_ scan: Scan, with attributes: [String: Any]) {
-        if let barcode = attributes["barcode"] as? String {
+        if let barcode = attributes[StringConstants.Attributes.barcode] as? String {
             scan.barcode = barcode
         }
-        if let isScannedOut = attributes["is_scanned_out"] as? NSNumber {
+        if let isScannedOut = attributes[StringConstants.Attributes.isScannedOut] as? NSNumber {
             scan.is_scanned_out = isScannedOut
         }
-        if let qrCode = attributes["qrCode"] as? String {
+        if let qrCode = attributes[StringConstants.Attributes.qrCode] as? String {
             scan.qrCode = qrCode
         }
-        if let timeStamp = attributes["timeStamp"] as? NSNumber {
+        if let timeStamp = attributes[StringConstants.Attributes.timeStamp] as? NSNumber {
             scan.timeStamp = timeStamp
         }
     }
@@ -693,21 +693,21 @@ class DRTDatabaseManager {
             self.deleteAllTableRecord(forEntity: Show.self)
             
             var showDict = serverDict
-            showDict.removeValue(forKey: "orders")
-            showDict.removeValue(forKey: "seats")
+            showDict.removeValue(forKey: StringConstants.Attributes.orders)
+            showDict.removeValue(forKey: StringConstants.Attributes.seats)
             
             // Prepare show data
-            if let showId = showDict["show_id"] as? NSNumber {
-                showDict["show_id"] = "\(showId)"
+            if let showId = showDict[StringConstants.Attributes.showId] as? NSNumber {
+                showDict[StringConstants.Attributes.showId] = "\(showId)"
             }
-            if let studioId = showDict["studio_id"] as? NSNumber {
-                showDict["studio_id"] = "\(studioId)"
+            if let studioId = showDict[StringConstants.Attributes.studioId] as? NSNumber {
+                showDict[StringConstants.Attributes.studioId] = "\(studioId)"
             }
             
             // Insert or update Show record
             if let show = self.insertUpdateShowRecordInShowTable(showAttributes: showDict) {
-                let orders = serverDict["orders"] as? [[Any]] ?? []
-                let soldSeats = serverDict["sold"] as? [[Any]] ?? []
+                let orders = serverDict[StringConstants.Attributes.orders] as? [[Any]] ?? []
+                let soldSeats = serverDict[StringConstants.Attributes.sold] as? [[Any]] ?? []
                 
                 let totalRecords = CGFloat(orders.count + soldSeats.count)
                 var currentlyProcessingRecord: CGFloat = 0
@@ -720,16 +720,16 @@ class DRTDatabaseManager {
                     }
                     
                     let orderAttributes: [String: Any] = [
-                        "oid": serverOrder[0],
-                        "buyer_name": serverOrder[1],
-                        "cc": serverOrder[2],
-                        "phone": serverOrder[3]
+                        StringConstants.Attributes.oid: serverOrder[0],
+                        StringConstants.Attributes.buyerName: serverOrder[1],
+                        StringConstants.Attributes.cc: serverOrder[2],
+                        StringConstants.Attributes.phone: serverOrder[3]
                     ]
                     if let order = self.insertUpdateOrderRecord(orderAttributes: orderAttributes) {
                         order.show = show
                         
                         if let oid = serverOrder[0] as? String {
-                            let predicate = NSPredicate(format: "(oid == %@)", oid)
+                            let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, oid)
                             let seats = self.fetchObjects(forEntity: Seat.self, withPredicate: predicate)
                             let seatSet = NSSet(array: seats ?? [])
                             order.addToSeats(seatSet)
@@ -754,19 +754,19 @@ class DRTDatabaseManager {
                     }
                     
                     let seatAttributes: [String: Any] = [
-                        "oid": serverSeat[0],
-                        "section": serverSeat[1],
-                        "row": serverSeat[2],
-                        "seat": serverSeat[3],
-                        "barcode": serverSeat[4],
-                        "qrCode": qrCode ?? "",
-                        "handicapped": serverSeat[7]
+                        StringConstants.Attributes.oid: serverSeat[0],
+                        StringConstants.Attributes.section: serverSeat[1],
+                        StringConstants.Attributes.row: serverSeat[2],
+                        StringConstants.Attributes.seat: serverSeat[3],
+                        StringConstants.Attributes.barcode: serverSeat[4],
+                        StringConstants.Attributes.qrCode: qrCode ?? "",
+                        StringConstants.Attributes.handicapped: serverSeat[7]
                     ]
                     if let seat = self.insertSeatRecord(seatAttributes: seatAttributes) {
                         seat.show = show
                         
                         if seat.order == nil, let oid = serverSeat[0] as? String {
-                            let predicate = NSPredicate(format: "(oid == %@)", oid)
+                            let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, oid)
                             if let order = self.fetchFirstObject(fromTable: Order.self, predicate: predicate) {
                                 seat.order = order
                             }
@@ -806,7 +806,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "(show.show_id == %@) AND ((barcode == %@) OR (qrCode == %@))", showID, barcode ?? "", qrCode ?? "")
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.showidBarcodeQrCode, showID, barcode ?? "", qrCode ?? "")
         
         return fetchFirstObject(fromTable: Seat.self, predicate: predicate)
     }
@@ -817,7 +817,7 @@ class DRTDatabaseManager {
             return []
         }
         
-        let predicate = NSPredicate(format: "(show.show_id == %@)", showID)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.showShowId, showID)
         
         let seats: [Seat] = fetchObjects(forEntity: Seat.self, withPredicate: predicate) ?? []
         
@@ -832,7 +832,7 @@ class DRTDatabaseManager {
             return []
         }
         
-        let predicate = NSPredicate(format: "(show.show_id == %@) AND (section == %@)", showID, section)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.showIdSection, showID, section)
         
         let seats: [Seat] = fetchObjects(forEntity: Seat.self, withPredicate: predicate) ?? []
         
@@ -847,7 +847,7 @@ class DRTDatabaseManager {
             return []
         }
         
-        let predicate = NSPredicate(format: "(show.show_id == %@) AND (section == %@) AND (row == %@)", showID, section, row)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.showIdSectionRow, showID, section, row)
         
         let seats: [Seat] = fetchObjects(forEntity: Seat.self, withPredicate: predicate) ?? []
         
@@ -862,7 +862,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "(section == %@) AND (row == %@) AND (seat == %@) AND (show.show_id == %@)", section, row, seat, showID)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.sectionRowSeatShowId, section, row, seat, showID)
         
         // Fetch the first seat matching the predicate
         if let seat = fetchFirstObject(fromTable: Seat.self, predicate: predicate) {
@@ -878,7 +878,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "(oid == %@) AND (show.show_id == %@)", orderID, showID)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.oidShowId, orderID, showID)
         
         if let order = fetchFirstObject(fromTable: Order.self, predicate: predicate) {
             return order
@@ -892,7 +892,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "(cc == %@)", creditCard)
+        let predicate = NSPredicate(format: StringConstants.NSPredicate.cc, creditCard)
         
         let orders = fetchObjects(forEntity: Order.self, withPredicate: predicate)
         return orders
@@ -904,7 +904,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "phone CONTAINS [cd] %@", phoneNumber)
+        let predicate = NSPredicate(format: StringConstants.Formate.phoneContains, phoneNumber)
         
         let orders = fetchObjects(forEntity: Order.self, withPredicate: predicate)
         return orders
@@ -916,7 +916,7 @@ class DRTDatabaseManager {
             return nil
         }
         
-        let predicate = NSPredicate(format: "buyer_name CONTAINS [cd] %@", lastName)
+        let predicate = NSPredicate(format: StringConstants.Formate.buyerName, lastName)
         
         let orders = fetchObjects(forEntity: Order.self, withPredicate: predicate)
         return orders

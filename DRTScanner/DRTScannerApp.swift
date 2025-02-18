@@ -16,8 +16,8 @@ struct DRTScannerApp: App {
     var body: some Scene {
         WindowGroup {
             if showSeatView {
-                //SeatHomeView(showSeatView: $showSeatView)
-                ContentView(context: persistenceController.container.viewContext)
+                SeatHomeView(showSeatView: $showSeatView)
+                //ContentView(context: persistenceController.container.viewContext)
                                     .environment(\.managedObjectContext, persistenceController.container.viewContext)
             } else {
                 LandingView()

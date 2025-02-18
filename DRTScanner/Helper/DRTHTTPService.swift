@@ -12,14 +12,14 @@ class DRTHTTPService {
     static let shared = DRTHTTPService()
 
     func showCode(sId: String) async throws -> [String: Any] {
-        let deviceName = UserDefaults.standard.string(forKey: "show_id") ?? "UnknownDevice"
+        let deviceName = UserDefaults.standard.string(forKey: StringConstants.Attributes.showId) ?? StringConstants.Common.unknownDevice
         
         guard let url = DRTHTTPServiceConstants.Show.url(forCode: sId, deviceName: deviceName) else {
             throw URLError(.badURL)
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = StringConstants.httpMethod.get
         
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {

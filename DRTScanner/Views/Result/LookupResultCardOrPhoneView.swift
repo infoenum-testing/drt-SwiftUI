@@ -54,7 +54,7 @@ struct LookupResultCardOrPhoneView: View {
                         }.padding(.leading, 20)
                         
                         Spacer()
-                        Text("Total Results:")
+                        Text(StringConstants.Common.totalResults)
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
@@ -83,7 +83,7 @@ struct LookupResultCardOrPhoneView: View {
             .background(Color.customWhite)
         .ignoresSafeArea()
         .task {
-            await viewModel.fetchSeats(c: "289-6385", q: inputText)
+            await viewModel.fetchSeats(c: StringConstants.Common.inputCode, q: inputText)
             self.orders = viewModel.orders
             print("Seat")
            // self.orders = viewModel.seatsModel
@@ -103,19 +103,19 @@ struct LookupCellView: View {
                 .padding(.top, 20)
 
             HStack(alignment: .center) {
-                Text("ORDER: \(result.orderId)")
+                Text("\(StringConstants.Common.Order) \(result.orderId)")
                     .font(.custom("Verlag-Bold", size: 22))
                     .foregroundColor(Color.showCodeText)
                     .frame(maxWidth: .infinity, alignment: .center)
                 
-                Text("CC: \(result.cc)")
+                Text("\(StringConstants.Common.cc) \(result.cc)")
                     .font(.custom("Verlag-Bold", size: 22))
                     .foregroundColor(Color.showCodeText)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             .padding(.top, 5)
 
-            Text("PHONE NUMBER: \(result.phone ?? "")")
+            Text("\(StringConstants.Common.phoneNumber) \(result.phone ?? "")")
                 .font(.custom("Verlag-Bold", size: 22))
                 .foregroundColor(Color.showCodeText)
                 .frame(maxWidth: .infinity, alignment: .center)
