@@ -5,8 +5,8 @@
 //  Created by IE Mac 05 on 13/02/25.
 //
 
-
 import SwiftUI
+import IQAPIClient
 
 struct SeatLookupView: View {
     @State private var seatText: String = ""
@@ -17,13 +17,19 @@ struct SeatLookupView: View {
     @State private var selectedSection: String = ""
     @State private var selectedRow: String = ""
     @State private var selectedSeat: String = ""
-    
+    @State private var isLoading = false
+    @State private var orderDetails: OrderDetailModel?
+    @State private var order: Orders?
+    @State private var orders: [Orders]?
+    @StateObject private var lookupByOrderViewModel = LookupByOrderResultViewModel()
+    @State private var showResultView = false
+
     private var seatDisplayText: String {
-         [selectedSection, selectedRow, selectedSeat]
-             .filter { !$0.isEmpty }
-             .joined(separator: " - ")
-     }
-    
+        [selectedSection, selectedRow, selectedSeat]
+            .filter { !$0.isEmpty }
+            .joined(separator: " - ")
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -34,40 +40,71 @@ struct SeatLookupView: View {
                 }) {
                     Image("left_side_arrow")
                 }
-                
-                TextField(StringConstants.LandingView.seat, text: .constant(seatDisplayText))
+
+                TextField("Select Seat", text: $seatText)
                     .font(.custom("Verlag-Bold", size: 42))
                     .foregroundColor(.customWhite)
                     .padding(.leading, 10)
                     .frame(width: 350, height: 85)
                     .background(Color.clear)
                     .multilineTextAlignment(.leading)
-                
+                    .onChange(of: selectedSection) { _ in seatText = seatDisplayText }
+                    .onChange(of: selectedRow) { _ in seatText = seatDisplayText }
+                    .onChange(of: selectedSeat) { _ in seatText = seatDisplayText }
             }
             .frame(width: 400, height: 85)
             .background(Color.showCodeButton)
 
-            TableView(isSeatLookupPresented: $isSeatLookupPresented, isSectionLookupPresented: $isSectionLookupPresented, isRowLookupPresented: $isRowLookupPresented, selectedSection: $selectedSection, selectedRow: $selectedRow, selectedSeat: $selectedSeat)
-                .frame(width: 400, height: 580)
-                .background(Color.clear)
-            
+            TableView(
+                isSeatLookupPresented: $isSeatLookupPresented,
+                isSectionLookupPresented: $isSectionLookupPresented,
+                isRowLookupPresented: $isRowLookupPresented,
+                selectedSection: $selectedSection,
+                selectedRow: $selectedRow,
+                selectedSeat: $selectedSeat
+            )
+            .frame(width: 400, height: 580)
+            .background(Color.clear)
+
             HStack {
                 Spacer()
                 Button(action: {
-                    print("Continue button tapped")
+                    continueButtonTapped()
                 }) {
-                    Text(StringConstants.Common.continueText)
-                        .font(.custom("Verlag-Bold", size: 36))
-                        .foregroundColor(.customWhite)
-                        .frame(width: 400, height: 60)
-                        .background(Color.showCodeButton)
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(width: 36, height: 36)
+                    } else {
+                        Text(StringConstants.Common.continueText)
+                            .font(.custom("Verlag-Bold", size: 36))
+                            .foregroundColor(.customWhite)
+                            .frame(width: 400, height: 60)
+                            .background(Color.showCodeButton)
+                    }
                 }
+                .disabled(isLoading)
                 Spacer()
             }
             .frame(width: 400, height: 60)
-        }.customSheetView(isPresented: $isSeatLookupPresented) {
+        }
+        .customSheetView(isPresented: $showResultView) {
+            LookupOrderResultView(
+                inputText: String(orderDetails?.oid ?? 24241),
+                dismissAction: { showResultView = false },
+                errorMessage: nil,
+                order: orders?.first
+            )
+        }
+        
+        .customSheetView(isPresented: $isSeatLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                ChooseSeatView(isPresented: $isSeatLookupPresented, selectedSeat: $selectedSeat)
+                ChooseSeatView(
+                    isPresented: $isSeatLookupPresented,
+                    selectedSeat: $selectedSeat,
+                    selectedSection: $selectedSection,
+                    selectedRow: $selectedRow
+                )
             }
         }
         .customSheetView(isPresented: $isSectionLookupPresented) {
@@ -77,7 +114,38 @@ struct SeatLookupView: View {
         }
         .customSheetView(isPresented: $isRowLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                ChooseRowView(isPresented: $isRowLookupPresented, selectedSeat: $selectedRow)
+                ChooseRowView(
+                    isPresented: $isRowLookupPresented,
+                    selectedSeat: $selectedRow,
+                    selectedSection: $selectedSection,
+                    selectedRow: $selectedRow
+                )
+            }
+        }
+    }
+
+    private func continueButtonTapped() {
+        guard !selectedSection.isEmpty, !selectedRow.isEmpty, !selectedSeat.isEmpty else {
+            print("Please select a section, row, and seat before continuing.")
+            return
+        }
+        
+        isLoading = true
+
+        IQAPIClient.getSeatsResults(code: "289-6385", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
+            DispatchQueue.main.async {
+                isLoading = false
+                switch result {
+                case .success(let orderDetail):
+                    print("Order Details: \(orderDetail)")
+                    orderDetails = orderDetail
+                    Task {
+                        await lookupByOrderViewModel.fetchSeats(c: "289-6385", q: String(orderDetail.oid ?? 24241))
+                    }
+                    showResultView = true
+                case .failure(let error):
+                    print("Failed to fetch seat details: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -103,7 +171,7 @@ struct TableView: View {
             }, selectedSeat: selectedRow)
             .frame(height: 100)
             
-            SeatLookupCell (action: {
+            SeatLookupCell(action: {
                 isSeatLookupPresented = true
             }, selectedSeat: selectedSeat)
             .frame(height: 100)

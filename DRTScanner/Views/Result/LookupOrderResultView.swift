@@ -14,7 +14,7 @@ struct LookupOrderResultView: View {
     @State private var orders: [Orders] = []
     @State private var seats: [SeatModel] = []
     let errorMessage: String?
-    let order: Orders
+    let order: Orders?
 
     var body: some View {
         VStack {
@@ -54,17 +54,17 @@ struct LookupOrderResultView: View {
                         }.padding(.leading, 20)
                         
                         Spacer()
-                        Text(order.buyerName?.uppercased() ?? StringConstants.Common.noOrderFound)
+                        Text(order?.buyerName?.uppercased() ?? StringConstants.Common.noOrderFound)
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
                         Spacer()
                     }
                     HStack(alignment: .center) {
-                        Text("\(StringConstants.Common.Order) \(order.orderId ?? 0)")
+                        Text("\(StringConstants.Common.Order) \(order?.orderId ?? 0)")
                             .font(Font.custom("Verlag-Bold", size: 15))
                             .foregroundColor(Color.customWhite)
-                        Text("CC \(order.cc ?? "")")
+                        Text("CC \(order?.cc ?? "")")
                             .font(Font.custom("Verlag-Bold", size: 15))
                             .foregroundColor(Color.customWhite)
                     }
@@ -74,9 +74,10 @@ struct LookupOrderResultView: View {
 
                 VStack {
                     if seats.isEmpty {
-                        Text(StringConstants.Common.loadingSeatInformation)
-                            .foregroundColor(.gray)
-                            .padding()
+//                        Text(StringConstants.Common.loadingSeatInformation)
+//                            .foregroundColor(.gray)
+//                            .padding()
+                        Spacer()
                     } else {
                         List {
                             ForEach(seats, id: \.seat) { seat in
@@ -89,11 +90,13 @@ struct LookupOrderResultView: View {
             }
         }.frame(maxHeight: .infinity)
             .background(Color.customWhite)
-        .ignoresSafeArea()
+       // .ignoresSafeArea()
         .task {
             await viewModel.fetchSeats(c: StringConstants.Common.inputCode, q: inputText)
             self.orders = viewModel.orders
-            self.seats = viewModel.seatsModel
+            if let seats = viewModel.seatsModel {
+                self.seats = seats
+            }
         }
     }
 }

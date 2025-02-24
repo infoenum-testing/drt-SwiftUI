@@ -12,6 +12,8 @@ struct ChooseRowView: View {
     @State private var RowTitle: String = "ROW"
     @Binding var isPresented: Bool
     @Binding var selectedSeat: String
+    @Binding var selectedSection: String
+    @Binding var selectedRow: String
     
     var body: some View {
         VStack {
@@ -40,7 +42,7 @@ struct ChooseRowView: View {
             }
             .background(Color.showCodeButton)
             HStack {
-                ChooseRowSubView(selectedSeat: $selectedSeat, isPresent: $isPresented)
+                ChooseRowSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
             }
         }
         .background(Color.white)
@@ -54,6 +56,6 @@ struct ChooseRowView: View {
 
 struct ChooseRowView_Previews: PreviewProvider {
     static var previews: some View {
-        ChooseRowView(isPresented: .constant(true), selectedSeat: .constant(""))
+        ChooseRowView(isPresented: .constant(true), selectedSeat: .constant(""), selectedSection: .constant(""), selectedRow: .constant(""))
     }
 }

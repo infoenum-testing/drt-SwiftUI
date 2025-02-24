@@ -6,15 +6,18 @@
 //
 
 import SwiftUI
+import IQAPIClient
 
 struct ChooseSeatSubView: View {
-    let seatLabels = ["201", "202", "203", "204", "205", "206", "207", "208", "209", "210", "211"]
+    @State private var seatSelect: [String] = []
     @Binding var selectedSeat: String
     @Binding var isPresent: Bool
+    @Binding var selectedSection: String
+    @Binding var selectedRow: String
     
     var body: some View {
         VStack {
-            List(seatLabels, id: \.self) { seat in
+            List(seatSelect, id: \.self) { seat in
                 ChooseSeatCell(seatLabel: seat)
                     .frame(height: 80)
                     .onTapGesture {
@@ -26,8 +29,25 @@ struct ChooseSeatSubView: View {
             .background(Color.customWhite)
         }
         .background(Color.customWhite)
+        .onAppear {
+            fetchSeats(for: selectedSection, row: selectedRow)
+        }
+    }
+    
+    private func fetchSeats(for section: String, row: String) {
+        IQAPIClient.getSeats(code: "289-6385", section: section, row: row) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let seats):
+                    seatSelect = seats
+                case .failure(let error):
+                    print("Failed to fetch seats: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
+
 
 struct ChooseSeatCell: View {
     var seatLabel: String
@@ -46,6 +66,6 @@ struct ChooseSeatCell: View {
 
 struct ChooseSeatCellView_Previews: PreviewProvider {
     static var previews: some View {
-        ChooseSeatSubView(selectedSeat: .constant(""), isPresent: .constant(false))
+        ChooseSeatSubView(selectedSeat: .constant(""), isPresent: .constant(false), selectedSection: .constant(""), selectedRow: .constant(""))
     }
 }

@@ -10,7 +10,7 @@ import IQAPIClient
 
 class LookupByOrderResultViewModel: ObservableObject {
     @Published var orders: [Orders] = []
-    @Published var seatsModel: [SeatModel] = []
+    @Published var seatsModel: [SeatModel]?
     @Published var buyerName: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -45,6 +45,7 @@ class LookupByOrderResultViewModel: ObservableObject {
                 IQAPIClient.getOrderDetail(code: c, oId: orderId) { result in
                     switch result {
                     case .success(let detailData):
+                        print(detailData)
                         continuation.resume(returning: detailData)
                     case .failure(let error):
                         continuation.resume(throwing: error)

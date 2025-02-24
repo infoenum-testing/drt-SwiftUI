@@ -13,7 +13,7 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init() {
-        container = NSPersistentContainer(name: "DRT_Scanner")  // Make sure this matches your .xcdatamodeld name
+        container = NSPersistentContainer(name: "DRT_Scanner")
         container.loadPersistentStores { _, error in
             if let error = error {
                 fatalError("Unresolved error \(error)")

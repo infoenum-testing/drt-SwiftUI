@@ -16,7 +16,7 @@ struct LookupByNameView: View {
     @State private var inputText: String = ""
     @Binding var isPresented: Bool
     @State private var showResultView: Bool = false
-    @State private var order: [Orders] = []
+    @State private var order: [Orders]?
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
     @StateObject var viewModel = LookupByNameResultViewModel()
@@ -101,10 +101,10 @@ struct LookupByNameView: View {
                 }
             }
         } .customSheetView(isPresented: $showResultView) {
-            if let firstOrder = order.first {
-                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: nil, order: firstOrder)
+            if let firstOrder = order {
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: firstOrder, errorMessage: nil)
             } else {
-                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false}, errorMessage: "Not found", order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: [Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0)], errorMessage: "No orders found")
             }
         }
     }

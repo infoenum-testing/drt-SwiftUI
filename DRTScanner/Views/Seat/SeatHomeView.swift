@@ -16,9 +16,13 @@ struct SeatHomeView: View {
     @State private var showLookupAlert = false
     @State private var showLookupAlertByName = false
     @State private var showLookupAlertBySeat = false
-    @State private var selectedLookupType: LookupType = .orderNumber
+    @StateObject private var seatHomeViewModel  =  SeatHomeViewModel()
     @State private var selectedLookupByName: LookupByName = .name
-
+    @State private var showGoOfflineView = false
+    @State private var showScanningStatsView = false
+    @State private var showAboutView = false
+    
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -32,7 +36,7 @@ struct SeatHomeView: View {
                     ScrollView {
                         VStack(spacing: 1) {
                             CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
-                                selectedLookupType = .orderNumber
+                                seatHomeViewModel.selectedLookupType = .orderNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
@@ -44,13 +48,13 @@ struct SeatHomeView: View {
                                 }
                             }
                             CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
-                                selectedLookupType = .phoneNumber
+                                seatHomeViewModel.selectedLookupType = .phoneNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
                             CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
-                                selectedLookupType = .creditCard
+                                seatHomeViewModel.selectedLookupType = .creditCard
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
@@ -86,7 +90,6 @@ struct SeatHomeView: View {
                         Image("Popup_cross_btn")
                     }
                 }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         isSideMenuPresented.toggle()
@@ -94,10 +97,14 @@ struct SeatHomeView: View {
                         Image("menu_triger")
                     }
                 }
-            }.frame(height: 100)
+            }
+            .frame(height: 120)
+            .ignoresSafeArea()
         }
         .customSheetView(isPresented: $showLookupAlert) {
-            LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.showCodeButton).padding(.top, 0)
+            if let selectedLookupType = seatHomeViewModel.selectedLookupType {
+                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.showCodeButton).padding(.top, 0)
+            }
         }
         .customSheetView(isPresented: $showLookupAlertByName) {
             LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.showCodeButton).padding(.top, 0)
@@ -106,70 +113,87 @@ struct SeatHomeView: View {
             SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, 0)
         }
         .sideMenuViewModify(isPresented: $isSideMenuPresented) {
-            SideMenuView(isPresented: $isSideMenuPresented)
+            SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView)
         }
-
+        .customAlert(isPresented: $showGoOfflineView) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                GoOfflineView(isPresented: $showGoOfflineView)
+            }
+        }
+        .customAlert(isPresented: $showScanningStatsView) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                ScanningStatsView(isPresented: $showScanningStatsView)
+            }
+        }
+        .customAlert(isPresented: $showAboutView) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                AboutView(isPresented: $showAboutView)
+            }
+        }
+        
         .customAlert(isPresented: $showAlert) {
-                    GeometryReader { geometry in
-                        VStack(alignment: .center) {
-                            HStack {
-                                Spacer()
-                                Text(StringConstants.Common.confirm)
-                                    .padding(.leading, 20)
-                                    .font(Font.custom("Verlag-Bold", size: 30))
-                                    .foregroundColor(.white)
-                                    .padding(.bottom, 10)
-                                    .padding(.top, 20)
-                                Spacer()
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showAlert = false
-                                    }
-                                }) {
-                                    Image("Popup_cross_btn")
-                                }
-                            }
-
-                            VStack {
-                                Text(StringConstants.SeatHomeView.areYouSureYouWantToLogout)
-                                    .font(Font.custom("Verlag-Book", size: 18))
-                                    .foregroundColor(.white)
-                                    .padding([.leading, .trailing, .bottom])
-                            }
-
-                            HStack {
-                                Text(StringConstants.Common.logout)
-                                    .font(Font.custom("Verlag-Bold", size: 20))
-                                    .foregroundColor(.showCodeText)
-                                    .padding(.leading, 30)
-                                    .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            showAlert = false
-                                            showSeatView = false
-                                            // DRTUser.logout()
-                                            showSeatView = false
-                                        }
-                                    }
-                                Spacer()
-                                Text(StringConstants.Common.cancel)
-                                    .font(Font.custom("Verlag-Bold", size: 20))
-                                    .foregroundColor(.showCodeText)
-                                    .padding(.trailing, 30)
-                                    .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            showAlert = false
-                                        }
-                                    }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
+            VStack(alignment: .center) {
+                HStack {
+                    Spacer()
+                    Text("Confirm")
+                        .padding(.leading, 20)
+                        .font(Font.custom("Verlag-Bold", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+                        .padding(.top, 20)
+                    
+                    Spacer()
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAlert = false
                         }
-                        .padding(.top, 100)
-                        .padding(.trailing, 20)
-                        .background(Color.showCodeButton)
-                        .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 0)
+                    }) {
+                        Image("Popup_cross_btn")
                     }
                 }
+                
+                VStack {
+                    Text("Are you sure you want to logout?")
+                        .font(Font.custom("Verlag-Book", size: 18))
+                        .foregroundColor(.white)
+                        .padding([.leading, .trailing, .bottom])
+                }
+                
+                HStack {
+                    Text("Logout")
+                        .font(Font.custom("Verlag-Bold", size: 20))
+                        .foregroundColor(.showCodeText)
+                        .padding(.leading, 30)
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showAlert = false
+                                showSeatView = false
+                                //DRTUser.logout()
+                                showSeatView = false
+                            }
+                        }
+                    Spacer()
+                    Text("Cancel")
+                        .font(Font.custom("Verlag-Bold", size: 20))
+                        .foregroundColor(.showCodeText)
+                        .padding(.trailing, 30)
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showAlert = false
+                            }
+                        }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            }
+            .padding()
+            .background(Color.showCodeButton)
+        }
+//        .ignoresSafeArea()
+//        .zIndex(1)
+//        .transition(.move(edge: .top))
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .edgesIgnoringSafeArea(.all)
     }
 }
 
@@ -177,4 +201,8 @@ struct SeatHomeView_Previews: PreviewProvider {
     static var previews: some View {
         SeatHomeView(showSeatView: .constant(true))
     }
+}
+
+class SeatHomeViewModel: ObservableObject {
+    @Published  var selectedLookupType: LookupType?
 }

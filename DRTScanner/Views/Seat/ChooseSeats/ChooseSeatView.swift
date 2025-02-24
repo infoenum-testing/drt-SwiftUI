@@ -12,6 +12,8 @@ struct ChooseSeatView: View {
     @State private var sectionsTitle: String = "SEAT"
     @Binding var isPresented: Bool
     @Binding var selectedSeat: String
+    @Binding var selectedSection: String
+    @Binding var selectedRow: String
     
     var body: some View {
         VStack {
@@ -40,7 +42,7 @@ struct ChooseSeatView: View {
             }
             .background(Color.showCodeButton)
             HStack {
-                ChooseSeatSubView(selectedSeat: $selectedSeat, isPresent: $isPresented)
+                ChooseSeatSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
             }
         }.frame(maxHeight: .infinity)
         .background(Color.white)
@@ -54,6 +56,6 @@ struct ChooseSeatView: View {
 
 struct ChooseSeatView_Previews: PreviewProvider {
     static var previews: some View {
-        ChooseSeatView(isPresented: .constant(true), selectedSeat: .constant(""))
+        ChooseSeatView(isPresented: .constant(true), selectedSeat: .constant(""), selectedSection: .constant(""), selectedRow: .constant(""))
     }
 }

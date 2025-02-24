@@ -11,9 +11,8 @@ struct LookupByNameResultView: View {
     let inputText: String
     var dismissAction: () -> Void
     @StateObject private var viewModel = LookupByNameResultViewModel()
-    @State private var orders: [Orders] = []
+    @State var orders: [Orders]
     let errorMessage: String?
-    let order: Orders
 
     var body: some View {
         VStack {
@@ -37,6 +36,7 @@ struct LookupByNameResultView: View {
                             .padding(.trailing, 20)
                         Spacer()
                     }
+                        
                 }
                 .padding()
                 .background(Color.showCodeButton)
@@ -67,13 +67,11 @@ struct LookupByNameResultView: View {
 
                 VStack {
                     if orders.isEmpty {
-                        Text("Loading Order information...")
-                            .foregroundColor(.gray)
-                            .padding()
+                        Spacer()
                     } else {
                         List {
                             ForEach(orders, id: \.orderId) { seat in
-                                LookupCellView(result: order) { orderId in
+                                LookupCellView(result: seat) { orderId in
                                     Task {
                                     //    await viewModel.fetchSeats(c: "289-6385", q: String(order.orderId ?? 0))
                                     }
@@ -95,37 +93,3 @@ struct LookupByNameResultView: View {
         }
     }
 }
-//
-//
-//struct LookupNameCellView: View {
-//    var result: Orders
-//    
-//    var body: some View {
-//        VStack(alignment: .center) {
-//            Text(result.buyerName ?? "")
-//                .font(.custom("Verlag-Black", size: 24))
-//                .foregroundColor(Color.showCodeText)
-//                .frame(maxWidth: .infinity, alignment: .center)
-//                .padding(.top, 20)
-//
-//            HStack {
-//
-//                Text("ORDER: \(result.orderId ?? 0)")
-//                    .font(.custom("Verlag-Bold", size: 15))
-//                    .foregroundColor(Color.showCodeText)
-//                
-//                Text("CC: \(result.cc ?? "")")
-//                    .font(.custom("Verlag-Bold", size: 15))
-//                    .foregroundColor(Color.showCodeText)
-//            }
-//            .padding(.top, 5)
-//
-//            Text("PHONE NUMBER: \(result.phone ?? "")")
-//                .font(.custom("Verlag-Bold", size: 15))
-//                .foregroundColor(Color.showCodeText)
-//                .frame(maxWidth: .infinity, alignment: .center)
-//                .padding(.top, 10)
-//        }
-//        .padding(10)
-//    }
-//}

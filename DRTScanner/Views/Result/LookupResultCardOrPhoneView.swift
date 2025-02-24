@@ -14,10 +14,9 @@ struct LookupResultCardOrPhoneView: View {
     @StateObject private var phoneViewModel = LookupByPhoneResultViewModel()
     @StateObject private var viewModel = LookupByOrderResultViewModel()
     @State private var isSheetPresented: Bool = false
-    @State private var orders: [Orders] = []
+    @State var orders: [Orders]
     let errorMessage: String?
     let lookupType: LookupType
-    let order: Orders
 
     var body: some View {
         VStack {
@@ -59,7 +58,7 @@ struct LookupResultCardOrPhoneView: View {
                         .padding(.leading, 20)
                         
                         Spacer()
-                        Text(StringConstants.Common.totalResults)
+                        Text("Total Results:")
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
@@ -72,13 +71,14 @@ struct LookupResultCardOrPhoneView: View {
 
                 VStack {
                     if orders.isEmpty {
-                        Text("Loading Order information...")
-                            .foregroundColor(.gray)
-                            .padding()
+//                        Text("Loading Order information...")
+//                            .foregroundColor(.gray)
+//                            .padding()
+                        Spacer()
                     } else {
                         List {
                             ForEach(orders, id: \.orderId) { seat in
-                                LookupCellView(result: order) { orderId in
+                                LookupCellView(result: seat) { orderId in
                                     Task {
 //                                        await viewModel.fetchSeats(c: "289-6385", q: String(24241))
 //                                        isSheetPresented = true
@@ -103,13 +103,6 @@ struct LookupResultCardOrPhoneView: View {
                 await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
                 self.orders = creditCardViewModel.orders
             }
-            .padding(.top, 5)
-
-            Text("\(StringConstants.Common.phoneNumber) \(result.phone ?? "")")
-                .font(.custom("Verlag-Bold", size: 22))
-                .foregroundColor(Color.showCodeText)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 10)
         }
     }
 }

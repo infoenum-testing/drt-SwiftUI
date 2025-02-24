@@ -177,4 +177,11 @@ struct StringConstants {
         static let emailNotVerified = "User email address does not veirfied. Please verify email address through the OTP to continue access to the app."
         
     }
+    
+    struct Offline {
+            static let title = "Going Offline"
+            static let description = "Are you sure you want to go offline? The database will be downloaded to this device, and nobody else will be able to scan tickets until you go back online."
+            static let continueText = "CONTINUE"
+            static let cancelText = "CANCEL"
+        }
 }

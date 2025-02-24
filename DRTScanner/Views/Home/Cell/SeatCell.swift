@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SeatCell: View {
-    let seat: SeatModel
+    let seat: SeatModel?
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -21,7 +21,7 @@ struct SeatCell: View {
                     Text("SECT:")
                         .font(Font.custom("Verlag-Bold", size: 10))
                         .foregroundColor(.showCodeText)
-                    Text("\(seat.section)")
+                    Text("\(seat?.section ?? "")")
                         .font(Font.custom("Verlag-Bold", size: 15))
                         .foregroundColor(.showCodeText)
                 }
@@ -30,7 +30,7 @@ struct SeatCell: View {
                     Text("ROW:")
                         .font(Font.custom("Verlag-Bold", size: 10))
                         .foregroundColor(.showCodeText)
-                    Text("\(seat.row)")
+                    Text("\(seat?.row ?? "")")
                         .font(Font.custom("Verlag-Bold", size: 15))
                         .foregroundColor(.showCodeText)
                 }
@@ -40,7 +40,7 @@ struct SeatCell: View {
                         .font(Font.custom("Verlag-Bold", size: 10))
                         .foregroundColor(.showCodeText)
                     
-                    Text("\(seat.seat)")
+                    Text("\(seat?.seat ?? "")")
                         .font(Font.custom("Verlag-Bold", size: 15))
                         .foregroundColor(.showCodeText)
                 }

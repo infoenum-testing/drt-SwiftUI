@@ -16,7 +16,7 @@ struct LookupByNumbersView: View {
     @State private var inputText: String = ""
     @State private var showResultView: Bool = false
     @State private var fetchedSeats: [LookupByOrderResultViewModel] = []
-    @State private var order: [Orders] = []
+    @State private var order: [Orders]?
     @StateObject var viewModel = LookupByOrderResultViewModel()
     @StateObject var creditCardViewModel = LookupByCreditCardResultViewModel()
     @StateObject var phoneViewModels = LookupByPhoneResultViewModel()
@@ -55,101 +55,106 @@ struct LookupByNumbersView: View {
     }
     
     var body: some View {
-        VStack {
+        ZStack {
             VStack {
                 VStack {
-                    HStack(alignment: .center){
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                isPresented = false
+                    VStack {
+                        HStack(alignment: .center){
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    isPresented = false
+                                }
+                            }) {
+                                Image("left_side_arrow")
                             }
-                        }) {
-                            Image("left_side_arrow")
-                        }
-                        Spacer()
-                        
-                        ZStack(alignment: .center) {
-                            if !inputText.isEmpty {
-                                Text(placeholderText)
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                    .offset(y: -25)
-                                    .animation(.easeInOut, value: inputText.isEmpty)
-                            }
+                            Spacer()
                             
-                            TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom("Verlag-Bold", size: 20)))
-                                .font(Font.custom("Verlag-Bold", size: 40))
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.customWhite)
-                                .padding(.all, 10)
-                                .padding(.leading)
-                        }
-                        .frame(height: 50)
-                        
-                        Button(action: {
-                            if !inputText.isEmpty {
-                                inputText.removeLast()
+                            ZStack(alignment: .center) {
+                                if !inputText.isEmpty {
+                                    Text(placeholderText)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                        .offset(y: -25)
+                                        .animation(.easeInOut, value: inputText.isEmpty)
+                                }
+                                
+                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom("Verlag-Bold", size: 20)))
+                                    .font(Font.custom("Verlag-Bold", size: 40))
+                                    .multilineTextAlignment(.leading)
+                                    .foregroundColor(.customWhite)
+                                    .padding(.all, 10)
+                                    .padding(.leading)
                             }
-                        }) {
-                            Image("arrow_with_cross_btn")
+                            .frame(height: 50)
+                            
+                            Button(action: {
+                                if !inputText.isEmpty {
+                                    inputText.removeLast()
+                                }
+                            }) {
+                                Image("arrow_with_cross_btn")
+                            }
                         }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding([.top, .bottom], 20)
-                }.background(.showCodeButton)
-                HStack {
-                    VStack(spacing: 1) {
-                        ForEach(buttons, id: \.self) { row in
-                            HStack(spacing: 0) {
-                                ForEach(row, id: \.self) { button in
-                                    ZStack {
-                                        if button == "OK" {
-                                            Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_disabled_btn")
-                                                .resizable()
-                                        } else {
-                                            Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")
-                                                .resizable()
+                        .padding(.horizontal, 20)
+                        .padding([.top, .bottom], 20)
+                    }.background(.showCodeButton)
+                    HStack {
+                        VStack(spacing: 1) {
+                            ForEach(buttons, id: \.self) { row in
+                                HStack(spacing: 0) {
+                                    ForEach(row, id: \.self) { button in
+                                        ZStack {
+                                            if button == "OK" {
+                                                Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_disabled_btn")
+                                                    .resizable()
+                                            } else {
+                                                Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")
+                                                    .resizable()
+                                            }
+                                            
+                                            Text(button)
+                                                .font(Font.custom("Verlag-Bold", size: 50))
+                                                .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                                .frame(maxWidth: .infinity)
                                         }
-                                        
-                                        Text(button)
-                                            .font(Font.custom("Verlag-Bold", size: 50))
-                                            .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                    .frame(maxWidth: .infinity, maxHeight: 160)
-                                    .onTapGesture {
-                                        handleButtonTap(button)
+                                        .frame(maxWidth: .infinity, maxHeight: 152)
+                                        .onTapGesture {
+                                            handleButtonTap(button)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }.background(.showCodeButton)
-        }
-        .customSheetView(isPresented: $showResultView) {
-            if let firstOrder = order.first {
-                if lookupType == .phoneNumber || lookupType == .creditCard {
-                    LookupResultCardOrPhoneView(
-                        inputText: inputText,
-                        dismissAction: { showResultView = false },
-                        errorMessage: nil,
-                        lookupType: lookupType,
-                        order: firstOrder
-                    )
-                } else {
-                    LookupOrderResultView(
-                        inputText: inputText,
-                        dismissAction: { showResultView = false },
-                        errorMessage: nil,
-                        order: firstOrder
-                    )
+                .background(.showCodeButton)
+            }
+            
+            if showResultView {
+                VStack {
+                    if let firstOrder = order {
+                        if lookupType == .phoneNumber || lookupType == .creditCard {
+                            LookupResultCardOrPhoneView(
+                                inputText: inputText,
+                                dismissAction: { showResultView = false }, orders: firstOrder,
+                                errorMessage: nil,
+                                lookupType: lookupType
+                            )
+                        } else {
+                            LookupOrderResultView(
+                                inputText: inputText,
+                                dismissAction: { showResultView = false },
+                                errorMessage: nil,
+                                order: firstOrder.first
+                            )
+                        }
+                    } else {
+                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+                    }
                 }
-            } else {
-                LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
             }
         }
-    }
+    }    
     
     private func handleButtonTap(_ button: String) {
         if button == "OK" {
@@ -168,7 +173,7 @@ struct LookupByNumbersView: View {
                         case .phoneNumber:
                             await phoneViewModels.fetchSeats(c: "289-6385", q: inputText)
                             DispatchQueue.main.async { self.order = phoneViewModels.orders.isEmpty ? [] : [phoneViewModels.orders.first!] }
-                        default:
+                        case .orderNumber:
                             await viewModel.fetchSeats(c: "289-6385", q: inputText)
                             DispatchQueue.main.async { self.order = viewModel.orders.isEmpty ? [] : [viewModel.orders.first!] }
                         }

@@ -40,4 +40,10 @@ struct StatsModel: Codable {
     let seatsScannedTotal: Int?
     let seatsScannedByDevice: Int?
 
+    enum CodingKeys: String, CodingKey {
+           case totalSeats = "total_seats"
+           case seatsScannable = "seats_scannable"
+           case seatsScannedTotal = "seats_scanned_total"
+           case seatsScannedByDevice = "seats_scanned_by_device"
+       }
 }

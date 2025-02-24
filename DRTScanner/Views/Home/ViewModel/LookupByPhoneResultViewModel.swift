@@ -24,7 +24,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
         
         do {
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
-                IQAPIClient.getLookUpByPhone(code: c, orderNumber: q) { result in
+                IQAPIClient.getLookUpByPhone(code: c, phoneNumber: q) { result in
                     switch result {
                     case .success(let user):
                         continuation.resume(returning: user.orders ?? [])

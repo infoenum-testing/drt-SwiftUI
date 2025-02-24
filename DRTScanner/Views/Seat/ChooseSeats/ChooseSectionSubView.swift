@@ -7,11 +7,13 @@
 
 
 import SwiftUI
+import IQAPIClient
 
 struct ChooseSectionSubView: View {
-    let seatLabels = ["B", "O", "OL", "OR", "VIP1", "VIP2"]
+    @State private var seatLabels: [String] = []
     @Binding var selectedSeat: String
     @Binding var isPresent: Bool
+    @State private var selectedSection: String = ""
     
     var body: some View {
         VStack {
@@ -22,6 +24,8 @@ struct ChooseSectionSubView: View {
                     .onTapGesture {
                         selectedSeat = seat
                         isPresent = false
+                        selectedSection = seat
+                       // fetchRows(for: selecteds) 
                     }
                 Divider()
             }
@@ -29,6 +33,23 @@ struct ChooseSectionSubView: View {
             .background(Color.customWhite)
         }
         .background(Color.customWhite)
+        .onAppear {
+            fetchSections()
+        }
+    }
+    
+    private func fetchSections() {
+        IQAPIClient.getSection(code: "289-6385") { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let section):
+                    print(section)
+                    seatLabels = section
+                case .failure(let error):
+                    print("Failed to fetch sections: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
 
@@ -43,7 +64,7 @@ struct ChooseSectionCell: View {
                 .foregroundColor(Color.showCodeButton)
             Spacer()
         }.listRowSeparator(.hidden)
-        .background(Color.customWhite)
+            .background(Color.customWhite)
     }
 }
 

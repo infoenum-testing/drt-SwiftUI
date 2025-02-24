@@ -10,6 +10,7 @@ import SwiftUI
 struct LookupCellView: View {
     var result: Orders
     var onCellTapped: (Int) -> Void
+    @State private var isTapped = false
     
     var body: some View {
         VStack(alignment: .center) {
@@ -18,9 +19,9 @@ struct LookupCellView: View {
                 .foregroundColor(Color.showCodeText)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 0)
-
+            
             HStack {
-
+                
                 Text("ORDER: \(result.orderId ?? 0)")
                     .font(.custom("Verlag-Bold", size: 15))
                     .foregroundColor(Color.showCodeText)
@@ -30,7 +31,7 @@ struct LookupCellView: View {
                     .foregroundColor(Color.showCodeText)
             }
             .padding(.top, 0)
-
+            
             Text("PHONE NUMBER: \(result.phone ?? "")")
                 .font(.custom("Verlag-Bold", size: 15))
                 .foregroundColor(Color.showCodeText)
@@ -38,8 +39,15 @@ struct LookupCellView: View {
                 .padding(.top, 5)
         }
         .padding(10)
+        .background(isTapped ? Color.black.opacity(0.2) : Color.white)
+        .animation(.easeInOut(duration: 0.2), value: isTapped)
         .onTapGesture {
-            onCellTapped(result.orderId ?? 0) 
+            isTapped = true
+            onCellTapped(result.orderId ?? 0)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                isTapped = false
+            }
         }
     }
 }

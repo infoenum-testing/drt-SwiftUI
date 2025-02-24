@@ -24,7 +24,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
         
         do {
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
-                IQAPIClient.getLookUpByCreditCard(code: c, orderNumber: q) { result in
+                IQAPIClient.getLookUpByCreditCard(code: c, ccNumber: q) { result in
                     switch result {
                     case .success(let user):
                         continuation.resume(returning: user.orders ?? [])

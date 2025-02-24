@@ -18,11 +18,11 @@ struct DRTScannerApp: App {
             
             if showSeatView {
                 SeatHomeView(showSeatView: $showSeatView)
-                //ContentView(context: persistenceController.container.viewContext)
+//                ContentView(context: persistenceController.container.viewContext)
                     .environment(\.managedObjectContext, persistenceController.container.viewContext)
             } else {
                 LandingView()
             }
-        }
+       }
     }
 }

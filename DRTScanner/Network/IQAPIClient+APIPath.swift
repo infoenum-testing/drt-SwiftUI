@@ -22,4 +22,9 @@ public enum APIPath: String {
     case lookUpByCreditCard = "orders/by-cc"
     case lookUpByPhone = "orders/by-phone"
     case lookUpByname = "orders/by-name"
+    case section = "/db/q"
+    case seat = "/seat"
+    
+    // Offline APi
+    case selectAllDataOffine = "/db/dl"
 }

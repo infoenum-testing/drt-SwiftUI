@@ -19,21 +19,21 @@ struct CustomCellView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(imageName)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text(title)
-                    .font(Font.custom("Verlag-Book", size: 15))
-                    .foregroundColor(.showCodeText)
-                Text(subtitle)
-                    .font(Font.custom("Verlag-Bold", size: 18))
-                    .foregroundColor(.showCodeButton)
-            }
-            Spacer()
             
             Button(action: {
                 buttonAction()
             }) {
+                Image(imageName)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(Font.custom("Verlag-Book", size: 15))
+                        .foregroundColor(.showCodeText)
+                    Text(subtitle)
+                        .font(Font.custom("Verlag-Bold", size: 18))
+                        .foregroundColor(.showCodeButton)
+                }
+                Spacer()
                 Image(buttonImage)
             }
         }

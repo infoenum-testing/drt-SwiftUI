@@ -28,6 +28,30 @@ class DRTDatabaseManager {
         return Bundle.main.url(forResource: "DRT_Scanner", withExtension: IQModelExtension.mom)
     }
     
+    func saveOrders(from orderDetails: [Orders], context: NSManagedObjectContext) {
+        context.perform {
+            for detail in orderDetails {
+                let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "oid == %d", detail.orderId ?? 0)
+
+                do {
+                    let existingOrders = try context.fetch(fetchRequest)
+                    let order = existingOrders.first ?? Order(context: context)
+                    
+                    order.buyer_name = detail.buyerName
+                    order.cc = detail.cc
+                    order.oid = (Int64(detail.orderId ?? 0)) as NSNumber
+                    order.phone = detail.phone
+
+                    try context.save()
+                    print("Order saved: \(detail.orderId ?? 0)")
+                } catch {
+                    print("Failed to save order: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
     func allRecordsSortByAttribute(_ attribute: String?, fromTable table: String) -> [Any] {
         var sortDescriptor: NSSortDescriptor?
         
