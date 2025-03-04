@@ -24,7 +24,10 @@ public enum APIPath: String {
     case lookUpByname = "orders/by-name"
     case section = "/db/q"
     case seat = "/seat"
+    case stringLang = "/strings"
+    case ticket = "/ticket"
     
     // Offline APi
     case selectAllDataOffine = "/db/dl"
+    case uploadAllDataOffine = "/db/ul/"
 }

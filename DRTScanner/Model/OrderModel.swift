@@ -27,6 +27,9 @@ struct Orders: Codable {
     let phone: String?
     let orderId: Int?
     let studioId: Int?
+    var seats: [SeatModel]?
+    let success: Bool?
+    let message: String?
     
     private enum CodingKeys: String, CodingKey {
         case buyerName = "buyer_name"
@@ -34,5 +37,7 @@ struct Orders: Codable {
         case phone = "phone"
         case orderId = "order_id"
         case studioId = "studio_id"
+        case success = "success"
+        case message = "message"
     }
 }

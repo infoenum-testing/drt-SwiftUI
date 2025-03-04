@@ -10,7 +10,7 @@ import SwiftUI
 struct LookupOrderResultView: View {
     let inputText: String
     var dismissAction: () -> Void
-    @StateObject private var viewModel = LookupByOrderResultViewModel()
+    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @State private var orders: [Orders] = []
     @State private var seats: [SeatModel] = []
     let errorMessage: String?
@@ -74,21 +74,18 @@ struct LookupOrderResultView: View {
 
                 VStack {
                     if seats.isEmpty {
-//                        Text(StringConstants.Common.loadingSeatInformation)
-//                            .foregroundColor(.gray)
-//                            .padding()
                         Spacer()
                     } else {
                         List {
-                            ForEach(seats, id: \.seat) { seat in
-                                SeatCell(seat: seat)
+                            ForEach(seats.indices, id: \.self) { index in
+                                SeatCell(seat: $seats[index])
                             }
                         }.listStyle(.plain)
-                        .padding(0)
+                            .padding(0)
                     }
                 }
             }
-        }.frame(maxHeight: .infinity)
+        }
             .background(Color.customWhite)
        // .ignoresSafeArea()
         .task {

@@ -8,12 +8,14 @@
 
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 struct ChooseSectionSubView: View {
     @State private var seatLabels: [String] = []
     @Binding var selectedSeat: String
     @Binding var isPresent: Bool
     @State private var selectedSection: String = ""
+    @Environment(\.managedObjectContext) private var viewContext
     
     var body: some View {
         VStack {
@@ -47,8 +49,19 @@ struct ChooseSectionSubView: View {
                     seatLabels = section
                 case .failure(let error):
                     print("Failed to fetch sections: \(error.localizedDescription)")
+                    fetchSectionsFromCoreData()
                 }
             }
+        }
+    }
+    private func fetchSectionsFromCoreData() {
+        let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
+        
+        do {
+            let sections = try viewContext.fetch(fetchRequest)
+            seatLabels = Array(Set(sections.map { $0.section ?? "" })).sorted()
+        } catch {
+            print("Failed to fetch sections from Core Data: \(error.localizedDescription)")
         }
     }
 }

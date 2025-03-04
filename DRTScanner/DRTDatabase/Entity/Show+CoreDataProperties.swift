@@ -56,6 +56,14 @@ extension Show {
 
     @objc(removeSeats:)
     @NSManaged public func removeFromSeats(_ values: NSSet)
+    
+    var isValid: Bool {
+        return valid?.boolValue ?? false
+    }
+
+    func setValid(isValid: Bool) {
+        valid = NSNumber(value: isValid)
+    }
 
 }
 

@@ -10,13 +10,21 @@ import SwiftUI
 struct LookupResultCardOrPhoneView: View {
     let inputText: String
     var dismissAction: () -> Void
-    @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel()
-    @StateObject private var phoneViewModel = LookupByPhoneResultViewModel()
-    @StateObject private var viewModel = LookupByOrderResultViewModel()
+    @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    @StateObject private var phoneViewModel = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @State private var isSheetPresented: Bool = false
-    @State var orders: [Orders]
+    var orders: [Orders] {
+           lookupType == .phoneNumber ? phoneViewModel.orders : creditCardViewModel.orders
+       }
+
     let errorMessage: String?
     let lookupType: LookupType
+    
+    @State private var oId: String?
+    
+    @State private var selectedOrder: Orders?
+    @State private var navigateToOrderResult = false
 
     var body: some View {
         VStack {
@@ -71,18 +79,14 @@ struct LookupResultCardOrPhoneView: View {
 
                 VStack {
                     if orders.isEmpty {
-//                        Text("Loading Order information...")
-//                            .foregroundColor(.gray)
-//                            .padding()
                         Spacer()
                     } else {
                         List {
                             ForEach(orders, id: \.orderId) { seat in
                                 LookupCellView(result: seat) { orderId in
-                                    Task {
-//                                        await viewModel.fetchSeats(c: "289-6385", q: String(24241))
-//                                        isSheetPresented = true
-                                    }
+                                    selectedOrder = seat
+                                    oId = "\(orderId)"
+                                    navigateToOrderResult = true
                                 }
                             }
                         }
@@ -98,11 +102,19 @@ struct LookupResultCardOrPhoneView: View {
         .task {
             if lookupType == .phoneNumber {
                 await phoneViewModel.fetchSeats(c: "289-6385", q: inputText)
-                self.orders = phoneViewModel.orders
+              //  self.orders = phoneViewModel.orders
             } else {
                 await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
-                self.orders = creditCardViewModel.orders
+             //   self.orders = creditCardViewModel.orders
             }
+        }
+        .customSheetView(isPresented: $navigateToOrderResult) {
+            if let selectedOrder = selectedOrder {
+                LookupOrderResultView(inputText: oId ?? "", dismissAction: { navigateToOrderResult = false }, errorMessage: nil, order: selectedOrder)
+            }
+                    }.padding(.top, 40)
+        .onChange(of: navigateToOrderResult) { newValue in
+            print(newValue)
         }
     }
 }

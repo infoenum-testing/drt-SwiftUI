@@ -31,7 +31,7 @@ struct SheetViewModifier<AlertContent: View>: ViewModifier {
                 
                 self.content()
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 30)
+                    //.padding(.top, 30)
                     .offset(y: 0)
                     .transition(.move(edge: .trailing))
             }

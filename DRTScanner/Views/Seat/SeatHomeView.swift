@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SeatHomeView: View {
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @State private var isSideMenuPresented = false
     @Binding var showSeatView: Bool
     @State private var showAlert = false
@@ -103,17 +104,19 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlert) {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
-                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.showCodeButton).padding(.top, 0)
+                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, 50)
             }
-        }
+        }.padding(.top, 0)
         .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.showCodeButton).padding(.top, 0)
+            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, 100)
+                .padding([.leading, .trailing], -10)
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, 0)
+            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, 90)
+                .padding([.leading, .trailing], -20)
         }
         .sideMenuViewModify(isPresented: $isSideMenuPresented) {
-            SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView)
+            SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)
         }
         .customAlert(isPresented: $showGoOfflineView) {
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -122,7 +125,7 @@ struct SeatHomeView: View {
         }
         .customAlert(isPresented: $showScanningStatsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                ScanningStatsView(isPresented: $showScanningStatsView)
+                ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
             }
         }
         .customAlert(isPresented: $showAboutView) {
@@ -131,11 +134,70 @@ struct SeatHomeView: View {
             }
         }
         
+//        .customAlert(isPresented: $showAlert) {
+//            VStack(alignment: .center) {
+//                HStack {
+//                    Spacer()
+//                    Text("Confirm")
+//                        .padding(.leading, 20)
+//                        .font(Font.custom("Verlag-Bold", size: 30))
+//                        .foregroundColor(.white)
+//                        .padding(.bottom, 10)
+//                        .padding(.top, 20)
+//                    
+//                    Spacer()
+//                    Button(action: {
+//                        withAnimation(.easeInOut(duration: 0.3)) {
+//                            showAlert = false
+//                        }
+//                    }) {
+//                        Image("Popup_cross_btn")
+//                    }
+//                }
+//                
+//                VStack {
+//                    Text("Are you sure you want to logout?")
+//                        .font(Font.custom("Verlag-Book", size: 18))
+//                        .foregroundColor(.white)
+//                        .padding([.leading, .trailing, .bottom])
+//                }
+//                
+//                HStack {
+//                    Text("Logout")
+//                        .font(Font.custom("Verlag-Bold", size: 20))
+//                        .foregroundColor(.showCodeText)
+//                        .padding(.leading, 30)
+//                        .onTapGesture {
+//                            withAnimation(.easeInOut(duration: 0.3)) {
+//                                showAlert = false
+//                                showSeatView = false
+//                                //DRTUser.logout()
+//                                showSeatView = false
+//                            }
+//                        }
+//                    Spacer()
+//                    Text("Cancel")
+//                        .font(Font.custom("Verlag-Bold", size: 20))
+//                        .foregroundColor(.showCodeText)
+//                        .padding(.trailing, 30)
+//                        .onTapGesture {
+//                            withAnimation(.easeInOut(duration: 0.3)) {
+//                                showAlert = false
+//                            }
+//                        }
+//                }
+//                .frame(maxWidth: .infinity)
+//                .padding()
+//            }
+//            .padding()
+//            .background(Color.showCodeButton)
+//        }
+        
         .customAlert(isPresented: $showAlert) {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text("Confirm")
+                    Text(isOfflineMode ? "ALERT" : "Confirm")
                         .padding(.leading, 20)
                         .font(Font.custom("Verlag-Bold", size: 30))
                         .foregroundColor(.white)
@@ -153,35 +215,41 @@ struct SeatHomeView: View {
                 }
                 
                 VStack {
-                    Text("Are you sure you want to logout?")
+                    Text(isOfflineMode ?
+                        "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out" :
+                        "Are you sure you want to log out?")
                         .font(Font.custom("Verlag-Book", size: 18))
                         .foregroundColor(.white)
-                        .padding([.leading, .trailing, .bottom])
+                    //    .padding([.leading, .trailing, .bottom])
                 }
                 
                 HStack {
-                    Text("Logout")
-                        .font(Font.custom("Verlag-Bold", size: 20))
-                        .foregroundColor(.showCodeText)
-                        .padding(.leading, 30)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = false
-                                showSeatView = false
-                                //DRTUser.logout()
-                                showSeatView = false
-                            }
+                    if !isOfflineMode {
+                        HStack {
+                            Text("Logout")
+                                .font(Font.custom("Verlag-Bold", size: 20))
+                                .foregroundColor(.showCodeText)
+                                .padding(.leading, 30)
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showAlert = false
+                                        showSeatView = false
+                                        //DRTUser.logout()
+                                        showSeatView = false
+                                    }
+                                }
+                            Spacer()
+                            Text("Cancel")
+                                .font(Font.custom("Verlag-Bold", size: 20))
+                                .foregroundColor(.showCodeText)
+                                .padding(.trailing, 30)
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showAlert = false
+                                    }
+                                }
                         }
-                    Spacer()
-                    Text("Cancel")
-                        .font(Font.custom("Verlag-Bold", size: 20))
-                        .foregroundColor(.showCodeText)
-                        .padding(.trailing, 30)
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = false
-                            }
-                        }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -189,7 +257,7 @@ struct SeatHomeView: View {
             .padding()
             .background(Color.showCodeButton)
         }
-//        .ignoresSafeArea()
+        .ignoresSafeArea()
 //        .zIndex(1)
 //        .transition(.move(edge: .top))
 //        .frame(maxWidth: .infinity, maxHeight: .infinity)

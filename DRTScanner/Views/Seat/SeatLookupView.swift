@@ -7,6 +7,7 @@
 
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 struct SeatLookupView: View {
     @State private var seatText: String = ""
@@ -18,10 +19,10 @@ struct SeatLookupView: View {
     @State private var selectedRow: String = ""
     @State private var selectedSeat: String = ""
     @State private var isLoading = false
-    @State private var orderDetails: OrderDetailModel?
+    @State private var orderDetails: OrderDetailModel = OrderDetailModel()
+    @State private var ordersDetailCoreData: Order?
     @State private var order: Orders?
-    @State private var orders: [Orders]?
-    @StateObject private var lookupByOrderViewModel = LookupByOrderResultViewModel()
+    @StateObject private var lookupByOrderViewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @State private var showResultView = false
 
     private var seatDisplayText: String {
@@ -90,12 +91,12 @@ struct SeatLookupView: View {
         }
         .customSheetView(isPresented: $showResultView) {
             LookupOrderResultView(
-                inputText: String(orderDetails?.oid ?? 24241),
+                inputText: String(orderDetails.oid ?? 24241),
                 dismissAction: { showResultView = false },
                 errorMessage: nil,
-                order: orders?.first
+                order: order
             )
-        }
+        }.padding([.leading, .trailing], 20)
         
         .customSheetView(isPresented: $isSeatLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -134,21 +135,65 @@ struct SeatLookupView: View {
 
         IQAPIClient.getSeatsResults(code: "289-6385", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
             DispatchQueue.main.async {
-                isLoading = false
+                self.isLoading = false
                 switch result {
                 case .success(let orderDetail):
                     print("Order Details: \(orderDetail)")
-                    orderDetails = orderDetail
+                    self.orderDetails = orderDetail
+                    self.order = Orders(
+                        buyerName: orderDetail.buyerName,
+                        cc: orderDetail.cc,
+                        phone: nil,
+                        orderId: orderDetail.oid,
+                        studioId: nil,
+                        success: true,
+                        message: ""
+                    )
+
                     Task {
-                        await lookupByOrderViewModel.fetchSeats(c: "289-6385", q: String(orderDetail.oid ?? 24241))
+                        await lookupByOrderViewModel.fetchSeats(c: "289-6385", q: String(orderDetails.oid ?? 24241))
                     }
-                    showResultView = true
+                    self.showResultView = true
+
                 case .failure(let error):
                     print("Failed to fetch seat details: \(error.localizedDescription)")
+
+                    if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
+                        self.order = Orders(
+                            buyerName: cachedOrder.buyer_name,
+                            cc: cachedOrder.cc,
+                            phone: cachedOrder.phone,
+                            orderId: cachedOrder.oid?.intValue,
+                            studioId: nil,
+                            success: true,
+                            message: ""
+                        )
+                        self.showResultView = true
+                    }
                 }
             }
         }
     }
+
+    
+    private func fetchOrderDetailFromCoreData(section: String, row: String, seat: String) -> Order? {
+        let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
+        
+        fetchRequest.predicate = NSPredicate(format: "section == %@ AND row == %@ AND seat == %@", section, row, seat)
+        
+        do {
+            let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            if let seat = results.first {
+                orderDetails.oid = seat.oid?.intValue
+                return seat.order
+            }
+        } catch {
+            print("Failed to fetch order detail from Core Data: \(error.localizedDescription)")
+        }
+        
+        return nil
+    }
+
 }
 
 struct TableView: View {

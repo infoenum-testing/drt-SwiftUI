@@ -12,8 +12,16 @@ struct OrderDetailModel: Codable {
     let valid: Bool?
     let buyerName: String?
     let cc: String?
-    let oid: Int?
+    var oid: Int?
     let seats: [SeatModel]?
+    
+    init(valid: Bool? = nil, buyerName: String? = nil, cc: String? = nil, oid: Int? = nil, seats: [SeatModel]? = nil) {
+           self.valid = valid
+           self.buyerName = buyerName
+           self.cc = cc
+           self.oid = oid
+           self.seats = seats
+       }
     
     private enum CodingKeys: String, CodingKey {
         case valid = "valid"

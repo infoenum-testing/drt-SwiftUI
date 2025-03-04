@@ -35,10 +35,10 @@ struct SkinModel: Codable {
 
 struct StatsModel: Codable {
 
-    let totalSeats: Int?
-    let seatsScannable: Int?
-    let seatsScannedTotal: Int?
-    let seatsScannedByDevice: Int?
+    var totalSeats: Int?
+    var seatsScannable: Int?
+    var seatsScannedTotal: Int?
+    var seatsScannedByDevice: Int?
 
     enum CodingKeys: String, CodingKey {
            case totalSeats = "total_seats"

@@ -10,13 +10,21 @@ import IQAPIClient
 import Alamofire
 
 extension IQAPIClient {
+    
+    @discardableResult
+    static func getStringLanguage(completionHandler: @Sendable @escaping (_ result: Swift.Result<DRTUser, Error>) -> Void) -> DataRequest? {
+        let path = APIPath.stringLang.rawValue
+        let param: [String: Any] = ["lang" : "en-US"]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+    }
+    
     @discardableResult
     static func getShowCodeData(code: String , completionHandler: @Sendable @escaping (_ result: Swift.Result<DRTUser, Error>) -> Void) -> DataRequest? {
         let path = APIPath.showCode.rawValue
         let param: [String: Any] = ["c" : code, "devicename" : ""]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
-    
+   
     @discardableResult
     static func getLookUpByOrder(code: String , orderNumber: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrderModel, Error>) -> Void) -> DataRequest? {
         let path = APIPath.lookUpByOrder.rawValue
@@ -81,9 +89,23 @@ extension IQAPIClient {
     }
     
     @discardableResult
+    static func getTicket(code: String , completionHandler: @Sendable @escaping (_ result: Swift.Result<String, Error>) -> Void) -> DataRequest? {
+        let path = APIPath.ticket.rawValue
+        let param: [String: Any] = ["c" : code, "devicename" : ""]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
     static func getAllDataOffline(code: String, username: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<Any, Error>) -> Void) -> DataRequest? {
         let path = APIPath.selectAllDataOffine.rawValue
         let param: [String: Any] = ["c" : code, "username": username, "devicename" : "iPhone-16-Plus-kxs9Jii6"]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+    }
+    
+    @discardableResult
+    static func uploadAllOfflineData(code: String, sId: String, dbCode: String, username: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<Any, Error>) -> Void) -> DataRequest? {
+        let path = APIPath.uploadAllDataOffine.rawValue
+        let param: [String: Any] = ["c" : code, "sid": sId, "db_code": "8E98E90F-9925-4EA2-B994-68D3259D93C0", "username": username, "devicename" : "iPhone-16-Plus-kxs9Jii6"]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
 }

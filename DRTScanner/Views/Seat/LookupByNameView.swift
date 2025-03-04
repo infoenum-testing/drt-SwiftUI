@@ -19,7 +19,7 @@ struct LookupByNameView: View {
     @State private var order: [Orders]?
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
-    @StateObject var viewModel = LookupByNameResultViewModel()
+    @StateObject var viewModel = LookupByNameResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     let lookupType: LookupByName
     let buttons = [
         ["A", "B", "C", "D"],
@@ -58,7 +58,7 @@ struct LookupByNameView: View {
                     .font(Font.custom("Verlag-Bold", size: 34))
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.customWhite)
-                    .padding(.all, 10)
+                    .padding([.leading, .trailing, .top], 10)
                     .padding(.leading)
                 
                 Button(action: {
@@ -68,7 +68,7 @@ struct LookupByNameView: View {
                 }) {
                     Image("arrow_with_cross_btn")
                 }
-            }
+            }.background(Color.showCodeButton)
             .padding(.horizontal, 20)
             .padding(.top, 20)
             
@@ -100,11 +100,12 @@ struct LookupByNameView: View {
                     }
                 }
             }
-        } .customSheetView(isPresented: $showResultView) {
+        }.background(.showCodeButton)
+        .customSheetView(isPresented: $showResultView) {
             if let firstOrder = order {
                 LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: firstOrder, errorMessage: nil)
             } else {
-                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: [Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0)], errorMessage: "No orders found")
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: [Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0, success: true, message: "")], errorMessage: "No orders found")
             }
         }
     }

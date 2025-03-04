@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ScannerView: View {
     @State private var flashLight: AVCaptureDevice?
-    @State private var scanViewHeight: CGFloat = UIScreen.main.bounds.height * 3 / 8.5
+    @State private var scanViewHeight: CGFloat = UIScreen.main.bounds.height * 3 / 10
     @State private var linePosition: CGFloat
     private let lineSpeed: CGFloat = 70.0
     
@@ -24,7 +24,7 @@ struct ScannerView: View {
             ZStack {
                 Rectangle()
                     .frame(height: scanViewHeight)
-                    .foregroundColor(.showCodeButton)
+                    .foregroundColor(.secondary)
                 
                 Rectangle()
                     .frame(height: 1)

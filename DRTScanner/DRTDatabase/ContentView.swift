@@ -56,6 +56,15 @@ struct ContentView: View {
                 isCreating = true
             }
             .padding()
+            Button("Delete All") {
+                databaseManager.deleteAllOrders(context: viewContext) { success in
+                    if success {
+                        fetchOrders()
+                    }
+                }
+            }
+            .padding()
+            .foregroundColor(.red)
         }
         .onAppear {
             fetchOrders()

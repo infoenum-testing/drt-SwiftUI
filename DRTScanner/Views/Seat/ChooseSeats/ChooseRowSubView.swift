@@ -7,6 +7,7 @@
 
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 struct ChooseRowSubView: View {
     @State private var rowSelect: [String] = []
@@ -14,6 +15,7 @@ struct ChooseRowSubView: View {
     @Binding var isPresent: Bool
     @Binding var selectedSection: String
     @Binding var selectedRow: String
+    @Environment(\.managedObjectContext) private var viewContext
     
     var body: some View {
         VStack {
@@ -43,10 +45,26 @@ struct ChooseRowSubView: View {
                        rowSelect = row
                    case .failure(let error):
                        print("Failed to fetch rows: \(error.localizedDescription)")
+                       fetchRowsCoreData(for: section)
                    }
                }
            }
        }
+    private func fetchRowsCoreData(for section: String) {
+        let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "section == %@", section)
+            do {
+                let rows = try viewContext.fetch(fetchRequest)
+                if !rows.isEmpty {
+                    rowSelect = Array(Set(rows.map { $0.row ?? "" })).sorted()
+                } else {
+                    fetchRows(for: section)
+                }
+            } catch {
+                print("Failed to fetch rows from Core Data: \(error.localizedDescription)")
+                fetchRows(for: section)
+            }
+        }
    }
 
 struct ChooseRowCell: View {

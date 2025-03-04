@@ -6,15 +6,16 @@
 //
 
 import SwiftUI
-import Foundation
 
 struct SideMenuView: View {
     @Binding var isPresented: Bool
     @Binding var showGoOfflineView: Bool
     @Binding var showScanningStatsView: Bool
     @Binding var showAboutView: Bool
+    @Binding var showAlert: Bool
+    @State private var showGoOnlineView = false
     @State private var showSettingsView = false
-    @State private var stopScanningView = false
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -34,17 +35,25 @@ struct SideMenuView: View {
                 .padding(.top, 50)
                 
                 VStack(alignment: .leading, spacing: 20) {
-                    SideMenuOption(title: "GO OFFLINE") {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showGoOfflineView = true
+                    if isOfflineMode {
+                        SideMenuOption(title: "GO ONLINE") {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                showGoOnlineView = true
+                            }
                         }
-                        isPresented = false
+                    } else {
+                        SideMenuOption(title: "GO OFFLINE") {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                showGoOfflineView = true
+                            }
+                            isPresented = false
+                        }
                     }
                     SideMenuOption(title: "SCANNING STATS") {
                         withAnimation(.easeInOut(duration: 0.5)) {
                             showScanningStatsView = true
                         }
-                        isPresented = false
+                        isPresented = true
                     }
                     SideMenuOption(title: "ABOUT") {
                         withAnimation(.easeInOut(duration: 0.5)) {
@@ -53,8 +62,8 @@ struct SideMenuView: View {
                         isPresented = false
                     }
                     SideMenuOption(title: "STOP SCANNING") {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            stopScanningView = true
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAlert = true
                         }
                     }
                     SideMenuOption(title: "DRT WEBSITE") {
@@ -65,7 +74,6 @@ struct SideMenuView: View {
                             showSettingsView = true
                         }
                     }
-                    
                 }
                 .padding()
                 
@@ -74,24 +82,20 @@ struct SideMenuView: View {
             .frame(width: 250)
             .background(Color.sideMenu)
             .edgesIgnoringSafeArea(.all)
-        }
-
-        .customAlert(isPresented: $showSettingsView) {
+        } .customAlert(isPresented: $showSettingsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 SettingsView(isPresented: $showSettingsView)
             }
         }
-        .customAlert(isPresented: $stopScanningView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                StopScanningView()
-            }
+        .customAlert(isPresented: $showGoOnlineView) {
+            GoOnlineView(isPresented: $showGoOnlineView)
         }
     }
-    
-    private func stopScanningAction() {
-        print("Scanning stopped")
+
+    private func toggleOfflineMode() {
+        isOfflineMode.toggle()
     }
-    
+
     private func openDRTWebsite() {
         if let url = URL(string: "https://www.drtwebsite.com") {
             UIApplication.shared.open(url)

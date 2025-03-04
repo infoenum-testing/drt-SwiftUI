@@ -12,7 +12,7 @@ struct CustomCellView: View {
     var imageName: String
     var title: String
     var subtitle: String
-    var cellHeight: CGFloat = 80.0
+    var cellHeight: CGFloat = 90.0
     var bottomLineColor: Color = .gray
     var buttonImage: String
     var buttonAction: () -> Void

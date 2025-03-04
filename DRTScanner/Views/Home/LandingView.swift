@@ -152,6 +152,7 @@ struct LandingView: View {
                     .transition(.move(edge: .top))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
+                    //.ignoresSafeArea()
                     .animation(.easeInOut(duration: 0.3), value: showSeatView)
             }
         }

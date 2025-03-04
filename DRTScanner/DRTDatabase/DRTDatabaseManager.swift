@@ -36,7 +36,13 @@ class DRTDatabaseManager {
 
                 do {
                     let existingOrders = try context.fetch(fetchRequest)
-                    let order = existingOrders.first ?? Order(context: context)
+                    
+                    if !existingOrders.isEmpty {
+                        print("Order already exists: \(detail.orderId ?? 0)")
+                        continue
+                    }
+                    
+                    let order = Order(context: context)
                     
                     order.buyer_name = detail.buyerName
                     order.cc = detail.cc
@@ -159,6 +165,23 @@ class DRTDatabaseManager {
         }
     }
     
+    func deleteAllOrders(context: NSManagedObjectContext, completion: @escaping (Bool) -> Void) {
+        context.perform {
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Order.fetchRequest()
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+            do {
+                try context.execute(deleteRequest)
+                try context.save()
+                print("All orders deleted successfully!")
+                completion(true)
+            } catch {
+                print("Failed to delete all orders: \(error.localizedDescription)")
+                completion(false)
+            }
+        }
+    }
+    
     func fetchObjects<T: NSManagedObject>(forEntity entity: T.Type, withPredicate predicate: NSPredicate? = nil) -> [T]? {
         guard let context = managedObjectContext else {
             print("Managed Object Context is not available")
@@ -221,31 +244,7 @@ class DRTDatabaseManager {
         
         return nil
     }
-    
-    func insertSeatRecord(seatAttributes: [String: Any]) -> Seat? {
-        guard let context = managedObjectContext else {
-            print("Managed Object Context is not available")
-            return nil
-        }
-        
-        let newSeat = Seat(context: context)
-        newSeat.barcode = seatAttributes[StringConstants.Formate.barcode] as? String
-        newSeat.row = seatAttributes[StringConstants.Attributes.row] as? String
-        newSeat.seat = seatAttributes[StringConstants.Attributes.seat] as? String
-        newSeat.section = seatAttributes[StringConstants.Attributes.section] as? String
-        newSeat.qrCode = seatAttributes[StringConstants.Attributes.qrCode] as? String
-        newSeat.handicapped = seatAttributes[StringConstants.Attributes.handicapped] as? NSNumber
-        newSeat.date_scanned = seatAttributes[StringConstants.Attributes.datesScanned] as? Date
-        
-        do {
-            try context.save()
-            return newSeat
-        } catch let error {
-            print("Error saving seat: \(error.localizedDescription)")
-            return nil
-        }
-    }
-    
+
     func deleteSeatRecord(seat: Seat) -> Bool {
         guard let context = managedObjectContext else {
             print("Managed Object Context is not available")
@@ -284,90 +283,7 @@ class DRTDatabaseManager {
             return nil
         }
     }
-    
-    func insertUpdateShowRecordInShowTable(showAttributes: [String: Any]) -> Show? {
-        guard let context = managedObjectContext else {
-            print("Managed Object Context is not available")
-            return nil
-        }
-        
-        // Check if a Show with the given show_id already exists
-        if let showId = showAttributes[StringConstants.Attributes.showId] as? String {
-            let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.showId, showId)
-            
-            do {
-                let existingShows = try context.fetch(fetchRequest)
-                
-                if let existingShow = existingShows.first {
-                    // Update the existing show record
-                    existingShow.message = showAttributes[StringConstants.Attributes.message] as? String
-                    existingShow.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
-                    existingShow.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
-                    existingShow.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
-                    
-                    return existingShow
-                } else {
-                    // Insert new show record if it doesn't exist
-                    let newShow = Show(context: context)
-                    newShow.show_id = showId
-                    newShow.message = showAttributes[StringConstants.Attributes.message] as? String
-                    newShow.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
-                    newShow.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
-                    newShow.valid = showAttributes[StringConstants.Attributes.valid] as? NSNumber
-                    
-                    return newShow
-                }
-            } catch let error {
-                print("Error fetching show: \(error.localizedDescription)")
-                return nil
-            }
-        }
-        
-        return nil
-    }
-    
-    func insertUpdateOrderRecord(orderAttributes: [String: Any]) -> Order? {
-        guard let context = managedObjectContext else {
-            print("Managed Object Context is not available")
-            return nil
-        }
-        
-        // Check if an Order with the given oid already exists
-        if let orderId = orderAttributes[StringConstants.Attributes.oid] as? String {
-            let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.oid, orderId)
-            
-            do {
-                let existingOrders = try context.fetch(fetchRequest)
-                
-                if let existingOrder = existingOrders.first {
-                    // Update the existing order record
-                    existingOrder.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
-                    existingOrder.cc = orderAttributes[StringConstants.Attributes.cc] as? String
-                    existingOrder.phone = orderAttributes[StringConstants.Attributes.phone] as? String
-                    
-                    return existingOrder
-                } else {
-                    // Insert new order record if it doesn't exist
-                    let newOrder = Order(context: context)
-                    newOrder.oid = orderAttributes[StringConstants.Attributes.oid] as? NSNumber
-                    newOrder.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
-                    newOrder.cc = orderAttributes[StringConstants.Attributes.cc] as? String
-                    newOrder.phone = orderAttributes[StringConstants.Attributes.phone] as? String
-                    
-                    return newOrder
-                }
-            } catch let error {
-                print("Error fetching order: \(error.localizedDescription)")
-                return nil
-            }
-        }
-        
-        return nil
-    }
-    
-    
+
     func insertOrUpdateShowRecord(in context: NSManagedObjectContext, showAttributes: [String: Any]) -> Show? {
         let showID = showAttributes[StringConstants.Attributes.showId] as? String ?? ""
         
@@ -752,104 +668,129 @@ class DRTDatabaseManager {
             return nil
         }
     }
-    
-    
-    // MARK: Sync server data
+  
     func syncServerData(serverDict: [String: Any], progressBlock: ((Float) -> Void)?, completionBlock: ((Bool, Error?) -> Void)?) {
         DispatchQueue.global(qos: .default).async {
-            // Delete all existing records
-            self.deleteAllTableRecord(forEntity: Seat.self)
-            self.deleteAllTableRecord(forEntity: Order.self)
-            self.deleteAllTableRecord(forEntity: Show.self)
             
-            var showDict = serverDict
-            showDict.removeValue(forKey: StringConstants.Attributes.orders)
-            showDict.removeValue(forKey: StringConstants.Attributes.seats)
-            
-            // Prepare show data
-            if let showId = showDict[StringConstants.Attributes.showId] as? NSNumber {
-                showDict[StringConstants.Attributes.showId] = "\(showId)"
-            }
-            if let studioId = showDict[StringConstants.Attributes.studioId] as? NSNumber {
-                showDict[StringConstants.Attributes.studioId] = "\(studioId)"
+            let deletionResults = self.deleteAllRecords()
+            if !deletionResults {
+                print("Failed to delete some records.")
             }
             
-            // Insert or update Show record
-            if let show = self.insertUpdateShowRecordInShowTable(showAttributes: showDict) {
-                let orders = serverDict[StringConstants.Attributes.orders] as? [[Any]] ?? []
-                let soldSeats = serverDict[StringConstants.Attributes.sold] as? [[Any]] ?? []
-                
-                let totalRecords = CGFloat(orders.count + soldSeats.count)
-                var currentlyProcessingRecord: CGFloat = 0
-                
-                // Handle orders
-                for serverOrder in orders {
-                    currentlyProcessingRecord += 1
-                    DispatchQueue.main.async {
-                        progressBlock?(Float(currentlyProcessingRecord / totalRecords))
-                    }
+            let showDict = self.prepareShowData(from: serverDict)
+            
+            DispatchQueue.main.async {
+                if let show = self.insertUpdateShowRecordInShowTable(showAttributes: showDict) {
+                    let orders = serverDict[StringConstants.Attributes.orders] as? [[Any]] ?? []
+                    let soldSeats = serverDict[StringConstants.Attributes.sold] as? [[Any]] ?? []
+                    let unSoldSeats = serverDict[StringConstants.Attributes.unsold] as? [[Any]] ?? []
                     
-                    let orderAttributes: [String: Any] = [
-                        StringConstants.Attributes.oid: serverOrder[0],
-                        StringConstants.Attributes.buyerName: serverOrder[1],
-                        StringConstants.Attributes.cc: serverOrder[2],
-                        StringConstants.Attributes.phone: serverOrder[3]
-                    ]
-                    if let order = self.insertUpdateOrderRecord(orderAttributes: orderAttributes) {
-                        order.show = show
-                        
-                        if let oid = serverOrder[0] as? String {
-                            let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, oid)
-                            let seats = self.fetchObjects(forEntity: Seat.self, withPredicate: predicate)
-                            let seatSet = NSSet(array: seats ?? [])
-                            order.addToSeats(seatSet)
-                        }
-                    }
+                    let totalRecords = CGFloat(orders.count + soldSeats.count + unSoldSeats.count)
+                    var currentlyProcessingRecord: CGFloat = 0
+                    
+                    self.handleOrders(orders, show: show, totalRecords: totalRecords, progressBlock: progressBlock, currentlyProcessingRecord: &currentlyProcessingRecord)
+                    
+                    self.handleSoldSeats(soldSeats, show: show, totalRecords: totalRecords, progressBlock: progressBlock, currentlyProcessingRecord: &currentlyProcessingRecord, isSold: true)
+
+                    self.handleSoldSeats(unSoldSeats, show: show, totalRecords: totalRecords, progressBlock: progressBlock, currentlyProcessingRecord: &currentlyProcessingRecord, isSold: false)
                 }
-                
-                for serverSeat in soldSeats {
-                    currentlyProcessingRecord += 1
-                    DispatchQueue.main.async {
-                        progressBlock?(Float(currentlyProcessingRecord / totalRecords))
-                    }
-                    
-                    var qrCode: String? = nil
-                    if let qrCodeData = serverSeat[5] as? [String: Any] {
-                        do {
-                            let jsonData = try JSONSerialization.data(withJSONObject: qrCodeData, options: [])
-                            qrCode = String(data: jsonData, encoding: .utf8)
-                        } catch {
-                            print("Error serializing QR code data: \(error)")
-                        }
-                    }
-                    
-                    let seatAttributes: [String: Any] = [
-                        StringConstants.Attributes.oid: serverSeat[0],
-                        StringConstants.Attributes.section: serverSeat[1],
-                        StringConstants.Attributes.row: serverSeat[2],
-                        StringConstants.Attributes.seat: serverSeat[3],
-                        StringConstants.Attributes.barcode: serverSeat[4],
-                        StringConstants.Attributes.qrCode: qrCode ?? "",
-                        StringConstants.Attributes.handicapped: serverSeat[7]
-                    ]
-                    if let seat = self.insertSeatRecord(seatAttributes: seatAttributes) {
-                        seat.show = show
-                        
-                        if seat.order == nil, let oid = serverSeat[0] as? String {
-                            let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, oid)
-                            if let order = self.fetchFirstObject(fromTable: Order.self, predicate: predicate) {
-                                seat.order = order
-                            }
-                        }
-                    }
-                }
-                
                 DispatchQueue.main.async {
                     completionBlock?(true, nil)
                 }
             }
         }
     }
+
+    private func deleteAllRecords() -> (Bool) {
+        let seatDeletionSuccess = self.deleteAllTableRecord(forEntity: Seat.self)
+        let orderDeletionSuccess = self.deleteAllTableRecord(forEntity: Order.self)
+        let showDeletionSuccess = self.deleteAllTableRecord(forEntity: Show.self)
+        let scanDeletionSuccess = self.deleteAllTableRecord(forEntity: Scan.self)
+        
+        return (seatDeletionSuccess && orderDeletionSuccess && showDeletionSuccess && scanDeletionSuccess)
+    }
+
+    private func prepareShowData(from serverDict: [String: Any]) -> [String: Any] {
+        var showDict = serverDict
+        showDict.removeValue(forKey: StringConstants.Attributes.orders)
+        showDict.removeValue(forKey: StringConstants.Attributes.seats)
+        
+        if let showId = showDict[StringConstants.Attributes.showId] as? NSNumber {
+            showDict[StringConstants.Attributes.showId] = "\(showId)"
+        }
+        if let studioId = showDict[StringConstants.Attributes.studioId] as? NSNumber {
+            showDict[StringConstants.Attributes.studioId] = "\(studioId)"
+        }
+        
+        return showDict
+    }
+
+    private func handleOrders(_ orders: [[Any]], show: Show, totalRecords: CGFloat, progressBlock: ((Float) -> Void)?, currentlyProcessingRecord: inout CGFloat) {
+        for serverOrder in orders {
+            currentlyProcessingRecord += 1
+            progressBlock?(Float(currentlyProcessingRecord / totalRecords))
+            
+            let orderAttributes: [String: Any] = [
+                StringConstants.Attributes.oid: serverOrder[0],
+                StringConstants.Attributes.buyerName: serverOrder[1],
+                StringConstants.Attributes.cc: serverOrder[2],
+                StringConstants.Attributes.phone: serverOrder[3]
+            ]
+            DispatchQueue.main.async {
+                if let order = self.insertUpdateOrderRecord(orderAttributes: orderAttributes) {
+                    order.show = show
+                
+                    if let oid = serverOrder[0] as? Int {
+                      
+                        let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, "\(oid)")
+                        if let seats = self.fetchObjects(forEntity: Seat.self, withPredicate: predicate), !seats.isEmpty {
+                            let seatSet = NSSet(array: seats)
+                            order.addToSeats(seatSet)
+                        } else {
+                            print("No seats found for order \(order)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func handleSoldSeats(_ soldSeats: [[Any]], show: Show, totalRecords: CGFloat, progressBlock: ((Float) -> Void)?, currentlyProcessingRecord: inout CGFloat, isSold: Bool) {
+        for serverSeat in soldSeats {
+            currentlyProcessingRecord += 1
+
+                progressBlock?(Float(currentlyProcessingRecord / totalRecords))
+            
+            var qrCode: String? = nil
+            if let qrCodeArray = serverSeat[5] as? [String], qrCodeArray.count >= 4 {
+                qrCode = qrCodeArray.joined(separator: "-")
+            }
+            
+            let seatAttributes: [String: Any] = [
+                StringConstants.Attributes.oid: serverSeat[0],
+                StringConstants.Attributes.section: serverSeat[1],
+                StringConstants.Attributes.row: serverSeat[2],
+                StringConstants.Attributes.seat: serverSeat[3],
+                StringConstants.Attributes.barcode: serverSeat[4],
+                StringConstants.Attributes.qrCode: qrCode ?? "",
+                StringConstants.Attributes.handicapped: serverSeat[7],
+                StringConstants.Attributes.isSold: isSold
+            ]
+            DispatchQueue.main.async {
+                if let seat = self.insertSeatRecord(seatAttributes: seatAttributes) {
+                    seat.show = show
+                    
+                    if seat.order == nil, let oid = serverSeat[0] as? Int {
+                        let predicate = NSPredicate(format: StringConstants.NSPredicate.oid, "\(oid)")
+                        if let order = self.fetchFirstObject(fromTable: Order.self, predicate: predicate) {
+                            seat.order = order
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     
     func deleteAllTableRecord<T: NSManagedObject>(forEntity entityType: T.Type) -> Bool {
         let context = self.managedObjectContext
@@ -990,6 +931,102 @@ class DRTDatabaseManager {
         
         let orders = fetchObjects(forEntity: Order.self, withPredicate: predicate)
         return orders
+    }
+    
+    func insertSeatRecord(seatAttributes: [String: Any]) -> Seat? {
+        guard let context = managedObjectContext else {
+            print("Managed Object Context is not available")
+            return nil
+        }
+        
+        let newSeat = Seat(context: context)
+        if let barcodeValue = seatAttributes[StringConstants.Attributes.barcode] as? NSString {
+            newSeat.barcode = barcodeValue as String
+        } else {
+            print("Error: Barcode is nil or not a valid string")
+        }
+
+        newSeat.oid = seatAttributes[StringConstants.Attributes.oid] as? NSNumber
+        newSeat.row = seatAttributes[StringConstants.Attributes.row] as? String
+        newSeat.seat = seatAttributes[StringConstants.Attributes.seat] as? String
+        newSeat.section = seatAttributes[StringConstants.Attributes.section] as? String
+        newSeat.qrCode = seatAttributes[StringConstants.Attributes.qrCode] as? String
+        if let handicappedValue = seatAttributes[StringConstants.Attributes.handicapped] as? Bool {
+            newSeat.handicapped = NSNumber(value: handicappedValue)
+        } else {
+            print("Error: Handicapped attribute is not a valid Boolean")
+        }
+        newSeat.date_scanned = seatAttributes[StringConstants.Attributes.datesScanned] as? Date
+        
+        if newSeat.row == nil || newSeat.seat == nil {
+            print("Error: Missing required attributes for seat")
+            return nil
+        }
+        
+        do {
+            try context.save()
+            return newSeat
+        } catch let error {
+            print("Error saving seat: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    func insertUpdateOrderRecord(orderAttributes: [String: Any]) -> Order? {
+        guard let context = managedObjectContext else {
+            print("Managed Object Context is not available")
+            return nil
+        }
+        
+        if let orderId = orderAttributes[StringConstants.Attributes.oid] as? Int {
+            let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.oid, "\(orderId)")
+            
+            do {
+                let newOrder = Order(context: context)
+                newOrder.oid = orderAttributes[StringConstants.Attributes.oid] as? NSNumber
+                newOrder.buyer_name = orderAttributes[StringConstants.Attributes.buyerName] as? String
+                newOrder.cc = orderAttributes[StringConstants.Attributes.cc] as? String
+                newOrder.phone = orderAttributes[StringConstants.Attributes.phone] as? String
+                try context.save()
+                return newOrder
+            } catch let error {
+                print("Error fetching order: \(error.localizedDescription)")
+                return nil
+            }
+        }
+        
+        return nil
+    }
+
+    func insertUpdateShowRecordInShowTable(showAttributes: [String: Any]) -> Show? {
+        guard let context = managedObjectContext else {
+            print("Managed Object Context is not available")
+            return nil
+        }
+        
+        if let showId = showAttributes[StringConstants.Attributes.showId] as? String {
+            let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: StringConstants.Formate.showId, showId)
+            
+            do {
+                let newShow = Show(context: context)
+                newShow.show_id = showId
+                newShow.message = showAttributes[StringConstants.Attributes.message] as? String
+                newShow.show_dt = showAttributes[StringConstants.Attributes.showDt] as? String
+                newShow.studio_id = showAttributes[StringConstants.Attributes.studioId] as? String
+                if let valid = showAttributes[StringConstants.Attributes.valid] as? Bool {
+                    newShow.valid = NSNumber(value: valid)
+                }
+                try context.save()
+                return newShow
+            } catch let error {
+                print("Error fetching show: \(error.localizedDescription)")
+                return nil
+            }
+        }
+        
+        return nil
     }
     
 }

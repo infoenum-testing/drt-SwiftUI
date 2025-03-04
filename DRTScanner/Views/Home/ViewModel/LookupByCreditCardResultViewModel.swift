@@ -8,13 +8,17 @@
 
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 class LookupByCreditCardResultViewModel: ObservableObject {
     @Published var orders: [Orders] = []
-    @Published var seatsModel: [SeatModel] = []
-    @Published var buyerName: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    private var managedObjectContext: NSManagedObjectContext
+    
+    init(managedObjectContext: NSManagedObjectContext) {
+        self.managedObjectContext = managedObjectContext
+    }
     
     func fetchSeats(c: String, q: String) async {
         DispatchQueue.main.async {
@@ -43,6 +47,37 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.errorMessage = error.localizedDescription
                 self.isLoading = false
+                self.fetchCCFromCoreData(ccNumber: q)
+            }
+        }
+    }
+    private func fetchCCFromCoreData(ccNumber: String) {
+        let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "cc CONTAINS[cd] %@", ccNumber)
+        
+        do {
+            let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
+            
+            let mappedOrders = fetchedOrders.map { order in
+                return Orders(
+                    buyerName: order.buyer_name ?? "",
+                    cc: order.cc ?? "",
+                    phone: order.phone ?? "",
+                    orderId: order.oid?.intValue ?? 0,
+                    studioId: 0,
+                    success: true,
+                    message: ""
+                )
+            }
+            
+            DispatchQueue.main.async {
+                self.orders = mappedOrders
+                self.errorMessage = mappedOrders.isEmpty ? "No orders found in Core Data." : nil
+            }
+            
+        } catch {
+            DispatchQueue.main.async {
+                self.errorMessage = "Error fetching from Core Data: \(error.localizedDescription)"
             }
         }
     }

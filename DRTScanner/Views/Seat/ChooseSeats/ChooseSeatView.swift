@@ -23,6 +23,7 @@ struct ChooseSeatView: View {
                 }) {
                     Image("left_side_arrow")
                 }.padding()
+                    .padding(.leading, 20)
                 .frame(height: 85, alignment: .center)
                 
                 Spacer()

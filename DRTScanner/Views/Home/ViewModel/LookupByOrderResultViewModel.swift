@@ -7,6 +7,7 @@
 
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 class LookupByOrderResultViewModel: ObservableObject {
     @Published var orders: [Orders] = []
@@ -14,9 +15,17 @@ class LookupByOrderResultViewModel: ObservableObject {
     @Published var buyerName: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    private var managedObjectContext: NSManagedObjectContext
+    
+    init(managedObjectContext: NSManagedObjectContext) {
+        self.managedObjectContext = managedObjectContext
+    }
     
     func fetchSeats(c: String, q: String) async {
+        
+      
         DispatchQueue.main.async {
+            self.orders = []
             self.isLoading = true
             self.errorMessage = nil
         }
@@ -64,12 +73,15 @@ class LookupByOrderResultViewModel: ObservableObject {
                         continuation.resume(returning: user.orders ?? [])
                     case .failure(let error):
                         continuation.resume(throwing: error)
+                        print(self.errorMessage)
                     }
                 }
             }
             
             DispatchQueue.main.async {
-                self.orders = fetchedSeats
+                if fetchedSeats.count > 0 {
+                    self.orders = fetchedSeats
+                }
                 self.isLoading = false
             }
             
@@ -77,6 +89,62 @@ class LookupByOrderResultViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.errorMessage = error.localizedDescription
                 self.isLoading = false
+                
+                self.fetchOrdersFromCoreData(orderNumber: q)
+            }
+        }
+    }
+    func fetchOrdersFromCoreData(orderNumber: String) {
+        let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
+        
+        fetchRequest.predicate = NSPredicate(format: "oid == %@", orderNumber)
+        
+        let seatRelationshipKey = "seats"
+        
+        fetchRequest.relationshipKeyPathsForPrefetching = [seatRelationshipKey]
+        
+        do {
+            let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
+            
+            if !fetchedOrders.isEmpty {
+                let mappedOrders = fetchedOrders.map { order in
+                    
+                    let seats = order.seats?.compactMap { seat in
+                        return SeatModel(
+                            section: seat.section ?? "",
+                            row: seat.row ?? "",
+                            seat: seat.seat ?? "",
+                            barcode: seat.barcode,
+                            qrCode: seat.qrCode,
+                            qr: seat.qrCode != nil ? Qr(code: seat.qrCode, valid: true) : nil,
+                            tsScanned: seat.date_scanned?.description
+                        )
+                    } ?? []
+                    self.seatsModel = seats
+                    return Orders(
+                        buyerName: order.buyer_name ?? "",
+                        cc: order.cc ?? "",
+                        phone: order.phone ?? "",
+                        orderId: order.oid?.intValue ?? 0,
+                        studioId: 0,
+                        success: true,
+                        message: ""
+                    )
+                }
+                
+                DispatchQueue.main.async {
+                    self.orders = mappedOrders
+                    self.errorMessage = nil
+                }
+                
+            } else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "No order found in Core Data for order number \(orderNumber)"
+                }
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.errorMessage = "Error fetching from Core Data: \(error.localizedDescription)"
             }
         }
     }

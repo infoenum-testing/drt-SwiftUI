@@ -13,17 +13,24 @@ enum LookupType {
 
 struct LookupByNumbersView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var managedObjectContext
     @State private var inputText: String = ""
     @State private var showResultView: Bool = false
     @State private var fetchedSeats: [LookupByOrderResultViewModel] = []
     @State private var order: [Orders]?
-    @StateObject var viewModel = LookupByOrderResultViewModel()
-    @StateObject var creditCardViewModel = LookupByCreditCardResultViewModel()
-    @StateObject var phoneViewModels = LookupByPhoneResultViewModel()
+    @StateObject var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    @StateObject var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    @StateObject var phoneViewModels = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @Binding var isPresented: Bool
     let lookupType: LookupType
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
+    
+    init(isPresented: Binding<Bool>, lookupType: LookupType) {
+           _viewModel = StateObject(wrappedValue: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)) // Pass context here
+           self._isPresented = isPresented
+           self.lookupType = lookupType
+       }
     
     let buttons = [
         ["1", "2", "3"],
@@ -136,7 +143,7 @@ struct LookupByNumbersView: View {
                         if lookupType == .phoneNumber || lookupType == .creditCard {
                             LookupResultCardOrPhoneView(
                                 inputText: inputText,
-                                dismissAction: { showResultView = false }, orders: firstOrder,
+                                dismissAction: { showResultView = false },
                                 errorMessage: nil,
                                 lookupType: lookupType
                             )
@@ -146,15 +153,20 @@ struct LookupByNumbersView: View {
                                 dismissAction: { showResultView = false },
                                 errorMessage: nil,
                                 order: firstOrder.first
-                            )
+                            ).padding(.top, 54)
                         }
+                        
                     } else {
-                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0))
+                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0, success: true, message: ""))
+                            .onAppear {
+                                order = nil
+                            }
                     }
                 }
             }
+            
         }
-    }    
+    }
     
     private func handleButtonTap(_ button: String) {
         if button == "OK" {
@@ -169,13 +181,19 @@ struct LookupByNumbersView: View {
                         switch lookupType {
                         case .creditCard:
                             await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
-                            DispatchQueue.main.async { self.order = creditCardViewModel.orders.isEmpty ? [] : [creditCardViewModel.orders.first!] }
+                            DispatchQueue.main.async {
+                                self.order = creditCardViewModel.orders.isEmpty ? [] : [creditCardViewModel.orders.first!]
+                            }
                         case .phoneNumber:
                             await phoneViewModels.fetchSeats(c: "289-6385", q: inputText)
-                            DispatchQueue.main.async { self.order = phoneViewModels.orders.isEmpty ? [] : [phoneViewModels.orders.first!] }
+                            DispatchQueue.main.async {
+                                self.order = phoneViewModels.orders.isEmpty ? [] : [phoneViewModels.orders.first!]
+                            }
                         case .orderNumber:
                             await viewModel.fetchSeats(c: "289-6385", q: inputText)
-                            DispatchQueue.main.async { self.order = viewModel.orders.isEmpty ? [] : [viewModel.orders.first!] }
+                            DispatchQueue.main.async {
+                                self.order = viewModel.orders.isEmpty ? [] : [viewModel.orders.first!]
+                            }
                         }
                         self.showResultView = true
                     } catch {

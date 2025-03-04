@@ -115,6 +115,8 @@ struct StringConstants {
         static let timeStamp = "timeStamp"
         static let orders = "orders"
         static let sold = "sold"
+        static let unsold = "unsold"
+        static let isSold = "issold"
     }
     
     struct NSPredicate {
