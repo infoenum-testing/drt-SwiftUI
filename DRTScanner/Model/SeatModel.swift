@@ -5,7 +5,6 @@
 //  Created by IE Mac 05 on 10/02/25.
 //
 
-
 import Foundation
 
 struct SeatModel: Codable {
@@ -15,14 +14,18 @@ struct SeatModel: Codable {
     let barcode: String?
     let qrCode: String?
     let qr: Qr?
-    var tsScanned: String?
+    var tsScanned: Int?
     var scannedTime: Date? {
             get {
                 guard let tsScanned = tsScanned else { return nil }
-                return SeatModel.dateFormatter.date(from: tsScanned)
+                return Date(timeIntervalSince1970: TimeInterval(tsScanned))
             }
             set {
-                tsScanned = newValue != nil ? SeatModel.dateFormatter.string(from: newValue!) : nil
+                if let newValue = newValue {
+                    tsScanned = Int(newValue.timeIntervalSince1970)
+                } else {
+                    tsScanned = nil
+                }
             }
         }
 
@@ -35,21 +38,8 @@ struct SeatModel: Codable {
         case barcode
         case qrCode
     }
-    
-    static let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            formatter.timeZone = TimeZone.current
-            return formatter
-        }()
 }
 
 struct Qr: Codable {
-    let code: String?
-    let valid: Bool?
-    
-    enum CodingKeys: String, CodingKey {
-        case code = "qr_code"
-        case valid = "is_valid"
-    }
+        let seat: [String]
 }

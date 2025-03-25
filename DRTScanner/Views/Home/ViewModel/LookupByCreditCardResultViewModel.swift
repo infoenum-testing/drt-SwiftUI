@@ -11,10 +11,11 @@ import IQAPIClient
 import CoreData
 
 class LookupByCreditCardResultViewModel: ObservableObject {
-    @Published var orders: [Orders] = []
+    @Published var orders: [OrdersNewApi] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     private var managedObjectContext: NSManagedObjectContext
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
@@ -26,12 +27,17 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             self.errorMessage = nil
         }
         
+        if isOfflineMode {
+            fetchCCFromCoreData(ccNumber: q)
+            return
+        }
+        
         do {
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
                 IQAPIClient.getLookUpByCreditCard(code: c, ccNumber: q) { result in
                     switch result {
                     case .success(let user):
-                        continuation.resume(returning: user.orders ?? [])
+                        continuation.resume(returning: user)
                     case .failure(let error):
                         continuation.resume(throwing: error)
                     }
@@ -47,7 +53,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.errorMessage = error.localizedDescription
                 self.isLoading = false
-                self.fetchCCFromCoreData(ccNumber: q)
+                //      self.fetchCCFromCoreData(ccNumber: q)
             }
         }
     }
@@ -59,14 +65,13 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
             
             let mappedOrders = fetchedOrders.map { order in
-                return Orders(
+                return OrdersNewApi(
                     buyerName: order.buyer_name ?? "",
                     cc: order.cc ?? "",
                     phone: order.phone ?? "",
-                    orderId: order.oid?.intValue ?? 0,
-                    studioId: 0,
-                    success: true,
-                    message: ""
+                    orderId: order.oid?.intValue ?? 0, valid: true, message: "",
+                    seats: [],
+                    merch: []
                 )
             }
             

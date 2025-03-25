@@ -15,7 +15,9 @@ struct SideMenuView: View {
     @Binding var showAlert: Bool
     @State private var showGoOnlineView = false
     @State private var showSettingsView = false
+    
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -35,20 +37,22 @@ struct SideMenuView: View {
                 .padding(.top, 50)
                 
                 VStack(alignment: .leading, spacing: 20) {
-                    if isOfflineMode {
-                        SideMenuOption(title: "GO ONLINE") {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showGoOnlineView = true
+                  //  if !isMerchandise {
+                        if isOfflineMode {
+                            SideMenuOption(title: "GO ONLINE") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showGoOnlineView = true
+                                }
+                            }
+                        } else {
+                            SideMenuOption(title: "GO OFFLINE") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showGoOfflineView = true
+                                }
+                                isPresented = false
                             }
                         }
-                    } else {
-                        SideMenuOption(title: "GO OFFLINE") {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showGoOfflineView = true
-                            }
-                            isPresented = false
-                        }
-                    }
+                  //  }
                     SideMenuOption(title: "SCANNING STATS") {
                         withAnimation(.easeInOut(duration: 0.5)) {
                             showScanningStatsView = true
@@ -80,7 +84,7 @@ struct SideMenuView: View {
                 Spacer()
             }
             .frame(width: 250)
-            .background(Color.sideMenu)
+            .background(Color.FDB_54_E)
             .edgesIgnoringSafeArea(.all)
         } .customAlert(isPresented: $showSettingsView) {
             withAnimation(.easeInOut(duration: 0.3)) {

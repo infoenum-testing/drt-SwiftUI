@@ -16,12 +16,15 @@ struct ChooseSeatSubView: View {
     @Binding var selectedSection: String
     @Binding var selectedRow: String
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     
     var body: some View {
         VStack {
             List(seatSelect, id: \.self) { seat in
                 ChooseSeatCell(seatLabel: seat)
                     .frame(height: 80)
+                    .listRowBackground(Color.white)
                     .onTapGesture {
                         selectedSeat = seat
                         isPresent = false
@@ -32,19 +35,27 @@ struct ChooseSeatSubView: View {
         }
         .background(Color.customWhite)
         .onAppear {
-            fetchSeats(for: selectedSection, row: selectedRow)
+            if isOfflineMode {
+                fetchSeatsCoreData(for: selectedSection, row: selectedRow)
+            } else {
+                fetchSeats(for: selectedSection, row: selectedRow)
+            }
         }
     }
     
     private func fetchSeats(for section: String, row: String) {
-        IQAPIClient.getSeats(code: "289-6385", section: section, row: row) { result in
+        IQAPIClient.getSeats(code: savedShowCode ?? "", section: section, row: row) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let seats):
-                    seatSelect = seats
+                    seatSelect = seats.compactMap {
+                        if let seatNumber = $0["seat"] as? Int {
+                            return "\(seatNumber)"
+                        }
+                        return nil
+                    }
                 case .failure(let error):
                     print("Failed to fetch seats: \(error.localizedDescription)")
-                    fetchSeatsCoreData(for: section, row: row)
                 }
             }
         }
@@ -63,7 +74,6 @@ struct ChooseSeatSubView: View {
             }
         } catch {
             print("Failed to fetch seats from Core Data: \(error.localizedDescription)")
-            fetchSeats(for: section, row: row)
         }
     }
 }
@@ -76,7 +86,7 @@ struct ChooseSeatCell: View {
         HStack {
             Text(seatLabel)
                 .font(.custom("Verlag-Bold", size: 32))
-                .foregroundColor(Color.showCodeButton)
+                .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding()

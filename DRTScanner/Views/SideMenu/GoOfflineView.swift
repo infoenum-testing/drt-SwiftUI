@@ -13,11 +13,19 @@ struct GoOfflineView: View {
     @State private var showAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    
+#if DEBUG
+    @State private var name = "indresh"
+
+#else
     @State private var name = ""
+
+#endif
     @State private var isSyncing = false
     @Binding var isPresented: Bool
-    
+    @Binding var showOfflineAlert: Bool
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     
     var isContinueDisabled: Bool {
         name.count < 5 || isSyncing
@@ -63,7 +71,7 @@ struct GoOfflineView: View {
                     Text("Continue")
                         .padding()
                         .font(Font.custom("Verlag-Bold", size: 26))
-                        .foregroundColor(isContinueDisabled ? .gray : .showCodeText)
+                        .foregroundColor(isContinueDisabled ? .gray : Color.customGreen)
                 }
                 .disabled(isContinueDisabled)
                 
@@ -73,26 +81,39 @@ struct GoOfflineView: View {
                     Text("Cancel")
                         .padding()
                         .font(Font.custom("Verlag-Bold", size: 26))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                 }
                 .disabled(isSyncing)
             }
         }
         .padding([.leading, .trailing], 10)
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 2)
-        .background(Color.showCodeButton)
+        .background(Color.FFCE_62)
     }
     
     private func goOffline() {
         guard name.count >= 5 else { return }
-        
+
         isSyncing = true
         progress = 0.0
-        
-        IQAPIClient.getAllDataOffline(code: "289-6385", username: name) { result in
+
+        IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {
-            case .success(let orderDetailsModel):
-                if let orderDetails = orderDetailsModel as? [String: Any] {
+            case .success(let response):
+                if let responseDict = response as? [String: Any],
+                   let success = responseDict["success"] as? Bool,
+                   !success {
+                    DispatchQueue.main.async {
+                        isSyncing = false
+                        isPresented = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showOfflineAlert = true
+                        }
+                    }
+                    return
+                }
+
+                if let orderDetails = response as? [String: Any] {
                     DispatchQueue.global(qos: .userInitiated).async {
                         DRTDatabaseManager.shared.syncServerData(
                             serverDict: orderDetails,
@@ -108,7 +129,10 @@ struct GoOfflineView: View {
                                         isOfflineMode = true
                                         isPresented = false
                                     } else {
-                                       
+                                        isPresented = false
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            showOfflineAlert = true
+                                        }
                                     }
                                 }
                             }
@@ -117,12 +141,20 @@ struct GoOfflineView: View {
                 } else {
                     DispatchQueue.main.async {
                         isSyncing = false
+                        isPresented = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showOfflineAlert = true
+                        }
                     }
                 }
 
-            case .failure(let error):
+            case .failure(_):
                 DispatchQueue.main.async {
                     isSyncing = false
+                    isPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showOfflineAlert = true
+                    }
                 }
             }
         }

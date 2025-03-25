@@ -113,7 +113,7 @@ struct ScanningStatsView: View {
             
         }
         .padding(20)
-        .background(.showCodeButton)
+        .background(Color.FFCE_62)
         .onAppear {
             Task {
                 await viewModel.fetchStats()

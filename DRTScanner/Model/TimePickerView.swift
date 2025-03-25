@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimePickerView: View {
-    @Binding var selectedIndex: Int?
+    @Binding var selectedIndex: IdentifiableIndex?
     var index: Int
     var viewModel: SettingsViewModel
     @State private var selectedValue: Int = 0

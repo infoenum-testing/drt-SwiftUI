@@ -14,10 +14,11 @@ enum LookupType {
 struct LookupByNumbersView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var managedObjectContext
+    @AppStorage("showCode") private var savedShowCode: String?
     @State private var inputText: String = ""
     @State private var showResultView: Bool = false
     @State private var fetchedSeats: [LookupByOrderResultViewModel] = []
-    @State private var order: [Orders]?
+    @State private var order: [OrdersNewApi]?
     @StateObject var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject var phoneViewModels = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
@@ -27,7 +28,7 @@ struct LookupByNumbersView: View {
     @State private var clickedButton: String? = nil
     
     init(isPresented: Binding<Bool>, lookupType: LookupType) {
-           _viewModel = StateObject(wrappedValue: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)) // Pass context here
+           _viewModel = StateObject(wrappedValue: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
            self._isPresented = isPresented
            self.lookupType = lookupType
        }
@@ -104,7 +105,7 @@ struct LookupByNumbersView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding([.top, .bottom], 20)
-                    }.background(.showCodeButton)
+                    }.background(Color.FFCE_62)
                     HStack {
                         VStack(spacing: 1) {
                             ForEach(buttons, id: \.self) { row in
@@ -121,7 +122,7 @@ struct LookupByNumbersView: View {
                                             
                                             Text(button)
                                                 .font(Font.custom("Verlag-Bold", size: 50))
-                                                .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                                .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
                                                 .frame(maxWidth: .infinity)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: 152)
@@ -134,7 +135,7 @@ struct LookupByNumbersView: View {
                         }
                     }
                 }
-                .background(.showCodeButton)
+                .background(Color.FFCE_62)
             }
             
             if showResultView {
@@ -157,7 +158,7 @@ struct LookupByNumbersView: View {
                         }
                         
                     } else {
-                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0, success: true, message: ""))
+                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: OrdersNewApi(buyerName: "", cc: "", phone: "", orderId: 0, valid: true, message: "", seats: [SeatModel(section: "", row: "", seat: "", barcode: "", qrCode: "", qr: Qr(seat: [""]))], merch: [Merchandise(name: "", variantName: "", qty: 0, icon: "", message: "", qr: QrMerchandise(merch: [""]), tsScanned: 0)]))
                             .onAppear {
                                 order = nil
                             }
@@ -180,17 +181,17 @@ struct LookupByNumbersView: View {
                     do {
                         switch lookupType {
                         case .creditCard:
-                            await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
+                            await creditCardViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
                             DispatchQueue.main.async {
                                 self.order = creditCardViewModel.orders.isEmpty ? [] : [creditCardViewModel.orders.first!]
                             }
                         case .phoneNumber:
-                            await phoneViewModels.fetchSeats(c: "289-6385", q: inputText)
+                            await phoneViewModels.fetchSeats(c: savedShowCode ?? "", q: inputText)
                             DispatchQueue.main.async {
                                 self.order = phoneViewModels.orders.isEmpty ? [] : [phoneViewModels.orders.first!]
                             }
                         case .orderNumber:
-                            await viewModel.fetchSeats(c: "289-6385", q: inputText)
+                            await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
                             DispatchQueue.main.async {
                                 self.order = viewModel.orders.isEmpty ? [] : [viewModel.orders.first!]
                             }

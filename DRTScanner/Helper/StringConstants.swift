@@ -74,7 +74,6 @@ struct StringConstants {
         static let loadingOrderInformation = "Loading Order information..."
         static let phoneNumber = "PHONE NUMBER"
         static let scannedQrCode = "Scanned QR Code:"
-        static let inputCode = "289-6385"
         static let ordersNotFound = "Orders not found."
         static let showCode = "Show Code"
     }

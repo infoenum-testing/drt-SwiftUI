@@ -21,16 +21,18 @@ struct SeatLookupView: View {
     @State private var isLoading = false
     @State private var orderDetails: OrderDetailModel = OrderDetailModel()
     @State private var ordersDetailCoreData: Order?
-    @State private var order: Orders?
+    @State private var order: OrdersNewApi?
     @StateObject private var lookupByOrderViewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @State private var showResultView = false
-
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
+    
     private var seatDisplayText: String {
         [selectedSection, selectedRow, selectedSeat]
             .filter { !$0.isEmpty }
             .joined(separator: " - ")
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -41,7 +43,7 @@ struct SeatLookupView: View {
                 }) {
                     Image("left_side_arrow")
                 }
-
+                
                 TextField("Select Seat", text: $seatText)
                     .font(.custom("Verlag-Bold", size: 42))
                     .foregroundColor(.customWhite)
@@ -54,8 +56,8 @@ struct SeatLookupView: View {
                     .onChange(of: selectedSeat) { _ in seatText = seatDisplayText }
             }
             .frame(width: 400, height: 85)
-            .background(Color.showCodeButton)
-
+            .background(Color.FFCE_62)
+            
             TableView(
                 isSeatLookupPresented: $isSeatLookupPresented,
                 isSectionLookupPresented: $isSectionLookupPresented,
@@ -66,7 +68,7 @@ struct SeatLookupView: View {
             )
             .frame(width: 400, height: 580)
             .background(Color.clear)
-
+            
             HStack {
                 Spacer()
                 Button(action: {
@@ -81,14 +83,14 @@ struct SeatLookupView: View {
                             .font(.custom("Verlag-Bold", size: 36))
                             .foregroundColor(.customWhite)
                             .frame(width: 400, height: 60)
-                            .background(Color.showCodeButton)
+                            .background(Color.FFCE_62)
                     }
                 }
                 .disabled(isLoading)
                 Spacer()
             }
             .frame(width: 400, height: 60)
-        }
+        }.padding([.leading, .trailing], -10)
         .customSheetView(isPresented: $showResultView) {
             LookupOrderResultView(
                 inputText: String(orderDetails.oid ?? 24241),
@@ -98,33 +100,33 @@ struct SeatLookupView: View {
             )
         }.padding([.leading, .trailing], 20)
         
-        .customSheetView(isPresented: $isSeatLookupPresented) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                ChooseSeatView(
-                    isPresented: $isSeatLookupPresented,
-                    selectedSeat: $selectedSeat,
-                    selectedSection: $selectedSection,
-                    selectedRow: $selectedRow
-                )
+            .customSheetView(isPresented: $isSeatLookupPresented) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    ChooseSeatView(
+                        isPresented: $isSeatLookupPresented,
+                        selectedSeat: $selectedSeat,
+                        selectedSection: $selectedSection,
+                        selectedRow: $selectedRow
+                    )
+                }
             }
-        }
-        .customSheetView(isPresented: $isSectionLookupPresented) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $selectedSection)
+            .customSheetView(isPresented: $isSectionLookupPresented) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $selectedSection)
+                }
             }
-        }
-        .customSheetView(isPresented: $isRowLookupPresented) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                ChooseRowView(
-                    isPresented: $isRowLookupPresented,
-                    selectedSeat: $selectedRow,
-                    selectedSection: $selectedSection,
-                    selectedRow: $selectedRow
-                )
+            .customSheetView(isPresented: $isRowLookupPresented) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    ChooseRowView(
+                        isPresented: $isRowLookupPresented,
+                        selectedSeat: $selectedRow,
+                        selectedSection: $selectedSection,
+                        selectedRow: $selectedRow
+                    )
+                }
             }
-        }
     }
-
+    
     private func continueButtonTapped() {
         guard !selectedSection.isEmpty, !selectedRow.isEmpty, !selectedSeat.isEmpty else {
             print("Please select a section, row, and seat before continuing.")
@@ -132,49 +134,51 @@ struct SeatLookupView: View {
         }
         
         isLoading = true
-
-        IQAPIClient.getSeatsResults(code: "289-6385", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
+        
+        if isOfflineMode {
+            if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
+                self.order = OrdersNewApi(
+                    buyerName: cachedOrder.buyer_name,
+                    cc: cachedOrder.cc,
+                    phone: cachedOrder.phone,
+                    orderId: cachedOrder.oid?.intValue, valid: true, message: "",
+                    seats: [SeatModel(section: "", row: "", seat: "", barcode: "", qrCode: "", qr: Qr(seat: [""]))],
+                    merch: [Merchandise(name: "", variantName: "", qty: 0, icon: "", message: "", qr: QrMerchandise(merch: [""]), tsScanned: 0)]
+                )
+                self.showResultView = true
+            }
+            isLoading = false
+            return
+        }
+        
+        IQAPIClient.getSeatsResults(code: savedShowCode ?? "", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
             DispatchQueue.main.async {
                 self.isLoading = false
                 switch result {
                 case .success(let orderDetail):
                     print("Order Details: \(orderDetail)")
                     self.orderDetails = orderDetail
-                    self.order = Orders(
+                    self.order = OrdersNewApi(
                         buyerName: orderDetail.buyerName,
                         cc: orderDetail.cc,
                         phone: nil,
-                        orderId: orderDetail.oid,
-                        studioId: nil,
-                        success: true,
-                        message: ""
+                        orderId: orderDetail.oid, valid: true, message: "",
+                        seats: [SeatModel(section: "", row: "", seat: "", barcode: "", qrCode: "", qr: Qr(seat: [""]))],
+                        merch: [Merchandise(name: "", variantName: "", qty: 0, icon: "", message: "", qr: QrMerchandise(merch: [""]), tsScanned: 0)]
                     )
-
+                    
                     Task {
-                        await lookupByOrderViewModel.fetchSeats(c: "289-6385", q: String(orderDetails.oid ?? 24241))
+                        await lookupByOrderViewModel.fetchSeats(c: savedShowCode ?? "", q: String(orderDetails.oid ?? 24241))
                     }
                     self.showResultView = true
-
+                    
                 case .failure(let error):
                     print("Failed to fetch seat details: \(error.localizedDescription)")
-
-                    if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
-                        self.order = Orders(
-                            buyerName: cachedOrder.buyer_name,
-                            cc: cachedOrder.cc,
-                            phone: cachedOrder.phone,
-                            orderId: cachedOrder.oid?.intValue,
-                            studioId: nil,
-                            success: true,
-                            message: ""
-                        )
-                        self.showResultView = true
-                    }
                 }
             }
         }
     }
-
+    
     
     private func fetchOrderDetailFromCoreData(section: String, row: String, seat: String) -> Order? {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
@@ -184,7 +188,7 @@ struct SeatLookupView: View {
         do {
             let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
             if let seat = results.first {
-                orderDetails.oid = seat.oid?.intValue
+                orderDetails.oid = seat.order_id?.intValue
                 return seat.order
             }
         } catch {
@@ -193,7 +197,7 @@ struct SeatLookupView: View {
         
         return nil
     }
-
+    
 }
 
 struct TableView: View {
@@ -209,18 +213,24 @@ struct TableView: View {
             SeatSectionLookupCell(action: {
                 isSectionLookupPresented = true
             }, selectedSeat: selectedSection)
+            .listRowBackground(Color.white)
             .frame(height: 100)
             
             SeatRowLookupCell(action: {
                 isRowLookupPresented = true
             }, selectedSeat: selectedRow)
+            .listRowBackground(Color.white)
             .frame(height: 100)
             
             SeatLookupCell(action: {
                 isSeatLookupPresented = true
             }, selectedSeat: selectedSeat)
+            .listRowBackground(Color.white)
             .frame(height: 100)
-        }
+        }.listStyle(.plain)
+        
+            .padding(0)
+            .background(Color.customWhite)
     }
 }
 

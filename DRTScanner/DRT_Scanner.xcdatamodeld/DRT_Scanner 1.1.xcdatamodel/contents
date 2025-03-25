@@ -13,6 +13,18 @@
         <attribute name="href" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
     </entity>
+    <entity name="Product" representedClassName=".Product" syncable="YES">
+        <attribute name="date_scanned" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="icon_src" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="order_id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="qrCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="qty" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="qty_scanned" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="variantName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order" syncable="YES"/>
+        <relationship name="show" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Show" syncable="YES"/>
+    </entity>
     <entity name="Scan" representedClassName=".Scan" syncable="YES">
         <attribute name="barcode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="is_scanned_out" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
@@ -24,6 +36,7 @@
         <attribute name="date_scanned" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="handicapped" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="oid" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="order_id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="qrCode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="row" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="seat" optional="YES" attributeType="String" syncable="YES"/>
@@ -32,6 +45,7 @@
         <relationship name="show" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Show" inverseName="seats" inverseEntity="Show" syncable="YES"/>
     </entity>
     <entity name="Show" representedClassName="Show" syncable="YES">
+        <attribute name="db_code" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="show_dt" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="show_id" optional="YES" attributeType="String" syncable="YES"/>

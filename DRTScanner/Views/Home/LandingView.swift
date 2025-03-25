@@ -12,7 +12,9 @@ struct LandingView: View {
     @StateObject private var viewModel = LandingViewModel()
     @State private var showSheet = false
     @State private var showSeatView = false
-    @State private var showCode: String = "289-6385"
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
+    @AppStorage("showCode") private var showCode: String = ""
+    @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     
     var body: some View {
         ZStack {
@@ -37,6 +39,7 @@ struct LandingView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .customWhite))
                         .padding(.bottom, 10)
                 }
+                
                 if !viewModel.isValidCode {
                     Text(StringConstants.LandingView.invalidShowCode)
                         .foregroundColor(.customWhite)
@@ -46,6 +49,7 @@ struct LandingView: View {
                 }
                 
                 Button(action: {
+                    viewModel.isValidCode = true
                     withAnimation(.easeInOut(duration: 0.3)) {
                         showSheet = true
                     }
@@ -54,9 +58,8 @@ struct LandingView: View {
                         .font(Font.custom("Verlag-Bold", size: 18))
                         .padding(.vertical, 20)
                         .frame(maxWidth: .infinity)
-                        .background(.showCodeButton)
+                        .background(Color.FFCE_62)
                         .foregroundColor(.customWhite)
-                    
                 }
                 .padding(.bottom, 10)
                 
@@ -69,9 +72,9 @@ struct LandingView: View {
                     .padding(.trailing, 10)
                     .frame(height: 65)
             }.onAppear {
-//                if DRTUser.isUserLoggedIn {
-//                    showSeatView = true
-//                }
+                if isUserLoggedIn {
+                    showSeatView = true
+                }
             }
             .customAlert(isPresented: $viewModel.showAlert) {
                 VStack(alignment: .center) {
@@ -112,16 +115,24 @@ struct LandingView: View {
                         HStack {
                             Text(StringConstants.LandingView.merchandise)
                                 .font(Font.custom("Verlag-Bold", size: 20))
-                                .foregroundColor(.showCodeText)
+                                .foregroundColor(Color.customGreen)
                                 .padding(.leading, 30)
+                                .onTapGesture {
+                                    self.isUserLoggedIn = true
+                                    showSeatView = true
+                                    isMerchandise = true
+                                    viewModel.showAlert = false
+                                }
                             Spacer()
                             
                             Text(StringConstants.LandingView.seat)
                                 .font(Font.custom("Verlag-Bold", size: 20))
-                                .foregroundColor(.showCodeText)
+                                .foregroundColor(Color.customGreen)
                                 .padding(.trailing, 50)
                                 .onTapGesture {
+                                    self.isUserLoggedIn = true
                                     showSeatView = true
+                                    isMerchandise = false
                                     viewModel.showAlert = false
                                 }
                         }
@@ -132,19 +143,19 @@ struct LandingView: View {
                 .padding(.leading)
                 .padding(.trailing)
                 .padding(.bottom)
-                .padding(.bottom)
-                .background(Color.showCodeButton)
+                .background(Color.FFCE_62)
             }
             
-                .customAlert(isPresented: $showSheet) {
-                    ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
-                        Task {
-                            await viewModel.validateCode(code)
-                        }
-                    })
-                    .padding(.bottom)
-                    .background(Color.clear)
-                }
+            .customAlert(isPresented: $showSheet) {
+                ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
+                    showCode = code
+                    Task {
+                        await viewModel.validateCode(code)
+                    }
+                })
+                .padding(.bottom)
+                .background(Color.clear)
+            }
 
             if showSeatView {
                 SeatHomeView(showSeatView: $showSeatView)
@@ -152,13 +163,8 @@ struct LandingView: View {
                     .transition(.move(edge: .top))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
-                    //.ignoresSafeArea()
                     .animation(.easeInOut(duration: 0.3), value: showSeatView)
             }
         }
     }
-}
-
-#Preview {
-    LandingView()
 }

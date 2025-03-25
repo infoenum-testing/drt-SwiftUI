@@ -8,8 +8,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct GoOnlineView: View {
     @Binding var isPresented: Bool
     @State private var progress: CGFloat = 0.0
@@ -45,22 +43,48 @@ struct GoOnlineView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 3)
-        .background(Color.showCodeButton)
+        .background(Color.FFCE_62)
     }
     
-    private func startUpload() {
+        private func startUploadWithoutApi() {
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+                if progress < 1.0 {
+                    progress += 0.2
+                } else {
+                    timer.invalidate()
+                    isUploading = false
+                    showSuccessMessage = true
+    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        isOfflineMode = false
+                        isPresented = false
+                    }
+                }
+            }
+        }
+    
+     func startUpload() {
+        DRTDatabaseManager.shared.fetchDataAndPostToServer { success, error in
+            if success {
+                progress = 1.0
+                isUploading = false
+                showSuccessMessage = true
+                isOfflineMode = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    isPresented = false
+                }
+            } else {
+                showSuccessMessage = false
+                
+                print("Upload failed: \(error?.localizedDescription ?? "Unknown error")")
+            }
+        }
+        
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
             if progress < 1.0 {
                 progress += 0.2
             } else {
                 timer.invalidate()
-                isUploading = false
-                showSuccessMessage = true
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    isOfflineMode = false
-                    isPresented = false
-                }
             }
         }
     }

@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct LookupResultCardOrPhoneView: View {
+    @AppStorage("showCode") private var savedShowCode: String?
     let inputText: String
     var dismissAction: () -> Void
     @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject private var phoneViewModel = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @State private var isSheetPresented: Bool = false
-    var orders: [Orders] {
+    var orders: [OrdersNewApi] {
            lookupType == .phoneNumber ? phoneViewModel.orders : creditCardViewModel.orders
        }
 
@@ -23,37 +24,11 @@ struct LookupResultCardOrPhoneView: View {
     
     @State private var oId: String?
     
-    @State private var selectedOrder: Orders?
+    @State private var selectedOrder: OrdersNewApi?
     @State private var navigateToOrderResult = false
 
     var body: some View {
         VStack {
-            if let errorMessage = errorMessage {
-                VStack {
-                    HStack {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image("left_side_arrow")
-                        }
-                        .padding(.leading, 20)
-                        
-                        Spacer()
-                        
-                        Text(errorMessage)
-                            .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Bold", size: 30))
-                            .padding(.trailing, 20)
-                        
-                        Spacer()
-                    }
-                }
-                .padding([.top, .bottom], 50)
-                .background(Color.showCodeButton)
-                .frame(maxWidth: .infinity)
-            } else {
                 VStack {
                     HStack(alignment: .center) {
                         Button(action: {
@@ -66,7 +41,7 @@ struct LookupResultCardOrPhoneView: View {
                         .padding(.leading, 20)
                         
                         Spacer()
-                        Text("Total Results:")
+                        Text(!viewModel.orders.isEmpty ? "Total Results: \(viewModel.orders.count)" : "No orders found")
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
@@ -74,7 +49,7 @@ struct LookupResultCardOrPhoneView: View {
                     }
                 }
                .padding([.top, .bottom], 20)
-                .background(Color.showCodeButton)
+                .background(Color.FFCE_62)
                 .frame(maxWidth: .infinity)
 
                 VStack {
@@ -87,7 +62,7 @@ struct LookupResultCardOrPhoneView: View {
                                     selectedOrder = seat
                                     oId = "\(orderId)"
                                     navigateToOrderResult = true
-                                }
+                                }.listRowBackground(Color.white)
                             }
                         }
                         .listStyle(.plain)
@@ -95,17 +70,14 @@ struct LookupResultCardOrPhoneView: View {
                     }
                 }
             }
-        }
         .frame(maxHeight: .infinity)
         .background(Color.customWhite)
         .ignoresSafeArea()
         .task {
             if lookupType == .phoneNumber {
-                await phoneViewModel.fetchSeats(c: "289-6385", q: inputText)
-              //  self.orders = phoneViewModel.orders
+                await phoneViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             } else {
-                await creditCardViewModel.fetchSeats(c: "289-6385", q: inputText)
-             //   self.orders = creditCardViewModel.orders
+                await creditCardViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             }
         }
         .customSheetView(isPresented: $navigateToOrderResult) {

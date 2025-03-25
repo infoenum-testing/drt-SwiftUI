@@ -7,10 +7,12 @@
 
 import SwiftUI
 
+
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @State private var selectedIndex: IdentifiableIndex?
     @Binding var isPresented: Bool
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     
     var body: some View {
         VStack {
@@ -45,6 +47,9 @@ struct SettingsView: View {
                             set: { viewModel.setBool($0, forKey: self.getKey(forRow: index)) }
                         ))
                         .labelsHidden()
+                    } else if index == 6 { 
+                        Toggle("", isOn: $isMerchandise)
+                            .hidden()
                     } else {
                         let timeText = self.getTimeText(forRow: index)
                         Text(timeText)
@@ -62,12 +67,11 @@ struct SettingsView: View {
             .listStyle(.plain)
             .background(Color.clear)
             .sheet(item: $selectedIndex) { selectedIndex in
-                // TimePickerView(selectedIndex: $selectedIndex, index: selectedIndex.id, viewModel: viewModel)
+                 TimePickerView(selectedIndex: $selectedIndex, index: selectedIndex.id, viewModel: viewModel)
             }
         }
-      //  .edgesIgnoringSafeArea(.all)
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height)
-        .background(.sideMenu)
+        .background(Color.FDB_54_E)
     }
     
     func getKey(forRow index: Int) -> String {

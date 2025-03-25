@@ -16,19 +16,22 @@ struct ChooseSectionSubView: View {
     @Binding var isPresent: Bool
     @State private var selectedSection: String = ""
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     
     var body: some View {
         VStack {
             List(seatLabels, id: \.self) { seat in
                 ChooseSectionCell(seatLabel: seat)
                     .frame(height: 80)
-                
+                    .listRowBackground(Color.white)
                     .onTapGesture {
                         selectedSeat = seat
                         isPresent = false
                         selectedSection = seat
-                       // fetchRows(for: selecteds) 
+                        // fetchRows(for: selecteds)
                     }
+                    .listRowBackground(Color.white)
                 Divider()
             }
             .listStyle(.plain)
@@ -36,24 +39,32 @@ struct ChooseSectionSubView: View {
         }
         .background(Color.customWhite)
         .onAppear {
-            fetchSections()
+            if isOfflineMode {
+                fetchSectionsFromCoreData()
+                return
+            }
+            else {
+                fetchSections()
+            }
         }
     }
     
     private func fetchSections() {
-        IQAPIClient.getSection(code: "289-6385") { result in
+        IQAPIClient.getSection(code: savedShowCode ?? "") { result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let section):
-                    print(section)
-                    seatLabels = section
+                case .success(let sectionData):
+                    print("Raw API response: \(sectionData)")
+                    
+                    seatLabels = sectionData.compactMap { $0["section"] as? String }
+                    
                 case .failure(let error):
                     print("Failed to fetch sections: \(error.localizedDescription)")
-                    fetchSectionsFromCoreData()
                 }
             }
         }
     }
+    
     private func fetchSectionsFromCoreData() {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         
@@ -74,7 +85,7 @@ struct ChooseSectionCell: View {
             Spacer()
             Text(seatLabel)
                 .font(.custom("Verlag-Bold", size: 32))
-                .foregroundColor(Color.showCodeButton)
+                .foregroundColor(Color.FFCE_62)
             Spacer()
         }.listRowSeparator(.hidden)
             .background(Color.customWhite)

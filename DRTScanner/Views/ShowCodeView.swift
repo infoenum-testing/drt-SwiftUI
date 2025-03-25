@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ShowCodeView: View {
-    @State private var showCode: String = "289-6385"
+    @State private var showCode: String = "36060-5E56"
     @Binding var showSheet: Bool
     var onCodeEntered: (String) -> Void
     @Environment(\.dismiss) var dismiss
@@ -65,7 +65,7 @@ struct ShowCodeView: View {
                         }) {
                             Image(systemName: "camera.metering.matrix")
                                 .font(.system(size: 20))
-                                .foregroundColor(.customWhite)
+                                .foregroundColor(Color.customWhite)
                         }
                         Spacer()
                     }
@@ -83,8 +83,8 @@ struct ShowCodeView: View {
                                             .font(Font.custom("Verlag-Bold", size: 50))
                                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                                             .aspectRatio(1.2, contentMode: .fill)
-                                            .background(button == "OK" ? Color.showCodeButton : Color.customWhite)
-                                            .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                            .background(button == "OK" ? Color.FFCE_62 : Color.customWhite)
+                                            .foregroundColor(button == "OK" ? Color.customWhite : Color.customGreen)
                                     }
                                     .onTapGesture {
                                         if button == "OK" {

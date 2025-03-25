@@ -269,45 +269,81 @@
 
 import SwiftUI
 import CoreData
+import IQAPIClient
 
 struct SeatCell: View {
     @Binding var seat: SeatModel
     @State private var isScanned: Bool
     @State private var scannedTime: String?
     @State private var isLoading = false
+    @AppStorage("isOfflineMode") private var isOffline: Bool = false
     @Environment(\.managedObjectContext) private var viewContext
+    
     
     init(seat: Binding<SeatModel>) {
         self._seat = seat
         self._isScanned = State(initialValue: seat.wrappedValue.scannedTime != nil)
+
         if let scannedDate = seat.wrappedValue.scannedTime {
             let formatter = DateFormatter()
-            formatter.dateFormat = "yy-MM-dd-HH:mm:ss"
+            formatter.dateFormat = "HH:mm"
             self._scannedTime = State(initialValue: formatter.string(from: scannedDate))
         } else {
             self._scannedTime = State(initialValue: nil)
         }
     }
+
     
     private func updateSeatWithScannedQrCode() {
         guard !isScanned else { return }
-        
+
         isLoading = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let currentDate = Date()
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yy-MM-dd-HH:mm:ss"
-            scannedTime = formatter.string(from: currentDate)
-            
-            seat.scannedTime = currentDate
-            isScanned = true
-            isLoading = false
-            
-            saveScannedStatus(for: seat)
-            saveScanData(for: seat, timestamp: currentDate)
+
+        if isOffline {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                let currentDate = Date()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                scannedTime = formatter.string(from: currentDate)
+
+                seat.scannedTime = currentDate
+                isScanned = true
+                isLoading = false
+                saveScannedStatus(for: seat)
+            }
+        } else {
+            guard let qrCode = seat.qr?.seat else {
+                print("QR code is nil")
+                isLoading = false
+                return
+            }
+
+            IQAPIClient.scanTicket(code: "36060-5E56", qr: qrCode) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let jsonResponse):
+                        if let valid = jsonResponse["valid"] as? Bool, !valid {
+                            let message = jsonResponse["message"] as? String ?? "Unknown error"
+                        } else {
+                            let currentDate = Date()
+                            let formatter = DateFormatter()
+                            formatter.dateFormat = "HH:mm"
+                            scannedTime = formatter.string(from: currentDate)
+
+                            seat.scannedTime = currentDate
+                            isScanned = true
+                        }
+
+                    case .failure(let error):
+                        print("Error scanning ticket: \(error.localizedDescription)")
+                    }
+
+                    isLoading = false
+                }
+            }
         }
     }
+    
     
     private func saveScannedStatus(for seat: SeatModel) {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
@@ -328,21 +364,19 @@ struct SeatCell: View {
         }
     }
     
-    private func saveScanData(for seat: SeatModel, timestamp: Date) {
-        let scanEntity = Scan(context: viewContext)
-        scanEntity.qrCode = seat.qrCode
-        scanEntity.barcode = seat.barcode
-        scanEntity.is_scanned_out = NSNumber(value: true)
-        scanEntity.timeStamp = NSNumber(value: timestamp.timeIntervalSince1970)
-        
-        do {
-            try viewContext.save()
-        } catch {
-            print("Error saving scan data: \(error.localizedDescription)")
+    private func loadScannedStatus(for seat: SeatModel) {
+        if isOffline {
+            loadScannedStatusOffline(for: seat)
+        } else {
+            loadScannedStatusOnline(for: seat) { success in
+                if !success {
+                    loadScannedStatusOffline(for: seat)
+                }
+            }
         }
     }
-    
-    private func loadScannedStatus(for seat: SeatModel) {
+ 
+    private func loadScannedStatusOffline(for seat: SeatModel) {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "section == %@ AND row == %@ AND seat == %@", seat.section, seat.row, seat.seat)
         
@@ -355,6 +389,10 @@ struct SeatCell: View {
                     isScanned = true
                     self.seat.scannedTime = savedDate
                 }
+                else {
+                           scannedTime = nil
+                           isScanned = false
+                       }
             }
             
             let scanFetchRequest: NSFetchRequest<Scan> = Scan.fetchRequest()
@@ -373,41 +411,42 @@ struct SeatCell: View {
             print("Error loading scanned status: \(error.localizedDescription)")
         }
     }
-
+    private func loadScannedStatusOnline(for seat: SeatModel, completion: @escaping (Bool) -> Void) {
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(isScanned ? "PREVIOUSLY SCANNED AT \(scannedTime ?? "")" : "NOT YET SCANNED")
                     .font(Font.custom("Verlag-Bold", size: 18))
-                    .foregroundColor(.showCodeText)
+                    .foregroundColor(Color.customGreen)
             }
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SECT:")
                         .font(Font.custom("Verlag-Bold", size: 10))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                     Text("\(seat.section)")
                         .font(Font.custom("Verlag-Bold", size: 15))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("ROW:")
                         .font(Font.custom("Verlag-Bold", size: 10))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                     Text("\(seat.row)")
                         .font(Font.custom("Verlag-Bold", size: 15))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SEAT:")
                         .font(Font.custom("Verlag-Bold", size: 10))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                     Text("\(seat.seat)")
                         .font(Font.custom("Verlag-Bold", size: 15))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                 }
                 
                 Spacer()
@@ -432,4 +471,7 @@ struct SeatCell: View {
             loadScannedStatus(for: seat)
         }
     }
+}
+struct ScanStatusResponse: Codable {
+    let scannedTime: Date?
 }

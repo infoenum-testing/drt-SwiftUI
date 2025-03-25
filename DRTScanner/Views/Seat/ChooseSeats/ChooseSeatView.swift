@@ -41,7 +41,7 @@ struct ChooseSeatView: View {
                 
                 Spacer()
             }
-            .background(Color.showCodeButton)
+            .background(Color.FFCE_62)
             HStack {
                 ChooseSeatSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
             }

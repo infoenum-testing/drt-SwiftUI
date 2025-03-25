@@ -14,30 +14,24 @@ class LandingViewModel: ObservableObject {
     @Published var isValidCode: Bool = true
     @Published var enteredCode: String = ""
     @Published var showAlert: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
+    @AppStorage("showId") private var savedShowId: String?
+    @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     
     func validateCode(_ code: String) async {
         DispatchQueue.main.async {
+            self.isValidCode = true
             self.isLoading = true
         }
         
         do {
             let result = try await getShowCodeDataAsync(code: code)
-            
-            //DispatchQueue.main.async{
-                print("Received result: \(result)")
-
-//                if let showCode = result.showID {
-//                    self.enteredCode = code
-//                    self.isValidCode = true
-//                    var user = DRTUser()
-//                    user.showCode = showCode
-//                   // user.setUserInfo(from: result)
-//                    DRTUser.currentUser = user
-//                } else {
-//                    print("DeviceName is missing or not a String.")
-//                    self.isValidCode = false
-//                }
-            //}
+            print("Received result: \(result)")
+            DispatchQueue.main.async {
+                self.isValidCode = true
+                self.savedShowCode = code
+                self.savedShowId = result.showId
+            }
         } catch {
             DispatchQueue.main.async {
                 self.isValidCode = false
@@ -51,15 +45,15 @@ class LandingViewModel: ObservableObject {
     }
     
     func getShowCodeDataAsync(code: String) async throws -> DRTUser {
-           return try await withCheckedThrowingContinuation { continuation in
-               IQAPIClient.getShowCodeData(code: code) { result in
-                   switch result {
-                   case .success(let user):
-                       continuation.resume(returning: user)
-                   case .failure(let error):
-                       continuation.resume(throwing: error)
-                   }
-               }
-           }
-       }
-   }
+        return try await withCheckedThrowingContinuation { continuation in
+            IQAPIClient.getShowCodeData(code: code) { result in
+                switch result {
+                case .success(let user):
+                    continuation.resume(returning: user)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+}

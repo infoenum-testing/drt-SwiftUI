@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LookupCellView: View {
-    var result: Orders
+    var result: OrdersNewApi
     var onCellTapped: (Int) -> Void
     @State private var isTapped = false
     
@@ -16,7 +16,7 @@ struct LookupCellView: View {
         VStack(alignment: .center) {
             Text(result.buyerName ?? "")
                 .font(.custom("Verlag-Black", size: 24))
-                .foregroundColor(Color.showCodeText)
+                .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 0)
             
@@ -24,17 +24,17 @@ struct LookupCellView: View {
                 
                 Text("ORDER: \(result.orderId ?? 0)")
                     .font(.custom("Verlag-Bold", size: 15))
-                    .foregroundColor(Color.showCodeText)
+                    .foregroundColor(Color.customGreen)
                 
                 Text("CC: \(result.cc ?? "")")
                     .font(.custom("Verlag-Bold", size: 15))
-                    .foregroundColor(Color.showCodeText)
+                    .foregroundColor(Color.customGreen)
             }
             .padding(.top, 0)
             
             Text("PHONE NUMBER: \(result.phone ?? "")")
                 .font(.custom("Verlag-Bold", size: 15))
-                .foregroundColor(Color.showCodeText)
+                .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 5)
         }

@@ -13,10 +13,11 @@ enum LookupByName {
 
 struct LookupByNameView: View {
     @Environment(\.dismiss) var dismiss
+    @AppStorage("showCode") private var savedShowCode: String?
     @State private var inputText: String = ""
     @Binding var isPresented: Bool
     @State private var showResultView: Bool = false
-    @State private var order: [Orders]?
+    @State private var order: [OrdersNewApi]?
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
     @StateObject var viewModel = LookupByNameResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
@@ -50,27 +51,25 @@ struct LookupByNameView: View {
                         isPresented = false
                     }
                 }) {
-                    Image("left_side_arrow")
+                    Image("left_side_arrow").padding(.horizontal, 20)
                 }
                 Spacer()
                 
                 TextField(placeholderText, text: $inputText)
                     .font(Font.custom("Verlag-Bold", size: 34))
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(.customWhite)
+                    .foregroundColor(Color.customWhite)
                     .padding([.leading, .trailing, .top], 10)
-                    .padding(.leading)
                 
                 Button(action: {
                     if !inputText.isEmpty {
                         inputText.removeLast()
                     }
                 }) {
-                    Image("arrow_with_cross_btn")
+                    Image("arrow_with_cross_btn").padding(.horizontal, 20)
                 }
-            }.background(Color.showCodeButton)
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            }.frame(maxWidth: .infinity, maxHeight: 90)
+            .background(Color.FFCE_62)
             
             Grid(horizontalSpacing: 0, verticalSpacing: 0.4) {
                 ForEach(buttons, id: \.self) { row in
@@ -88,10 +87,9 @@ struct LookupByNameView: View {
                                     
                                     Text(button)
                                         .font(Font.custom("Verlag-Bold", size: 50))
-                                        .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                        .foregroundColor(button == "OK" ? Color.customWhite : Color.customGreen)
                                         .frame(maxWidth: .infinity)
                                 }
-                                .frame(width: 100, height: 90)
                             }
                             .onTapGesture {
                                 handleButtonTap(button)
@@ -99,13 +97,13 @@ struct LookupByNameView: View {
                         }
                     }
                 }
-            }
-        }.background(.showCodeButton)
+            }.padding(.bottom)
+        }.background(.customWhite)
         .customSheetView(isPresented: $showResultView) {
             if let firstOrder = order {
                 LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: firstOrder, errorMessage: nil)
             } else {
-                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: [Orders(buyerName: "", cc: "", phone: "", orderId: 0, studioId: 0, success: true, message: "")], errorMessage: "No orders found")
+                LookupByNameResultView(inputText: inputText, dismissAction: { showResultView = false }, orders: [], errorMessage: order?.isEmpty ?? true ? "No orders found" : nil)
             }
         }
     }
@@ -119,7 +117,7 @@ struct LookupByNameView: View {
                 }
                 showResultView = true
                 Task {
-                    await viewModel.fetchSeats(c: "289-6385", q: inputText)
+                    await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
                     DispatchQueue.main.async {
                         self.order = viewModel.orders
                     }

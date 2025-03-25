@@ -57,11 +57,11 @@ struct ContentView: View {
             }
             .padding()
             Button("Delete All") {
-                databaseManager.deleteAllOrders(context: viewContext) { success in
-                    if success {
-                        fetchOrders()
-                    }
-                }
+//                databaseManager.deleteAllOrders(context: viewContext) { success in
+//                    if success {
+//                        fetchOrders()
+//                    }
+//                }
             }
             .padding()
             .foregroundColor(.red)
@@ -84,37 +84,37 @@ struct ContentView: View {
     }
 
     private func createOrder(orderAttributes: [String: Any]) {
-        databaseManager.createOrder(orderAttributes: orderAttributes, context: viewContext) { success in
-            if success {
-                print("Order created successfully.")
-                fetchOrders()
-            }
-        }
+//        databaseManager.createOrder(orderAttributes: orderAttributes, context: viewContext) { success in
+//            if success {
+//                print("Order created successfully.")
+//                fetchOrders()
+//            }
+//        }
     }
 
     private func updateOrder(orderAttributes: [String: Any]) {
-        databaseManager.updateOrder(orderAttributes: orderAttributes, context: viewContext) { success in
-            if success {
-                print("Order updated successfully.")
-                fetchOrders()
-            }
-        }
+//        databaseManager.updateOrder(orderAttributes: orderAttributes, context: viewContext) { success in
+//            if success {
+//                print("Order updated successfully.")
+//                fetchOrders()
+//            }
+//        }
     }
 
     private func fetchOrders() {
-        databaseManager.fetchOrders(context: viewContext) { orders in
-            if let fetchedOrders = orders {
-                self.orders = fetchedOrders
-                print("Fetched \(fetchedOrders.count) orders.")
-            }
-        }
+//        databaseManager.fetchOrders(context: viewContext) { orders in
+//            if let fetchedOrders = orders {
+//                self.orders = fetchedOrders
+//                print("Fetched \(fetchedOrders.count) orders.")
+//            }
+//        }
     }
 
     private func deleteOrder(order: Order) {
-        databaseManager.deleteOrder(order: order, context: viewContext) { success in
-            if success {
-                fetchOrders()
-            }
-        }
+//        databaseManager.deleteOrder(order: order, context: viewContext) { success in
+//            if success {
+//                fetchOrders()
+//            }
+//        }
     }
 }

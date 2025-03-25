@@ -11,11 +11,12 @@ import IQAPIClient
 import CoreData
 
 class LookupByPhoneResultViewModel: ObservableObject {
-    @Published var orders: [Orders] = []
+    @Published var orders: [OrdersNewApi] = []
     @Published var seatsModel: [SeatModel] = []
     @Published var buyerName: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     
     private var managedObjectContext: NSManagedObjectContext
     
@@ -29,12 +30,17 @@ class LookupByPhoneResultViewModel: ObservableObject {
             self.errorMessage = nil
         }
         
+        if isOfflineMode {
+            fetchphoneFromCoreData(phoneNumber: q)
+            return
+        }
+        
         do {
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
                 IQAPIClient.getLookUpByPhone(code: c, phoneNumber: q) { result in
                     switch result {
                     case .success(let user):
-                        continuation.resume(returning: user.orders ?? [])
+                        continuation.resume(returning: user)
                     case .failure(let error):
                         continuation.resume(throwing: error)
                     }
@@ -62,14 +68,13 @@ class LookupByPhoneResultViewModel: ObservableObject {
             let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
             
             let mappedOrders = fetchedOrders.map { order in
-                return Orders(
+                return OrdersNewApi(
                     buyerName: order.buyer_name ?? "",
                     cc: order.cc ?? "",
                     phone: order.phone ?? "",
-                    orderId: order.oid?.intValue ?? 0,
-                    studioId: 0,
-                    success: true,
-                    message: ""
+                    orderId: order.oid?.intValue ?? 0, valid: true, message: "",
+                    seats: [SeatModel(section: "", row: "", seat: "", barcode: "", qrCode: "", qr: Qr(seat: [""]))],
+                    merch: [Merchandise(name: "", variantName: "", qty: 0, icon: "", message: "", qr: QrMerchandise(merch: [""]), tsScanned: 0)]
                 )
             }
             

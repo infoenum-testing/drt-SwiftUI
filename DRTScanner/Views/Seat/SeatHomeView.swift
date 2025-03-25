@@ -10,8 +10,12 @@ import SwiftUI
 struct SeatHomeView: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
+    @AppStorage("showId") private var savedShowId: String?
     @State private var isSideMenuPresented = false
     @Binding var showSeatView: Bool
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     @State private var showAlert = false
     @State private var showOrderNumberView = false
     @State private var showLookupAlert = false
@@ -22,6 +26,8 @@ struct SeatHomeView: View {
     @State private var showGoOfflineView = false
     @State private var showScanningStatsView = false
     @State private var showAboutView = false
+    @State private var showOfflineAlert = false
+    @State private var scannedBarcode: String? = nil
     
     
     var body: some View {
@@ -31,56 +37,65 @@ struct SeatHomeView: View {
                     .resizable()
                     .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
+                    .zIndex(-1)
                 VStack {
-                    ScannerView().padding(.top, -30)
-                    
+                    ScannerView(seat: $seatHomeViewModel.selectedSeat)
+                        .padding(.top, -30)
+                      //  .frame(height: UIScreen.main.bounds.height * 3 / 9)
+                    //.background(Color.clear)
+                 
                     ScrollView {
                         VStack(spacing: 1) {
-                            CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, cellHeight: isMerchandise ? 102.0 : 80.0, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 seatHomeViewModel.selectedLookupType = .orderNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.name,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.name,
+                                           cellHeight: isMerchandise ? 102.0 : 80.0, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 selectedLookupByName = .name
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlertByName = true
                                 }
                             }
-                            CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,
+                                           cellHeight: isMerchandise ? 102.0 : 80.0, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 seatHomeViewModel.selectedLookupType = .phoneNumber
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                            CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,
+                                           cellHeight: isMerchandise ? 102.0 : 80.0,
+                                           bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                 seatHomeViewModel.selectedLookupType = .creditCard
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showLookupAlert = true
                                 }
                             }
-                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat , bottomLineColor: .customWhite,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showLookupAlertBySeat = true
+                            if !isMerchandise {
+                                CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat, cellHeight: 80.0 , bottomLineColor: .customWhite,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showLookupAlertBySeat = true
+                                    }
                                 }
                             }
                         }
-                    }.background(Color.customWhite)
+                    }.padding(.top, -10)
+                    .background(Color.customWhite)
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    ZStack {
                         VStack{
                             Text(StringConstants.SeatHomeView.danceRecitalTicketing)
                                 .font(Font.custom("Verlag-Book", size: 12))
                                 .foregroundColor(.customWhite)
-                            Text(StringConstants.SeatHomeView.danceNationals)
+                            Text(isMerchandise ? "Merchandise" : StringConstants.SeatHomeView.danceNationals)
                                 .font(Font.custom("Verlag-Bold", size: 18))
                                 .foregroundColor(.customWhite)
                         }
-                    }.padding()
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
@@ -107,161 +122,134 @@ struct SeatHomeView: View {
                 LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, 50)
             }
         }.padding(.top, 0)
-        .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, 100)
-                .padding([.leading, .trailing], -10)
-        }
-        .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, 90)
-                .padding([.leading, .trailing], -20)
-        }
-        .sideMenuViewModify(isPresented: $isSideMenuPresented) {
-            SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)
-        }
-        .customAlert(isPresented: $showGoOfflineView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                GoOfflineView(isPresented: $showGoOfflineView)
+            .customSheetView(isPresented: $showLookupAlertByName) {
+                LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, 100)
+                    .padding([.leading, .trailing], -10)
             }
-        }
-        .customAlert(isPresented: $showScanningStatsView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
+            .customSheetView(isPresented: $showLookupAlertBySeat) {
+                SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, 90)
+                    .padding([.leading, .trailing], -20)
             }
-        }
-        .customAlert(isPresented: $showAboutView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                AboutView(isPresented: $showAboutView)
+            .sideMenuViewModify(isPresented: $isSideMenuPresented) {
+                SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)
             }
-        }
-        
-//        .customAlert(isPresented: $showAlert) {
-//            VStack(alignment: .center) {
-//                HStack {
-//                    Spacer()
-//                    Text("Confirm")
-//                        .padding(.leading, 20)
-//                        .font(Font.custom("Verlag-Bold", size: 30))
-//                        .foregroundColor(.white)
-//                        .padding(.bottom, 10)
-//                        .padding(.top, 20)
-//                    
-//                    Spacer()
-//                    Button(action: {
-//                        withAnimation(.easeInOut(duration: 0.3)) {
-//                            showAlert = false
-//                        }
-//                    }) {
-//                        Image("Popup_cross_btn")
-//                    }
-//                }
-//                
-//                VStack {
-//                    Text("Are you sure you want to logout?")
-//                        .font(Font.custom("Verlag-Book", size: 18))
-//                        .foregroundColor(.white)
-//                        .padding([.leading, .trailing, .bottom])
-//                }
-//                
-//                HStack {
-//                    Text("Logout")
-//                        .font(Font.custom("Verlag-Bold", size: 20))
-//                        .foregroundColor(.showCodeText)
-//                        .padding(.leading, 30)
-//                        .onTapGesture {
-//                            withAnimation(.easeInOut(duration: 0.3)) {
-//                                showAlert = false
-//                                showSeatView = false
-//                                //DRTUser.logout()
-//                                showSeatView = false
-//                            }
-//                        }
-//                    Spacer()
-//                    Text("Cancel")
-//                        .font(Font.custom("Verlag-Bold", size: 20))
-//                        .foregroundColor(.showCodeText)
-//                        .padding(.trailing, 30)
-//                        .onTapGesture {
-//                            withAnimation(.easeInOut(duration: 0.3)) {
-//                                showAlert = false
-//                            }
-//                        }
-//                }
-//                .frame(maxWidth: .infinity)
-//                .padding()
-//            }
-//            .padding()
-//            .background(Color.showCodeButton)
-//        }
-        
-        .customAlert(isPresented: $showAlert) {
-            VStack(alignment: .center) {
-                HStack {
-                    Spacer()
-                    Text(isOfflineMode ? "ALERT" : "Confirm")
-                        .padding(.leading, 20)
-                        .font(Font.custom("Verlag-Bold", size: 30))
-                        .foregroundColor(.white)
-                        .padding(.bottom, 10)
-                        .padding(.top, 20)
-                    
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showAlert = false
-                        }
-                    }) {
-                        Image("Popup_cross_btn")
-                    }
+            .customAlert(isPresented: $showGoOfflineView) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert)
                 }
-                
-                VStack {
-                    Text(isOfflineMode ?
-                        "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out" :
-                        "Are you sure you want to log out?")
+            }
+            .customAlert(isPresented: $showScanningStatsView) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
+                }
+            }
+            .customAlert(isPresented: $showAboutView) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    AboutView(isPresented: $showAboutView)
+                }
+            }
+        
+            .customAlert(isPresented: $showAlert) {
+                VStack(alignment: .center) {
+                    HStack {
+                        Spacer()
+                        Text(isOfflineMode ? "ALERT" : "Confirm")
+                            .padding(.leading, 20)
+                            .font(Font.custom("Verlag-Bold", size: 30))
+                            .foregroundColor(.white)
+                            .padding(.bottom, 10)
+                            .padding(.top, 20)
+                        
+                        Spacer()
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showAlert = false
+                                isMerchandise = false
+                            }
+                        }) {
+                            Image("Popup_cross_btn")
+                        }
+                    }
+                    
+                    VStack {
+                        Text(isOfflineMode ?
+                             "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out" :
+                                "Are you sure you want to log out?")
                         .font(Font.custom("Verlag-Book", size: 18))
                         .foregroundColor(.white)
-                    //    .padding([.leading, .trailing, .bottom])
-                }
-                
-                HStack {
-                    if !isOfflineMode {
-                        HStack {
-                            Text("Logout")
-                                .font(Font.custom("Verlag-Bold", size: 20))
-                                .foregroundColor(.showCodeText)
-                                .padding(.leading, 30)
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showAlert = false
-                                        showSeatView = false
-                                        //DRTUser.logout()
-                                        showSeatView = false
+                    }
+                    
+                    HStack {
+                        if !isOfflineMode {
+                            HStack {
+                                Text("Logout")
+                                    .font(Font.custom("Verlag-Bold", size: 20))
+                                    .foregroundColor(Color.customGreen)
+                                    .padding(.leading, 30)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            DeviceManager.shared.deleteDeviceName()
+                                            isUserLoggedIn = false
+                                            savedShowCode = nil
+                                            savedShowId = nil
+                                            showAlert = false
+                                            showSeatView = false
+                                        }
                                     }
-                                }
-                            Spacer()
-                            Text("Cancel")
-                                .font(Font.custom("Verlag-Bold", size: 20))
-                                .foregroundColor(.showCodeText)
-                                .padding(.trailing, 30)
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showAlert = false
+                                Spacer()
+                                Text("Cancel")
+                                    .font(Font.custom("Verlag-Bold", size: 20))
+                                    .foregroundColor(Color.customGreen)
+                                    .padding(.trailing, 30)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showAlert = false
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
                 }
-                .frame(maxWidth: .infinity)
                 .padding()
+                .background(Color.FFCE_62)
             }
-            .padding()
-            .background(Color.showCodeButton)
-        }
-        .ignoresSafeArea()
-//        .zIndex(1)
-//        .transition(.move(edge: .top))
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .edgesIgnoringSafeArea(.all)
+            .customAlert(isPresented: $showOfflineAlert) {
+                VStack(alignment: .center) {
+                    HStack {
+                        
+                        Spacer()
+                        Text("Error")
+                            .padding(.leading, 20)
+                            .font(Font.custom("Verlag-Bold", size: 30))
+                            .foregroundColor(.white)
+                            .padding(.bottom, 10)
+                            .padding(.top, 20)
+                        
+                        Spacer()
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showOfflineAlert = false
+                            }
+                        }) {
+                            Image("Popup_cross_btn")
+                        }
+                    }
+                    
+                    VStack {
+                        Text("There was an issue going offline. Please try again.")
+                            .font(Font.custom("Verlag-Book", size: 18))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                }
+                .padding()
+                .background(Color.FFCE_62)
+            }
+
+            .ignoresSafeArea()
     }
 }
 
@@ -273,4 +261,5 @@ struct SeatHomeView_Previews: PreviewProvider {
 
 class SeatHomeViewModel: ObservableObject {
     @Published  var selectedLookupType: LookupType?
+    @Published var selectedSeat: SeatModel?
 }

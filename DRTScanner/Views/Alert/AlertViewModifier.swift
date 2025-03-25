@@ -21,7 +21,7 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
             
             
             if isPresented {
-               Color.black.opacity(0.5)
+                Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
                     .transition(.opacity)
                     .onTapGesture {
