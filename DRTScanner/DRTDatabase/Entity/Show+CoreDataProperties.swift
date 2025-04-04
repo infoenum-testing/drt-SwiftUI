@@ -20,6 +20,7 @@ extension Show {
     @NSManaged public var show_id: String?
     @NSManaged public var studio_id: String?
     @NSManaged public var valid: NSNumber?
+    @NSManaged public var db_code: String?
     @NSManaged public var orders: NSSet?
     @NSManaged public var seats: NSSet?
 

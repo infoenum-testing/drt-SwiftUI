@@ -6,6 +6,7 @@
 //
 
 import SwiftUICore
+import UIKit
 
 struct SideMenuViewModifier<AlertContent: View>: ViewModifier {
     @Binding var isPresented: Bool
@@ -30,7 +31,6 @@ struct SideMenuViewModifier<AlertContent: View>: ViewModifier {
                     }
                 
                 self.content()
-                    .frame(maxWidth: .infinity)
                     .padding(.top, 0)
                     .offset(y: 0)
                     .transition(.move(edge: .trailing))

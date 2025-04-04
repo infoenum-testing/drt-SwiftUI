@@ -22,6 +22,7 @@ extension Order {
     @NSManaged public var phone: String?
     @NSManaged public var seats: Set<Seat>?
     @NSManaged public var show: Show?
+    @NSManaged public var products: Set<Product>?
 
 }
 

@@ -40,7 +40,7 @@ struct ChooseSectionView: View {
                 
                 Spacer()
             }
-            .background(Color.showCodeButton)
+            .background(Color.FFCE_62)
             VStack {
                 ChooseSectionSubView(selectedSeat: $selectedSeat, isPresent: $isPresented)
             }

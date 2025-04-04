@@ -18,6 +18,17 @@ struct DRTUser: Codable {
     var showCode: String? {
         return showId
     }
+    
+    enum CodingKeys: String, CodingKey {
+           case phoneFormat = "phone_format"
+           case showId = "show_id"
+           case showDt = "show_dt"
+           case stats
+           case valid
+           case studioId = "studio_id"
+           case skin
+           case isUserLoggedIn
+       }
 }
 
 struct SkinModel: Codable {

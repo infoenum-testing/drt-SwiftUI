@@ -23,6 +23,7 @@ extension Seat {
     @NSManaged public var row: String?
     @NSManaged public var seat: String?
     @NSManaged public var section: String?
+    @NSManaged public var order_id: NSNumber?
     @NSManaged public var order: Order?
     @NSManaged public var show: Show?
 

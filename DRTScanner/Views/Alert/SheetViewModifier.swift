@@ -18,9 +18,8 @@ struct SheetViewModifier<AlertContent: View>: ViewModifier {
                 .blur(radius: isPresented ? 0 : 0)
                 .animation(.easeInOut(duration: 0.3), value: isPresented)
             
-            
             if isPresented {
-                Color.black.opacity(0.0)
+                Color.black.opacity(0)
                     .edgesIgnoringSafeArea(.all)
                     .transition(.opacity)
                     .onTapGesture {
@@ -31,7 +30,6 @@ struct SheetViewModifier<AlertContent: View>: ViewModifier {
                 
                 self.content()
                     .frame(maxWidth: .infinity)
-                    //.padding(.top, 30)
                     .offset(y: 0)
                     .transition(.move(edge: .trailing))
             }

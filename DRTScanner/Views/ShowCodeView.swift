@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ShowCodeView: View {
-    @State private var showCode: String = "289-6385"
+    @State private var showCode: String = "36060-5E56"
     @Binding var showSheet: Bool
     var onCodeEntered: (String) -> Void
     @Environment(\.dismiss) var dismiss
@@ -56,20 +56,20 @@ struct ShowCodeView: View {
                         Image("arrow_with_cross_btn")
                     }
                 }
-                .padding(.leading, 20)
-                .padding(.trailing, 20)
+                .padding(.leading, 30)
+                .padding(.trailing, 30)
                 
-                VStack(alignment: .center) {
+                VStack(alignment: .leading) {
                     HStack {
                         Button(action: {
                         }) {
                             Image(systemName: "camera.metering.matrix")
                                 .font(.system(size: 20))
-                                .foregroundColor(.customWhite)
+                                .foregroundColor(Color.customWhite)
                         }
                         Spacer()
                     }
-                    .padding(.leading)
+                    .padding(.leading, 25)
                     .padding(.trailing)
                     .padding(.bottom)
                 }
@@ -83,8 +83,8 @@ struct ShowCodeView: View {
                                             .font(Font.custom("Verlag-Bold", size: 50))
                                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                                             .aspectRatio(1.2, contentMode: .fill)
-                                            .background(button == "OK" ? Color.showCodeButton : Color.customWhite)
-                                            .foregroundColor(button == "OK" ? .customWhite : .showCodeText)
+                                            .background(button == "OK" ? Color.FFCE_62 : Color.customWhite)
+                                            .foregroundColor(button == "OK" ? Color.customWhite : Color.customGreen)
                                     }
                                     .onTapGesture {
                                         if button == "OK" {
@@ -103,8 +103,8 @@ struct ShowCodeView: View {
                             }
                         }
                     }
-                }.padding(.bottom, 100)
-            }.padding(.top, 50)
+                }
+            }.padding(.bottom, 30)
         }
     }
 }

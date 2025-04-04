@@ -21,9 +21,10 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
             
             
             if isPresented {
-               Color.black.opacity(0.5)
+                Color.black.opacity(0.8)
                     .edgesIgnoringSafeArea(.all)
                     .transition(.opacity)
+                    .allowsHitTesting(true)
                     .onTapGesture {
                         withAnimation {
                             isPresented = false
@@ -36,6 +37,7 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
                 //.background(Color.yellow)
                     .offset(y: 0)
                     .transition(.move(edge: .top))
+                    .ignoresSafeArea(.container, edges: .top)
             }
         }
     }

@@ -7,94 +7,114 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
-    @State private var selectedIndex: IdentifiableIndex?
     @Binding var isPresented: Bool
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
+    
+    @State private var selectedTimerIndex: IdentifiableIndex?
     
     var body: some View {
         VStack {
+            Spacer()
             HStack {
                 Spacer()
                 Text("Settings")
-                    .font(Font.custom("Verlag-Bold", size: 30))
-                    .foregroundColor(.customWhite)
-                    .padding(.leading, 50)
+                    .font(Font.custom("Verlag-Bold", size: 24))
+                    .padding(.leading, 20)
+                    .foregroundColor(.white)
                 Spacer()
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        isPresented = false
-                    }
-                }) {
+                Button(action: { isPresented = false }) {
                     Image("Popup_cross_btn")
-                        .foregroundColor(.black)
-                        .padding()
                 }
-            }
+            }.background(Color.FDB_54_E)
+            .padding()
             
-            List(viewModel.settingArray.indices, id: \.self) { index in
-                HStack {
-                    Text(viewModel.settingArray[index])
-                        .font(Font.custom("Verlag-Bold", size: 20))
-                        .foregroundColor(.customWhite)
-                    Spacer()
-                    
-                    if [0, 1, 5, 6, 7].contains(index) {
-                        Toggle("", isOn: Binding(
-                            get: { viewModel.getBool(forKey: self.getKey(forRow: index)) },
-                            set: { viewModel.setBool($0, forKey: self.getKey(forRow: index)) }
-                        ))
-                        .labelsHidden()
-                    } else {
-                        let timeText = self.getTimeText(forRow: index)
-                        Text(timeText)
-                            .foregroundColor(.customWhite)
-                            .onTapGesture {
-                                selectedIndex = IdentifiableIndex(id: index)
-                            }
-                    }
-                }
-                .padding(8)
-                .background(selectedIndex?.id == index ? Color.clear : Color.clear)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
+            List {
+                settingsSection
+                    .listRowBackground(Color.clear)
             }
             .listStyle(.plain)
-            .background(Color.clear)
-            .sheet(item: $selectedIndex) { selectedIndex in
-                // TimePickerView(selectedIndex: $selectedIndex, index: selectedIndex.id, viewModel: viewModel)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.FDB_54_E)
+            
+        }
+        
+        .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height)
+        .background(Color.FDB_54_E)
+        ZStack {
+            Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
+                .edgesIgnoringSafeArea(.all)
+                .animation(.easeInOut(duration: 0.3), value: selectedTimerIndex)
+            
+            .customSheetView(isPresented: Binding(
+                get: { selectedTimerIndex != nil },
+                set: { if !$0 { selectedTimerIndex = nil } }
+            )) {
+                if let index = selectedTimerIndex {
+                    TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel)
+                }
             }
         }
-      //  .edgesIgnoringSafeArea(.all)
-        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height)
-        .background(.sideMenu)
+
     }
-    
-    func getKey(forRow index: Int) -> String {
-        switch index {
-        case 0: return "kShouldShowTourOnStartup"
-        case 1: return "kShouldPlayBeep"
-        case 2: return "kShouldPlayHaptic"
-        case 6: return "kShowScanStats"
-        case 7: return "kAutoEnableFlashTimeout"
-        default: return ""
+
+    private var settingsSection: some View {
+        ForEach(Array(settingItems.enumerated()), id: \.element.title) { index, setting in
+            HStack {
+                Text(setting.title)
+                    .foregroundColor(.white)
+                    .font(Font.custom("Verlag-Bold", size: 16))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer()
+
+                if let toggleBinding = setting.toggleBinding {
+                    Toggle("", isOn: toggleBinding)
+                        .labelsHidden()
+                } else {
+                    Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
+                        Text(setting.value ?? "")
+                            .foregroundColor(.white)
+                            .font(Font.custom("Verlag-Bold", size: 16))
+                            .padding(8)
+                    }
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 50)
         }
     }
-    
-    func getTimeText(forRow index: Int) -> String {
-        switch index {
-        case 2:
-            return viewModel.getTime(forKey: "kDeviceSleepTimeout") == 0 ? "Off" : "\(viewModel.getTime(forKey: "kDeviceSleepTimeout")) mins"
-        case 3:
-            return viewModel.getTime(forKey: "kPauseScanTimeout") == 0 ? "Off" : "\(viewModel.getTime(forKey: "kPauseScanTimeout")) secs"
-        case 4:
-            return viewModel.getTime(forKey: "kDuplicateScanSuppression") == 0 ? "Off" : "\(viewModel.getTime(forKey: "kDuplicateScanSuppression")) secs"
-        default:
-            return "N/A"
-        }
+
+    private var settingItems: [SettingItem] {
+        [
+            SettingItem(title: "SOUND", toggleBinding: $viewModel.shouldPlayBeep),
+            SettingItem(title: "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
+            SettingItem(title: "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
+            SettingItem(title: "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
+            SettingItem(title: "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText),
+            SettingItem(title: "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats),
+            SettingItem(title: "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout)
+        ]
     }
 }
 
-struct IdentifiableIndex: Identifiable {
+struct SettingItem: Hashable {
+    var title: String
+    var toggleBinding: Binding<Bool>? = nil
+    var value: String? = nil
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+    }
+    
+    static func == (lhs: SettingItem, rhs: SettingItem) -> Bool {
+        lhs.title == rhs.title
+    }
+}
+
+struct IdentifiableIndex: Identifiable, Equatable {
     var id: Int
 }

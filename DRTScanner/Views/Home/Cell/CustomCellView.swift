@@ -12,7 +12,7 @@ struct CustomCellView: View {
     var imageName: String
     var title: String
     var subtitle: String
-    var cellHeight: CGFloat = 90.0
+    var cellHeight: CGFloat
     var bottomLineColor: Color = .gray
     var buttonImage: String
     var buttonAction: () -> Void
@@ -21,27 +21,27 @@ struct CustomCellView: View {
         HStack(spacing: 12) {
             
             Button(action: {
-                buttonAction()
+                    buttonAction()
             }) {
                 Image(imageName)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)
                         .font(Font.custom("Verlag-Book", size: 15))
-                        .foregroundColor(.showCodeText)
+                        .foregroundColor(Color.customGreen)
                     Text(subtitle)
                         .font(Font.custom("Verlag-Bold", size: 18))
-                        .foregroundColor(.showCodeButton)
+                        .foregroundColor(Color.FFCE_62)
                 }
                 Spacer()
                 Image(buttonImage)
             }
         }
         .padding()
-        .background(.customWhite)
+        .background(Color.customWhite)
         .frame(height: cellHeight)
         Rectangle()
-            .frame(height: 1)
+            .frame(height: 0.30)
             .foregroundColor(bottomLineColor)
     }
 }

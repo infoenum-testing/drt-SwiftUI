@@ -6,133 +6,21 @@
 //
 
 import SwiftUI
-//
-//struct LookupByNameResultView: View {
-//    let inputText: String
-//    var dismissAction: () -> Void
-//    @StateObject private var viewModel = LookupByNameResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-//    @State var orders: [Orders]
-//    let errorMessage: String?
-//
-//    var body: some View {
-//        VStack {
-//            if let errorMessage = errorMessage {
-//                VStack {
-//                    HStack {
-//                        Button(action: {
-//                            withAnimation(.easeInOut(duration: 0.3)) {
-//                                dismissAction()
-//                            }
-//                        }) {
-//                            Image("left_side_arrow")
-//                        }
-//                        .padding(.leading, 20)
-//                        
-//                        Spacer()
-//                        
-//                        Text(errorMessage)
-//                            .foregroundColor(Color.customWhite)
-//                            .font(Font.custom("Verlag-Bold", size: 30))
-//                            .padding(.trailing, 20)
-//                        Spacer()
-//                    }
-//                        
-//                }
-//                .padding()
-//                .background(Color.showCodeButton)
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            } else {
-//                VStack {
-//                    HStack(alignment: .center) {
-//                        Button(action: {
-//                            withAnimation(.easeInOut(duration: 0.3)) {
-//                                dismissAction()
-//                            }
-//                        }) {
-//                            Image("left_side_arrow")
-//                        }
-//                        .padding(.leading, 20)
-//                        
-//                        Spacer()
-//                        Text("Total Results:")
-//                            .foregroundColor(Color.customWhite)
-//                            .font(Font.custom("Verlag-Black", size: 25))
-//                            .padding(.trailing, 20)
-//                        Spacer()
-//                    }
-//                }
-//                .padding([.bottom, .top])
-//                .background(Color.showCodeButton)
-//                .frame(maxWidth: .infinity)
-//
-//                VStack {
-//                    if orders.isEmpty {
-//                        Spacer()
-//                    } else {
-//                        List {
-//                            ForEach(orders, id: \.orderId) { seat in
-//                                LookupCellView(result: seat) { orderId in
-//                                    Task {
-//                                    //    await viewModel.fetchSeats(c: "289-6385", q: String(order.orderId ?? 0))
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        .listStyle(.plain)
-//                        .padding(0)
-//                    }
-//                }
-//            }
-//        }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background(Color.customWhite)
-//      //  .ignoresSafeArea()
-//        .task {
-//            await viewModel.fetchSeats(c: "289-6385", q: inputText)
-//            self.orders = viewModel.orders
-//        }
-//    }
-//}
 
 struct LookupByNameResultView: View {
     let inputText: String
     var dismissAction: () -> Void
     @StateObject private var viewModel = LookupByNameResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    @State var orders: [Orders] = []
+    @State var orders: [OrdersNewApi] = []
     let errorMessage: String?
     @State private var oId: String?
-    
-    @State private var selectedOrder: Orders?
+    @State private var selectedOrder: OrdersNewApi?
     @State private var navigateToOrderResult = false
+    @AppStorage("showCode") private var savedShowCode: String?
+    @State private var showTextAfterDelay = false
 
     var body: some View {
         VStack {
-            if let errorMessage = errorMessage {
-                VStack {
-                    HStack {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image("left_side_arrow")
-                        }
-                        .padding(.leading, 20)
-                        
-                        Spacer()
-                        
-                        Text(errorMessage)
-                            .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Bold", size: 30))
-                            .padding(.trailing, 20)
-                        Spacer()
-                    }
-                        
-                }
-                .padding()
-                .background(Color.showCodeButton)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
                 VStack {
                     HStack(alignment: .center) {
                         Button(action: {
@@ -145,15 +33,27 @@ struct LookupByNameResultView: View {
                         .padding(.leading, 20)
                         
                         Spacer()
-                        Text("Total Results:")
-                            .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Black", size: 25))
-                            .padding(.trailing, 20)
+                        if viewModel.isLoading {
+                            Text(viewModel.isLoading ? "Loading..." : "")
+                                .foregroundColor(Color.customWhite)
+                                .font(Font.custom("Verlag-Black", size: 25))
+                                .padding(.trailing, 20)
+                            ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .padding(.trailing, 5)
+                            }
+                        if !viewModel.isLoading {
+                            
+                            Text(viewModel.orders.isEmpty ? "No orders found." : "Total Results: \(viewModel.orders.count)")
+                                .foregroundColor(Color.customWhite)
+                                .font(Font.custom("Verlag-Black", size: 25))
+                                .padding(.trailing, 20)
+                        }
                         Spacer()
                     }
                 }
                 .padding([.bottom, .top])
-                .background(Color.showCodeButton)
+                .background(Color.FFCE_62)
                 .frame(maxWidth: .infinity)
 
                 VStack {
@@ -166,7 +66,7 @@ struct LookupByNameResultView: View {
                                     selectedOrder = order
                                     oId = "\(orderId)"
                                     navigateToOrderResult = true
-                                }
+                                }.listRowBackground(Color.white)
                             }
                         }
                         .listStyle(.plain)
@@ -174,11 +74,10 @@ struct LookupByNameResultView: View {
                     }
                 }
             }
-        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.customWhite)
         .task {
-            await viewModel.fetchSeats(c: "289-6385", q: inputText)
+            await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             self.orders = viewModel.orders
         }
         .customSheetView(isPresented: $navigateToOrderResult) {

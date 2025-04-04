@@ -15,92 +15,191 @@ struct SideMenuView: View {
     @Binding var showAlert: Bool
     @State private var showGoOnlineView = false
     @State private var showSettingsView = false
+    @State private var isSwitchingToMerchandise = false
+    @State private var showConfirmationAlert = false
+    @State private var showWebsiteAlert = false
+    
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     
     var body: some View {
-        ZStack(alignment: .trailing) {
-            Color.black.opacity(0.3)
-                .edgesIgnoringSafeArea(.all)
-                .onTapGesture {
-                    withAnimation {
-                        isPresented = false
-                    }
-                }
-            
-            VStack(alignment: .trailing) {
-                Button(action: { isPresented = false }) {
-                    Image("Popup_cross_btn")
-                        .padding()
-                }
-                .padding(.top, 50)
+        GeometryReader { geometry in
+            ZStack(alignment: .trailing) {
+                Color.black.opacity(0.3)
+                    .edgesIgnoringSafeArea(.all)
                 
-                VStack(alignment: .leading, spacing: 20) {
-                    if isOfflineMode {
-                        SideMenuOption(title: "GO ONLINE") {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showGoOnlineView = true
+                VStack {
+                    VStack(spacing: 5) {
+                        HStack {
+                            Spacer()
+                            Button(action: { isPresented = false }) {
+                                Image("Popup_cross_btn")
+                                    .padding()
+                            }
+                            .padding(.top, 30)
+                        }
+                        if isOfflineMode {
+                            SideMenuOption(title: "GO ONLINE") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showGoOnlineView = true
+                                }
+                            }
+                            
+                        } else {
+                            SideMenuOption(title: "GO OFFLINE") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showGoOfflineView = true
+                                }
+                                isPresented = false
                             }
                         }
-                    } else {
-                        SideMenuOption(title: "GO OFFLINE") {
+                        if !isMerchandise {
+                            SideMenuOption(title: "SCANNING STATS") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showScanningStatsView = true
+                                }
+                                isPresented = true
+                            }
+                        }
+                        
+                        SideMenuOption(title: "SETTINGS") {
                             withAnimation(.easeInOut(duration: 0.5)) {
-                                showGoOfflineView = true
+                                showSettingsView = true
+                            }
+                        }
+                        
+                        if isMerchandise {
+                            SideMenuOption(title: "SCAN TICKETS") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isSwitchingToMerchandise = !isMerchandise
+                                    showConfirmationAlert = true
+                                }
+                            }
+                        } else {
+                            SideMenuOption(title: "SCAN MERCHANDISE") {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isSwitchingToMerchandise = !isMerchandise
+                                    showConfirmationAlert = true
+                                }
+                            }
+                        }
+                        
+                        SideMenuOption(title: "LOG OUT") {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showAlert = true
+                            }
+                        }
+                        
+                        SideMenuOption(title: "ABOUT") {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                showAboutView = true
                             }
                             isPresented = false
                         }
-                    }
-                    SideMenuOption(title: "SCANNING STATS") {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showScanningStatsView = true
+                       
+                        SideMenuOption(title: "DRT WEBSITE") {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showWebsiteAlert = true
+                            }
                         }
-                        isPresented = true
-                    }
-                    SideMenuOption(title: "ABOUT") {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showAboutView = true
+                        .alert(isPresented: $showWebsiteAlert) {
+                            Alert(
+                                title: Text("Open DRT Website?"),
+                                message: Text("Do you want to visit the DRT website?"),
+                                primaryButton: .default(Text("Yes")) {
+                                    openDRTWebsite()
+                                },
+                                secondaryButton: .cancel(Text("No"))
+                            )
                         }
-                        isPresented = false
+                        
                     }
-                    SideMenuOption(title: "STOP SCANNING") {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showAlert = true
-                        }
-                    }
-                    SideMenuOption(title: "DRT WEBSITE") {
-                        openDRTWebsite()
-                    }
-                    SideMenuOption(title: "SETTINGS") {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showSettingsView = true
-                        }
-                    }
+                    .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? min(geometry.size.width * 0.5, 450) : min(geometry.size.width * 0.8, 400))
+                    .background(Color.tealLight)
+                    Spacer()
+                }.onAppear {
+                    isSwitchingToMerchandise = isMerchandise
                 }
-                .padding()
                 
-                Spacer()
+                
             }
-            .frame(width: 250)
-            .background(Color.sideMenu)
-            .edgesIgnoringSafeArea(.all)
-        } .customAlert(isPresented: $showSettingsView) {
+        }.sideMenuViewModify(isPresented: $showSettingsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                SettingsView(isPresented: $showSettingsView)
+                SettingsView(isPresented: $showSettingsView).padding(.top, 30)
             }
         }
         .customAlert(isPresented: $showGoOnlineView) {
             GoOnlineView(isPresented: $showGoOnlineView)
         }
-    }
+        .customAlert(isPresented: $showConfirmationAlert) {
+                GeometryReader { geometry in
+                    ZStack(alignment: .top) {
+                        Color.black.opacity(0.0)
+                            .ignoresSafeArea()
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showConfirmationAlert = false
+                                }
+                            }
 
+                        VStack(alignment: .center) {
+                            
+                            Text("Switch to scanning \(isSwitchingToMerchandise ? "merchandise?" : "tickets?")")
+                                .font(Font.custom("Verlag-Bold", size: 26))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                            
+                            HStack {
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                        isMerchandise = isSwitchingToMerchandise
+                                        showConfirmationAlert = false
+                                    }
+                                }) {
+                                    Text("Yes")
+                                        .font(Font.custom("Verlag-Bold", size: 24))
+                                        .foregroundColor(Color.customGreen)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showConfirmationAlert = false
+                                    }
+                                }) {
+                                    Text("No")
+                                        .font(Font.custom("Verlag-Bold", size: 24))
+                                        .foregroundColor(Color.customGreen)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                }
+                            }.onChange(of: isSwitchingToMerchandise) { newValue in
+                                isMerchandise = newValue
+                            }
+                        }
+                        .padding(.top,30)
+                        .background(Color.FFCE_62)
+                        .frame(width: geometry.size.width * 1)
+                        .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)
+                    }
+                }
+                .padding(.top, 0)
+                .edgesIgnoringSafeArea(.all)
+        }
+    }
+    
     private func toggleOfflineMode() {
         isOfflineMode.toggle()
     }
-
+    
     private func openDRTWebsite() {
         if let url = URL(string: "https://www.drtwebsite.com") {
             UIApplication.shared.open(url)
         }
     }
+
 }
 
 struct SideMenuOption: View {
@@ -110,11 +209,13 @@ struct SideMenuOption: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(Font.custom("Verlag-Bold", size: 15))
+                .font(Font.custom("Verlag-Bold", size: 16))
                 .foregroundColor(.white)
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.customGreen)
         .onTapGesture {
             action?()
         }

@@ -6,60 +6,58 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct LookupOrderResultView: View {
     let inputText: String
     var dismissAction: () -> Void
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    @State private var orders: [Orders] = []
     @State private var seats: [SeatModel] = []
+    @State private var merch: [Merchandise] = []
+    @AppStorage("showCode") private var savedShowCode: String?
+    @AppStorage("isMerchandise") private var isMerchandise: Bool?
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @State private var isLoadingMerch = true
+    @State private var showAlert = false
+    @State private var errorMessages: String?
     let errorMessage: String?
-    let order: Orders?
-
+    var order: OrdersNewApi?
+    
+    @State private var products: [Product] = []
+    
     var body: some View {
         VStack {
-            if let errorMessage = errorMessage {
-                VStack {
-                    HStack {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image("left_side_arrow")
+            VStack {
+                HStack (alignment: .center){
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            dismissAction()
                         }
-                        .padding(.leading, 20)
-                        
-                        Spacer()
-                        
-                        Text(errorMessage)
+                    }) {
+                        Image("left_side_arrow")
+                    }.padding(.leading, 20)
+                    
+                    Spacer()
+                    if viewModel.isLoading {
+                        Text(viewModel.isLoading ? "Loading..." : "")
                             .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Bold", size: 30))
+                            .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
-                        
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                            .padding(.trailing, 5)
                         Spacer()
                     }
-                }.padding()
-                .background(Color.showCodeButton)
-                .frame(maxWidth: .infinity)
-            } else {
-                VStack {
-                    HStack (alignment: .center){
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image("left_side_arrow")
-                        }.padding(.leading, 20)
-                        
-                        Spacer()
-                        Text(order?.buyerName?.uppercased() ?? StringConstants.Common.noOrderFound)
+                    if !viewModel.isLoading {
+                        Text(viewModel.buyerName == "No orders found" ? "No orders found." : viewModel.buyerName.uppercased())
                             .foregroundColor(Color.customWhite)
                             .font(Font.custom("Verlag-Black", size: 25))
                             .padding(.trailing, 20)
                         Spacer()
                     }
+                }
+                if !viewModel.isLoading {
+                    if viewModel.buyerName != "No orders found" {
                     HStack(alignment: .center) {
                         Text("\(StringConstants.Common.Order) \(order?.orderId ?? 0)")
                             .font(Font.custom("Verlag-Bold", size: 15))
@@ -68,17 +66,64 @@ struct LookupOrderResultView: View {
                             .font(Font.custom("Verlag-Bold", size: 15))
                             .foregroundColor(Color.customWhite)
                     }
+                }
+            }
                 }.padding([.bottom, .top])
-                .background(Color.showCodeButton)
-                .frame(maxWidth: .infinity)
-
-                VStack {
-                    if seats.isEmpty {
-                        Spacer()
+                    .background(Color.FFCE_62)
+                    .frame(maxWidth: .infinity)
+            VStack {
+                if isMerchandise ?? false {
+                    if isOfflineMode {
+                        if isLoadingMerch {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                .padding()
+                            Spacer()
+                        }
+                        else if !products.isEmpty {
+                            ForEach(products, id: \.self) { product in
+                                let merchandiseOrder = MerchandiseOrder(from: product)
+                                MerchandiseOrderCell(merchandiseOrder: .constant(merchandiseOrder))
+                            }
+                            Spacer()
+                        } else {
+                            Text("No merchandise found.")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                        }
                     } else {
+                        
+                        if isLoadingMerch {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                .padding()
+                            Spacer()
+                        }
+                        else {
+                            List {
+                                ForEach(merch.indices, id: \.self) { index in
+                                    MerchandiseOrderCell(merchandiseOrder: .constant(MerchandiseOrder(from: merch[index])))
+                                }
+                            }.listStyle(.plain)
+                                .padding(0)
+                        }
+                    }
+                } else {
+                    if viewModel.isLoading {
+                        Text(viewModel.isLoading ? "Loading..." : "")
+                            .foregroundColor(Color.customWhite)
+                            .font(Font.custom("Verlag-Black", size: 25))
+                            .padding(.trailing, 20)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                .padding(.trailing, 5)
+                        Spacer()
+                        }
+                    if !viewModel.isLoading {
                         List {
                             ForEach(seats.indices, id: \.self) { index in
-                                SeatCell(seat: $seats[index])
+                                SeatCell(seat: $seats[index], showAlert: $showAlert, errorMessages: $errorMessages)
+                                    .listRowBackground(Color.white)
                             }
                         }.listStyle(.plain)
                             .padding(0)
@@ -86,14 +131,116 @@ struct LookupOrderResultView: View {
                 }
             }
         }
-            .background(Color.customWhite)
-       // .ignoresSafeArea()
+        .background(Color.customWhite)
         .task {
-            await viewModel.fetchSeats(c: StringConstants.Common.inputCode, q: inputText)
-            self.orders = viewModel.orders
-            if let seats = viewModel.seatsModel {
-                self.seats = seats
+            isLoadingMerch = true
+            await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
+            self.seats = viewModel.seatsModel ?? []
+            self.merch = viewModel.merchModel ?? []
+           
+            if let orderId = order?.orderId {
+                fetchProducts(orderId: orderId)
             }
+            isLoadingMerch = false
+        }
+        .customAlert(isPresented: $showAlert) {
+            GeometryReader { geometry in
+                ZStack(alignment: .top) {
+                    Color.black.opacity(0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showAlert = false
+                            }
+                        }
+
+                    VStack(alignment: .center) {
+                        HStack {
+                            Spacer()
+                            Text("Error")
+                                .padding(.leading, 20)
+                                .font(Font.custom("Verlag-Bold", size: 30))
+                                .foregroundColor(.white)
+                                .padding(.bottom, 10)
+
+                            Spacer()
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showAlert = false
+                                }
+                            }) {
+                                Image("Popup_cross_btn")
+                            }
+                        }
+
+                        VStack {
+                            Text(errorMessages ?? "This ticket could not be found because the database has been downloaded by indresh")
+                                .font(Font.custom("Verlag-Book", size: 18))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                        }
+                    }
+                    .padding(30)
+                    .background(Color.FFCE_62)
+                    .frame(width: geometry.size.width * 1)
+                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 60)
+                }
+            }.padding(.top, -60)
+            .edgesIgnoringSafeArea(.all)
+        }
+        .edgesIgnoringSafeArea(.all)
+    }
+    
+    private func fetchProducts(orderId: Int) {
+        let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "order_id == %@", NSNumber(value: orderId))
+        
+        do {
+            let fetchedProducts = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            self.products = fetchedProducts
+        } catch {
+            print("Error fetching products: \(error)")
         }
     }
 }
+
+extension MerchandiseOrder {
+    
+    init(from product: Product) {
+        self.orderId = Int(product.order_id)
+        self.name = product.name ?? ""
+        self.variantName = product.variantName ?? ""
+        
+        if let qrCode = product.qrCode, !qrCode.isEmpty {
+            self.qrCode = [qrCode]
+        } else {
+            self.qrCode = []
+        }
+        
+        self.qty = Int(product.qty)
+        self.qtyScanned = Int(product.qty_scanned)
+        self.iconSrc = product.icon_src ?? ""
+        self.date_Scanned = product.date_scanned?.formatted() ?? ""
+    }
+}
+
+extension MerchandiseOrder {
+    init(from merchandise: Merchandise) {
+        self.orderId = 3333876
+        self.name = merchandise.name ?? ""
+        self.variantName = merchandise.variantName ?? ""
+        
+        if let qrMerch = merchandise.qr, !qrMerch.merch.isEmpty {
+            self.qrCode = qrMerch.merch
+        } else {
+            self.qrCode = []
+        }
+        
+        self.qty = merchandise.qty ?? 0
+        self.qtyScanned = merchandise.qty ?? 0
+        self.iconSrc = merchandise.icon ?? ""
+        self.date_Scanned = merchandise.scannedTime?.formatted() ?? ""
+    }
+}
+

@@ -16,12 +16,15 @@ struct ChooseRowSubView: View {
     @Binding var selectedSection: String
     @Binding var selectedRow: String
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     
     var body: some View {
         VStack {
             List(rowSelect, id: \.self) { seat in
                 ChooseRowCell(row: seat)
                     .frame(height: 80)
+                    .listRowBackground(Color.white)
                     .onTapGesture {
                         selectedSeat = seat
                         selectedRow = seat
@@ -33,19 +36,24 @@ struct ChooseRowSubView: View {
         }
         .background(Color.customWhite)
         .onAppear {
-            fetchRows(for: selectedSection)
+            if isOfflineMode {
+                fetchRowsCoreData(for: selectedSection)
+                return
+            }
+            else {
+                fetchRows(for: selectedSection)
+            }
         }
     }
     
     private func fetchRows(for section: String) {
-           IQAPIClient.getRow(code: "289-6385", section: section) { result in
+        IQAPIClient.getRow(code: savedShowCode ?? "", section: section) { result in
                DispatchQueue.main.async {
                    switch result {
                    case .success(let row):
-                       rowSelect = row
+                       rowSelect = row.compactMap { $0["row"] as? String }
                    case .failure(let error):
                        print("Failed to fetch rows: \(error.localizedDescription)")
-                       fetchRowsCoreData(for: section)
                    }
                }
            }
@@ -58,11 +66,9 @@ struct ChooseRowSubView: View {
                 if !rows.isEmpty {
                     rowSelect = Array(Set(rows.map { $0.row ?? "" })).sorted()
                 } else {
-                    fetchRows(for: section)
                 }
             } catch {
                 print("Failed to fetch rows from Core Data: \(error.localizedDescription)")
-                fetchRows(for: section)
             }
         }
    }
@@ -74,7 +80,7 @@ struct ChooseRowCell: View {
         HStack {
             Text(row)
                 .font(.custom("Verlag-Bold", size: 32))
-                .foregroundColor(Color.showCodeButton)
+                .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding()
