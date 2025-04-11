@@ -39,6 +39,8 @@ struct SeatHomeView: View {
     @State private var isMerchTicketValid: Bool = false
     @State private var isMerchPreScanned: Bool = false
     @State private var isFullScreen: Bool = false
+    @State private var isScanningCell = true
+    @StateObject private var scnanerReset = ScannerViewModel()
     
     private var dynamicCellHeight: CGFloat {
            let screenHeight = UIScreen.main.bounds.height
@@ -54,18 +56,21 @@ struct SeatHomeView: View {
                         .scaledToFill()
                         .edgesIgnoringSafeArea(.all)
                         .zIndex(-1)
+                        .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                 }
                 VStack {
-                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen)
+                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell, scannerViewModel: scnanerReset)
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
                                             
                     ScrollView {
-                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isFullScreen {
+                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid  {
                             VStack(spacing: 1) {
                                 CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     seatHomeViewModel.selectedLookupType = .orderNumber
+                                    isScanningCell = false
+                                 //   scnanerReset.disableFlash()
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlert = true
                                     }
@@ -73,6 +78,7 @@ struct SeatHomeView: View {
                                 CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.name,
                                                cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     selectedLookupByName = .name
+                                    isScanningCell = false
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlertByName = true
                                     }
@@ -80,6 +86,7 @@ struct SeatHomeView: View {
                                 CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,
                                                cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     seatHomeViewModel.selectedLookupType = .phoneNumber
+                                    isScanningCell = false
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlert = true
                                     }
@@ -88,12 +95,14 @@ struct SeatHomeView: View {
                                                cellHeight: dynamicCellHeight,
                                                bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     seatHomeViewModel.selectedLookupType = .creditCard
+                                    isScanningCell = false
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlert = true
                                     }
                                 }
                                 if !isMerchandise {
                                     CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                        isScanningCell = false
                                         withAnimation(.easeInOut(duration: 0.3)) {
                                             showLookupAlertBySeat = true
                                         }
@@ -122,7 +131,9 @@ struct SeatHomeView: View {
                             }
                         }
                     }
-                        .background(Color.customWhite)
+                    .opacity(!isFullScreen ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.4), value: isFullScreen)
+                    .background(Color.customWhite)
                 }
             }
             .toolbar {
@@ -132,14 +143,15 @@ struct SeatHomeView: View {
                             Image("Logo")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 500, height: 50)
+                                .frame(width: 500, height: 60)
                                 .padding(.leading)
-                                .padding(.top, 5)
+                                .padding(.top, 10)
                             
                             Text(savedShow)
                                 .font(Font.custom("Verlag-Bold", size: 20))
                                 .foregroundColor(Color.white)
                                 .padding(.leading)
+                            //    .padding(.top)
                         }
                     }
 //                    ToolbarItem(placement: .topBarLeading) {
@@ -163,21 +175,59 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlert) {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
-                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.14)
+                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.15)
+            }
+        }
+        .onChange(of: showLookupAlert) { newValue in
+            if newValue == false {
+                isScanningCell = true
+                scnanerReset.triggerReset()
             }
         }
         .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.14)
+            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.15)
+        }
+        .onChange(of: showLookupAlertByName) { newValue in
+            if newValue == false {
+                isScanningCell = true
+                scnanerReset.triggerReset()
+            }
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, UIScreen.main.bounds.height * 0.14)
+            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, UIScreen.main.bounds.height * 0.15)
+        }
+        .onChange(of: showLookupAlertBySeat) { newValue in
+            if newValue == false {
+                isScanningCell = true
+                scnanerReset.triggerReset()
+            }
         }
         .sideMenuViewModify(isPresented: $isSideMenuPresented) {
             SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)
         }
+        .onChange(of: isSideMenuPresented) { newValue in
+            if newValue {
+                isScanningCell = false
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    isScanningCell = true
+                    scnanerReset.triggerReset()
+                }
+            }
+        }
         .customAlert(isPresented: $showGoOfflineView) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert)
+            }
+        }
+        .onChange(of: showGoOfflineView) { newValue in
+            if newValue {
+                isScanningCell = false
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    isScanningCell = true
+                    scnanerReset.triggerReset()
+                }
             }
         }
         .customAlert(isPresented: $showScanningStatsView) {
@@ -323,22 +373,5 @@ struct SeatHomeView: View {
 struct SeatHomeView_Previews: PreviewProvider {
     static var previews: some View {
         SeatHomeView(showSeatView: .constant(true))
-    }
-}
-
-class SeatHomeViewModel: ObservableObject {
-    @Published  var selectedLookupType: LookupType?
-    @Published var selectedSeat: SeatModel?
-}
-
-struct ConditionalEdgeIgnore: ViewModifier {
-    var isFullScreen: Bool
-    
-    func body(content: Content) -> some View {
-        if isFullScreen {
-            content.edgesIgnoringSafeArea(.top)
-        } else {
-            content
-        }
     }
 }

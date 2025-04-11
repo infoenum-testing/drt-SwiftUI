@@ -14,6 +14,7 @@ struct SeatCell: View {
     @State private var scannedTime: String?
     @State private var isLoading = false
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showAlert: Bool  // 🔹 Added binding to control the alert visibility
     @Binding var errorMessages: String?
@@ -58,7 +59,7 @@ struct SeatCell: View {
                 return
             }
 
-            IQAPIClient.scanTicket(code: "36060-5E56", qr: qrCode) { result in
+            IQAPIClient.scanTicket(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let jsonResponse):

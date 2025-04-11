@@ -27,6 +27,8 @@ struct GoOfflineView: View {
     @Binding var showOfflineSuccessAlert: Bool
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
+    @FocusState private var isNameFieldFocused: Bool
+    @State private var keyboardHeight: CGFloat = 0
     
     var isContinueDisabled: Bool {
         name.count < 5 || isSyncing
@@ -59,7 +61,15 @@ struct GoOfflineView: View {
                     .frame(alignment: .center)
                     .multilineTextAlignment(.center)
                     .disabled(isSyncing)
+                    .focused($isNameFieldFocused)
             }.frame(alignment: .center)
+//                .onAppear {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//                        isNameFieldFocused = true
+//                    }
+//                    startKeyboardObserver()
+//                }
+
             if isSyncing {
                 VStack {
                     ProgressView()
@@ -102,6 +112,7 @@ struct GoOfflineView: View {
         }.frame(alignment: .top)
             .padding([.leading, .trailing], 10)
             .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 2)
+            .edgesIgnoringSafeArea(.bottom)
             .background(Color.FFCE_62)
     }
     
@@ -194,5 +205,15 @@ struct GoOfflineView: View {
             }
         }
     }
-    
+    private func startKeyboardObserver() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+            if let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                self.keyboardHeight = frame.height
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+            self.keyboardHeight = 0
+        }
+    }
 }

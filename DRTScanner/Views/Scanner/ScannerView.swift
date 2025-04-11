@@ -24,15 +24,28 @@ struct ScannerView: View {
     @State private var timer: Timer?
     @State private var isScannerActive = true
     @State private var isCustomColorVisible = false
+    @State private var isStopScanVisible = false
     @State private var scannerController: ScannerViewController?
     
     @State private var isScanned = false
     @State private var scannedTime: String?
     @State private var isLoading = false
+    @AppStorage("showCode") private var savedShowCode: String?
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool?
     @AppStorage("kShowScanStats") private var showScanStats: Bool?
     @AppStorage("kShouldPlayBeep") private var shouldPlayBeep: Bool?
+    @AppStorage("kPauseScanTimeout") var pauseScanTimeout: Int = 0
+    @AppStorage("kAutoEnableFlashTimeout") private var autoEnableFlashTimeout: Bool = false
+    @AppStorage("kAutoEnableFlashDelay") private var autoEnableFlashDelay: Int = 10
+    @AppStorage("kDuplicateScanSuppression") private var duplicateScanSuppression: Int = 0
+    @State private var lastScanTimes: [String: Date] = [:]
+    @State private var suppressedOnce: Set<String> = []
+    @State private var apiPreviouslyScannedQRCodes: Set<String> = []
+
+    @State private var inactivityTimer: Timer?
+    @State private var flashAutoOffTimer: Timer?
+    @State private var flashAutoOnTimer: Timer?
     @Environment(\.managedObjectContext) private var viewContext
     @State private var shouldPlayBeepSound = false
     @State private var isOfflineMode = false
@@ -59,7 +72,24 @@ struct ScannerView: View {
     @State private var isFlashOn = false
     let dragAreaSize: CGSize = CGSize(width: 80, height: 80)
     
-    init(seat: Binding<SeatModel?>, isTicketValid: Binding<Bool>, isPreScanned: Binding<Bool>, isInvalidTicket: Binding<Bool>, orderName: Binding<String>, orderNumber: Binding<String>, orderDateScanned: Binding<String>, isMerchTicketValid: Binding<Bool>, isFullScreen: Binding<Bool>) {
+    @Binding var isScanningCell: Bool
+    @ObservedObject var scannerViewModel: ScannerViewModel
+    
+    @State private var isProcessingScan = false
+    @State private var lastScannedCode: String?
+    @State private var lastScannedTime: TimeInterval = 0
+    
+    init(seat: Binding<SeatModel?>,
+         isTicketValid: Binding<Bool>,
+         isPreScanned: Binding<Bool>,
+         isInvalidTicket: Binding<Bool>,
+         orderName: Binding<String>,
+         orderNumber: Binding<String>,
+         orderDateScanned: Binding<String>,
+         isMerchTicketValid: Binding<Bool>,
+         isFullScreen: Binding<Bool>,
+         isScanningCell: Binding<Bool>,
+         scannerViewModel: ScannerViewModel) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
         _isTicketValid = isTicketValid
@@ -70,18 +100,36 @@ struct ScannerView: View {
         _orderDateScanned = orderDateScanned
         _isMerchTicketValid = isMerchTicketValid
         _isFullScreen = isFullScreen
+        _isScanningCell = isScanningCell
+        self.scannerViewModel = scannerViewModel
     }
     
     var body: some View {
         VStack {
             ZStack {
-                CameraScannerView { scanned in
-                    scannedCode = scanned
-                    sendScanRequest(qr: scanned)
-                    resetInactivityTimer()
-                }
-                .frame(height: isFullScreen ? nil : scanViewHeight)
-                .frame(maxWidth: .infinity)
+                CameraScannerView(
+                    onScan: { scanned in
+                        scannedCode = scanned
+                        sendScanRequest(qr: scanned)
+                        resetInactivityTimer()
+                    },
+                    onControllerCreated: { controller in
+                        DispatchQueue.main.async {
+                            scannerController = controller
+                            controller.isScanningBinding = $isScanningCell
+                        }
+                    },
+                    isScanning: $isScanningCell
+                ).padding(.bottom, -30)
+                    .frame(height: isFullScreen ? nil : scanViewHeight)
+                    .frame(maxWidth: .infinity)
+                    .onChange(of: isScanning) { newValue in
+                        if newValue {
+                            scannerController?.startScanning()
+                        } else {
+                            scannerController?.stopScanning()
+                        }
+                    }
                 if isFullScreen {
                     VStack {
                         Spacer()
@@ -103,13 +151,16 @@ struct ScannerView: View {
                         }
                         Spacer()
                     }.frame(height: isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight)
+                        .onAppear {
+                               startInactivityTimer()
+                           }
                     AnyView(EmptyView())
                 }
                 VStack {
                     HStack {
                         Spacer()
                         HStack {
-                            Image(isFlashOn ? "FlashOn" : "FlashOff")
+                            Image(isFlashOn ? "FlashOff" : "FlashOn")
                                 .resizable()
                                 .frame(width: 50, height: 50)
                                 .padding(.top, isFullScreen ? 30 : 0)
@@ -128,17 +179,23 @@ struct ScannerView: View {
                                             if isFlashOn {
                                                 isFlashOn = false
                                                 toggleTorch(status: false)
+                                                flashAutoOffTimer?.invalidate()
                                             }
                                         }
+                                        startFlashInactivityTimer()
                                     }
                                     .onEnded { _ in
                                         if isFlashOn {
                                             isFlashOn = false
                                             toggleTorch(status: false)
+                                            flashAutoOffTimer?.invalidate()
                                         }
+                                        startFlashInactivityTimer()
                                     }
                             )
+
                     }
+                    
                     Spacer()
                     HStack {
                         if !isFullScreen {
@@ -201,7 +258,22 @@ struct ScannerView: View {
                         .padding(.bottom, -30)
                 }
                 
-                if !isCustomColorVisible && !isAnyOverlayDisplayed {
+                if isStopScanVisible && !isFullScreen {
+                    Color.FFCE_62
+                        .opacity(1)
+                        .frame(height: scanViewHeight + 30)
+                        .overlay(
+                            Text("Scanning Pause")
+                                .font(Font.custom("Verlag-Bold", size: 30))
+                                .foregroundColor(.white)
+                                .onTapGesture {
+                                    resetScanner()
+                                }
+                        )
+                        .padding(.bottom, -30)
+                }
+                
+                if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
                     Rectangle()
                         .frame(height: 1.5)
                         .foregroundColor(.red)
@@ -215,6 +287,12 @@ struct ScannerView: View {
                 Task {
                     await viewModel.fetchStats()
                 }
+            }
+            .onChange(of: scannerViewModel.shouldResetScanner) { _ in
+                startInactivityTimer()
+                isStopScanVisible = false
+                startFlashInactivityTimer()
+                
             }
         }
         .onAppear {
@@ -252,6 +330,58 @@ struct ScannerView: View {
                 shouldPlayBeepSound = newValue ?? false
             }
         }
+        .onAppear {
+            startFlashInactivityTimer()
+        }
+        .onDisappear {
+            stopFlashInactivityTimer()
+        }
+
+    }
+    
+    private func startFlashInactivityTimer() {
+        flashAutoOnTimer?.invalidate()
+
+        guard autoEnableFlashTimeout else { return }
+
+        flashAutoOnTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(autoEnableFlashDelay), repeats: false) { _ in
+            if let scanner = scannerController, scanner.captureSession?.isRunning == true {
+                if !isFlashOn {
+                    isFlashOn = true
+                    toggleTorch(status: true)
+                    startFlashAutoOffTimer()
+                }
+            } else {
+                print("🔁 Skipping flash-on: Scanner is not running")
+            }
+        }
+    }
+
+    private func startFlashAutoOffTimer() {
+        flashAutoOffTimer?.invalidate()
+
+        flashAutoOffTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+            if isFlashOn {
+                isFlashOn = false
+                toggleTorch(status: false)
+            }
+
+            if let scanner = scannerController, scanner.captureSession?.isRunning == true {
+                startFlashInactivityTimer()
+            } else {
+                print("⏹️ Flash auto-off: Scanner not running, not restarting timer")
+            }
+        }
+    }
+
+
+    private func stopFlashInactivityTimer() {
+        flashAutoOnTimer?.invalidate()
+        flashAutoOffTimer?.invalidate()
+    }
+
+    private func resetFlashInactivityTimer() {
+        startFlashInactivityTimer()
     }
     
     private func setupScanner() {
@@ -278,30 +408,34 @@ struct ScannerView: View {
     
     private func resetScanner() {
         isCustomColorVisible = false
+        isStopScanVisible = false
         scannedCode = nil
         scanResult = nil
         isScanning = true
         isScannerActive = true
+        isScanningCell = true
         linePosition = 0
         startLineAnimation()
-        
         startInactivityTimer()
-        
-        if let scannerVC = scannerController {
-            DispatchQueue.global(qos: .userInitiated).async {
-                if scannerVC.captureSession?.isRunning == false {
-                    scannerVC.captureSession?.startRunning()
-                }
-            }
-        }
+        startFlashInactivityTimer()
     }
     
     private func startInactivityTimer() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
+        
+        guard pauseScanTimeout > 0 else { return }
+        
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(pauseScanTimeout), repeats: false) { _ in
             if !isFullScreen {
+                isScanningCell = false
                 self.activateColorOverlay()
-                self.stopScanner()
+                stopLineAnimation()
+                self.scannerController?.stopScanning()
+                if isFlashOn {
+                    isFlashOn = false
+                    toggleTorch(status: false)
+                }
+                stopFlashInactivityTimer()
             }
         }
     }
@@ -317,10 +451,11 @@ struct ScannerView: View {
     private func stopScanner() {
         isScannerActive = false
         scannerController?.captureSession?.stopRunning()
+        scannerController = nil
     }
     
     private func activateColorOverlay() {
-        isCustomColorVisible = true
+        isStopScanVisible = true
     }
     
     private func toggleTorch(status: Bool) {
@@ -351,6 +486,37 @@ struct ScannerView: View {
         let qrCodes = cleanedQR.components(separatedBy: ",").filter { !$0.isEmpty }
         let isMerch = isMerchandise ?? false
         let scanType = isMerch ? "merch" : "seat"
+        guard let qrCode = qrCodes.first else { return }
+        
+        let now = Date()
+        let suppressionSeconds = duplicateScanSuppression
+        
+        if suppressionSeconds > 0,
+           let lastScan = lastScanTimes[cleanedQR] {
+            let timeSinceLast = now.timeIntervalSince(lastScan)
+            
+            if timeSinceLast < Double(suppressionSeconds) {
+                if !suppressedOnce.contains(cleanedQR) {
+                    suppressedOnce.insert(cleanedQR)
+                    lastScanTimes[cleanedQR] = now
+                    
+                    isTicketValid = true
+                    if shouldPlayBeepSound {
+                        AudioServicesPlaySystemSound(1022)
+                    }
+                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        withAnimation {
+                            isTicketValid = false
+                        }
+                    }
+                    isScanning = false
+                    return
+                }
+            } else {
+                suppressedOnce.remove(cleanedQR)
+            }
+        }
         
         if isOfflineMode {
             let separatedQRCodes = qrCodes.joined(separator: "-")
@@ -420,6 +586,8 @@ struct ScannerView: View {
                                     isTicketValid = false
                                 }
                             }
+                            lastScanTimes[cleanedQR] = now
+                            suppressedOnce.remove(cleanedQR)
                         }
                     } else {
                         isInvalidTicket = true
@@ -467,6 +635,8 @@ struct ScannerView: View {
                                     isTicketValid = false
                                 }
                             }
+                            lastScanTimes[cleanedQR] = now
+                            suppressedOnce.remove(cleanedQR)
                         }
                     } else {
                         isInvalidTicket = true
@@ -489,7 +659,7 @@ struct ScannerView: View {
             }
         } else {
             if qr.allSatisfy({ $0.isNumber }) {
-                IQAPIClient.scanTicketBarcode(code: "36060-5E56", barcode: qr) { result in
+                IQAPIClient.scanTicketBarcode(code: savedShowCode ?? "", barcode: qr) { result in
                     DispatchQueue.main.async {
                         switch result {
                         case .success(let responseData):
@@ -522,6 +692,8 @@ struct ScannerView: View {
                                             isTicketValid = false
                                         }
                                     }
+                                    lastScanTimes[cleanedQR] = now
+                                    suppressedOnce.remove(cleanedQR)
                                 }
                             }
                         case .failure(_):
@@ -537,7 +709,7 @@ struct ScannerView: View {
                 }
             } else {
                 if isMerchandiseMode {
-                    IQAPIClient.scanProductQrCode(code: "36060-5E56", qr: qrCodes) { result in
+                    IQAPIClient.scanProductQrCode(code: savedShowCode ?? "", qr: qrCodes) { result in
                         DispatchQueue.main.async {
                             switch result {
                             case .success(let responseData):
@@ -564,7 +736,7 @@ struct ScannerView: View {
                         }
                     }
                 } else {
-                    IQAPIClient.scanTicketQrCode(code: "36060-5E56", type: scanType, qr: qrCodes) { result in
+                    IQAPIClient.scanTicketQrCode(code: savedShowCode ?? "36060-5E56", type: scanType, qr: qrCodes) { result in
                         DispatchQueue.main.async {
                             switch result {
                             case .success(let responseData):
@@ -575,6 +747,7 @@ struct ScannerView: View {
                                         
                                         if let scanResponse = try? decoder.decode(ScanResponse.self, from: jsonData) {
                                             if scanResponse.valid {
+                                                
                                                 isTicketValid = true
                                                 orderName = scanResponse.buyerName ?? "Unknown"
                                                 orderNumber = String(scanResponse.oid ?? 0)
@@ -590,7 +763,8 @@ struct ScannerView: View {
                                                 
                                                 seat?.scannedTime = Date()
                                                 isScanning = false
-                                                
+                                                lastScanTimes[cleanedQR] = now
+                                                suppressedOnce.remove(cleanedQR)
                                             } else if scanResponse.message == "Previously Scanned" {
                                                 isPreScanned = true
                                                 isTicketValid = true

@@ -15,9 +15,10 @@ struct SideMenuView: View {
     @Binding var showAlert: Bool
     @State private var showGoOnlineView = false
     @State private var showSettingsView = false
-    @State private var isSwitchingToMerchandise = false
+    @State var isSwitchingToMerchandise: Bool?
     @State private var showConfirmationAlert = false
     @State private var showWebsiteAlert = false
+    
     
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
@@ -96,7 +97,7 @@ struct SideMenuView: View {
                             }
                             isPresented = false
                         }
-                       
+                        
                         SideMenuOption(title: "DRT WEBSITE") {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
@@ -118,10 +119,9 @@ struct SideMenuView: View {
                     .background(Color.tealLight)
                     Spacer()
                 }.onAppear {
-                    isSwitchingToMerchandise = isMerchandise
+                    isSwitchingToMerchandise = !isMerchandise
+                    print(isSwitchingToMerchandise ?? false,"")
                 }
-                
-                
             }
         }.sideMenuViewModify(isPresented: $showSettingsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -132,61 +132,64 @@ struct SideMenuView: View {
             GoOnlineView(isPresented: $showGoOnlineView)
         }
         .customAlert(isPresented: $showConfirmationAlert) {
-                GeometryReader { geometry in
-                    ZStack(alignment: .top) {
-                        Color.black.opacity(0.0)
-                            .ignoresSafeArea()
-                            .onTapGesture {
+            GeometryReader { geometry in
+                ZStack(alignment: .top) {
+                    Color.black.opacity(0.0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showConfirmationAlert = false
+                            }
+                        }
+                    
+                    VStack(alignment: .center) {
+                        
+                        Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? "merchandise?" : "tickets?")")
+                            .font(Font.custom("Verlag-Bold", size: 26))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                        
+                        HStack {
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isMerchandise = isSwitchingToMerchandise ?? false
+                                    showConfirmationAlert = false
+                                }
+                            }) {
+                                Text("Yes")
+                                    .font(Font.custom("Verlag-Bold", size: 24))
+                                    .foregroundColor(Color.customGreen)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                            }
+                            
+                            Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showConfirmationAlert = false
                                 }
+                            }) {
+                                Text("No")
+                                    .font(Font.custom("Verlag-Bold", size: 24))
+                                    .foregroundColor(Color.customGreen)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
                             }
-
-                        VStack(alignment: .center) {
-                            
-                            Text("Switch to scanning \(isSwitchingToMerchandise ? "merchandise?" : "tickets?")")
-                                .font(Font.custom("Verlag-Bold", size: 26))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                            
-                            HStack {
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                        isMerchandise = isSwitchingToMerchandise
-                                        showConfirmationAlert = false
-                                    }
-                                }) {
-                                    Text("Yes")
-                                        .font(Font.custom("Verlag-Bold", size: 24))
-                                        .foregroundColor(Color.customGreen)
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                }
-                                
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showConfirmationAlert = false
-                                    }
-                                }) {
-                                    Text("No")
-                                        .font(Font.custom("Verlag-Bold", size: 24))
-                                        .foregroundColor(Color.customGreen)
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                }
-                            }.onChange(of: isSwitchingToMerchandise) { newValue in
-                                isMerchandise = newValue
-                            }
+                        }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
+                            isMerchandise = newValue
                         }
-                        .padding(.top,30)
-                        .background(Color.FFCE_62)
-                        .frame(width: geometry.size.width * 1)
-                        .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)
                     }
+                    .padding(.top,30)
+                    .background(Color.FFCE_62)
+                    .frame(width: geometry.size.width * 1)
+                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)
+                }.onChange(of: isSwitchingToMerchandise) { _ in
+                    print(isSwitchingToMerchandise ?? false,"")
                 }
-                .padding(.top, 0)
-                .edgesIgnoringSafeArea(.all)
+                
+            }
+            .padding(.top, 0)
+            .edgesIgnoringSafeArea(.all)
         }
     }
     
@@ -199,7 +202,7 @@ struct SideMenuView: View {
             UIApplication.shared.open(url)
         }
     }
-
+    
 }
 
 struct SideMenuOption: View {

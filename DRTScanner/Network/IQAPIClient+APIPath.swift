@@ -30,5 +30,5 @@ public enum APIPath: String {
     
     // Offline APi
     case selectAllDataOffine = "/db/dl"
-    case uploadAllDataOffine = "/db/ul?c=36060-5E56&devicename=iPhone-18.0-72EB8E"
+    case uploadAllDataOffine = "/db/ul"
 }

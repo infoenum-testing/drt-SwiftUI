@@ -40,6 +40,7 @@ struct CustomCellView: View {
         .padding()
         .background(Color.customWhite)
         .frame(height: cellHeight)
+    .frame(width: UIScreen.main.bounds.width)
         Rectangle()
             .frame(height: 0.30)
             .foregroundColor(bottomLineColor)

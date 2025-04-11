@@ -1034,10 +1034,11 @@
 import CoreData
 import UIKit
 import IQAPIClient
+import SwiftUI
 
 class DRTDatabaseManager {
     var managedObjectContext: NSManagedObjectContext?
-    
+    @AppStorage("showCode") private var savedShowCode: String?
     static let shared: DRTDatabaseManager = {
         let context = PersistenceController.shared.container.viewContext
         return DRTDatabaseManager(context: context)
@@ -1061,7 +1062,6 @@ class DRTDatabaseManager {
                 return
             }
 
-            // Fetch orders, seats, and products from serverDict
             let orders = serverDict["orders"] as? [[String: Any]] ?? []
             let seats = serverDict["seats"] as? [[String: Any]] ?? []
             let products = serverDict["products"] as? [[String: Any]] ?? []
@@ -1178,6 +1178,15 @@ class DRTDatabaseManager {
         seat.qrCode = seatAttributes["qrCode"] as? String
         seat.handicapped = NSNumber(value: (seatAttributes["handicap"] as? Int ?? 0) == 1)
         
+        if let scannedString = seatAttributes["scanned"] as? String {
+               let formatter = DateFormatter()
+               formatter.dateFormat = "h:mm a"
+               formatter.locale = Locale(identifier: "en_US_POSIX")
+               if let scannedDate = formatter.date(from: scannedString) {
+                   seat.date_scanned = scannedDate
+               }
+           }
+        
         if let secRowSeat = seatAttributes["secRowSeat"] as? String {
             let components = secRowSeat.split(separator: "-")
             if components.count == 3 {
@@ -1196,49 +1205,71 @@ class DRTDatabaseManager {
         return seat
     }
     
+//    private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
+//        let product = Product(context: context)
+//        
+//        product.name = productAttributes["name"] as? String
+//        product.variantName = productAttributes["variantName"] as? String
+//        product.qrCode = productAttributes["qrCode"] as? String
+//        product.qty = productAttributes["qty"] as? Int64 ?? 0
+//        product.qty_scanned = productAttributes["qty_scanned"] as? Int64 ?? 0
+//        product.icon_src = productAttributes["icon_src"] as? String
+//        
+//        if let orderId = productAttributes["orderId"] as? Int {
+//            let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
+//            fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
+//            
+//            do {
+//                let orders = try context.fetch(fetchRequest)
+//                if let order = orders.first {
+//                    product.order = order
+//                    product.order_id = Int64(orderId)
+//                    print("Linked order with ID \(orderId) to product.")
+//                } else {
+//                    print("No order found for orderId: \(orderId)")
+//                }
+//            } catch {
+//                print("❌ Error fetching order with orderId \(orderId): \(error.localizedDescription)")
+//            }
+//        }
+//        
+//        do {
+//            if context.hasChanges {
+//                try context.save()
+//                print("Context saved successfully.")
+//            }
+//        } catch {
+//            print("error saving context: \(error.localizedDescription)")
+//            return nil
+//        }
+//        
+//        return product
+//    }
+    
     private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
         let product = Product(context: context)
-        
+
         product.name = productAttributes["name"] as? String
         product.variantName = productAttributes["variantName"] as? String
         product.qrCode = productAttributes["qrCode"] as? String
         product.qty = productAttributes["qty"] as? Int64 ?? 0
         product.qty_scanned = productAttributes["qty_scanned"] as? Int64 ?? 0
         product.icon_src = productAttributes["icon_src"] as? String
-        
-        if let orderId = productAttributes["orderId"] as? Int {
-            let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
-            
-            do {
-                let orders = try context.fetch(fetchRequest)
-                if let order = orders.first {
-                    product.order = order
-                    product.order_id = Int64(orderId)
-                    print("Linked order with ID \(orderId) to product.")
-                } else {
-                    print("No order found for orderId: \(orderId)")
-                }
-            } catch {
-                print("❌ Error fetching order with orderId \(orderId): \(error.localizedDescription)")
-            }
-        }
-        
+        product.order_id = (productAttributes["orderId"] as? Int64) ?? 0
+
         do {
             if context.hasChanges {
                 try context.save()
-                print("Context saved successfully.")
+                print("✅ Product saved with order_id \(product.order_id).")
             }
         } catch {
-            print("error saving context: \(error.localizedDescription)")
+            print("❌ Error saving product: \(error.localizedDescription)")
             return nil
         }
-        
+
         return product
     }
 
-
-    
     func fetchDataAndPostToServer(completionBlock: @escaping (Bool, Error?) -> Void) {
         DispatchQueue.global(qos: .background).async {
             guard let context = self.managedObjectContext else {
@@ -1269,7 +1300,7 @@ class DRTDatabaseManager {
                 ]
             ]
             
-            IQAPIClient.uploadAllOfflineData(code: "36060-5E56", data: postData) { result in
+            IQAPIClient.uploadAllOfflineData(code: self.savedShowCode ?? "36060-5E56", data: postData) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let response):

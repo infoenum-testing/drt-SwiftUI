@@ -114,7 +114,7 @@ struct LookupByNumbersView: View {
                                     ForEach(row, id: \.self) { button in
                                         ZStack {
                                             if button == "OK" {
-                                                Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_disabled_btn")
+                                                Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_unclicked_btn")
                                                     .resizable()
                                             } else {
                                                 Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")

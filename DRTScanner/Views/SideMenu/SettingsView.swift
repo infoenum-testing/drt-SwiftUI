@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Binding var isPresented: Bool
@@ -40,7 +38,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.FDB_54_E)
             
-        }
+        } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
         
         .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height)
         .background(Color.FDB_54_E)

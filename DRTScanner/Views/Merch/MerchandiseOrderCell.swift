@@ -233,6 +233,7 @@ struct MerchandiseOrderCell: View {
     @State private var scannedTime: String?
     @State private var isScanned = false
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     @State private var isLoading = false
     @State private var isLoadingSvgImage = false
     
@@ -355,7 +356,7 @@ struct MerchandiseOrderCell: View {
                 return
             }
             
-            IQAPIClient.scanProductQrCode(code: "36060-5E56", qr: qrCode) { result in
+            IQAPIClient.scanProductQrCode(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let jsonResponse):

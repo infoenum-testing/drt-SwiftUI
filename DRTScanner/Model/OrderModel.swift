@@ -69,6 +69,7 @@ struct Merchandise: Codable {
     let name: String?
     let variantName: String?
     let qty: Int?
+    let orderId: Int?
     let icon: String?
     let message: String?
     let qr: QrMerchandise?
@@ -102,9 +103,10 @@ struct Merchandise: Codable {
         case qr
         case tsScanned = "ts_scanned"
         case message
+        case orderId = "order_id"
     }
     
-    init(name: String? = nil, variantName: String? = nil, qty: Int? = nil, icon: String? = nil, message: String? = nil, qr: QrMerchandise? = nil, tsScanned: Int64? = nil) {
+    init(name: String? = nil, variantName: String? = nil, qty: Int? = nil, icon: String? = nil, message: String? = nil, qr: QrMerchandise? = nil, tsScanned: Int64? = nil, orderId: Int? = nil) {
             self.name = name
             self.variantName = variantName
             self.qty = qty
@@ -112,6 +114,7 @@ struct Merchandise: Codable {
             self.message = message
             self.qr = qr
             self.tsScanned = tsScanned
+            self.orderId = orderId
         }
 }
 

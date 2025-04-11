@@ -7,19 +7,29 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct CameraScannerView: UIViewControllerRepresentable {
     var onScan: (String) -> Void
     var onControllerCreated: ((ScannerViewController) -> Void)?
-    
+    @Binding var isScanning: Bool
+
     func makeUIViewController(context: Context) -> ScannerViewController {
         let controller = ScannerViewController()
         controller.onScan = onScan
+        controller.isScanningBinding = $isScanning // 👈 Binding passed here
         onControllerCreated?(controller)
         return controller
     }
-    
-    func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) {}
-    
+
+    func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) {
+        if isScanning {
+            uiViewController.startScanning()
+        } else {
+            uiViewController.stopScanning()
+        }
+    }
+
     static func dismantleUIViewController(_ uiViewController: ScannerViewController, coordinator: ()) {
         uiViewController.captureSession?.stopRunning()
     }
