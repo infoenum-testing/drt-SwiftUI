@@ -160,7 +160,7 @@ struct LookupByNumbersView: View {
                         }
                         
                     } else {
-                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: OrdersNewApi(buyerName: "", cc: "", phone: "", orderId: 0, valid: true, message: "", seats: [], merch: []))
+                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: OrdersNewApi(buyerName: "", cc: "", phone: "", orderId: 0, valid: true,goldenTicketText: "", isGoldenTicket: nil, message: "", seats: [], merch: []))
                             .onAppear {
                                 order = nil
                             }

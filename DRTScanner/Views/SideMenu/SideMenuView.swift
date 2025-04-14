@@ -201,26 +201,5 @@ struct SideMenuView: View {
         if let url = URL(string: "https://www.drtwebsite.com") {
             UIApplication.shared.open(url)
         }
-    }
-    
-}
-
-struct SideMenuOption: View {
-    var title: String
-    var action: (() -> Void)? = nil
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(Font.custom("Verlag-Bold", size: 16))
-                .foregroundColor(.white)
-            Spacer()
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color.customGreen)
-        .onTapGesture {
-            action?()
-        }
-    }
+    }    
 }

@@ -98,21 +98,3 @@ struct SettingsView: View {
         ]
     }
 }
-
-struct SettingItem: Hashable {
-    var title: String
-    var toggleBinding: Binding<Bool>? = nil
-    var value: String? = nil
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(title)
-    }
-    
-    static func == (lhs: SettingItem, rhs: SettingItem) -> Bool {
-        lhs.title == rhs.title
-    }
-}
-
-struct IdentifiableIndex: Identifiable, Equatable {
-    var id: Int
-}

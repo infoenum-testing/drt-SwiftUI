@@ -57,9 +57,11 @@ struct ScannerView: View {
     @Binding var isTicketValid: Bool
     @Binding var isPreScanned: Bool
     @Binding var isInvalidTicket: Bool
+    
     @Binding var orderName: String
     @Binding var orderNumber: String
     @Binding var orderDateScanned: String
+    @Binding var isGoldenTicket: Bool
     @Binding var isMerchTicketValid: Bool
     @Binding var isFullScreen: Bool
     //@State private var isFullScreen = false
@@ -89,6 +91,7 @@ struct ScannerView: View {
          isMerchTicketValid: Binding<Bool>,
          isFullScreen: Binding<Bool>,
          isScanningCell: Binding<Bool>,
+         isGoldenTicket: Binding<Bool>,
          scannerViewModel: ScannerViewModel) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
@@ -101,6 +104,7 @@ struct ScannerView: View {
         _isMerchTicketValid = isMerchTicketValid
         _isFullScreen = isFullScreen
         _isScanningCell = isScanningCell
+        _isGoldenTicket = isGoldenTicket
         self.scannerViewModel = scannerViewModel
     }
     
@@ -137,7 +141,7 @@ struct ScannerView: View {
                             if isPreScanned {
                                 PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned)
                             } else {
-                                ValidTicketView(orderName: orderName, orderNumber: orderNumber)
+                                ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
                             }
                         } else if isInvalidTicket {
                             InvalidTicketView()
@@ -193,7 +197,6 @@ struct ScannerView: View {
                                         startFlashInactivityTimer()
                                     }
                             )
-
                     }
                     
                     Spacer()
@@ -263,7 +266,7 @@ struct ScannerView: View {
                         .opacity(1)
                         .frame(height: scanViewHeight + 30)
                         .overlay(
-                            Text("Scanning Pause")
+                            Text("Pause, click to resume")
                                 .font(Font.custom("Verlag-Bold", size: 30))
                                 .foregroundColor(.white)
                                 .onTapGesture {
@@ -489,34 +492,44 @@ struct ScannerView: View {
         guard let qrCode = qrCodes.first else { return }
         
         let now = Date()
-        let suppressionSeconds = duplicateScanSuppression
+        let suppressionSeconds = Double(duplicateScanSuppression)
         
-        if suppressionSeconds > 0,
-           let lastScan = lastScanTimes[cleanedQR] {
-            let timeSinceLast = now.timeIntervalSince(lastScan)
-            
-            if timeSinceLast < Double(suppressionSeconds) {
-                if !suppressedOnce.contains(cleanedQR) {
-                    suppressedOnce.insert(cleanedQR)
-                    lastScanTimes[cleanedQR] = now
-                    
-                    isTicketValid = true
-                    if shouldPlayBeepSound {
-                        AudioServicesPlaySystemSound(1022)
-                    }
-                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        withAnimation {
-                            isTicketValid = false
-                        }
-                    }
-                    isScanning = false
-                    return
-                }
-            } else {
-                suppressedOnce.remove(cleanedQR)
-            }
-        }
+        let beforeCleanup = lastScanTimes.count
+         lastScanTimes = lastScanTimes.filter { now.timeIntervalSince($0.value) < suppressionSeconds }
+         suppressedOnce = suppressedOnce.filter { lastScanTimes[$0] != nil }
+         print("🧹 Cleaned up old QR entries. Before: \(beforeCleanup), After: \(lastScanTimes.count)")
+
+         if suppressionSeconds > 0,
+            let lastScan = lastScanTimes[cleanedQR] {
+             let timeSinceLast = now.timeIntervalSince(lastScan)
+             print("⏱️ QR '\(cleanedQR)' was last scanned \(timeSinceLast) seconds ago")
+
+             if timeSinceLast < suppressionSeconds {
+                 if !suppressedOnce.contains(cleanedQR) {
+                     print("⚠️ Duplicate scan suppressed for: \(cleanedQR)")
+                     suppressedOnce.insert(cleanedQR)
+                     lastScanTimes[cleanedQR] = now
+
+                     isTicketValid = true
+                     if shouldPlayBeepSound {
+                         AudioServicesPlaySystemSound(1022)
+                     }
+                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                         withAnimation { isTicketValid = false }
+                     }
+                     isScanning = false
+                     return
+                 }
+             } else {
+                 print("✅ Suppression window expired for: \(cleanedQR)")
+                 suppressedOnce.remove(cleanedQR)
+             }
+         } else {
+             print("🆕 First time scanning QR: \(cleanedQR)")
+         }
+
+         print("📡 Sending scan request for QR: \(cleanedQR), Type: \(scanType)")
         
         if isOfflineMode {
             let separatedQRCodes = qrCodes.joined(separator: "-")
@@ -671,6 +684,7 @@ struct ScannerView: View {
                                         orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Unknown"
                                         orderNumber = String(responseDict["oid"] as? Int ?? 3333876)
                                         orderDateScanned = responseDict["date_scanned"] as? String ?? ""
+                                        
                                         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                             withAnimation {
@@ -686,6 +700,7 @@ struct ScannerView: View {
                                     orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Unknown"
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
+                                    isGoldenTicket = (responseDict["is_golden_ticket"] == nil)
                                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
@@ -751,6 +766,7 @@ struct ScannerView: View {
                                                 isTicketValid = true
                                                 orderName = scanResponse.buyerName ?? "Unknown"
                                                 orderNumber = String(scanResponse.oid ?? 0)
+                                                isGoldenTicket = scanResponse.isGoldenTicket ?? false
                                                 if shouldPlayBeepSound {
                                                     AudioServicesPlaySystemSound(1022)
                                                 }

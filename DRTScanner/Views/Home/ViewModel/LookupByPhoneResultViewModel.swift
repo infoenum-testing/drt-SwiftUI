@@ -75,9 +75,13 @@ class LookupByPhoneResultViewModel: ObservableObject {
                     buyerName: order.buyer_name ?? "",
                     cc: order.cc ?? "",
                     phone: order.phone ?? "",
-                    orderId: order.oid?.intValue ?? 0, valid: true, message: "",
-                    seats: [SeatModel(section: "", row: "", seat: "", barcode: "", qrCode: "", qr: Qr(seat: [""]))],
-                    merch: [Merchandise(name: "", variantName: "", qty: 0, icon: "", message: "", qr: QrMerchandise(merch: [""]), tsScanned: 0)]
+                    orderId: order.oid?.intValue ?? 0,
+                    valid: true,
+                    goldenTicketText: "",
+                    isGoldenTicket: nil,
+                    message: "",
+                    seats: [],
+                    merch: []
                 )
             }
             

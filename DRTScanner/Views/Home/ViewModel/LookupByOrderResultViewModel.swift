@@ -143,6 +143,8 @@ class LookupByOrderResultViewModel: ObservableObject {
                         phone: firstOrder.phone ?? "",
                         orderId: firstOrder.oid?.intValue ?? 0,
                         valid: true,
+                        goldenTicketText: "",
+                        isGoldenTicket: nil,
                         message: "",
                         seats: seats,
                         merch: []

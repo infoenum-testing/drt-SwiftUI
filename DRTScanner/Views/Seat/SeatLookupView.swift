@@ -147,7 +147,11 @@ struct SeatLookupView: View {
                     buyerName: cachedOrder.buyer_name,
                     cc: cachedOrder.cc,
                     phone: cachedOrder.phone,
-                    orderId: cachedOrder.oid?.intValue, valid: true, message: "",
+                    orderId: cachedOrder.oid?.intValue,
+                    valid: true,
+                    goldenTicketText: "",
+                    isGoldenTicket: nil,
+                    message: "",
                     seats: [],
                     merch: []
                 )
@@ -168,7 +172,11 @@ struct SeatLookupView: View {
                         buyerName: orderDetail.buyerName,
                         cc: orderDetail.cc,
                         phone: nil,
-                        orderId: orderDetail.oid, valid: true, message: "",
+                        orderId: orderDetail.oid,
+                        valid: true,
+                        goldenTicketText: "",
+                        isGoldenTicket: nil,
+                        message: "",
                         seats: [],
                         merch: []
                     )
@@ -204,40 +212,6 @@ struct SeatLookupView: View {
         return nil
     }
     
-}
-
-struct TableView: View {
-    @Binding var isSeatLookupPresented: Bool
-    @Binding var isSectionLookupPresented: Bool
-    @Binding var isRowLookupPresented: Bool
-    @Binding var selectedSection: String
-    @Binding var selectedRow: String
-    @Binding var selectedSeat: String
-    
-    var body: some View {
-        List {
-            SeatSectionLookupCell(action: {
-                isSectionLookupPresented = true
-            }, selectedSeat: selectedSection)
-            .listRowBackground(Color.white)
-            .frame(height: 100)
-            
-            SeatRowLookupCell(action: {
-                isRowLookupPresented = true
-            }, selectedSeat: selectedRow)
-            .listRowBackground(Color.white)
-            .frame(height: 100)
-            
-            SeatLookupCell(action: {
-                isSeatLookupPresented = true
-            }, selectedSeat: selectedSeat)
-            .listRowBackground(Color.white)
-            .frame(height: 100)
-        }.listStyle(.plain)
-        
-            .padding(0)
-            .background(Color.customWhite)
-    }
 }
 
 struct SeatLookupView_Previews: PreviewProvider {

@@ -36,6 +36,7 @@ struct SeatHomeView: View {
     @State private var orderName: String = ""
     @State private var orderNumber: String = ""
     @State private var orderDateScanned: String = ""
+    @State private var isGoldenTicket: Bool = false
     @State private var isMerchTicketValid: Bool = false
     @State private var isMerchPreScanned: Bool = false
     @State private var isFullScreen: Bool = false
@@ -59,7 +60,7 @@ struct SeatHomeView: View {
                         .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                 }
                 VStack {
-                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell, scannerViewModel: scnanerReset)
+                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell, isGoldenTicket: $isGoldenTicket, scannerViewModel: scnanerReset)
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
@@ -116,7 +117,7 @@ struct SeatHomeView: View {
                                     PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned)
                                     
                                 } else {
-                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber)
+                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
                                 }
                             } else if isInvalidTicket {
                                 InvalidTicketView()

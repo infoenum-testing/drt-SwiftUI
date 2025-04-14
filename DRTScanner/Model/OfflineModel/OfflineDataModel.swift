@@ -16,8 +16,6 @@ struct OfflineDataModel: Codable {
     let showDt: String?
     let dbCode: String?
     let orders: [OrdersOfflineModel]?
-  //  let sold: [Sold]?
-   // let unsold: [Unsold]?
     
     private enum CodingKeys: String, CodingKey {
         case valid = "valid"
@@ -27,8 +25,6 @@ struct OfflineDataModel: Codable {
         case showDt = "show_dt"
         case dbCode = "db_code"
         case orders = "orders"
-      //  case sold = "sold"
-       // case unsold = "unsold"
     }
 }
 
@@ -49,57 +45,3 @@ struct OrdersOfflineModel: Codable {
     }
 
 }
-
-//import Foundation
-//
-//struct Sold: Codable {
-//
-//    let 0: Int?
-//    let 1: String?
-//    let 2: String?
-//    let 3: String?
-//    let 4: String?
-//    let 5: [String]?
-//    let 6: Any?
-//    let 7: Bool?
-//
-//    private enum CodingKeys: String, CodingKey {
-//        case 0 = "0"
-//        case 1 = "1"
-//        case 2 = "2"
-//        case 3 = "3"
-//        case 4 = "4"
-//        case 5 = "5"
-//        case 6 = "6"
-//        case 7 = "7"
-//    }
-//
-//}
-//
-//import Foundation
-//
-//struct Unsold: Codable {
-//
-//    let 0: Int?
-//    let 1: String?
-//    let 2: String?
-//    let 3: String?
-//    let 4: String?
-//    let 5: [String]?
-//    let 6: Int?
-//    let 7: Bool?
-//    let 8: String?
-//
-//    private enum CodingKeys: String, CodingKey {
-//        case 0 = "0"
-//        case 1 = "1"
-//        case 2 = "2"
-//        case 3 = "3"
-//        case 4 = "4"
-//        case 5 = "5"
-//        case 6 = "6"
-//        case 7 = "7"
-//        case 8 = "8"
-//    }
-//
-//}

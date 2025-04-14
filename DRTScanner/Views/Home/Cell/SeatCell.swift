@@ -16,7 +16,7 @@ struct SeatCell: View {
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var showAlert: Bool  // 🔹 Added binding to control the alert visibility
+    @Binding var showAlert: Bool
     @Binding var errorMessages: String?
     
     init(seat: Binding<SeatModel>, showAlert: Binding<Bool>, errorMessages: Binding<String?>) {
@@ -30,7 +30,7 @@ struct SeatCell: View {
         } else {
             self._scannedTime = State(initialValue: nil)
         }
-        self._showAlert = showAlert  // 🔹 Binding for alert visibility
+        self._showAlert = showAlert
                 self._errorMessages = errorMessages
     }
 

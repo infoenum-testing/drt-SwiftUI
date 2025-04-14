@@ -105,7 +105,7 @@ struct ShowCodeView: View {
                     }
                 }
             }.padding(.bottom, 30)
-        }.padding(.leading)
+        }
     }
 }
 

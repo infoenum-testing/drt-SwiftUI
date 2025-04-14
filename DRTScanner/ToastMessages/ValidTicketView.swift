@@ -10,6 +10,7 @@ import SwiftUI
 struct ValidTicketView: View {
     let orderName: String
     let orderNumber: String
+    let isGoldenTicket: Bool
     
     var body: some View {
         VStack {
@@ -30,7 +31,7 @@ struct ValidTicketView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.top, .bottom], UIScreen.main.bounds.height * 0.15)
-            .background(Color.green)
+            .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.3))
             Spacer()

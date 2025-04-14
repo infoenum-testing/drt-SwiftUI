@@ -72,7 +72,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
                     buyerName: order.buyer_name ?? "",
                     cc: order.cc ?? "",
                     phone: order.phone ?? "",
-                    orderId: order.oid?.intValue ?? 0, valid: true, message: "",
+                    orderId: order.oid?.intValue ?? 0, valid: true, goldenTicketText: "", isGoldenTicket: nil, message: "",
                     seats: [],
                     merch: []
                 )
