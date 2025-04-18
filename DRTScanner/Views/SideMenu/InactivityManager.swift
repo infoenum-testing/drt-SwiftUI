@@ -11,14 +11,19 @@ import Combine
 
 class InactivityManager: ObservableObject {
     static let shared = InactivityManager()
-    
-    @AppStorage("kDeviceSleepTimeout") private var timeoutMinutes: Int = 1
+
     private var timer: Timer?
+    private var cancellables = Set<AnyCancellable>()
     
     @Published var isAsleep: Bool = false
 
+    private var timeoutMinutes: Int {
+        UserDefaults.standard.integer(forKey: "kDeviceSleepTimeout")
+    }
+
     private init() {
         observeAppLifecycle()
+        observeTimeoutChanges()
     }
 
     func start() {
@@ -27,22 +32,22 @@ class InactivityManager: ObservableObject {
 
     func resetTimer() {
         timer?.invalidate()
+
         DispatchQueue.main.async {
-               self.isAsleep = false
-           }
-
-        UIApplication.shared.isIdleTimerDisabled = true
-
-        let timeout: TimeInterval? = timeoutMinutes > 0 ? TimeInterval(timeoutMinutes * 60) : nil
-        
-        if let timeout = timeout {
+            self.isAsleep = false
             UIApplication.shared.isIdleTimerDisabled = true
-            timer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { [weak self] _ in
-                self?.enterSleepMode()
-            }
-        } else {
-            UIApplication.shared.isIdleTimerDisabled = false
-            timer = nil
+        }
+
+        let timeout = timeoutMinutes
+        guard timeout > 0 else {
+            DispatchQueue.main.async {
+                        UIApplication.shared.isIdleTimerDisabled = false
+                    }
+            return
+        }
+
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(timeout * 60), repeats: false) { [weak self] _ in
+            self?.enterSleepMode()
         }
     }
 
@@ -53,14 +58,17 @@ class InactivityManager: ObservableObject {
     func stop() {
         timer?.invalidate()
         timer = nil
-        UIApplication.shared.isIdleTimerDisabled = false
+        DispatchQueue.main.async {
+                    UIApplication.shared.isIdleTimerDisabled = false
+                }
         isAsleep = false
     }
 
-
     private func enterSleepMode() {
-        isAsleep = true
-        UIApplication.shared.isIdleTimerDisabled = false
+        DispatchQueue.main.async {
+            self.isAsleep = true
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
     }
 
     private func observeAppLifecycle() {
@@ -77,6 +85,14 @@ class InactivityManager: ObservableObject {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
+    }
+
+    private func observeTimeoutChanges() {
+        NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+            .sink { [weak self] _ in
+                self?.resetTimer()
+            }
+            .store(in: &cancellables)
     }
 
     @objc private func appWillResignActive() {

@@ -19,7 +19,7 @@ struct LookupOrderResultView: View {
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @State private var isLoadingMerch = true
     @State private var showAlert = false
-    @State private var errorMessages: String?
+    @State  var errorMessages: String? = nil
     let errorMessage: String?
     var order: OrdersNewApi?
     
@@ -122,7 +122,7 @@ struct LookupOrderResultView: View {
                     if !viewModel.isLoading {
                         List {
                             ForEach(seats.indices, id: \.self) { index in
-                                SeatCell(seat: $seats[index], showAlert: $showAlert, errorMessages: $errorMessages)
+                                SeatCell(seat: $seats[index], showAlert: $showAlert, lookupByOrderResultViewModel: viewModel)
                                     .listRowBackground(Color.white)
                             }
                         }.listStyle(.plain)
@@ -170,23 +170,31 @@ struct LookupOrderResultView: View {
                                 }
                             }) {
                                 Image("Popup_cross_btn")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .background(Color.clear)
+                                    .contentShape(Rectangle())
                             }
                         }
 
                         VStack {
-                            Text(errorMessages ?? "This ticket could not be found because the database has been downloaded by indresh")
+                            Text(viewModel.errorMessage ?? "This")
                                 .font(Font.custom("Verlag-Book", size: 18))
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.center)
                                 .padding()
+                        }.onChange(of: errorMessages) { _ in
+                            print(errorMessages, "new")
+                            
                         }
                     }
                     .padding(30)
                     .background(Color.FFCE_62)
                     .frame(width: geometry.size.width * 1)
-                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 60)
+                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top)
+                    
                 }
-            }.padding(.top, -60)
+            }.padding(.top, -30)
             .edgesIgnoringSafeArea(.all)
         }
         .edgesIgnoringSafeArea(.all)

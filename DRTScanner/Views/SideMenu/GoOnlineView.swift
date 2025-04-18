@@ -14,39 +14,42 @@ struct GoOnlineView: View {
     @State private var isUploading = true
     @State private var showSuccessMessage = false
     @State private var showErrorMessage = false
+    @State private var errorMessage = ""
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = true
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Go Online")
-                .font(Font.custom("Verlag-Bold", size: 30))
-                .foregroundColor(.customWhite)
-            
+            if !showErrorMessage {
+                Text("Go Online")
+                    .font(Font.custom("Verlag-Bold", size: 30))
+                    .foregroundColor(.customWhite)
+            }
             if isUploading {
                 Text("Uploading scanned tickets to the server...")
                     .font(Font.custom("Avenir-Light", size: 18))
                     .foregroundColor(.customWhite)
                     .multilineTextAlignment(.leading)
                     .padding()
-                
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(1.0)
-                    
-                    ProgressView(value: progress, total: 1.0)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                        .background(Color.customWhite)
-                        .foregroundColor(.customWhite)
-                        .padding()
-                        .animation(.easeInOut, value: progress)
-                        .onAppear {
-                            startUpload()
-                        }
-                    
-                    Text("\(Int(progress * 100))% Completed")
-                        .font(Font.custom("Verlag-Bold", size: 16))
-                        .foregroundColor(.white)
+                if !showErrorMessage {
+                    VStack {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.0)
+                        
+                        ProgressView(value: progress, total: 1.0)
+                            .progressViewStyle(LinearProgressViewStyle(tint: .white))
+                            .background(Color.customWhite)
+                            .foregroundColor(.customWhite)
+                            .padding()
+                            .animation(.easeInOut, value: progress)
+                            .onAppear {
+                                startUpload()
+                            }
+                        
+                        Text("\(Int(progress * 100))% Completed")
+                            .font(Font.custom("Verlag-Bold", size: 16))
+                            .foregroundColor(.white)
+                    }
                 }
                    
             } else if showSuccessMessage {
@@ -63,6 +66,7 @@ struct GoOnlineView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 3)
         .background(Color.FFCE_62)
+        .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }
     
         private func startUploadWithoutApi() {
@@ -91,16 +95,14 @@ struct GoOnlineView: View {
                 isOfflineMode = false
                 print(isOfflineMode)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                   
                     isPresented = false
                 }
             } else {
-                //showSuccessMessage = false
+                errorMessage = error?.localizedDescription ?? "Unknown error"
                 showErrorMessage = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                     isPresented = false
                 }
-                print("Upload failed: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
         
@@ -111,5 +113,36 @@ struct GoOnlineView: View {
                 timer.invalidate()
             }
         }
+    }
+}
+
+struct CustomAlertForError: View {
+    @Binding var isPresented: Bool
+    var message: String
+
+    var body: some View {
+        VStack(alignment: .center) {
+            HStack {
+                Spacer()
+                Text("Error")
+                    .font(Font.custom("Verlag-Bold", size: 30))
+                    .foregroundColor(.white)
+                    .padding(.bottom, 10)
+                    .padding(.top, 20)
+                Spacer()
+            }
+
+            VStack {
+                Text(message)
+                    .font(Font.custom("Verlag-Book", size: 18))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+        }
+        .padding()
+        .background(Color.FFCE_62)
+        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 5)
+        .opacity(isPresented ? 1 : 0)
     }
 }

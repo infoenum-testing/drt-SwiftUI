@@ -60,6 +60,8 @@
         <attribute name="color_1_text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="color_2_bg" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="color_2_text" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="color_neutral_bg" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="color_neutral_text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="logo_href" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Stats" representedClassName=".Stats" syncable="YES">

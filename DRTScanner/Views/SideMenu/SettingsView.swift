@@ -26,6 +26,10 @@ struct SettingsView: View {
                 Spacer()
                 Button(action: { isPresented = false }) {
                     Image("Popup_cross_btn")
+                        .resizable()
+                        .frame(width: 25, height: 25)
+                        .background(Color.clear)
+                        .contentShape(Rectangle())
                 }
             }.background(Color.FDB_54_E)
             .padding()

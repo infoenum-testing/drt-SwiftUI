@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import IQAPIClient
+import CoreData
 
 class LandingViewModel: ObservableObject {
     @Published var isLoading: Bool = false
@@ -19,7 +20,7 @@ class LandingViewModel: ObservableObject {
     @AppStorage("show") private var savedShow: String?
     @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     
-    func validateCode(_ code: String) async {
+    func validateCode(_ code: String, context: NSManagedObjectContext) async {
         DispatchQueue.main.async {
             self.isLoading = true
         }
@@ -34,6 +35,9 @@ class LandingViewModel: ObservableObject {
                 self.savedShow = result.showDt
                 self.isUserLoggedIn = true
                 self.showAlert = false
+            }
+            if let skinDict = result.skin {
+                DRTDatabaseManager.shared.insertOrUpdateSkin(skinModel: skinDict, context: context)
             }
         } catch {
             DispatchQueue.main.async {

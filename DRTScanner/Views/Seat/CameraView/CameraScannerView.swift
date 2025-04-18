@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct CameraScannerView: UIViewControllerRepresentable {
     var onScan: (String) -> Void
     var onControllerCreated: ((ScannerViewController) -> Void)?
@@ -17,7 +15,7 @@ struct CameraScannerView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> ScannerViewController {
         let controller = ScannerViewController()
         controller.onScan = onScan
-        controller.isScanningBinding = $isScanning // 👈 Binding passed here
+        controller.isScanningBinding = $isScanning
         onControllerCreated?(controller)
         return controller
     }

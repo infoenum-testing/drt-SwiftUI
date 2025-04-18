@@ -54,9 +54,12 @@ class SettingsViewModel: ObservableObject {
     }
     
     private func updateTextValues() {
-        deviceSleepTimeoutText = "\(deviceSleepTimeout):00 mins"
-        pauseScanTimeoutText = "\(pauseScanTimeout) sec"
-        duplicateScanSuppressionText = "\(duplicateScanSuppression) sec"
+//        deviceSleepTimeoutText = "\(deviceSleepTimeout):00 mins"
+//        pauseScanTimeoutText = "\(pauseScanTimeout) sec"
+//        duplicateScanSuppressionText = "\(duplicateScanSuppression) sec"
+        deviceSleepTimeoutText = deviceSleepTimeout == 0 ? "Off" : "\(deviceSleepTimeout):00 mins"
+        pauseScanTimeoutText = pauseScanTimeout == 0 ? "Off" : "\(pauseScanTimeout) sec"
+        duplicateScanSuppressionText = duplicateScanSuppression == 0 ? "Off" : "\(duplicateScanSuppression) sec"
         objectWillChange.send()
     }
 }

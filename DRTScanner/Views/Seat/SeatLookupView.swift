@@ -52,6 +52,7 @@ struct SeatLookupView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.clear)
                         .multilineTextAlignment(.leading)
+                        .disabled(true)
                         .onChange(of: selectedSection) { _ in seatText = seatDisplayText }
                         .onChange(of: selectedRow) { _ in seatText = seatDisplayText }
                         .onChange(of: selectedSeat) { _ in seatText = seatDisplayText }

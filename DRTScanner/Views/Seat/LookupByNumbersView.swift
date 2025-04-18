@@ -91,6 +91,7 @@ struct LookupByNumbersView: View {
                                     .font(Font.custom("Verlag-Bold", size: 40))
                                     .multilineTextAlignment(.leading)
                                     .foregroundColor(.customWhite)
+                                    .disabled(true)
                                     .padding(.all, 10)
                                     .padding(.leading)
                             }

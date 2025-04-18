@@ -9,11 +9,11 @@
 import SwiftUI
 
 struct MerchandiseScanView: View {
-    var itemName: String = "TSHIRT MEDIUM"
-    var purchased: Int = 3
-    var scanned: Int = 3
-    var orderName: String = "John Doe"
-    var orderNumber: String = "1234567"
+    var itemName: String? = nil
+    var purchased: Int? = nil
+    var scanned: Int? = nil
+    var orderName: String? = nil
+    var orderNumber: String? = nil
 
     var body: some View {
         VStack {
@@ -24,7 +24,7 @@ struct MerchandiseScanView: View {
                     .frame(width: 80, height: 80)
                     .foregroundColor(.white)
 
-                Text(itemName)
+                Text(itemName ?? "")
                     .font(Font.custom("Verlag-Black", size: 30))
                     .foregroundColor(.white)
 

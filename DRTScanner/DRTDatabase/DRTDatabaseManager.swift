@@ -1112,11 +1112,15 @@ class DRTDatabaseManager {
     // MARK: - Helper Functions
 
     private func deleteAllRecords() {
+        deleteAllTableRecords(forEntity: Scan.self)
+        deleteAllTableRecords(forEntity: Product.self)
         deleteAllTableRecords(forEntity: Seat.self)
         deleteAllTableRecords(forEntity: Order.self)
         deleteAllTableRecords(forEntity: Show.self)
-        deleteAllTableRecords(forEntity: Scan.self)
-        deleteAllTableRecords(forEntity: Product.self)
+    }
+    
+    func deleteSkin() {
+        deleteAllTableRecords(forEntity: Skin.self)
     }
 
     private func deleteAllTableRecords<T: NSManagedObject>(forEntity entity: T.Type) {
@@ -1205,47 +1209,6 @@ class DRTDatabaseManager {
         return seat
     }
     
-//    private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
-//        let product = Product(context: context)
-//        
-//        product.name = productAttributes["name"] as? String
-//        product.variantName = productAttributes["variantName"] as? String
-//        product.qrCode = productAttributes["qrCode"] as? String
-//        product.qty = productAttributes["qty"] as? Int64 ?? 0
-//        product.qty_scanned = productAttributes["qty_scanned"] as? Int64 ?? 0
-//        product.icon_src = productAttributes["icon_src"] as? String
-//        
-//        if let orderId = productAttributes["orderId"] as? Int {
-//            let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-//            fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
-//            
-//            do {
-//                let orders = try context.fetch(fetchRequest)
-//                if let order = orders.first {
-//                    product.order = order
-//                    product.order_id = Int64(orderId)
-//                    print("Linked order with ID \(orderId) to product.")
-//                } else {
-//                    print("No order found for orderId: \(orderId)")
-//                }
-//            } catch {
-//                print("❌ Error fetching order with orderId \(orderId): \(error.localizedDescription)")
-//            }
-//        }
-//        
-//        do {
-//            if context.hasChanges {
-//                try context.save()
-//                print("Context saved successfully.")
-//            }
-//        } catch {
-//            print("error saving context: \(error.localizedDescription)")
-//            return nil
-//        }
-//        
-//        return product
-//    }
-    
     private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
         let product = Product(context: context)
 
@@ -1268,6 +1231,27 @@ class DRTDatabaseManager {
         }
 
         return product
+    }
+    
+    func insertOrUpdateSkin(skinModel: SkinModel, context: NSManagedObjectContext) {
+        let fetchRequest: NSFetchRequest<Skin> = Skin.fetchRequest()
+
+        let skin = (try? context.fetch(fetchRequest).first) ?? Skin(context: context)
+        skin.color_1_bg = skinModel.color1Bg
+        skin.color_1_text = skinModel.color1Text
+        skin.color_2_bg = skinModel.color2Bg
+        skin.color_2_text = skinModel.color2Text
+        skin.color_neutral_bg = skinModel.colorNeutralBg
+        skin.color_neutral_text = skinModel.colorNeutralText
+        skin.logo_href = skinModel.logoHref
+        skin.background_href = skinModel.backgroundHref
+
+        do {
+            try context.save()
+            print("✅ Skin saved.")
+        } catch {
+            print("❌ Failed to save skin: \(error.localizedDescription)")
+        }
     }
 
     func fetchDataAndPostToServer(completionBlock: @escaping (Bool, Error?) -> Void) {

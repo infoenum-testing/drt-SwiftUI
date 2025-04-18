@@ -7,6 +7,7 @@
 
 import SwiftUI
 import IQAPIClient
+import Combine
 
 struct GoOfflineView: View {
     @State private var progress: CGFloat = 0.0
@@ -16,11 +17,10 @@ struct GoOfflineView: View {
     
 #if DEBUG
     @State private var name = "indresh"
-    
 #else
     @State private var name = ""
-    
 #endif
+    
     @State private var isSyncing = false
     @Binding var isPresented: Bool
     @Binding var showOfflineAlert: Bool
@@ -29,6 +29,7 @@ struct GoOfflineView: View {
     @AppStorage("showCode") private var savedShowCode: String?
     @FocusState private var isNameFieldFocused: Bool
     @State private var keyboardHeight: CGFloat = 0
+    @ObservedObject var viewModel: LookupByOrderResultViewModel
     
     var isContinueDisabled: Bool {
         name.count < 5 || isSyncing
@@ -44,15 +45,22 @@ struct GoOfflineView: View {
                     .padding(.trailing, -50)
                 Spacer()
                 Button(action: { isPresented = false }) {
-                    Image("Popup_cross_btn").padding()
+                    Image("Popup_cross_btn")
+                        .resizable()
+                        .frame(width: 25, height: 25)
+                        .background(Color.clear)
+                        .contentShape(Rectangle())
+                        .padding()
                 }
                 .disabled(isSyncing)
-            }
+            }.padding()
             
             Text("By going offline, the database will be downloaded to this device, and nobody else will be able to scan tickets for this show until I go back online. When I return online, the scanned tickets will be uploaded back to the server.\n\nBy signing my name, I understand and agree to the above:")
                 .font(Font.custom("Verlag-Book", size: 18))
                 .foregroundColor(Color.customWhite)
                 .multilineTextAlignment(.center)
+                .padding()
+            
             HStack {
                 TextField("Type your name here", text: $name)
                     .padding(5)
@@ -62,14 +70,9 @@ struct GoOfflineView: View {
                     .multilineTextAlignment(.center)
                     .disabled(isSyncing)
                     .focused($isNameFieldFocused)
-            }.frame(alignment: .center)
-//                .onAppear {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//                        isNameFieldFocused = true
-//                    }
-//                    startKeyboardObserver()
-//                }
-
+            }.padding()
+            .frame(alignment: .center)
+            
             if isSyncing {
                 VStack {
                     ProgressView()
@@ -109,11 +112,19 @@ struct GoOfflineView: View {
                 }
                 .disabled(isSyncing)
             }
-        }.frame(alignment: .top)
-            .padding([.leading, .trailing], 10)
-            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 2)
-            .edgesIgnoringSafeArea(.bottom)
-            .background(Color.FFCE_62)
+        }
+        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 2 + keyboardHeight)
+        .padding(.bottom, keyboardHeight)
+        .background(Color.FFCE_62)
+        .edgesIgnoringSafeArea(.bottom)
+        .onReceive(Publishers.keyboardHeight) { height in
+            withAnimation {
+                self.keyboardHeight = height
+            }
+        }
+        .onAppear {
+          //  isNameFieldFocused = true
+        }
     }
     
     private func goOffline() {
@@ -139,8 +150,8 @@ struct GoOfflineView: View {
                     DispatchQueue.main.async {
                         isSyncing = false
                         isPresented = false
-                        timer.invalidate()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            viewModel.errorMessage = responseDict["message"] as? String ?? "There was an issue going offline. Please try again."
                             showOfflineAlert = true
                         }
                     }
@@ -205,15 +216,19 @@ struct GoOfflineView: View {
             }
         }
     }
-    private func startKeyboardObserver() {
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
-            if let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                self.keyboardHeight = frame.height
-            }
-        }
+}
 
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-            self.keyboardHeight = 0
-        }
+extension Publishers {
+    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
+        let willShow = NotificationCenter.default
+            .publisher(for: UIResponder.keyboardWillShowNotification)
+            .map { ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0 }
+
+        let willHide = NotificationCenter.default
+            .publisher(for: UIResponder.keyboardWillHideNotification)
+            .map { _ in CGFloat(0) }
+
+        return MergeMany(willShow, willHide)
+            .eraseToAnyPublisher()
     }
 }

@@ -60,6 +60,7 @@ struct LookupByNameView: View {
                     .multilineTextAlignment(.leading)
                     .foregroundColor(Color.customWhite)
                     .padding([.leading, .trailing, .top], 10)
+                    .disabled(true)
                 
                 Button(action: {
                     if !inputText.isEmpty {

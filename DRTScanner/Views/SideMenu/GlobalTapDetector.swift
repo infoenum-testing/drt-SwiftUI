@@ -7,52 +7,71 @@
 
 import SwiftUI
 
-struct GlobalTapDetector: ViewModifier {
+struct GlobalTapGestureModifier: ViewModifier {
     var disabled: Bool = false
     
     func body(content: Content) -> some View {
         content
-            .background(
-                TapForwarder(disabled: disabled)
-            )
+            .background(GlobalTapCatcher(disabled: disabled))
     }
     
-    struct TapForwarder: UIViewRepresentable {
+    struct GlobalTapCatcher: UIViewControllerRepresentable {
         var disabled: Bool
         
-        func makeUIView(context: Context) -> TapDetectingView {
-            let view = TapDetectingView()
-            view.disabled = disabled
-            view.onTap = {
-                if !disabled {
-                    print("✅ Global tap detected")
-                    InactivityManager.shared.resetTimer()
+        func makeUIViewController(context: Context) -> UIViewController {
+            let controller = UIViewController()
+            DispatchQueue.main.async {
+                if let window = controller.view.window {
+                    let tapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap))
+                    tapRecognizer.cancelsTouchesInView = false
+                    tapRecognizer.delegate = context.coordinator
+                    window.addGestureRecognizer(tapRecognizer)
                 }
             }
-            return view
+            return controller
         }
         
-        func updateUIView(_ uiView: TapDetectingView, context: Context) {
-            uiView.disabled = disabled
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+            context.coordinator.disabled = disabled
         }
-    }
-    
-    class TapDetectingView: UIView {
-        var onTap: (() -> Void)?
-        var disabled: Bool = false
         
-        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-            _ = super.hitTest(point, with: event)
-            if !disabled {
-                onTap?()
+        func makeCoordinator() -> Coordinator {
+            Coordinator(disabled: disabled)
+        }
+        
+        class Coordinator: NSObject, UIGestureRecognizerDelegate {
+            var disabled: Bool
+            
+            init(disabled: Bool) {
+                self.disabled = disabled
             }
-            return nil
+            
+            @objc func handleTap() {
+                if !disabled {
+                    print("✅ Global tap detected via UIWindow (handleTap)")
+                    InactivityManager.shared.resetTimer()
+                } else {
+                    print("⚠️ Tap ignored because detection is disabled")
+                }
+            }
+            
+            func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+                let touchedView = touch.view
+                print("👆 Touch received on: \(String(describing: touchedView))")
+                
+                return true
+            }
+            
+            func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+                print("🤝 Allowing simultaneous gesture recognition")
+                return true
+            }
         }
     }
 }
 
 extension View {
     func detectGlobalTaps(disabled: Bool = false) -> some View {
-        self.modifier(GlobalTapDetector(disabled: disabled))
+        self.modifier(GlobalTapGestureModifier(disabled: disabled))
     }
 }

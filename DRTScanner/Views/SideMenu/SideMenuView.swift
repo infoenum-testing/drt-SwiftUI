@@ -35,6 +35,10 @@ struct SideMenuView: View {
                             Spacer()
                             Button(action: { isPresented = false }) {
                                 Image("Popup_cross_btn")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .background(Color.clear)
+                                    .contentShape(Rectangle())
                                     .padding()
                             }
                             .padding(.top, 30)
@@ -51,7 +55,7 @@ struct SideMenuView: View {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
-                                isPresented = false
+                               // isPresented = false
                             }
                         }
                         if !isMerchandise {

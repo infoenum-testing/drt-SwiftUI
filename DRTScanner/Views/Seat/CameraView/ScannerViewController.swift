@@ -26,6 +26,9 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     private(set) var isScanning = false
 
     private var boundingBoxLayer = CAShapeLayer()
+    private var flashAutoOffTimer: Timer?
+    private var isFlashOn = false
+    private var lastScanTime: Date = .distantPast
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +48,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // MARK: - Camera Setup
 
-    private func setupCamera() {
+    func setupCamera() {
         let session = AVCaptureSession()
         session.sessionPreset = .hd1280x720
 
@@ -88,12 +91,11 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         captureSession = session
         DispatchQueue.global(qos: .userInitiated).async {
-                session.startRunning()
-                DispatchQueue.main.async {
-                    self.isScanning = true
-                    print("📷 Capture session started")
-                }
+            session.startRunning()
+            DispatchQueue.main.async {
+                self.isScanning = true
             }
+        }
     }
 
     // MARK: - Flash Control
@@ -104,13 +106,18 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     }
 
     func turnFlashOn() {
-        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
+        guard !isFlashOn,
+              let device = AVCaptureDevice.default(for: .video),
+              device.hasTorch else { return }
+
         DispatchQueue.main.async {
             do {
                 try device.lockForConfiguration()
                 try device.setTorchModeOn(level: 1.0)
                 device.unlockForConfiguration()
+                self.isFlashOn = true
                 print("💡 Flash turned ON")
+                self.startFlashAutoOffTimer()
             } catch {
                 print("⚠️ Flash On Error: \(error)")
             }
@@ -118,16 +125,30 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     }
 
     func turnFlashOff() {
-        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
+        guard isFlashOn,
+              let device = AVCaptureDevice.default(for: .video),
+              device.hasTorch else { return }
+
         DispatchQueue.main.async {
             do {
                 try device.lockForConfiguration()
                 device.torchMode = .off
                 device.unlockForConfiguration()
+                self.isFlashOn = false
                 print("💡 Flash turned OFF")
+                self.flashAutoOffTimer?.invalidate()
+                self.flashAutoOffTimer = nil
             } catch {
                 print("⚠️ Flash Off Error: \(error)")
             }
+        }
+    }
+
+    private func startFlashAutoOffTimer() {
+        flashAutoOffTimer?.invalidate()
+
+        flashAutoOffTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
+            self?.turnFlashOff()
         }
     }
 
@@ -179,10 +200,19 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     private func drawBoundingBox(for observation: VNBarcodeObservation) {
         guard let previewLayer = self.previewLayer else { return }
 
-        let boundingBox = observation.boundingBox
-        let convertedRect = previewLayer.layerRectConverted(fromMetadataOutputRect: boundingBox)
+        var rect = observation.boundingBox
+        rect.origin.y = 1 - rect.origin.y - rect.size.height
+
+        let convertedRect = previewLayer.layerRectConverted(fromMetadataOutputRect: rect)
 
         let path = UIBezierPath(rect: convertedRect)
+
+        let animation = CABasicAnimation(keyPath: "path")
+        animation.fromValue = boundingBoxLayer.path
+        animation.toValue = path.cgPath
+        animation.duration = 0.15
+        boundingBoxLayer.add(animation, forKey: "pathAnimation")
+
         boundingBoxLayer.path = path.cgPath
         boundingBoxLayer.isHidden = false
     }
@@ -194,6 +224,10 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         guard !didJustScan else { return }
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
+        let now = Date()
+        guard now.timeIntervalSince(lastScanTime) > 0.5 else { return }
+        lastScanTime = now
+
         let request = VNDetectBarcodesRequest { request, error in
             guard error == nil,
                   let results = request.results as? [VNBarcodeObservation],
@@ -203,14 +237,21 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             DispatchQueue.main.async {
                 self.drawBoundingBox(for: bestResult)
 
+                if self.autoEnableFlashTimeout {
+                    self.turnFlashOn()
+                }
+
                 self.didJustScan = true
                 self.isScanningBinding?.wrappedValue = false
                 self.onScan?(payload)
 
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.boundingBoxLayer.isHidden = true
+                }
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.didJustScan = false
                     self.isScanningBinding?.wrappedValue = true
-                    self.boundingBoxLayer.isHidden = true
                 }
             }
         }
@@ -220,9 +261,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     }
 }
 
-
-
-import Foundation
+// MARK: - Notification Extension
 
 extension Notification.Name {
     static let enableAutoFlash = Notification.Name("enableAutoFlash")

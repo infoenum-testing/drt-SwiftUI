@@ -18,7 +18,7 @@ struct LandingView: View {
     @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("show") private var savedShow: String = ""
-    
+    @Environment(\.managedObjectContext) private var context
     @State private var animateLogo = false
     @State private var animateButtons = false
     
@@ -170,6 +170,7 @@ struct LandingView: View {
                         .multilineTextAlignment(.center)
                         .padding(.top, 20)
                         .padding(.horizontal, 10)
+                        .padding(.bottom)
                 }
                 // .padding()
                 .onAppear {
@@ -193,7 +194,11 @@ struct LandingView: View {
                                     showLogoutAlert = false
                                 }
                             }) {
-                                Image("Popup_cross_btn").frame(width: 30, height: 30)
+                                Image("Popup_cross_btn")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .background(Color.clear)
+                                    .contentShape(Rectangle())
                             }.padding(.trailing)
                         }
                         
@@ -215,6 +220,7 @@ struct LandingView: View {
                                         showCode = ""
                                         viewModel.isValidCode = false
                                         showLogoutAlert = false
+                                        DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }) {
                                     Text("Logout")
@@ -244,12 +250,12 @@ struct LandingView: View {
                     ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
                         showCode = code
                         Task {
-                            await viewModel.validateCode(code)
+                            await viewModel.validateCode(code, context: context)
                         }
                     })
                     .background(Color.clear)
-                    .padding([.trailing, .leading], 50)
-                }
+                  //  .padding([.trailing, .leading], 50)
+                }.edgesIgnoringSafeArea(.bottom)
                 
                 .customAlert(isPresented: $viewModel.showAlert) {
                     if !viewModel.isValidCode {
@@ -269,7 +275,12 @@ struct LandingView: View {
                                         viewModel.showAlert = false
                                     }
                                 }) {
-                                    Image("Popup_cross_btn").padding(.trailing, 20)
+                                    Image("Popup_cross_btn")
+                                        .resizable()
+                                        .frame(width: 25, height: 25)
+                                        .background(Color.clear)
+                                        .contentShape(Rectangle())
+                                        .padding(.trailing, 20)
                                 }
                             }
                             
@@ -289,6 +300,7 @@ struct LandingView: View {
                     .transition(.move(edge: .top))
                     .edgesIgnoringSafeArea(.all)
                     .animation(.easeInOut(duration: 0.3), value: showSeatView)
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }.frame(width: UIScreen.main.bounds.width)
     }

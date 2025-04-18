@@ -33,15 +33,19 @@ struct SeatHomeView: View {
     @State private var isTicketValid: Bool = false
     @State private var isPreScanned: Bool = false
     @State private var isInvalidTicket: Bool = false
+    @State private var isInvalidSeatTicket: Bool = false
+    @State private var isInvalidMerchTicket: Bool = false
     @State private var orderName: String = ""
     @State private var orderNumber: String = ""
     @State private var orderDateScanned: String = ""
+    @State private var errorMessage : String = ""
     @State private var isGoldenTicket: Bool = false
     @State private var isMerchTicketValid: Bool = false
     @State private var isMerchPreScanned: Bool = false
     @State private var isFullScreen: Bool = false
     @State private var isScanningCell = true
     @StateObject private var scnanerReset = ScannerViewModel()
+    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     
     private var dynamicCellHeight: CGFloat {
            let screenHeight = UIScreen.main.bounds.height
@@ -60,18 +64,18 @@ struct SeatHomeView: View {
                         .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                 }
                 VStack {
-                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell, isGoldenTicket: $isGoldenTicket, scannerViewModel: scnanerReset)
+                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
                                             
                     ScrollView {
-                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid  {
+                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket {
                             VStack(spacing: 1) {
                                 CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     seatHomeViewModel.selectedLookupType = .orderNumber
                                     isScanningCell = false
-                                 //   scnanerReset.disableFlash()
+                                    //   scnanerReset.disableFlash()
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlert = true
                                     }
@@ -122,14 +126,21 @@ struct SeatHomeView: View {
                             } else if isInvalidTicket {
                                 InvalidTicketView()
                             }
-                            else if isMerchandise {
-                                if isMerchPreScanned {
-                                    PreviousMerchandiseScanView()
-                                }
-                                if isMerchTicketValid {
-                                    MerchandiseScanView()
-                                }
+                            //                            else if isMerchandise {
+                            if isMerchPreScanned {
+                                PreviousMerchandiseScanView()
                             }
+                            if isMerchTicketValid {
+                                MerchandiseScanView()
+                            }
+                            if isInvalidMerchTicket {
+                                InvalidMerchandiseTicketView()
+                            }
+                            
+                            if isInvalidSeatTicket {
+                                InvalidSeatTicketView()
+                            }
+                            //                            }
                         }
                     }
                     .opacity(!isFullScreen ? 1 : 0)
@@ -144,31 +155,26 @@ struct SeatHomeView: View {
                             Image("Logo")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 500, height: 60)
-                                .padding(.leading)
+                                .frame(width: 500, height: 60, alignment: .center)
+                                .padding(.leading, 30)
                                 .padding(.top, 10)
                             
                             Text(savedShow)
                                 .font(Font.custom("Verlag-Bold", size: 20))
                                 .foregroundColor(Color.white)
-                                .padding(.leading)
-                            //    .padding(.top)
+                                .padding(.leading, 30)
                         }
                     }
-//                    ToolbarItem(placement: .topBarLeading) {
-//                        Button(action: {
-//                            withAnimation(.easeInOut(duration: 0.3)) {
-//                                showAlert = true
-//                            }
-//                        }) {
-//                            Image("Popup_cross_btn")
-//                        }
-//                    }
+                    
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(action: {
                             isSideMenuPresented.toggle()
                         }) {
                             Image("menu_triger")
+                                .resizable()
+                                .frame(width: 25, height: 20)
+                                .background(Color.clear)
+                                .contentShape(Rectangle())
                         }
                     }
                 }
@@ -218,7 +224,7 @@ struct SeatHomeView: View {
         }
         .customAlert(isPresented: $showGoOfflineView) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert)
+                GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
             }
         }
         .onChange(of: showGoOfflineView) { newValue in
@@ -261,6 +267,10 @@ struct SeatHomeView: View {
                         }
                     }) {
                         Image("Popup_cross_btn")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
                     }
                 }
                 
@@ -287,6 +297,7 @@ struct SeatHomeView: View {
                                         savedShowId = nil
                                         showAlert = false
                                         showSeatView = false
+                                        DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }
                             Spacer()
@@ -311,7 +322,6 @@ struct SeatHomeView: View {
         .customAlert(isPresented: $showOfflineAlert) {
             VStack(alignment: .center) {
                 HStack {
-                    
                     Spacer()
                     Text("Error")
                         .padding(.leading, 20)
@@ -327,11 +337,15 @@ struct SeatHomeView: View {
                         }
                     }) {
                         Image("Popup_cross_btn")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
                     }
                 }
                 
                 VStack {
-                    Text("There was an issue going offline. Please try again.")
+                    Text(viewModel.errorMessage ?? "")
                         .font(Font.custom("Verlag-Book", size: 18))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -344,10 +358,8 @@ struct SeatHomeView: View {
         .customAlert(isPresented: $showOfflineSuccessAlert) {
             VStack(alignment: .center) {
                 HStack {
-                    
                     Spacer()
                     Text("Success")
-                        .padding(.leading, 20)
                         .font(Font.custom("Verlag-Bold", size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)

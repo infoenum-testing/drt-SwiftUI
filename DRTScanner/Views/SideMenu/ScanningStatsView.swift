@@ -35,6 +35,10 @@ struct ScanningStatsView: View {
                     }
                 }) {
                     Image("Popup_cross_btn")
+                        .resizable()
+                        .frame(width: 25, height: 25)
+                        .background(Color.clear)
+                        .contentShape(Rectangle())
                         .padding([.bottom, .top])
                 }
             }

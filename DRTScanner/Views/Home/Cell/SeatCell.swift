@@ -17,10 +17,11 @@ struct SeatCell: View {
     @AppStorage("showCode") private var savedShowCode: String?
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showAlert: Bool
-    @Binding var errorMessages: String?
-    
-    init(seat: Binding<SeatModel>, showAlert: Binding<Bool>, errorMessages: Binding<String?>) {
+    @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
+    init(seat: Binding<SeatModel>, showAlert: Binding<Bool>, lookupByOrderResultViewModel: LookupByOrderResultViewModel) {
         self._seat = seat
+        self._showAlert = showAlert
+        self.lookupByOrderResultViewModel = lookupByOrderResultViewModel
         self._isScanned = State(initialValue: seat.wrappedValue.scannedTime != nil)
 
         if let scannedDate = seat.wrappedValue.scannedTime {
@@ -30,8 +31,6 @@ struct SeatCell: View {
         } else {
             self._scannedTime = State(initialValue: nil)
         }
-        self._showAlert = showAlert
-                self._errorMessages = errorMessages
     }
 
     
@@ -64,7 +63,7 @@ struct SeatCell: View {
                     switch result {
                     case .success(let jsonResponse):
                         if let valid = jsonResponse["valid"] as? Bool, !valid {
-                            errorMessages = jsonResponse["message"] as? String ?? "Unknown error"
+                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? "Unknown error"
                             showAlert = true
                         } else {
                             let currentDate = Date()
@@ -212,6 +211,7 @@ struct SeatCell: View {
         .onAppear {
             loadScannedStatus(for: seat)
         }
+      
     }
 }
 struct ScanStatusResponse: Codable {
