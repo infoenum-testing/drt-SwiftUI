@@ -69,7 +69,13 @@ class DRTDatabaseManager {
             }
 
             for productDict in products {
-                _ = self.insertProductRecord(productAttributes: productDict, context: context)
+                if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
+                    product.show = show
+                    
+                    if let orderId = productDict["orderId"] as? NSNumber, let linkedOrder = orderDict[orderId] {
+                        product.order = linkedOrder
+                    }
+                }
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
             }

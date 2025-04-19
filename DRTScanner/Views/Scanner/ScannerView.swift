@@ -296,7 +296,7 @@ struct ScannerView: View {
                         .padding(.bottom, -30)
                 }
                 
-                if isStopScanVisible && !isFullScreen {
+                if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
                     Color.FFCE_62
                         .opacity(1)
                         .frame(height: scanViewHeight + 30)
@@ -466,7 +466,7 @@ struct ScannerView: View {
     }
     
     private var isAnyOverlayDisplayed: Bool {
-        return (isFullScreen && (isTicketValid || isInvalidTicket || isMerchTicketValid || isPreScanned || isMerchPreScanned))
+        return (isFullScreen && (isTicketValid || isInvalidTicket || isMerchTicketValid || isPreScanned || isMerchPreScanned || isInvalidSeatTicket || isInvalidMerchTicket))
     }
     
     private func resetScanner() {
