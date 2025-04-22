@@ -60,10 +60,10 @@ struct LookupOrderResultView: View {
                     if viewModel.buyerName != "No orders found" {
                     HStack(alignment: .center) {
                         Text("\(StringConstants.Common.Order) \(order?.orderId ?? 0)")
-                            .font(Font.custom("Verlag-Bold", size: 15))
+                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
                             .foregroundColor(Color.customWhite)
                         Text("CC \(order?.cc ?? "")")
-                            .font(Font.custom("Verlag-Bold", size: 15))
+                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
                             .foregroundColor(Color.customWhite)
                     }
                 }
@@ -159,7 +159,7 @@ struct LookupOrderResultView: View {
                             Spacer()
                             Text("Error")
                                 .padding(.leading, 20)
-                                .font(Font.custom("Verlag-Bold", size: 30))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                                 .foregroundColor(.white)
                                 .padding(.bottom, 10)
 
@@ -169,7 +169,7 @@ struct LookupOrderResultView: View {
                                     showAlert = false
                                 }
                             }) {
-                                Image("Popup_cross_btn")
+                                Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25, height: 25)
                                     .background(Color.clear)

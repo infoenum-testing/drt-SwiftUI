@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ShowCodeView: View {
-    @State private var showCode: String = "36060-5E56"
+    @State private var showCode: String = ""
     @Binding var showSheet: Bool
     var onCodeEntered: (String) -> Void
     @Environment(\.dismiss) var dismiss
@@ -56,7 +56,7 @@ struct ShowCodeView: View {
                                     isScannerVisible = false
                                 }
                             }) {
-                                Image("Popup_cross_btn")
+                                Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25, height: 25)
                                     .background(Color.clear)
@@ -75,13 +75,20 @@ struct ShowCodeView: View {
                         .edgesIgnoringSafeArea(.all)
 
                     VStack(spacing: 20) {
+                            HStack {
+                                Image("Logo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 500, height: 60, alignment: .center)
+                                    .padding(.top, 10)
+                            }
                         HStack {
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showSheet = false
                                 }
                             }) {
-                                Image("Popup_cross_btn")
+                                Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25, height: 25)
                                     .background(Color.clear)
@@ -89,14 +96,22 @@ struct ShowCodeView: View {
                             }
 
                             Spacer()
-
-                            TextField(StringConstants.Common.showCode, text: $showCode)
-                                .font(Font.custom("Verlag-Bold", size: 42))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.white)
-                                .background(Color.clear)
-                                .disabled(true)
-
+                            ZStack(alignment: .center) {
+                                if !showCode.isEmpty {
+//                                    Text(StringConstants.Common.showCode)
+//                                        .font(.caption)
+//                                        .foregroundColor(.gray)
+//                                        .padding(.leading)
+//                                        .offset(y: -25)
+//                                        .animation(.easeInOut, value: showCode.isEmpty)
+                                }
+                                TextField(StringConstants.Common.showCode, text: $showCode)
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 42))
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.white)
+                                    .background(Color.clear)
+                                    .disabled(true)
+                            }
                             Button(action: {
                                 if !showCode.isEmpty {
                                     showCode.removeLast()
@@ -108,7 +123,7 @@ struct ShowCodeView: View {
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                             }
-                        }.padding(.top, 20)
+                        }
                         .padding(.horizontal, 20)
 
                         HStack {
@@ -125,7 +140,7 @@ struct ShowCodeView: View {
                         }
                         .padding(.horizontal, 15)
 
-                        Grid(alignment: .center, horizontalSpacing: 0, verticalSpacing: 0.4) {
+                        Grid(alignment: .center, horizontalSpacing: 0, verticalSpacing: 0.5) {
                             ForEach(buttons, id: \.self) { row in
                                 GridRow {
                                     ForEach(row, id: \.self) { button in
@@ -139,7 +154,8 @@ struct ShowCodeView: View {
                                             }
                                             
                                             Text(button)
-                                                .font(Font.custom("Verlag-Bold", size: 50))
+                                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 50))
+                                                .scaleEffect(button.range(of: #"^[A-Z]$"#, options: .regularExpression) != nil ? 0.9 : 1.1)
                                                 .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
                                                 .frame(maxWidth: .infinity)
                                         }

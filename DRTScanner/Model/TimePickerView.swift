@@ -31,7 +31,7 @@ struct TimePickerView: View {
             Picker("Select Time", selection: $selectedValue) {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     Text(viewModel.getTimeOptions(for: index)[idx])
-                        .font(Font.custom("Verlag-Bold", size: 30))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                         .foregroundColor(.white)
                         .padding(.vertical, 10)
                         .padding(.horizontal, 10)
@@ -48,7 +48,7 @@ struct TimePickerView: View {
                     selectedIndex = nil
                 }) {
                     Text("Save")
-                        .font(Font.custom("Verlag-Bold", size: 22))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                         .foregroundColor(.customGreen)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -59,7 +59,7 @@ struct TimePickerView: View {
                     selectedIndex = nil
                 }) {
                     Text("Cancel")
-                        .font(Font.custom("Verlag-Bold", size: 22))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                         .foregroundColor(.customGreen)
                         .frame(maxWidth: .infinity)
                         .padding()

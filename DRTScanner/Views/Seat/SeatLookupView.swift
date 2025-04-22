@@ -45,19 +45,20 @@ struct SeatLookupView: View {
                         Image("left_side_arrow")
                     }.padding(.leading, 20)
                     
-                    TextField("Select Seat", text: $seatText)
-                        .font(.custom("Verlag-Bold", size: 42))
+                    //TextField("", text: $seatText)
+                    TextField("", text: $seatText, prompt: Text("Select Seat").font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30)))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 42))
                         .foregroundColor(.customWhite)
-                        .padding(.leading, 10)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.clear)
-                        .multilineTextAlignment(.leading)
+                        .multilineTextAlignment(.center)
+                        .padding(.leading, -50)
                         .disabled(true)
                         .onChange(of: selectedSection) { _ in seatText = seatDisplayText }
                         .onChange(of: selectedRow) { _ in seatText = seatDisplayText }
                         .onChange(of: selectedSeat) { _ in seatText = seatDisplayText }
                 }
-                .frame(height: geometry.size.height * 0.1)
+                .frame(maxWidth: .infinity, maxHeight: 90)
                 .background(Color.FFCE_62)
                 
                 TableView(
@@ -82,7 +83,7 @@ struct SeatLookupView: View {
                                 .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                         } else {
                             Text(StringConstants.Common.continueText)
-                                .font(.custom("Verlag-Bold", size: 36))
+                                .font(.custom(StringConstants.DRTFont.verlagBold, size: 36))
                                 .foregroundColor(.customWhite)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .background(Color.FFCE_62)

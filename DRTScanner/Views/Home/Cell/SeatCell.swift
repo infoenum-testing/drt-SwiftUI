@@ -159,34 +159,34 @@ struct SeatCell: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(isScanned ? "PREVIOUSLY SCANNED AT \(scannedTime ?? "")" : "NOT YET SCANNED")
-                    .font(Font.custom("Verlag-Bold", size: 18))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
                     .foregroundColor(Color.customGreen)
             }
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SECT:")
-                        .font(Font.custom("Verlag-Bold", size: 10))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.section)")
-                        .font(Font.custom("Verlag-Bold", size: 15))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("ROW:")
-                        .font(Font.custom("Verlag-Bold", size: 10))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.row)")
-                        .font(Font.custom("Verlag-Bold", size: 15))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SEAT:")
-                        .font(Font.custom("Verlag-Bold", size: 10))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.seat)")
-                        .font(Font.custom("Verlag-Bold", size: 15))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 

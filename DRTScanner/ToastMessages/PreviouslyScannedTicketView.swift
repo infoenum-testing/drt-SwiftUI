@@ -27,11 +27,11 @@ struct PreviouslyScannedTicketView: View {
                     .foregroundColor(.white)
                 
                 Text("Order: \(orderNumber)")
-                    .font(Font.custom("Verlag-Bold", size: 26))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                     .foregroundColor(.white)
                 
                 Text("Previously Scanned @\n\(scannedTime)")
-                    .font(Font.custom("Verlag-Bold", size: 26))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
             }

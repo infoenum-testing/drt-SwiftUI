@@ -43,6 +43,8 @@ struct StringConstants {
         static let noOrderFound = "NO ORDER FOUND"
         static let error = "Error"
         static let ok = "OK"
+        static let yes = "Yes"
+        static let no = "No"
         static let emailCannotEmpty = "Email cannot be empty"
         static let invalidEmail = "Invalid email address"
         static let success = "Success"
@@ -129,6 +131,11 @@ struct StringConstants {
         static let oidShowId = "(oid == %@) AND (show.show_id == %@)"
     }
     
+    struct DRTImages {
+        static let backgound = "background"
+        static let crossImage = "Popup_cross_btn"
+    }
+    
     struct Formate {
         static let oid = "oid == %@"
         static let showId = "show_id == %@"
@@ -144,7 +151,7 @@ struct StringConstants {
     
     struct SeatHomeView {
         static let orderNumberIcon = "order_number_icon"
-        static let lookUpBy = "Look UP By"
+        static let lookUpBy = "Look Up By"
         static let orderNumber = "ORDER NUMBER"
         static let rightSideArrow = "right_side_arrow"
         static let lastNameIcon = "last_name_icon"
@@ -162,11 +169,19 @@ struct StringConstants {
     
     struct SideMenuView {
         static let goOffline = "GO OFFLINE"
+        static let goOnline = "GO ONLINE"
+        static let scanTicket = "SCAN TICKETS"
+        static let ticket = "tickets?"
+        static let merchandise = "merchandise?"
+        static let scanMerchandise = "SCAN MERCHANDISE"
         static let scaningStats = "SCANNING STATS"
         static let about = "ABOUT"
-        static let stopScanning = "STOP SCANNING"
+        static let logout = "LOG OUT"
         static let drtWebsite = "DRT WEBSITE"
         static let setting = "SETTINGS"
+        static let openDrtWebsiteTitle = "Open DRT Website?"
+        static let openDrtWebsiteMessage = "Do you want to visit the DRT website?"
+        static let drtWebsiteURL = "https://www.drtwebsite.com"
     }
     
     // MARK: - API Error -
@@ -185,4 +200,8 @@ struct StringConstants {
             static let continueText = "CONTINUE"
             static let cancelText = "CANCEL"
         }
+    
+    struct DRTFont {
+        static let verlagBold = "Verlag-Bold"
+    }
 }

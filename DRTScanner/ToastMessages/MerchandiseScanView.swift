@@ -35,7 +35,7 @@ struct MerchandiseScanView: View {
                     Text("Order Number : \(orderNumber)")
                 }
                 .foregroundColor(.white)
-                .font(Font.custom("Verlag-Bold", size: 26))
+                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)

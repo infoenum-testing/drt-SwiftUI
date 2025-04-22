@@ -20,12 +20,12 @@ struct SettingsView: View {
             HStack {
                 Spacer()
                 Text("Settings")
-                    .font(Font.custom("Verlag-Bold", size: 24))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 24))
                     .padding(.leading, 20)
                     .foregroundColor(.white)
                 Spacer()
                 Button(action: { isPresented = false }) {
-                    Image("Popup_cross_btn")
+                    Image(StringConstants.DRTImages.crossImage)
                         .resizable()
                         .frame(width: 25, height: 25)
                         .background(Color.clear)
@@ -68,7 +68,7 @@ struct SettingsView: View {
             HStack {
                 Text(setting.title)
                     .foregroundColor(.white)
-                    .font(Font.custom("Verlag-Bold", size: 16))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
@@ -80,7 +80,7 @@ struct SettingsView: View {
                     Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
                         Text(setting.value ?? "")
                             .foregroundColor(.white)
-                            .font(Font.custom("Verlag-Bold", size: 16))
+                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
                             .padding(8)
                     }
                 }
@@ -91,14 +91,21 @@ struct SettingsView: View {
     }
 
     private var settingItems: [SettingItem] {
-        [
+        var items: [SettingItem] = [
             SettingItem(title: "SOUND", toggleBinding: $viewModel.shouldPlayBeep),
             SettingItem(title: "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
             SettingItem(title: "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
             SettingItem(title: "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
-            SettingItem(title: "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText),
-            SettingItem(title: "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats),
-            SettingItem(title: "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout)
+            SettingItem(title: "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText)
         ]
+        
+        if !isMerchandise {
+            items.append(SettingItem(title: "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats))
+        }
+
+        items.append(SettingItem(title: "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout))
+        
+        return items
     }
+
 }

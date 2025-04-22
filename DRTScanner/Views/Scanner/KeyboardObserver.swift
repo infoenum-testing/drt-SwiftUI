@@ -15,12 +15,14 @@ class KeyboardObserver: ObservableObject {
 
     init() {
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.isKeyboardVisible = true
             }
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.isKeyboardVisible = false
             }

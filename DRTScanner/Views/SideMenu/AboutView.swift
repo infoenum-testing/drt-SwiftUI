@@ -10,7 +10,8 @@ import SwiftUI
 
 struct AboutView: View {
     @Binding var isPresented: Bool
-    
+    @State private var showWebsiteAlert = false
+    static let urlString = "www.drttix.com"
     var body: some View {
         ZStack {
             Image("background")
@@ -26,7 +27,7 @@ struct AboutView: View {
                             isPresented = false
                         }
                     }) {
-                        Image("Popup_cross_btn")
+                        Image(StringConstants.DRTImages.crossImage)
                             .resizable()
                             .frame(width: 25, height: 25)
                             .background(Color.clear)
@@ -39,28 +40,57 @@ struct AboutView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 150)
-                Spacer()
-                
-                Text("Copyright(c) 2013-2025. DRT Performance Tix.")
-                    .font(.custom("Verlag-Bold", size: 20))
-                    .foregroundColor(Color.customWhite)
-                    .multilineTextAlignment(.center)
-                
-                Text("All Rights Reserved")
-                    .font(.custom("Verlag-Bold", size: 20))
-                    .foregroundColor(Color.customWhite)
-                    .multilineTextAlignment(.center)
-                
-                
-                Link(destination: URL(string: "http://www.dancerecitalticketing.com")!) {
-                    Text("http://www.dancerecitalticketing.com")
-                        .underline()
-                        .font(.custom("Verlag-Bold", size: 20))
-                        .tint(Color.customWhite)
-                }.buttonStyle(PlainButtonStyle())
-                .padding(.bottom, 50)
+                VStack {
+                    Text("Our purpose and mission is to provide small bussinesses with the advantages to grow and prosper through innovative solution and lifelong relationships.")
+                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                        .foregroundColor(Color.customWhite)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    
+                    Text(AboutView.urlString)
+                            .underline()
+                            .foregroundColor(.white)
+                            .font(.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.FFCE_62)
+                            .cornerRadius(12)
+                            .onTapGesture {
+                                showWebsiteAlert = true
+                            }
+                            .alert(isPresented: $showWebsiteAlert) {
+                                Alert(
+                                    title: Text("Open DRT Website?"),
+                                    message: Text("Do you want to visit the DRT website?"),
+                                    primaryButton: .default(Text("Yes")) {
+                                        openWebsite()
+                                    },
+                                    secondaryButton: .cancel(Text("No"))
+                                )
+                            }
+                            .padding()
+                    
+                    Text("Copyright(c) 2013-2025. DRT Performance Tix.")
+                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                        .foregroundColor(Color.customWhite)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("All Rights Reserved")
+                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                        .foregroundColor(Color.customWhite)
+                        .multilineTextAlignment(.center)
+                    
+                }
+               
+                .padding(.bottom)
             }
         }.frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 1.7)
             .ignoresSafeArea(.all)
+    }
+    
+    func openWebsite() {
+        if let url = URL(string: "http://www.dancerecitalticketing.com") {
+            UIApplication.shared.open(url)
+        }
     }
 }

@@ -65,6 +65,7 @@ struct LandingView: View {
                             Text(savedShow)
                                 .font(Font.custom("Verlag-Black", size: 16))
                                 .foregroundColor(.white)
+                                .padding(.bottom)
                             
                             Spacer()
                             Text("Change Show")
@@ -76,9 +77,9 @@ struct LandingView: View {
                                     showLogoutAlert = true
                                 }
                             }) {
-                                Image(systemName: "rectangle.portrait.and.arrow.right.fill")
-                                    .foregroundColor(.white)
-                                    .font(Font.custom("Verlag-Black", size: 30))
+                                Image("logout")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
                             }
                         }
                         .padding(.horizontal, 20)
@@ -119,7 +120,7 @@ struct LandingView: View {
                                 }
                             }) {
                                 Text("MERCHANDISE")
-                                    .font(Font.custom("Verlag-Bold", size: 22))
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.FFCE_62)
@@ -137,7 +138,7 @@ struct LandingView: View {
                                 }
                             }) {
                                 Text("SEAT")
-                                    .font(Font.custom("Verlag-Bold", size: 22))
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.FFCE_62)
@@ -153,7 +154,7 @@ struct LandingView: View {
                             }
                         }) {
                             Text("Enter Show Code")
-                                .font(Font.custom("Verlag-Bold", size: 18))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(Color.FFCE_62)
@@ -184,7 +185,7 @@ struct LandingView: View {
                         HStack {
                             Spacer()
                             Text(isOfflineMode ? "ALERT" : "Confirm")
-                                .font(Font.custom("Verlag-Bold", size: 30))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                                 .foregroundColor(.white)
                                 .padding(.top, 20)
                                 .padding(.leading, 30)
@@ -194,7 +195,7 @@ struct LandingView: View {
                                     showLogoutAlert = false
                                 }
                             }) {
-                                Image("Popup_cross_btn")
+                                Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25, height: 25)
                                     .background(Color.clear)
@@ -224,7 +225,7 @@ struct LandingView: View {
                                     }
                                 }) {
                                     Text("Logout")
-                                        .font(Font.custom("Verlag-Bold", size: 22))
+                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                                         .foregroundColor(.customGreen)
                                 }
                                 
@@ -236,7 +237,7 @@ struct LandingView: View {
                                     }
                                 }) {
                                     Text("Cancel")
-                                        .font(Font.custom("Verlag-Bold", size: 22))
+                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                                         .foregroundColor(.customGreen)
                                 }
                             }
@@ -264,7 +265,7 @@ struct LandingView: View {
                                 Spacer()
                                 Text(StringConstants.Common.error)
                                     .padding(.leading, 30)
-                                    .font(Font.custom("Verlag-Bold", size: 30))
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                                     .foregroundColor(.customWhite)
                                     .padding(.bottom, 10)
                                     .padding(.top, 20)
@@ -275,7 +276,7 @@ struct LandingView: View {
                                         viewModel.showAlert = false
                                     }
                                 }) {
-                                    Image("Popup_cross_btn")
+                                    Image(StringConstants.DRTImages.crossImage)
                                         .resizable()
                                         .frame(width: 25, height: 25)
                                         .background(Color.clear)

@@ -34,6 +34,7 @@ struct ChooseSectionView: View {
                 } else {
                     Text(sectionsTitle)
                         .font(.custom("Verlag-Black", size: 30))
+                        .multilineTextAlignment(.center)
                         .foregroundColor(.white)
                         .padding(.trailing, 50)
                 }

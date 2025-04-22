@@ -20,7 +20,7 @@ struct SeatLookupCell: View {
             Spacer()
             
             Text(selectedSeat.isEmpty ? "-" : selectedSeat)
-                .font(.custom("Verlag-Bold", size: 48))
+                .font(.custom(StringConstants.DRTFont.verlagBold, size: 48))
                 .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
 

@@ -40,12 +40,12 @@ struct GoOfflineView: View {
             HStack {
                 Spacer()
                 Text("Go offline")
-                    .font(Font.custom("Verlag-Bold", size: 30))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                     .foregroundColor(.customWhite)
                     .padding(.trailing, -50)
                 Spacer()
                 Button(action: { isPresented = false }) {
-                    Image("Popup_cross_btn")
+                    Image(StringConstants.DRTImages.crossImage)
                         .resizable()
                         .frame(width: 25, height: 25)
                         .background(Color.clear)
@@ -88,7 +88,7 @@ struct GoOfflineView: View {
                         .animation(.easeInOut, value: progress)
                     
                     Text("\(Int(progress * 100))% Completed")
-                        .font(Font.custom("Verlag-Bold", size: 16))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
                         .foregroundColor(.white)
                 }
             }
@@ -97,7 +97,7 @@ struct GoOfflineView: View {
                 Button(action: goOffline) {
                     Text("Continue")
                         .padding()
-                        .font(Font.custom("Verlag-Bold", size: 26))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                         .foregroundColor(isContinueDisabled ? .gray : Color.customGreen)
                 }
                 .disabled(isContinueDisabled)
@@ -107,7 +107,7 @@ struct GoOfflineView: View {
                 Button(action: { isPresented = false }) {
                     Text("Cancel")
                         .padding()
-                        .font(Font.custom("Verlag-Bold", size: 26))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                         .foregroundColor(Color.customGreen)
                 }
                 .disabled(isSyncing)

@@ -68,7 +68,7 @@ struct SeatHomeView: View {
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
-                                            
+                    
                     ScrollView {
                         if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket {
                             VStack(spacing: 1) {
@@ -98,7 +98,9 @@ struct SeatHomeView: View {
                                 }
                                 CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,
                                                cellHeight: dynamicCellHeight,
-                                               bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                               bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
+                                               showDivider: isMerchandise ? false : true
+                                ) {
                                     seatHomeViewModel.selectedLookupType = .creditCard
                                     isScanningCell = false
                                     withAnimation(.easeInOut(duration: 0.3)) {
@@ -106,7 +108,10 @@ struct SeatHomeView: View {
                                     }
                                 }
                                 if !isMerchandise {
-                                    CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,  buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                    CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,
+                                                   buttonImage: StringConstants.SeatHomeView.rightSideArrow,
+                                                   showDivider: false
+                                    ) {
                                         isScanningCell = false
                                         withAnimation(.easeInOut(duration: 0.3)) {
                                             showLookupAlertBySeat = true
@@ -151,38 +156,59 @@ struct SeatHomeView: View {
             .toolbar {
                 if !isFullScreen {
                     ToolbarItem(placement: .principal) {
-                        VStack{
-                            Image("Logo")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 500, height: 60, alignment: .center)
-                                .padding(.leading, 30)
-                                .padding(.top, 10)
-                            
-                            Text(savedShow)
-                                .font(Font.custom("Verlag-Bold", size: 20))
-                                .foregroundColor(Color.white)
-                                .padding(.leading, 30)
+                        VStack {
+                            HStack {
+                                Text("")
+                                    .frame(width: 25, height: 25)
+                                Spacer()
+                                Image("Logo")
+                                    .resizable()
+                                    .frame(width: 120, height: 60, alignment: .center)
+                                    .padding(.top, 40)
+                                    .padding(.leading, 10)
+                                Spacer()
+                                Button(action: {
+                                    isSideMenuPresented.toggle()
+                                }) {
+                                    Image("side_menu")
+                                        .resizable()
+                                        .frame(width: 25, height: 25)
+                                        .background(Color.clear)
+                                        .contentShape(Rectangle())
+                                        .padding(.top, 40)
+                                }
+                            }
+                            HStack {
+                                Spacer()
+                                Text(savedShow)
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                                    .foregroundColor(Color.white)
+                                    .padding(.leading, 5)
+                                Spacer()
+                            }
+                            .frame(width: UIScreen.main.bounds.width)
+                            .padding(10)
+                            .background(Color.FFCE_62)
                         }
                     }
                     
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button(action: {
-                            isSideMenuPresented.toggle()
-                        }) {
-                            Image("menu_triger")
-                                .resizable()
-                                .frame(width: 25, height: 20)
-                                .background(Color.clear)
-                                .contentShape(Rectangle())
-                        }
-                    }
+//                    ToolbarItem(placement: .topBarTrailing) {
+//                        Button(action: {
+//                            isSideMenuPresented.toggle()
+//                        }) {
+//                            Image("side_menu")
+//                                .resizable()
+//                                .frame(width: 25, height: 25)
+//                                .background(Color.clear)
+//                                .contentShape(Rectangle())
+//                        }
+//                    }
                 }
             }
         }
         .customSheetView(isPresented: $showLookupAlert) {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
-                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.15)
+                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.158)
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -192,7 +218,7 @@ struct SeatHomeView: View {
             }
         }
         .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.15)
+            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.158)
         }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
@@ -201,7 +227,7 @@ struct SeatHomeView: View {
             }
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, UIScreen.main.bounds.height * 0.15)
+            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, UIScreen.main.bounds.height * 0.158)
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {
@@ -254,7 +280,7 @@ struct SeatHomeView: View {
                     Spacer()
                     Text(isOfflineMode ? "ALERT" : "Confirm")
                         .padding(.leading, 20)
-                        .font(Font.custom("Verlag-Bold", size: 30))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
@@ -266,7 +292,7 @@ struct SeatHomeView: View {
                             isMerchandise = false
                         }
                     }) {
-                        Image("Popup_cross_btn")
+                        Image(StringConstants.DRTImages.crossImage)
                             .resizable()
                             .frame(width: 25, height: 25)
                             .background(Color.clear)
@@ -286,7 +312,7 @@ struct SeatHomeView: View {
                     if !isOfflineMode {
                         HStack {
                             Text("Logout")
-                                .font(Font.custom("Verlag-Bold", size: 20))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.leading, 30)
                                 .onTapGesture {
@@ -302,7 +328,7 @@ struct SeatHomeView: View {
                                 }
                             Spacer()
                             Text("Cancel")
-                                .font(Font.custom("Verlag-Bold", size: 20))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.trailing, 30)
                                 .onTapGesture {
@@ -325,7 +351,7 @@ struct SeatHomeView: View {
                     Spacer()
                     Text("Error")
                         .padding(.leading, 20)
-                        .font(Font.custom("Verlag-Bold", size: 30))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
@@ -336,7 +362,7 @@ struct SeatHomeView: View {
                             showOfflineAlert = false
                         }
                     }) {
-                        Image("Popup_cross_btn")
+                        Image(StringConstants.DRTImages.crossImage)
                             .resizable()
                             .frame(width: 25, height: 25)
                             .background(Color.clear)
@@ -360,7 +386,7 @@ struct SeatHomeView: View {
                 HStack {
                     Spacer()
                     Text("Success")
-                        .font(Font.custom("Verlag-Bold", size: 30))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)

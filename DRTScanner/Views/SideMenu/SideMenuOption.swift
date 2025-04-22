@@ -14,7 +14,7 @@ struct SideMenuOption: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(Font.custom("Verlag-Bold", size: 16))
+                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
                 .foregroundColor(.white)
             Spacer()
         }

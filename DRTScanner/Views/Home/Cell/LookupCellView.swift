@@ -23,17 +23,17 @@ struct LookupCellView: View {
             HStack {
                 
                 Text("ORDER: \(result.orderId ?? 0)")
-                    .font(.custom("Verlag-Bold", size: 15))
+                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
                     .foregroundColor(Color.customGreen)
                 
                 Text("CC: \(result.cc ?? "")")
-                    .font(.custom("Verlag-Bold", size: 15))
+                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
                     .foregroundColor(Color.customGreen)
             }
             .padding(.top, 0)
             
             Text("PHONE NUMBER: \(result.phone ?? "")")
-                .font(.custom("Verlag-Bold", size: 15))
+                .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 5)

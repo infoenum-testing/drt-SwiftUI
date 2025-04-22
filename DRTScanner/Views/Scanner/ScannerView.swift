@@ -44,7 +44,7 @@ struct ScannerView: View {
     @State private var lastScanTimes: [String: Date] = [:]
     @State private var suppressedOnce: Set<String> = []
     @State private var apiPreviouslyScannedQRCodes: Set<String> = []
-
+    
     @State private var inactivityTimer: Timer?
     @State private var flashAutoOffTimer: Timer?
     @State private var flashAutoOnTimer: Timer?
@@ -94,7 +94,10 @@ struct ScannerView: View {
     @StateObject private var keyboardObserver = KeyboardObserver()
     @ObservedObject var lookupByOrderResultViewModel: LookupByOrderResultViewModel
     @Binding var showOfflineAlert: Bool
-
+    
+    @State private var isInputActive: Bool = false
+    @State private var scannedExternalCode: String = ""
+    
     
     init(seat: Binding<SeatModel?>,
          isTicketValid: Binding<Bool>,
@@ -169,12 +172,12 @@ struct ScannerView: View {
                         } else if isInvalidTicket {
                             InvalidTicketView()
                         } /*else if isMerchandiseMode {*/
-                            if isMerchPreScanned {
-                                PreviousMerchandiseScanView()
-                            }
-                            if isMerchTicketValid {
-                                MerchandiseScanView()
-                            }
+                        if isMerchPreScanned {
+                            PreviousMerchandiseScanView()
+                        }
+                        if isMerchTicketValid {
+                            MerchandiseScanView()
+                        }
                         if isInvalidMerchTicket {
                             InvalidMerchandiseTicketView()
                         }
@@ -182,12 +185,12 @@ struct ScannerView: View {
                         if isInvalidSeatTicket {
                             InvalidSeatTicketView()
                         }
-//                        }
+                        //                        }
                         Spacer()
                     }.frame(height: isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight)
                         .onAppear {
-                               startInactivityTimer()
-                           }
+                            startInactivityTimer()
+                        }
                     AnyView(EmptyView())
                 }
                 VStack {
@@ -231,10 +234,13 @@ struct ScannerView: View {
                     }
                     
                     Spacer()
+                    
+                    // external scanner
                     HStack {
                         if !isFullScreen {
                             Image("Scan_icon")
                                 .resizable()
+                               // .scaleEffect(x: -1, y: 1)
                                 .frame(width: 30, height: 30)
                                 .background(Color.clear)
                                 .padding([.leading, .top])
@@ -243,6 +249,7 @@ struct ScannerView: View {
                                     DispatchQueue.main.async {
                                         externalScannerAction()
                                         isCustomColorVisible = true
+                                        isInputActive = true
                                     }
                                 }
                         }
@@ -281,19 +288,44 @@ struct ScannerView: View {
                 }.frame(maxHeight: isFullScreen ? .infinity : scanViewHeight, alignment: .bottom)
                 
                 if isCustomColorVisible && !isFullScreen {
-                    Color.FDB_54_E
-                        .opacity(1)
-                        .frame(height: scanViewHeight + 30)
-                        .overlay(
-                            Image("scan__cirle_icon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 80, height: 80)
-                                .onTapGesture {
-                                    resetScanner()
+                    ZStack {
+                        ExternalBarcodeInputField(scannedCode: $scannedExternalCode, isActive: $isInputActive)
+                            .frame(width: 200, height: 50)
+                            .opacity(0.01)
+                            .allowsHitTesting(true)
+                        TextField("Enter barcode manually", text: $scannedExternalCode)
+                            .padding()
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 250, height: 50)
+                            .onChange(of: scannedExternalCode) { newValue in
+                                print("Manual input: \(newValue)")
+                            }
+                        
+                        Color.FFCE_62
+                            .opacity(1)
+                            .frame(height: scanViewHeight + 30)
+                            .frame(height: 50)
+                            .overlay(
+                                VStack(spacing: 12) {
+                                    Image("scan__cirle_icon")
+                                        .resizable()
+                                      //  .scaleEffect(x: -1, y: 1)
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
+                                        .onTapGesture {
+                                            resetScanner()
+                                        }
                                 }
-                        )
-                        .padding(.bottom, -30)
+                            )
+                            .padding(.bottom, -30)
+                    }
+                    .onChange(of: scannedExternalCode) { newCode in
+                        print("New barcode code received: \(newCode)")
+                        if !newCode.isEmpty {
+                            sendScanRequest(qr: newCode)
+                            scannedExternalCode = ""
+                        }
+                    }
                 }
                 
                 if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
@@ -302,7 +334,7 @@ struct ScannerView: View {
                         .frame(height: scanViewHeight + 30)
                         .overlay(
                             Text("Pause, click to resume")
-                                .font(Font.custom("Verlag-Bold", size: 20))
+                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
                                 .foregroundColor(.white)
                                 .onTapGesture {
                                     resetScanner()
@@ -332,7 +364,7 @@ struct ScannerView: View {
                 startInactivityTimer()
                 isStopScanVisible = false
                 isCustomColorVisible = false
-            
+                
                 startFlashInactivityTimer()
             }
         }
@@ -401,9 +433,9 @@ struct ScannerView: View {
     
     private func startFlashInactivityTimer() {
         flashAutoOnTimer?.invalidate()
-
+        
         guard autoEnableFlashTimeout else { return }
-
+        
         flashAutoOnTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(autoEnableFlashDelay), repeats: false) { _ in
             if let scanner = scannerController, scanner.captureSession?.isRunning == true {
                 if !isFlashOn {
@@ -418,17 +450,17 @@ struct ScannerView: View {
             }
         }
     }
-
+    
     private func startFlashAutoOffTimer() {
         flashAutoOffTimer?.invalidate()
-
+        
         flashAutoOffTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
             DispatchQueue.main.async {
                 if isFlashOn {
                     isFlashOn = false
                     toggleTorch(status: false)
                 }
-
+                
                 if let scanner = scannerController, scanner.captureSession?.isRunning == true {
                     startFlashInactivityTimer()
                 } else {
@@ -437,12 +469,12 @@ struct ScannerView: View {
             }
         }
     }
-
+    
     private func stopFlashInactivityTimer() {
         flashAutoOnTimer?.invalidate()
         flashAutoOffTimer?.invalidate()
     }
-
+    
     private func resetFlashInactivityTimer() {
         startFlashInactivityTimer()
     }
@@ -471,8 +503,8 @@ struct ScannerView: View {
     
     private func resetScanner() {
         DispatchQueue.global(qos: .userInitiated).async {
-               scannerController?.captureSession?.startRunning()
-           }
+            scannerController?.captureSession?.startRunning()
+        }
         isCustomColorVisible = false
         isStopScanVisible = false
         scannedCode = nil
@@ -481,7 +513,7 @@ struct ScannerView: View {
         isScannerActive = true
         isScanningCell = true
         linePosition = 0
-
+        
         startLineAnimation()
         startInactivityTimer()
         startFlashInactivityTimer()
@@ -536,16 +568,16 @@ struct ScannerView: View {
     }
     
     func externalScannerAction() {
-
+        
         isUtilizingExternalBarcode = true
         isExternalInputFocused = true
         stopScanner()
-
+        
         withAnimation(.easeInOut(duration: 0.2)) {
             showExternalBarcodeView = true
         }
     }
-
+    
     
     private func isInsideBounds(_ location: CGPoint) -> Bool {
         return location.x >= 0 &&

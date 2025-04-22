@@ -87,13 +87,14 @@ struct LookupByNumbersView: View {
                                         .animation(.easeInOut, value: inputText.isEmpty)
                                 }
                                 
-                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom("Verlag-Bold", size: 20)))
-                                    .font(Font.custom("Verlag-Bold", size: 40))
-                                    .multilineTextAlignment(.leading)
+                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom(StringConstants.DRTFont.verlagBold, size: 20)))
+                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 40))
+                                    .multilineTextAlignment(.center)
                                     .foregroundColor(.customWhite)
+                                    .minimumScaleFactor(0.5)
+                                    .lineLimit(1)
                                     .disabled(true)
                                     .padding(.all, 10)
-                                    .padding(.leading)
                             }
                             .frame(height: 50)
                             
@@ -123,7 +124,7 @@ struct LookupByNumbersView: View {
                                             }
                                             
                                             Text(button)
-                                                .font(Font.custom("Verlag-Bold", size: 50))
+                                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 50))
                                                 .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
                                                 .frame(maxWidth: .infinity)
                                         }

@@ -26,7 +26,7 @@ struct ValidTicketView: View {
                     .foregroundColor(.white)
 
                 Text("Order: \(orderNumber)")
-                    .font(Font.custom("Verlag-Bold", size: 26))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                     .foregroundColor(.white)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

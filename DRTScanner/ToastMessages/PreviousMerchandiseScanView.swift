@@ -29,7 +29,7 @@ struct PreviousMerchandiseScanView: View {
                     .foregroundColor(.white)
 
                 Text(itemName)
-                    .font(Font.custom("Verlag-Bold", size: 26))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                     .foregroundColor(.white)
 
                 VStack(spacing: 5) {
@@ -39,7 +39,7 @@ struct PreviousMerchandiseScanView: View {
                     Text("Order Number : \(orderNumber)")
                 }
                 .foregroundColor(.white)
-                .font(Font.custom("Verlag-Bold", size: 24))
+                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 24))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)

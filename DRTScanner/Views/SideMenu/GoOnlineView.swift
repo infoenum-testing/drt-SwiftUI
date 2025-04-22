@@ -21,7 +21,7 @@ struct GoOnlineView: View {
         VStack(spacing: 20) {
             if !showErrorMessage {
                 Text("Go Online")
-                    .font(Font.custom("Verlag-Bold", size: 30))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                     .foregroundColor(.customWhite)
             }
             if isUploading {
@@ -47,18 +47,18 @@ struct GoOnlineView: View {
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
-                            .font(Font.custom("Verlag-Bold", size: 16))
+                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
                             .foregroundColor(.white)
                     }
                 }
                    
             } else if showSuccessMessage {
                 Text("Upload Successful!")
-                    .font(Font.custom("Verlag-Bold", size: 22))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
                     .foregroundColor(.customWhite)
             }  else if showErrorMessage {
                 Text("Database upload failed! Please try again.")
-                    .font(Font.custom("Verlag-Bold", size: 18))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
             }
@@ -125,7 +125,7 @@ struct CustomAlertForError: View {
             HStack {
                 Spacer()
                 Text("Error")
-                    .font(Font.custom("Verlag-Bold", size: 30))
+                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
                     .foregroundColor(.white)
                     .padding(.bottom, 10)
                     .padding(.top, 20)

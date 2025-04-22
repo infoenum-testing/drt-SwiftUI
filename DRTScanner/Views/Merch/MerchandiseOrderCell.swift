@@ -72,7 +72,7 @@ struct MerchandiseOrderCell: View {
             
             VStack(alignment: .leading, spacing: 5) {
                 Text(merchandiseOrder.name)
-                    .font(.custom("Verlag-Bold", size: 20))
+                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 20))
                     .foregroundColor(Color.customGreen)
                 
                 Text(merchandiseOrder.variantName)
@@ -81,12 +81,12 @@ struct MerchandiseOrderCell: View {
                 
                 if isScanned {
                     Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
-                        .font(.custom("Verlag-Bold", size: 18))
+                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
                         .foregroundColor(.green)
                         .padding(.top, 10)
                 } else {
                     Text("Not yet scanned")
-                        .font(.custom("Verlag-Bold", size: 18))
+                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
                         .foregroundColor(Color.customGreen)
                         .padding(.top, 10)
                 }

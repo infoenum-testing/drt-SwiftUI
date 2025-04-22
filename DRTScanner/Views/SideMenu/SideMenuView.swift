@@ -34,7 +34,7 @@ struct SideMenuView: View {
                         HStack {
                             Spacer()
                             Button(action: { isPresented = false }) {
-                                Image("Popup_cross_btn")
+                                Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25, height: 25)
                                     .background(Color.clear)
@@ -44,44 +44,44 @@ struct SideMenuView: View {
                             .padding(.top, 30)
                         }
                         if isOfflineMode {
-                            SideMenuOption(title: "GO ONLINE") {
+                            SideMenuOption(title: StringConstants.SideMenuView.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOnlineView = true
                                 }
                             }
                             
                         } else {
-                            SideMenuOption(title: "GO OFFLINE") {
+                            SideMenuOption(title: StringConstants.SideMenuView.goOffline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
-                               // isPresented = false
+                                // isPresented = false
                             }
                         }
                         if !isMerchandise {
-                            SideMenuOption(title: "SCANNING STATS") {
+                            SideMenuOption(title: StringConstants.SideMenuView.scaningStats) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showScanningStatsView = true
                                 }
-                                isPresented = true
+                                // isPresented = true
                             }
                         }
                         
-                        SideMenuOption(title: "SETTINGS") {
+                        SideMenuOption(title: StringConstants.SideMenuView.setting) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showSettingsView = true
                             }
                         }
                         
                         if isMerchandise {
-                            SideMenuOption(title: "SCAN TICKETS") {
+                            SideMenuOption(title: StringConstants.SideMenuView.scanTicket) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
                                 }
                             }
                         } else {
-                            SideMenuOption(title: "SCAN MERCHANDISE") {
+                            SideMenuOption(title: StringConstants.SideMenuView.scanMerchandise) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
@@ -89,32 +89,32 @@ struct SideMenuView: View {
                             }
                         }
                         
-                        SideMenuOption(title: "LOG OUT") {
+                        SideMenuOption(title: StringConstants.SideMenuView.logout) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
                         }
                         
-                        SideMenuOption(title: "ABOUT") {
+                        SideMenuOption(title: StringConstants.SideMenuView.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
-                            isPresented = false
+                            //   isPresented = false
                         }
                         
-                        SideMenuOption(title: "DRT WEBSITE") {
+                        SideMenuOption(title: StringConstants.SideMenuView.drtWebsite) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }
                         }
                         .alert(isPresented: $showWebsiteAlert) {
                             Alert(
-                                title: Text("Open DRT Website?"),
-                                message: Text("Do you want to visit the DRT website?"),
-                                primaryButton: .default(Text("Yes")) {
+                                title: Text(StringConstants.SideMenuView.openDrtWebsiteTitle),
+                                message: Text(StringConstants.SideMenuView.openDrtWebsiteMessage),
+                                primaryButton: .default(Text(StringConstants.Common.yes)) {
                                     openDRTWebsite()
                                 },
-                                secondaryButton: .cancel(Text("No"))
+                                secondaryButton: .cancel(Text(StringConstants.Common.no))
                             )
                         }
                         
@@ -148,43 +148,59 @@ struct SideMenuView: View {
                     
                     VStack(alignment: .center) {
                         
-                        Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? "merchandise?" : "tickets?")")
-                            .font(Font.custom("Verlag-Bold", size: 26))
+                        Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? StringConstants.SideMenuView.merchandise : StringConstants.SideMenuView.ticket)")
+                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
-                            .padding()
                         
-                        HStack {
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    isMerchandise = isSwitchingToMerchandise ?? false
-                                    showConfirmationAlert = false
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showConfirmationAlert = false
+                                    }
+                                }) {
+                                    Text(StringConstants.Common.no)
+                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                        .foregroundColor(Color.customWhite)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }) {
-                                Text("Yes")
-                                    .font(Font.custom("Verlag-Bold", size: 24))
-                                    .foregroundColor(Color.customGreen)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                            }
+                                Spacer()
+                            }.background(Color.FFCE_62)
+                                .padding(.horizontal, 30)
+                                .padding(.top)
                             
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showConfirmationAlert = false
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                        isMerchandise = isSwitchingToMerchandise ?? false
+                                        showConfirmationAlert = false
+                                    }
+                                }) {
+                                    Text(StringConstants.Common.yes)
+                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                        .foregroundColor(Color.customWhite)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }) {
-                                Text("No")
-                                    .font(Font.custom("Verlag-Bold", size: 24))
-                                    .foregroundColor(Color.customGreen)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                            }
+                                Spacer()
+                            }.background(Color.FFCE_62)
+                                .padding(.horizontal, 30)
+                            
                         }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
                             isMerchandise = newValue
                         }
                     }
-                    .padding(.top,30)
-                    .background(Color.FFCE_62)
+                    .padding(.top, 100)
+                    .padding(.bottom)
+                    .background {
+                        Image(StringConstants.DRTImages.backgound)
+                            .resizable()
+                            .edgesIgnoringSafeArea(.top)
+                    }
                     .frame(width: geometry.size.width * 1)
                     .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)
                 }.onChange(of: isSwitchingToMerchandise) { _ in
@@ -202,8 +218,8 @@ struct SideMenuView: View {
     }
     
     private func openDRTWebsite() {
-        if let url = URL(string: "https://www.drtwebsite.com") {
+        if let url = URL(string: StringConstants.SideMenuView.drtWebsiteURL) {
             UIApplication.shared.open(url)
         }
-    }    
+    }
 }

@@ -15,6 +15,7 @@ struct CustomCellView: View {
     var cellHeight: CGFloat
     var bottomLineColor: Color = .gray
     var buttonImage: String
+    var showDivider: Bool = true
     var buttonAction: () -> Void
 
     var body: some View {
@@ -30,7 +31,7 @@ struct CustomCellView: View {
                         .font(Font.custom("Verlag-Book", size: 15))
                         .foregroundColor(Color.customGreen)
                     Text(subtitle)
-                        .font(Font.custom("Verlag-Bold", size: 18))
+                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
                         .foregroundColor(Color.FFCE_62)
                 }
                 Spacer()
@@ -40,9 +41,11 @@ struct CustomCellView: View {
         .padding()
         .background(Color.customWhite)
         .frame(height: cellHeight)
-    .frame(width: UIScreen.main.bounds.width)
-        Rectangle()
-            .frame(height: 0.30)
-            .foregroundColor(bottomLineColor)
+        .frame(width: UIScreen.main.bounds.width)
+        if showDivider {
+            Divider()
+                .frame(height: 0.5)
+                .foregroundColor(bottomLineColor)
+        }
     }
 }
