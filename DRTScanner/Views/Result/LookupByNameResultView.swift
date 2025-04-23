@@ -28,7 +28,7 @@ struct LookupByNameResultView: View {
                                 dismissAction()
                             }
                         }) {
-                            Image("left_side_arrow")
+                            Image(StringConstants.DRTImages.leftSideArrow)
                         }
                         .padding(.leading, 20)
                         
@@ -36,7 +36,7 @@ struct LookupByNameResultView: View {
                         if viewModel.isLoading {
                             Text(viewModel.isLoading ? "Loading..." : "")
                                 .foregroundColor(Color.customWhite)
-                                .font(Font.custom("Verlag-Black", size: 25))
+                                .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
                             ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -44,9 +44,9 @@ struct LookupByNameResultView: View {
                             }
                         if !viewModel.isLoading {
                             
-                            Text(viewModel.orders.isEmpty ? "No orders found." : "Total Results: \(viewModel.orders.count)")
+                            Text(viewModel.orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(viewModel.orders.count)")
                                 .foregroundColor(Color.customWhite)
-                                .font(Font.custom("Verlag-Black", size: 25))
+                                .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
                         }
                         Spacer()

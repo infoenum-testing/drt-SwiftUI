@@ -51,35 +51,38 @@ struct LookupByNameView: View {
                         isPresented = false
                     }
                 }) {
-                    Image("left_side_arrow").padding(.horizontal, 20)
+                    Image(StringConstants.DRTImages.leftSideArrow)
+                        .padding(.horizontal, 20)
                 }
                 Spacer()
                 ZStack(alignment: .center) {
                     if !inputText.isEmpty {
                         Text(placeholderText)
-                            .font(.caption)
+                            .font(.verlagBookAdaptive(size: 10))
                             .foregroundColor(.gray)
-                            .offset(y: -25)
+                            .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -50 : -25)
                             .animation(.easeInOut, value: inputText.isEmpty)
                     }
                     
-                    TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom(StringConstants.DRTFont.verlagBold, size: 20)))
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 34))
+                    TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
+                        .font(.verlagBoldAdaptive(size: 34))
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color.customWhite)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                         .padding(.all, 10)
                         .disabled(true)
-                }.frame(height: 50)
+                }.frame(height: 50.adaptiveForIpad)
                 Button(action: {
                     if !inputText.isEmpty {
                         inputText.removeLast()
                     }
                 }) {
-                    Image("arrow_with_cross_btn").padding(.horizontal, 20)
+                    Image("arrow_with_cross_btn")
+                        .padding(.horizontal, 20)
                 }
-            }.frame(maxWidth: .infinity, maxHeight: 90)
+            } .padding(.horizontal, 2.adaptiveForIpad)
+                .padding([.top, .bottom], 12.adaptiveForIpad)
             .background(Color.FFCE_62)
             
             Grid(horizontalSpacing: 0, verticalSpacing: 0.8) {
@@ -97,7 +100,7 @@ struct LookupByNameView: View {
                                     }
                                     
                                     Text(button)
-                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 50))
+                                        .font(.verlagBoldAdaptive(size: 50))
                                         .foregroundColor(button == "OK" ? Color.customWhite : Color.customGreen)
                                         .frame(maxWidth: .infinity)
                                 }.frame(maxWidth: .infinity, maxHeight: .infinity)

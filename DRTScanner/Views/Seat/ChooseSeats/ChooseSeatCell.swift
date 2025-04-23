@@ -13,10 +13,11 @@ struct ChooseSeatCell: View {
     var body: some View {
         HStack {
             Text(seatLabel)
-                .font(.custom(StringConstants.DRTFont.verlagBold, size: 32))
+                .font(.verlagBoldAdaptive(size: 32))
                 .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
-        }
+            
+        }.listRowSeparator(.hidden)
         .padding()
         .background(Color.customWhite)
     }

@@ -42,12 +42,12 @@ struct SeatLookupView: View {
                             isPresented = false
                         }
                     }) {
-                        Image("left_side_arrow")
+                        Image(StringConstants.DRTImages.leftSideArrow)
                     }.padding(.leading, 20)
                     
                     //TextField("", text: $seatText)
-                    TextField("", text: $seatText, prompt: Text("Select Seat").font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30)))
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 42))
+                    TextField("", text: $seatText, prompt: Text("Select Seat").font(.verlagBoldAdaptive(size: 30)))
+                        .font(.verlagBoldAdaptive(size: 42))
                         .foregroundColor(.customWhite)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.clear)
@@ -58,7 +58,7 @@ struct SeatLookupView: View {
                         .onChange(of: selectedRow) { _ in seatText = seatDisplayText }
                         .onChange(of: selectedSeat) { _ in seatText = seatDisplayText }
                 }
-                .frame(maxWidth: .infinity, maxHeight: 90)
+                .frame(maxWidth: .infinity, maxHeight: 90.adaptiveForIpad)
                 .background(Color.FFCE_62)
                 
                 TableView(
@@ -83,7 +83,7 @@ struct SeatLookupView: View {
                                 .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                         } else {
                             Text(StringConstants.Common.continueText)
-                                .font(.custom(StringConstants.DRTFont.verlagBold, size: 36))
+                                .font(.verlagBoldAdaptive(size: 36))
                                 .foregroundColor(.customWhite)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .background(Color.FFCE_62)

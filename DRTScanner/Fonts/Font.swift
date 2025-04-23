@@ -21,3 +21,88 @@ extension Font {
         return Font.custom("Verlag-Black", size: size)
     }
 }
+
+extension Font {
+    static func verlagBookAdaptive(size: CGFloat) -> Font {
+        let finalSize = UIDevice.isIpad ? size * 2 : size
+        return .verlagBook(size: finalSize)
+    }
+    
+    static func verlagBoldAdaptive(size: CGFloat) -> Font {
+        let finalSize = UIDevice.isIpad ? size * 2 : size
+        return .verlagBold(size: finalSize)
+    }
+    
+    static func verlagBlackAdaptive(size: CGFloat) -> Font {
+        let finalSize = UIDevice.isIpad ? size * 2 : size
+        return .verlagBlack(size: finalSize)
+    }
+}
+
+extension UIDevice {
+    static var isIpad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+}
+
+extension BinaryInteger {
+    var adaptiveForIpad: CGFloat {
+        let value = CGFloat(self)
+        return UIDevice.isIpad ? value * 2 : value
+    }
+}
+
+extension CGFloat {
+    var adaptiveForIpadScan: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? self * 1 : self
+    }
+}
+
+func topPaddingForDevice() -> CGFloat {
+    let nativeHeight = UIScreen.main.nativeBounds.height
+    let idiom = UIDevice.current.userInterfaceIdiom
+
+    guard idiom == .pad else {
+        // Default for iPhone
+        return UIScreen.main.bounds.height * 0.159
+    }
+
+    switch nativeHeight {
+    case 2732:
+        // iPad Pro 12.9" (3rd, 4th, 5th, 6th gen), iPad Pro 13" M4
+        return UIScreen.main.bounds.height * 0.13
+    case 2360:
+        // iPad Air 4th/5th gen, iPad 10th gen
+        return UIScreen.main.bounds.height * 0.15
+    case 2266:
+        // iPad mini 6th gen
+        return UIScreen.main.bounds.height * 0.16
+    default:
+        // Unknown iPad, use a safe fallback
+        return UIScreen.main.bounds.height * 0.13
+    }
+}
+
+func scannerTopPadding(isFullScreen: Bool) -> CGFloat {
+    guard UIDevice.current.userInterfaceIdiom == .pad, !isFullScreen else {
+        return 0
+    }
+
+    let nativeHeight = UIScreen.main.nativeBounds.height
+
+    switch nativeHeight {
+    case 2732:
+        // iPad Pro 12.9" or 13" M4
+        return 120
+    case 2360:
+        // iPad 10th gen, iPad Air 4th/5th gen
+        return 80
+    case 2266:
+        // iPad mini 6th gen
+        return 70
+    default:
+        // Default padding for other iPads
+        return 120
+    }
+}
+

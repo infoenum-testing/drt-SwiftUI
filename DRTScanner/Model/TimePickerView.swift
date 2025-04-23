@@ -28,10 +28,10 @@ struct TimePickerView: View {
 
     var body: some View {
         VStack {
-            Picker("Select Time", selection: $selectedValue) {
+            Picker(StringConstants.Common.selectTime, selection: $selectedValue) {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     Text(viewModel.getTimeOptions(for: index)[idx])
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                        .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(.white)
                         .padding(.vertical, 10)
                         .padding(.horizontal, 10)
@@ -39,7 +39,7 @@ struct TimePickerView: View {
                 }
             }
             .pickerStyle(InlinePickerStyle())
-            .frame(height: 150)
+            .frame(height: 150.adaptiveForIpad)
             .clipped()
             
             HStack {
@@ -47,8 +47,8 @@ struct TimePickerView: View {
                     viewModel.saveTime(selectedValue, for: index)
                     selectedIndex = nil
                 }) {
-                    Text("Save")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                    Text(StringConstants.Common.save)
+                        .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(.customGreen)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -58,8 +58,8 @@ struct TimePickerView: View {
                 Button(action: {
                     selectedIndex = nil
                 }) {
-                    Text("Cancel")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                    Text(StringConstants.Common.cancel)
+                        .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(.customGreen)
                         .frame(maxWidth: .infinity)
                         .padding()

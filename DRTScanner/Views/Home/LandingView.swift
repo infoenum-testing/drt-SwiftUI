@@ -30,7 +30,7 @@ struct LandingView: View {
     
     var body: some View {
         ZStack {
-            Image("background")
+            Image(StringConstants.DRTImages.backgound)
                 .resizable()
                 .scaledToFill()
                 .frame(width: UIScreen.main.bounds.width)
@@ -38,10 +38,10 @@ struct LandingView: View {
             if viewModel.isLoading {
                 VStack {
                     Spacer()
-                    Image("Logo")
+                    Image(StringConstants.DRTImages.logo)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 300, height: 300)
+                        .frame(width: 300.adaptiveForIpad, height: 300.adaptiveForIpad)
                         .scaleEffect(animateLogo ? 1 : 0.8)
                         .opacity(animateLogo ? 1 : 0)
                         .animation(.easeOut(duration: 0.7), value: animateLogo)
@@ -63,13 +63,13 @@ struct LandingView: View {
                     if viewModel.isValidCode && isUserLoggedIn {
                         HStack {
                             Text(savedShow)
-                                .font(Font.custom("Verlag-Black", size: 16))
+                                .font(.verlagBoldAdaptive(size: 16))
                                 .foregroundColor(.white)
                                 .padding(.bottom)
                             
                             Spacer()
-                            Text("Change Show")
-                                .font(Font.custom("Verlag-Black", size: 16))
+                            Text(StringConstants.LandingView.changeShow)
+                                .font(.verlagBoldAdaptive(size: 16))
                                 .foregroundColor(.white)
                                 .padding(.bottom)
                             Button(action: {
@@ -77,9 +77,9 @@ struct LandingView: View {
                                     showLogoutAlert = true
                                 }
                             }) {
-                                Image("logout")
+                                Image(StringConstants.DRTImages.logout)
                                     .resizable()
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                             }
                         }
                         .padding(.horizontal, 20)
@@ -89,10 +89,10 @@ struct LandingView: View {
                     
                     Spacer()
                     if viewModel.isLoading || !viewModel.isLoading {
-                        Image("Logo")
+                        Image(StringConstants.DRTImages.logo)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 300, height: 300)
+                            .frame(width: 300.adaptiveForIpad, height: 300.adaptiveForIpad)
                             .scaleEffect(animateLogo ? 1 : 0.8)
                             .opacity(animateLogo ? 1 : 0)
                             .animation(.easeOut(duration: 0.7), value: animateLogo)
@@ -104,8 +104,8 @@ struct LandingView: View {
                     
                     if viewModel.isValidCode && isUserLoggedIn {
                         VStack {
-                            Text("Do you want to scan merchandise or seats?")
-                                .font(Font.custom("Verlag-Black", size: 22))
+                            Text(StringConstants.LandingView.scanMerchOrSeat)
+                                .font(.verlagBlackAdaptive(size: 22))
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.white)
                                 .padding(.bottom, 20)
@@ -119,8 +119,8 @@ struct LandingView: View {
                                     showSeatView = true
                                 }
                             }) {
-                                Text("MERCHANDISE")
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                                Text(StringConstants.LandingView.merchandise)
+                                    .font(.verlagBoldAdaptive(size: 22))
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.FFCE_62)
@@ -137,8 +137,8 @@ struct LandingView: View {
                                     showSeatView = true
                                 }
                             }) {
-                                Text("SEAT")
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                                Text(StringConstants.LandingView.seat)
+                                    .font(.verlagBoldAdaptive(size: 22))
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.FFCE_62)
@@ -153,8 +153,8 @@ struct LandingView: View {
                                 showSheet = true
                             }
                         }) {
-                            Text("Enter Show Code")
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                            Text(StringConstants.LandingView.showCode)
+                                .font(.verlagBoldAdaptive(size: 18))
                                 .padding()
                                 .frame(maxWidth: .infinity)
                                 .background(Color.FFCE_62)
@@ -165,8 +165,8 @@ struct LandingView: View {
                         .animation(.easeInOut(duration: 0.6).delay(0.9), value: animateButtons)
                     }
                     
-                    Text("Copyright(c) 2013-2025. DRT Performance Tix.\nAll Rights Reserved")
-                        .font(Font.custom("Verlag-Book", size: 14))
+                    Text(StringConstants.LandingView.copyRight)
+                        .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding(.top, 20)
@@ -184,8 +184,8 @@ struct LandingView: View {
                     VStack {
                         HStack {
                             Spacer()
-                            Text(isOfflineMode ? "ALERT" : "Confirm")
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                            Text(isOfflineMode ? StringConstants.Common.alert : StringConstants.Common.confirm)
+                                .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(.white)
                                 .padding(.top, 20)
                                 .padding(.leading, 30)
@@ -197,16 +197,15 @@ struct LandingView: View {
                             }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                             }.padding(.trailing)
                         }
                         
-                        Text(isOfflineMode ?
-                             "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out" :
-                                "Are you sure you want to log out?")
-                        .font(Font.custom("Verlag-Book", size: 18))
+                        Text(isOfflineMode ? StringConstants.LandingView.isOfflineAlertMessage :
+                                StringConstants.LandingView.logoutConfirm)
+                        .font(.verlagBookAdaptive(size: 18))
                         .foregroundStyle(Color.white)
                         .padding(.bottom)
                         .padding(.top)
@@ -224,8 +223,8 @@ struct LandingView: View {
                                         DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }) {
-                                    Text("Logout")
-                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                                    Text(StringConstants.Common.logout)
+                                        .font(.verlagBoldAdaptive(size: 22))
                                         .foregroundColor(.customGreen)
                                 }
                                 
@@ -236,8 +235,8 @@ struct LandingView: View {
                                         showLogoutAlert = false
                                     }
                                 }) {
-                                    Text("Cancel")
-                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                                    Text(StringConstants.Common.cancel)
+                                        .font(.verlagBoldAdaptive(size: 22))
                                         .foregroundColor(.customGreen)
                                 }
                             }
@@ -265,7 +264,7 @@ struct LandingView: View {
                                 Spacer()
                                 Text(StringConstants.Common.error)
                                     .padding(.leading, 30)
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                    .font(.verlagBoldAdaptive(size: 30))
                                     .foregroundColor(.customWhite)
                                     .padding(.bottom, 10)
                                     .padding(.top, 20)
@@ -278,7 +277,7 @@ struct LandingView: View {
                                 }) {
                                     Image(StringConstants.DRTImages.crossImage)
                                         .resizable()
-                                        .frame(width: 25, height: 25)
+                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                         .background(Color.clear)
                                         .contentShape(Rectangle())
                                         .padding(.trailing, 20)
@@ -286,7 +285,7 @@ struct LandingView: View {
                             }
                             
                             Text(StringConstants.LandingView.invalidShowCode)
-                                .font(Font.custom("Verlag-Book", size: 18))
+                                .font(.verlagBookAdaptive(size: 18))
                                 .padding(.bottom)
                                 .foregroundColor(.customWhite)
                         }

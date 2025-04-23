@@ -39,38 +39,41 @@ struct GoOfflineView: View {
         VStack(spacing: 10) {
             HStack {
                 Spacer()
-                Text("Go offline")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                Text(StringConstants.SideMenuView.goOffline)
+                    .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
-                    .padding(.trailing, -50)
+                    .padding(.trailing, -60)
                 Spacer()
                 Button(action: { isPresented = false }) {
                     Image(StringConstants.DRTImages.crossImage)
                         .resizable()
-                        .frame(width: 25, height: 25)
+                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                         .background(Color.clear)
                         .contentShape(Rectangle())
                         .padding()
                 }
                 .disabled(isSyncing)
-            }.padding()
+            }
             
-            Text("By going offline, the database will be downloaded to this device, and nobody else will be able to scan tickets for this show until I go back online. When I return online, the scanned tickets will be uploaded back to the server.\n\nBy signing my name, I understand and agree to the above:")
-                .font(Font.custom("Verlag-Book", size: 18))
+            Text(StringConstants.SideMenuView.goOfflineViewDiscription)
+                .font(.verlagBookAdaptive(size: 18))
                 .foregroundColor(Color.customWhite)
                 .multilineTextAlignment(.center)
-                .padding()
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
             
             HStack {
                 TextField("Type your name here", text: $name)
-                    .padding(5)
+                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 15 : 0)
+                    .font(.verlagBook(size: 25))
                     .background(Color.customWhite)
                     .foregroundColor(Color.gray)
                     .frame(alignment: .center)
                     .multilineTextAlignment(.center)
                     .disabled(isSyncing)
                     .focused($isNameFieldFocused)
-            }.padding()
+            }.padding(.horizontal)
             .frame(alignment: .center)
             
             if isSyncing {
@@ -78,26 +81,25 @@ struct GoOfflineView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(1.0)
-                        .padding(.top)
-                    
+                        .padding(2)
                     ProgressView(value: progress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle(tint: .white))
                         .background(Color.customWhite)
                         .foregroundColor(.customWhite)
-                        .padding()
                         .animation(.easeInOut, value: progress)
+                        .padding(2)
                     
                     Text("\(Int(progress * 100))% Completed")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                        .font(.verlagBoldAdaptive(size: 16))
                         .foregroundColor(.white)
                 }
             }
             
             HStack {
                 Button(action: goOffline) {
-                    Text("Continue")
+                    Text(StringConstants.Common.continueTextAlert)
                         .padding()
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                        .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(isContinueDisabled ? .gray : Color.customGreen)
                 }
                 .disabled(isContinueDisabled)
@@ -105,9 +107,9 @@ struct GoOfflineView: View {
                 Spacer()
                 
                 Button(action: { isPresented = false }) {
-                    Text("Cancel")
+                    Text(StringConstants.Common.cancel)
                         .padding()
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                        .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(Color.customGreen)
                 }
                 .disabled(isSyncing)

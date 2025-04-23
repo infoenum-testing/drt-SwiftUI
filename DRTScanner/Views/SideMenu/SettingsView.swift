@@ -15,52 +15,53 @@ struct SettingsView: View {
     @State private var selectedTimerIndex: IdentifiableIndex?
     
     var body: some View {
-        VStack {
-            Spacer()
-            HStack {
+        ZStack (alignment: .trailing){
+            VStack {
                 Spacer()
-                Text("Settings")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 24))
-                    .padding(.leading, 20)
-                    .foregroundColor(.white)
-                Spacer()
-                Button(action: { isPresented = false }) {
-                    Image(StringConstants.DRTImages.crossImage)
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                        .background(Color.clear)
-                        .contentShape(Rectangle())
+                HStack {
+                    Spacer()
+                    Text("Settings")
+                        .font(.verlagBoldAdaptive(size: 24))
+                        .padding(.leading, 10)
+                        .foregroundColor(.white)
+                    Spacer()
+                    Button(action: { isPresented = false }) {
+                        Image(StringConstants.DRTImages.crossImage)
+                            .resizable()
+                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
+                    }
+                }.background(Color.FDB_54_E)
+                    .padding()
+                
+                List {
+                    settingsSection
+                        .listRowBackground(Color.clear)
                 }
-            }.background(Color.FDB_54_E)
-            .padding()
+                .listStyle(.plain)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.FDB_54_E)
+            } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
-            List {
-                settingsSection
-                    .listRowBackground(Color.clear)
+                .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
+                .background(Color.FDB_54_E)
+            ZStack {
+                Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
+                    .edgesIgnoringSafeArea(.all)
+                    .animation(.easeInOut(duration: 0.3), value: selectedTimerIndex)
+                
+                    .customSheetView(isPresented: Binding(
+                        get: { selectedTimerIndex != nil },
+                        set: { if !$0 { selectedTimerIndex = nil } }
+                    )) {
+                        if let index = selectedTimerIndex {
+                            TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel).padding(.leading, UIScreen.main.bounds.width * 0.1 )
+                        }
+                    }
             }
-            .listStyle(.plain)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.FDB_54_E)
             
-        } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
-        
-        .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height)
-        .background(Color.FDB_54_E)
-        ZStack {
-            Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
-                .edgesIgnoringSafeArea(.all)
-                .animation(.easeInOut(duration: 0.3), value: selectedTimerIndex)
-            
-            .customSheetView(isPresented: Binding(
-                get: { selectedTimerIndex != nil },
-                set: { if !$0 { selectedTimerIndex = nil } }
-            )) {
-                if let index = selectedTimerIndex {
-                    TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel)
-                }
-            }
         }
-
     }
 
     private var settingsSection: some View {
@@ -68,7 +69,7 @@ struct SettingsView: View {
             HStack {
                 Text(setting.title)
                     .foregroundColor(.white)
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                    .font(.verlagBoldAdaptive(size: 14))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Spacer()
@@ -76,17 +77,18 @@ struct SettingsView: View {
                 if let toggleBinding = setting.toggleBinding {
                     Toggle("", isOn: toggleBinding)
                         .labelsHidden()
+                        .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.2 : 0.7)
                 } else {
                     Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
                         Text(setting.value ?? "")
                             .foregroundColor(.white)
-                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                            .font(.verlagBoldAdaptive(size: 16))
                             .padding(8)
                     }
                 }
             }
             .padding()
-            .frame(maxWidth: .infinity, minHeight: 50)
+            .frame(maxWidth: .infinity, minHeight: 50.adaptiveForIpad)
         }
     }
 

@@ -58,7 +58,7 @@ struct ShowCodeView: View {
                             }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                                     .padding()
@@ -76,10 +76,10 @@ struct ShowCodeView: View {
 
                     VStack(spacing: 20) {
                             HStack {
-                                Image("Logo")
+                                Image(StringConstants.DRTImages.logo)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 500, height: 60, alignment: .center)
+                                    .frame(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
                                     .padding(.top, 10)
                             }
                         HStack {
@@ -90,7 +90,7 @@ struct ShowCodeView: View {
                             }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                             }
@@ -106,7 +106,7 @@ struct ShowCodeView: View {
 //                                        .animation(.easeInOut, value: showCode.isEmpty)
                                 }
                                 TextField(StringConstants.Common.showCode, text: $showCode)
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 42))
+                                    .font(.verlagBoldAdaptive(size: 42))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
                                     .background(Color.clear)
@@ -119,7 +119,7 @@ struct ShowCodeView: View {
                             }) {
                                 Image("arrow_with_cross_btn")
                                     .resizable()
-                                    .frame(width: 40, height: 30)
+                                    .frame(width: 40.adaptiveForIpad, height: 30.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                             }
@@ -133,7 +133,7 @@ struct ShowCodeView: View {
                                 }
                             }) {
                                 Image(systemName: "camera.metering.matrix")
-                                    .font(.system(size: 25))
+                                    .font(.verlagBookAdaptive(size: 25))
                                     .foregroundColor(Color.customWhite)
                             }
                             Spacer()
@@ -154,7 +154,7 @@ struct ShowCodeView: View {
                                             }
                                             
                                             Text(button)
-                                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 50))
+                                                .font(.verlagBoldAdaptive(size: 50))
                                                 .scaleEffect(button.range(of: #"^[A-Z]$"#, options: .regularExpression) != nil ? 0.9 : 1.1)
                                                 .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
                                                 .frame(maxWidth: .infinity)

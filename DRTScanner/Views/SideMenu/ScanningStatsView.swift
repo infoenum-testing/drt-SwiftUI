@@ -24,7 +24,7 @@ struct ScanningStatsView: View {
             HStack {
                 Spacer()
                 Text("Scanning Stats")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                    .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
                     .frame(alignment: .center)
                     .padding(.leading, 10)
@@ -36,7 +36,7 @@ struct ScanningStatsView: View {
                 }) {
                     Image(StringConstants.DRTImages.crossImage)
                         .resizable()
-                        .frame(width: 25, height: 25)
+                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                         .background(Color.clear)
                         .contentShape(Rectangle())
                         .padding([.bottom, .top])
@@ -64,11 +64,11 @@ struct ScanningStatsView: View {
     private func statsRow(title: String, value: Int?) -> some View {
         HStack {
             Text(title)
-                .font(Font.custom("Avenir-Light", size: 20))
+                .font(.verlagBoldAdaptive(size: 20))
                 .foregroundColor(.customWhite)
             Spacer()
             Text(value.map { "\($0)" } ?? "N/A")
-                .font(Font.custom("Avenir-Light", size: 20))
+                .font(.verlagBoldAdaptive(size: 20))
                 .foregroundColor(.customWhite)
         }
     }

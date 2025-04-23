@@ -25,17 +25,21 @@ struct CustomCellView: View {
                     buttonAction()
             }) {
                 Image(imageName)
+                    .resizable()
+                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)
-                        .font(Font.custom("Verlag-Book", size: 15))
+                        .font(.verlagBookAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                     Text(subtitle)
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                        .font(.verlagBoldAdaptive(size: 18))
                         .foregroundColor(Color.FFCE_62)
                 }
                 Spacer()
                 Image(buttonImage)
+                    .resizable()
+                    .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
             }
         }
         .padding()

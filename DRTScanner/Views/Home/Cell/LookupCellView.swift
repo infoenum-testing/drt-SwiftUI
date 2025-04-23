@@ -15,7 +15,7 @@ struct LookupCellView: View {
     var body: some View {
         VStack(alignment: .center) {
             Text(result.buyerName ?? "")
-                .font(.custom("Verlag-Black", size: 24))
+                .font(.verlagBlackAdaptive(size: 24))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 0)
@@ -23,17 +23,17 @@ struct LookupCellView: View {
             HStack {
                 
                 Text("ORDER: \(result.orderId ?? 0)")
-                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                    .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
                 
                 Text("CC: \(result.cc ?? "")")
-                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                    .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
             }
-            .padding(.top, 0)
+            .padding(.top, 1)
             
             Text("PHONE NUMBER: \(result.phone ?? "")")
-                .font(.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                .font(.verlagBoldAdaptive(size: 15))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 5)

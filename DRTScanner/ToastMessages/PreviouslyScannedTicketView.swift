@@ -18,20 +18,20 @@ struct PreviouslyScannedTicketView: View {
             VStack(spacing: 15) {
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
-                    .frame(width: 120, height: 120)
+                    .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(.white)
                 
                 Text(orderName.capitalized)
-                    .font(Font.custom("Verlag-Black", size: 30))
+                    .font(.verlagBlackAdaptive(size: 30))
                     .foregroundColor(.white)
                 
                 Text("Order: \(orderNumber)")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                    .font(.verlagBoldAdaptive(size: 26))
                     .foregroundColor(.white)
                 
                 Text("Previously Scanned @\n\(scannedTime)")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                    .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
             }

@@ -97,6 +97,7 @@ struct ScannerView: View {
     
     @State private var isInputActive: Bool = false
     @State private var scannedExternalCode: String = ""
+    @State private var audioPlayer: AVAudioPlayer?
     
     
     init(seat: Binding<SeatModel?>,
@@ -151,7 +152,7 @@ struct ScannerView: View {
                     },
                     isScanning: $isScanningCell
                 ).padding(.bottom, -30)
-                    .frame(height: isFullScreen ? nil : scanViewHeight)
+                    .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
                     .frame(maxWidth: .infinity)
                     .onChange(of: isScanning) { newValue in
                         if newValue {
@@ -199,9 +200,9 @@ struct ScannerView: View {
                         HStack {
                             Image(isFlashOn ? "FlashOff" : "FlashOn")
                                 .resizable()
-                                .frame(width: 50, height: 50)
-                                .padding(.trailing, -10)
-                                .padding(.top, isFullScreen ? 60 : 0)
+                                .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+                                .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? 10 : -10)
+                                .padding(.top, isFullScreen ? 60 : (UIDevice.current.userInterfaceIdiom == .pad ? 60 : 0))
                         }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
                             .gesture(
                                 DragGesture(minimumDistance: 0)
@@ -241,7 +242,7 @@ struct ScannerView: View {
                             Image("Scan_icon")
                                 .resizable()
                                // .scaleEffect(x: -1, y: 1)
-                                .frame(width: 30, height: 30)
+                                .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                                 .background(Color.clear)
                                 .padding([.leading, .top])
                                 .contentShape(Rectangle())
@@ -257,7 +258,7 @@ struct ScannerView: View {
                             if let stats = viewModel.stats {
                                 Spacer()
                                 Text("Scanned by Device: \(stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
-                                    .font(Font.custom("Verlag-Book", size: 16))
+                                    .font(.verlagBookAdaptive(size: 16))
                                     .padding(.bottom, -30)
                                     .foregroundColor(.white)
                                     .opacity(isVisibleText ? 1 : 0)
@@ -271,7 +272,7 @@ struct ScannerView: View {
                         
                         Image(isFullScreen ? "video_Default_screen_icon" : "video_full_screen_icon")
                             .resizable()
-                            .frame(width: 30, height: 30)
+                            .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                             .background(Color.clear)
                             .padding([.top, .trailing])
                             .contentShape(Rectangle())
@@ -303,15 +304,15 @@ struct ScannerView: View {
                         
                         Color.FFCE_62
                             .opacity(1)
-                            .frame(height: scanViewHeight + 30)
-                            .frame(height: 50)
+                            .frame(height: scanViewHeight + 30.adaptiveForIpad)
+                            .frame(height: 50.adaptiveForIpad)
                             .overlay(
                                 VStack(spacing: 12) {
                                     Image("scan__cirle_icon")
                                         .resizable()
                                       //  .scaleEffect(x: -1, y: 1)
                                         .scaledToFit()
-                                        .frame(width: 100, height: 100)
+                                        .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                                         .onTapGesture {
                                             resetScanner()
                                         }
@@ -331,10 +332,11 @@ struct ScannerView: View {
                 if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
                     Color.FFCE_62
                         .opacity(1)
-                        .frame(height: scanViewHeight + 30)
+                        .frame(height: scanViewHeight + 30.adaptiveForIpad)
+                        .frame(height: 50.adaptiveForIpad)
                         .overlay(
                             Text("Pause, click to resume")
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                                .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(.white)
                                 .onTapGesture {
                                     resetScanner()
@@ -350,7 +352,7 @@ struct ScannerView: View {
                         .frame(height: 1.5)
                         .foregroundColor(.red)
                         .shadow(color: .black, radius: 1.5)
-                        .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight) / 2))
+                        .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / 2))
                         .onAppear {
                             startLineAnimation()
                         }
@@ -1024,7 +1026,17 @@ struct ScannerView: View {
     
     func playScanFeedback(beep: Bool, haptic: Bool) {
         if beep {
-            AudioServicesPlaySystemSound(1057)
+            if let soundURL = Bundle.main.url(forResource: "beep", withExtension: "mp3") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
+                } catch {
+                    print("Error playing beep.mp3: \(error.localizedDescription)")
+                }
+            } else {
+                print("beep.mp3 not found in bundle")
+            }
         }
         if haptic {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration

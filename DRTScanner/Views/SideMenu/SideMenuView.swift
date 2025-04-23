@@ -36,7 +36,7 @@ struct SideMenuView: View {
                             Button(action: { isPresented = false }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                                     .padding()
@@ -119,7 +119,7 @@ struct SideMenuView: View {
                         }
                         
                     }
-                    .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? min(geometry.size.width * 0.5, 450) : min(geometry.size.width * 0.8, 400))
+                    .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400))
                     .background(Color.tealLight)
                     Spacer()
                 }.onAppear {
@@ -149,7 +149,7 @@ struct SideMenuView: View {
                     VStack(alignment: .center) {
                         
                         Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? StringConstants.SideMenuView.merchandise : StringConstants.SideMenuView.ticket)")
-                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                            .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                         
@@ -161,8 +161,8 @@ struct SideMenuView: View {
                                         showConfirmationAlert = false
                                     }
                                 }) {
-                                    Text(StringConstants.Common.no)
-                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                    Text("NO")
+                                        .font(.verlagBoldAdaptive(size: 30))
                                         .foregroundColor(Color.customWhite)
                                         .padding()
                                         .frame(maxWidth: .infinity)
@@ -180,8 +180,8 @@ struct SideMenuView: View {
                                         showConfirmationAlert = false
                                     }
                                 }) {
-                                    Text(StringConstants.Common.yes)
-                                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                    Text("YES")
+                                        .font(.verlagBoldAdaptive(size: 30))
                                         .foregroundColor(Color.customWhite)
                                         .padding()
                                         .frame(maxWidth: .infinity)

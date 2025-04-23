@@ -30,8 +30,10 @@ struct ChooseRowSubView: View {
                         selectedRow = seat
                         isPresent = false
                     }
+                    .listRowBackground(Color.white)
+                Divider()
             }
-            .listStyle(PlainListStyle())
+            .listStyle(.plain)
             .background(Color.customWhite)
         }
         .background(Color.customWhite)

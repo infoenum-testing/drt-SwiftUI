@@ -74,21 +74,21 @@ struct LookupByNumbersView: View {
                                     isPresented = false
                                 }
                             }) {
-                                Image("left_side_arrow")
+                                Image(StringConstants.DRTImages.leftSideArrow)
                             }
                             Spacer()
                             
                             ZStack(alignment: .center) {
                                 if !inputText.isEmpty {
                                     Text(placeholderText)
-                                        .font(.caption)
+                                        .font(.verlagBookAdaptive(size: 10))
                                         .foregroundColor(.gray)
-                                        .offset(y: -25)
+                                        .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -50 : -25)
                                         .animation(.easeInOut, value: inputText.isEmpty)
                                 }
                                 
-                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.custom(StringConstants.DRTFont.verlagBold, size: 20)))
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 40))
+                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
+                                    .font(.verlagBoldAdaptive(size: 40))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.customWhite)
                                     .minimumScaleFactor(0.5)
@@ -96,7 +96,7 @@ struct LookupByNumbersView: View {
                                     .disabled(true)
                                     .padding(.all, 10)
                             }
-                            .frame(height: 50)
+                            .frame(height: 50.adaptiveForIpad)
                             
                             Button(action: {
                                 if !inputText.isEmpty {
@@ -106,8 +106,8 @@ struct LookupByNumbersView: View {
                                 Image("arrow_with_cross_btn")
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding([.top, .bottom], 20)
+                        .padding(.horizontal, 20.adaptiveForIpad)
+                        .padding([.top, .bottom], 20.adaptiveForIpad)
                     }.background(Color.FFCE_62)
                     HStack {
                         VStack(spacing: 1) {
@@ -124,7 +124,7 @@ struct LookupByNumbersView: View {
                                             }
                                             
                                             Text(button)
-                                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 50))
+                                                .font(.verlagBoldAdaptive(size: 50))
                                                 .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
                                                 .frame(maxWidth: .infinity)
                                         }

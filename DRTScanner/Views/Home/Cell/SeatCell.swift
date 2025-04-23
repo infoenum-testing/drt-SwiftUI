@@ -159,34 +159,34 @@ struct SeatCell: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(isScanned ? "PREVIOUSLY SCANNED AT \(scannedTime ?? "")" : "NOT YET SCANNED")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                    .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(Color.customGreen)
             }
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SECT:")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
+                        .font(.verlagBoldAdaptive(size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.section)")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("ROW:")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
+                        .font(.verlagBoldAdaptive(size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.row)")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SEAT:")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 10))
+                        .font(.verlagBoldAdaptive(size: 10))
                         .foregroundColor(Color.customGreen)
                     Text("\(seat.seat)")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                 }
                 
@@ -198,6 +198,7 @@ struct SeatCell: View {
                         .padding(10)
                 } else {
                     Image(isScanned ? "Green_circle_check_btn" : "scan_now")
+                        .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                         .onTapGesture {
                             updateSeatWithScannedQrCode()
                         }

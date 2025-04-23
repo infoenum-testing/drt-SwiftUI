@@ -21,7 +21,7 @@ struct ChooseSeatView: View {
                 Button(action: {
                     isPresented = false
                 }) {
-                    Image("left_side_arrow")
+                    Image(StringConstants.DRTImages.leftSideArrow)
                 }.padding()
                     .padding(.leading, 20)
                 .frame(height: 85, alignment: .center)
@@ -34,7 +34,7 @@ struct ChooseSeatView: View {
                         .frame(width: 20, height: 20)
                 } else {
                     Text(sectionsTitle)
-                        .font(.custom("Verlag-Black", size: 30))
+                        .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.trailing, 50)
                 }

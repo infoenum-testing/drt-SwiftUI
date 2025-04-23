@@ -13,12 +13,13 @@ struct ChooseRowCell: View {
     var body: some View {
         HStack {
             Text(row)
-                .font(.custom(StringConstants.DRTFont.verlagBold, size: 32))
+                .font(.verlagBoldAdaptive(size: 32))
                 .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding()
-        .background(Color.customWhite)
+        .listRowSeparator(.hidden)
+            .background(Color.customWhite)
     }
 }
 

@@ -29,7 +29,6 @@ struct ChooseSectionSubView: View {
                         selectedSeat = seat
                         isPresent = false
                         selectedSection = seat
-                        // fetchRows(for: selecteds)
                     }
                     .listRowBackground(Color.white)
                 Divider()

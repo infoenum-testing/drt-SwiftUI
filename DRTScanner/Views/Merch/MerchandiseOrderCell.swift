@@ -27,7 +27,7 @@ struct MerchandiseOrderCell: View {
                     if let url = URL(string: merchandiseOrder.iconSrc) {
                         ZStack {
                             SVGWebView(url: url, isLoading: $isLoadingSvgImage)
-                                .frame(width: 70, height: 70)
+                                .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                                 .onAppear {
                                     isLoadingSvgImage = true
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -38,7 +38,7 @@ struct MerchandiseOrderCell: View {
                             if isLoadingSvgImage {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                                    .frame(width: 50, height: 50)
+                                    .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                                     .transition(.opacity)
                             }
                         }
@@ -50,43 +50,43 @@ struct MerchandiseOrderCell: View {
                         switch phase {
                         case .success(let image): image.resizable()
                         case .failure(_): Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red)
-                        default: ProgressView().frame(width: 70, height: 70)
+                        default: ProgressView().frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                         }
                     }
-                    .frame(width: 70, height: 70)
+                    .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                 }
                 
                 Text("\(merchandiseOrder.qty)")
-                    .font(.custom("Verlag-Book", size: 20))
+                    .font(.verlagBookAdaptive(size: 20))
                     .foregroundColor(.white)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                     .background(merchandiseOrder.qty == merchandiseOrder.qtyScanned ? Color.green : Color.orange)
                     .clipShape(Circle())
                     .padding(.top, -30)
                     .padding(.leading, -10)
                 
                 Text("Scanned: \(merchandiseOrder.qtyScanned)")
-                    .font(.custom("Verlag-Book", size: 15))
+                    .font(.verlagBookAdaptive(size: 15))
                     .foregroundColor(.black)
             }
             
             VStack(alignment: .leading, spacing: 5) {
                 Text(merchandiseOrder.name)
-                    .font(.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                    .font(.verlagBoldAdaptive(size: 20))
                     .foregroundColor(Color.customGreen)
                 
                 Text(merchandiseOrder.variantName)
-                    .font(.custom("Verlag-Book", size: 15))
+                    .font(.verlagBookAdaptive(size: 15))
                     .foregroundColor(.black)
                 
                 if isScanned {
                     Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
-                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                        .font(.verlagBoldAdaptive(size: 18))
                         .foregroundColor(.green)
                         .padding(.top, 10)
                 } else {
                     Text("Not yet scanned")
-                        .font(.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                        .font(.verlagBoldAdaptive(size: 18))
                         .foregroundColor(Color.customGreen)
                         .padding(.top, 10)
                 }
@@ -102,22 +102,22 @@ struct MerchandiseOrderCell: View {
                 if isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                        .frame(width: 50, height: 50)
+                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                 }
                 else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {
-                    Image("Green_circle_check_btn")
+                    Image(StringConstants.DRTImages.greenCheckImage)
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                         .transition(.scale)
                 } else {
-                    Image("scan_now")
+                    Image(StringConstants.DRTImages.scanNow)
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                 }
             }
             .padding(.trailing, 10)
         }
-        .frame(height: 133)
+        .frame(height: 130.adaptiveForIpad)
         .onAppear {
             loadScannedTime()
             isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned

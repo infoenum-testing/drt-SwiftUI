@@ -67,6 +67,7 @@ struct SeatHomeView: View {
                     ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
+                        .padding(.top, scannerTopPadding(isFullScreen: isFullScreen))
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
                     
                     ScrollView {
@@ -161,10 +162,10 @@ struct SeatHomeView: View {
                                 Text("")
                                     .frame(width: 25, height: 25)
                                 Spacer()
-                                Image("Logo")
+                                Image(StringConstants.DRTImages.logo)
                                     .resizable()
-                                    .frame(width: 120, height: 60, alignment: .center)
-                                    .padding(.top, 40)
+                                    .frame(width: 120.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
+                                    .padding(.top, 40.adaptiveForIpad)
                                     .padding(.leading, 10)
                                 Spacer()
                                 Button(action: {
@@ -172,16 +173,16 @@ struct SeatHomeView: View {
                                 }) {
                                     Image("side_menu")
                                         .resizable()
-                                        .frame(width: 25, height: 25)
+                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                         .background(Color.clear)
                                         .contentShape(Rectangle())
-                                        .padding(.top, 40)
+                                        .padding(.top, 40.adaptiveForIpad)
                                 }
                             }
                             HStack {
                                 Spacer()
                                 Text(savedShow)
-                                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                                    .font(.verlagBoldAdaptive(size: 20))
                                     .foregroundColor(Color.white)
                                     .padding(.leading, 5)
                                 Spacer()
@@ -208,7 +209,10 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlert) {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
-                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.158)
+                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
+                    .background(Color.clear)
+                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
+
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -218,7 +222,9 @@ struct SeatHomeView: View {
             }
         }
         .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName).background(Color.clear).padding(.top, UIScreen.main.bounds.height * 0.158)
+            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
+                .background(Color.clear)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
         }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
@@ -227,7 +233,8 @@ struct SeatHomeView: View {
             }
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat).padding(.top, UIScreen.main.bounds.height * 0.158)
+            SeatLookupView(isPresented: $showLookupAlertBySeat)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {
@@ -278,9 +285,9 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text(isOfflineMode ? "ALERT" : "Confirm")
+                    Text(isOfflineMode ? StringConstants.Common.alert : StringConstants.Common.confirm)
                         .padding(.leading, 20)
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                        .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
@@ -294,25 +301,24 @@ struct SeatHomeView: View {
                     }) {
                         Image(StringConstants.DRTImages.crossImage)
                             .resizable()
-                            .frame(width: 25, height: 25)
+                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                             .background(Color.clear)
                             .contentShape(Rectangle())
                     }
                 }
                 
                 VStack {
-                    Text(isOfflineMode ?
-                         "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out" :
-                            "Are you sure you want to log out?")
-                    .font(Font.custom("Verlag-Book", size: 18))
+                    Text(isOfflineMode ? StringConstants.LandingView.isOfflineAlertMessage :
+                            StringConstants.LandingView.logoutConfirm)
+                    .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.white)
                 }
                 
                 HStack {
                     if !isOfflineMode {
                         HStack {
-                            Text("Logout")
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                            Text(StringConstants.Common.logout)
+                                .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.leading, 30)
                                 .onTapGesture {
@@ -327,8 +333,8 @@ struct SeatHomeView: View {
                                     }
                                 }
                             Spacer()
-                            Text("Cancel")
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 20))
+                            Text(StringConstants.Common.cancel)
+                                .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.trailing, 30)
                                 .onTapGesture {
@@ -351,7 +357,7 @@ struct SeatHomeView: View {
                     Spacer()
                     Text("Error")
                         .padding(.leading, 20)
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                        .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
@@ -364,7 +370,7 @@ struct SeatHomeView: View {
                     }) {
                         Image(StringConstants.DRTImages.crossImage)
                             .resizable()
-                            .frame(width: 25, height: 25)
+                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                             .background(Color.clear)
                             .contentShape(Rectangle())
                     }
@@ -372,7 +378,7 @@ struct SeatHomeView: View {
                 
                 VStack {
                     Text(viewModel.errorMessage ?? "")
-                        .font(Font.custom("Verlag-Book", size: 18))
+                        .font(.verlagBookAdaptive(size: 18))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding()
@@ -386,7 +392,7 @@ struct SeatHomeView: View {
                 HStack {
                     Spacer()
                     Text("Success")
-                        .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                        .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
@@ -396,7 +402,7 @@ struct SeatHomeView: View {
                 
                 VStack {
                     Text("Database download successfully")
-                        .font(Font.custom("Verlag-Book", size: 18))
+                        .font(.verlagBookAdaptive(size: 18))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding()

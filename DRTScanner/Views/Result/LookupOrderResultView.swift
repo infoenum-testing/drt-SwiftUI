@@ -34,14 +34,14 @@ struct LookupOrderResultView: View {
                             dismissAction()
                         }
                     }) {
-                        Image("left_side_arrow")
+                        Image(StringConstants.DRTImages.leftSideArrow)
                     }.padding(.leading, 20)
                     
                     Spacer()
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? "Loading..." : "")
                             .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Black", size: 25))
+                            .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .gray))
@@ -49,9 +49,9 @@ struct LookupOrderResultView: View {
                         Spacer()
                     }
                     if !viewModel.isLoading {
-                        Text(viewModel.buyerName == "No orders found" ? "No orders found." : viewModel.buyerName.uppercased())
+                        Text(viewModel.buyerName == "No orders found" ? StringConstants.Common.noOrdersFound : viewModel.buyerName.uppercased())
                             .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Black", size: 25))
+                            .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         Spacer()
                     }
@@ -60,10 +60,10 @@ struct LookupOrderResultView: View {
                     if viewModel.buyerName != "No orders found" {
                     HStack(alignment: .center) {
                         Text("\(StringConstants.Common.Order) \(order?.orderId ?? 0)")
-                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                            .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.customWhite)
                         Text("CC \(order?.cc ?? "")")
-                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 15))
+                            .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.customWhite)
                     }
                 }
@@ -112,7 +112,7 @@ struct LookupOrderResultView: View {
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? "Loading..." : "")
                             .foregroundColor(Color.customWhite)
-                            .font(Font.custom("Verlag-Black", size: 25))
+                            .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .gray))
@@ -159,7 +159,7 @@ struct LookupOrderResultView: View {
                             Spacer()
                             Text("Error")
                                 .padding(.leading, 20)
-                                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                                .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(.white)
                                 .padding(.bottom, 10)
 
@@ -171,7 +171,7 @@ struct LookupOrderResultView: View {
                             }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
                             }
@@ -179,7 +179,7 @@ struct LookupOrderResultView: View {
 
                         VStack {
                             Text(viewModel.errorMessage ?? "This")
-                                .font(Font.custom("Verlag-Book", size: 18))
+                                .font(.verlagBookAdaptive(size: 18))
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.center)
                                 .padding()
@@ -189,12 +189,14 @@ struct LookupOrderResultView: View {
                         }
                     }
                     .padding(30)
+                    .padding(.top, 30)
                     .background(Color.FFCE_62)
                     .frame(width: geometry.size.width * 1)
                     .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top)
                     
                 }
-            }.padding(.top, -30)
+            }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? -90 : -30)
+
             .edgesIgnoringSafeArea(.all)
         }
         .edgesIgnoringSafeArea(.all)

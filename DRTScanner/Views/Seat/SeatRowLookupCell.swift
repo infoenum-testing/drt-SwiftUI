@@ -13,14 +13,14 @@ struct SeatRowLookupCell: View {
     var body: some View {
         HStack {
             Text(StringConstants.Common.row)
-                .font(.custom("Verlag-Book", size: 27))
+                .font(.verlagBookAdaptive(size: 27))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
             
             Text(selectedSeat.isEmpty ? "-" : selectedSeat)
-                .font(.custom(StringConstants.DRTFont.verlagBold, size: 48))
+                .font(.verlagBoldAdaptive(size: 40))
                 .foregroundColor(Color.FFCE_62)
                 .frame(maxWidth: .infinity, alignment: .center)
             

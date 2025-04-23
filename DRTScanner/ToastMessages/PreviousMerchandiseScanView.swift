@@ -21,15 +21,15 @@ struct PreviousMerchandiseScanView: View {
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 80, height: 80)
+                    .frame(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
                     .foregroundColor(.white)
 
-                Text("Previously Scanned")
-                    .font(Font.custom("Verlag-Black", size: 30))
+                Text(StringConstants.DRTToastMessages.preScanned)
+                    .font(.verlagBlackAdaptive(size: 30))
                     .foregroundColor(.white)
 
                 Text(itemName)
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 26))
+                    .font(.verlagBoldAdaptive(size: 26))
                     .foregroundColor(.white)
 
                 VStack(spacing: 5) {
@@ -39,7 +39,7 @@ struct PreviousMerchandiseScanView: View {
                     Text("Order Number : \(orderNumber)")
                 }
                 .foregroundColor(.white)
-                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 24))
+                .font(.verlagBoldAdaptive(size: 24))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)

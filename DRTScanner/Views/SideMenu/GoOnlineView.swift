@@ -21,12 +21,12 @@ struct GoOnlineView: View {
         VStack(spacing: 20) {
             if !showErrorMessage {
                 Text("Go Online")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                    .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
             }
             if isUploading {
                 Text("Uploading scanned tickets to the server...")
-                    .font(Font.custom("Avenir-Light", size: 18))
+                    .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.customWhite)
                     .multilineTextAlignment(.leading)
                     .padding()
@@ -47,18 +47,18 @@ struct GoOnlineView: View {
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
-                            .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                            .font(.verlagBoldAdaptive(size: 16))
                             .foregroundColor(.white)
                     }
                 }
                    
             } else if showSuccessMessage {
                 Text("Upload Successful!")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 22))
+                    .font(.verlagBoldAdaptive(size: 22))
                     .foregroundColor(.customWhite)
             }  else if showErrorMessage {
                 Text("Database upload failed! Please try again.")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 18))
+                    .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
             }
@@ -125,7 +125,7 @@ struct CustomAlertForError: View {
             HStack {
                 Spacer()
                 Text("Error")
-                    .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 30))
+                    .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.white)
                     .padding(.bottom, 10)
                     .padding(.top, 20)
@@ -134,7 +134,7 @@ struct CustomAlertForError: View {
 
             VStack {
                 Text(message)
-                    .font(Font.custom("Verlag-Book", size: 18))
+                    .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding()

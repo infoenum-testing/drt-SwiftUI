@@ -14,13 +14,13 @@ struct InvalidTicketView: View {
             VStack {
                 Image(systemName: "xmark.circle")
                     .resizable()
-                    .frame(width: 120, height: 120)
+                    .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(.white)
                     .padding(.bottom)
                 
-                Text("INVALID SHOW")
-                    .font(Font.custom("Verlag-Black", size: 30))
+                Text(StringConstants.DRTToastMessages.inValidShow)
+                    .font(.verlagBlackAdaptive(size: 30))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
             }

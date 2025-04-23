@@ -14,7 +14,7 @@ struct ChooseSectionCell: View {
         HStack {
             Spacer()
             Text(seatLabel)
-                .font(.custom(StringConstants.DRTFont.verlagBold, size: 32))
+                .font(.verlagBoldAdaptive(size: 32))
                 .foregroundColor(Color.FFCE_62)
             Spacer()
         }.listRowSeparator(.hidden)

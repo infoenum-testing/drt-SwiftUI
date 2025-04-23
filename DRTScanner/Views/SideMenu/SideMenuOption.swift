@@ -14,11 +14,11 @@ struct SideMenuOption: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(Font.custom(StringConstants.DRTFont.verlagBold, size: 16))
+                .font(.verlagBoldAdaptive(size: 16))
                 .foregroundColor(.white)
             Spacer()
         }
-        .padding()
+        .padding(UIDevice.current.userInterfaceIdiom == .pad ? 30 : 20)
         .frame(maxWidth: .infinity)
         .background(Color.customGreen)
         .onTapGesture {

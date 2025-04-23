@@ -8,12 +8,17 @@
 struct StringConstants {
     
     enum LandingView {
-        static let showCode = "ENTER SHOW CODE"
-        static let copyRight = "Copyright(c) 2013-2025. DRT Performance Tix. All Rights Reserved"
+        static let showCode = "Enter Show Code"
+        static let copyRight = "Copyright(c) 2013-2025. DRT Performance Tix.\nAll Rights Reserved"
         static let invalidShowCode = "Invalid show code."
         static let validShowCode = "Do you want to scan merchandise or seat?"
-        static let merchandise = "Merchandise"
-        static let seat = "Seat"
+        static let merchandise = "MERCHANDISE"
+        static let seat = "SEAT"
+        static let seatSection = "Seat"
+        static let changeShow = "Change Show"
+        static let scanMerchOrSeat = "Do you want to scan merchandise or seats?"
+        static let isOfflineAlertMessage = "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out"
+        static let logoutConfirm = "Are you sure you want to log out?"
     }
     
     // MARK: - Common -
@@ -51,12 +56,14 @@ struct StringConstants {
         static let nameCannotEmpty = "Name cannot be empty"
         static let invalidName = "Invalid Name"
         static let done = "Done"
-        static let alert = "Alert"
+        static let alert = "ALERT"
         static let cancel = "Cancel"
+        static let continueTextAlert = "Continue"
         static let music = "music"
         static let DontCry = "Don't cry"
         static let someTimeLittle = "some time a little.."
         static let noOrdersAvailable = "No orders available."
+        static let noOrdersFound = "No orders found."
         
         static let unknown = "Unknown"
         static let oID = "OID :"
@@ -78,6 +85,7 @@ struct StringConstants {
         static let scannedQrCode = "Scanned QR Code:"
         static let ordersNotFound = "Orders not found."
         static let showCode = "Show Code"
+        static let selectTime = "Select Time"
     }
     
     struct httpMethod {
@@ -134,6 +142,11 @@ struct StringConstants {
     struct DRTImages {
         static let backgound = "background"
         static let crossImage = "Popup_cross_btn"
+        static let logo = "Logo"
+        static let logout = "logout"
+        static let scanNow = "scan_now"
+        static let greenCheckImage = "Green_circle_check_btn"
+        static let leftSideArrow = "left_side_arrow"
     }
     
     struct Formate {
@@ -169,6 +182,8 @@ struct StringConstants {
     
     struct SideMenuView {
         static let goOffline = "GO OFFLINE"
+        static let goOfflineViewText = "Go offline"
+        static let goOfflineViewDiscription = "By going offline, the database will be downloaded to this device, and nobody else will be able to scan tickets for this show until I go back online. When I return online, the scanned tickets will be uploaded back to the server.\n\nBy signing my name, I understand and agree to the above:"
         static let goOnline = "GO ONLINE"
         static let scanTicket = "SCAN TICKETS"
         static let ticket = "tickets?"
@@ -203,5 +218,14 @@ struct StringConstants {
     
     struct DRTFont {
         static let verlagBold = "Verlag-Bold"
+        static let verlagBook = "Verlag-Book"
+        static let verlagBlack = "Verlag-Black"
+    }
+    
+    struct DRTToastMessages {
+        static let inValidMerchandiseVoucher = "This is an invalid merchandise voucher."
+        static let inValidTicketVoucher = "This is an invalid seating ticket."
+        static let inValidShow = "INVALID SHOW"
+        static let preScanned = "Previously Scanned"
     }
 }

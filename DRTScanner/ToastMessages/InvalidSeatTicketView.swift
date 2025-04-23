@@ -14,13 +14,13 @@ struct InvalidSeatTicketView: View {
             VStack {
                 Image(systemName: "xmark.circle")
                     .resizable()
-                    .frame(width: 120, height: 120)
+                    .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(.white)
                     .padding(.bottom)
                 
-                Text("This is an invalid seating ticket")
-                    .font(Font.custom("Verlag-Black", size: 30))
+                Text(StringConstants.DRTToastMessages.inValidTicketVoucher)
+                    .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .foregroundColor(.white)

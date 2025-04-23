@@ -40,7 +40,7 @@ struct LookupResultCardOrPhoneView: View {
                                 dismissAction()
                             }
                         }) {
-                            Image("left_side_arrow")
+                            Image(StringConstants.DRTImages.leftSideArrow)
                         }
                         .padding(.leading, 20)
                         
@@ -48,15 +48,15 @@ struct LookupResultCardOrPhoneView: View {
                         if isLoading {
                             Text("Loading...")
                                 .foregroundColor(Color.customWhite)
-                                .font(Font.custom("Verlag-Black", size: 25))
+                                .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20).frame(alignment: .leading)
                             ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         }
                         if !isLoading {
-                            Text(orders.isEmpty ? "No orders found." : "Total Results: \(orders.count)")
+                            Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(orders.count)")
                                 .foregroundColor(Color.customWhite)
-                                .font(Font.custom("Verlag-Black", size: 25))
+                                .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
                         }
                             Spacer()
