@@ -27,9 +27,11 @@ struct DRTScannerApp: App {
                     LandingView()
                         .padding([.leading, .trailing], 20)
                         .environmentObject(inactivityManager)
+                        .ignoresSafeArea(.keyboard)
                        // .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 }
             } .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .ignoresSafeArea(.keyboard)
             .detectGlobalTaps(disabled: false)
             .onAppear {
                 InactivityManager.shared.start()

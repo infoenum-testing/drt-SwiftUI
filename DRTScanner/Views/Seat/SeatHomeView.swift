@@ -252,24 +252,25 @@ struct SeatHomeView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     isScanningCell = true
                     scnanerReset.triggerReset()
+                    NotificationCenter.default.post(name: .resetCameraView, object: nil)
                 }
             }
         }
-        .customAlert(isPresented: $showGoOfflineView) {
+        .customAlertGoOffline(isPresented: $showGoOfflineView) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
             }
         }
-        .onChange(of: showGoOfflineView) { newValue in
-            if newValue {
-                isScanningCell = false
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    isScanningCell = true
-                    scnanerReset.triggerReset()
-                }
-            }
-        }
+//        .onChange(of: showGoOfflineView) { newValue in
+//            if newValue {
+//                isScanningCell = false
+//            } else {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+//                    isScanningCell = true
+//                    scnanerReset.triggerReset()
+//                }
+//            }
+//        }
         .customAlert(isPresented: $showScanningStatsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
@@ -419,4 +420,8 @@ struct SeatHomeView_Previews: PreviewProvider {
     static var previews: some View {
         SeatHomeView(showSeatView: .constant(true))
     }
+}
+
+extension Notification.Name {
+    static let resetCameraView = Notification.Name("resetCameraView")
 }

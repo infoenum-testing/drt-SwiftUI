@@ -56,7 +56,7 @@ struct LandingView: View {
                         .scaleEffect(1.5)
                         .padding(.bottom)
                 }
-                       }
+            }
             else {
                 
                 VStack {
@@ -254,45 +254,45 @@ struct LandingView: View {
                         }
                     })
                     .background(Color.clear)
-                  //  .padding([.trailing, .leading], 50)
+                    //  .padding([.trailing, .leading], 50)
                 }.edgesIgnoringSafeArea(.bottom)
                 
-                .customAlert(isPresented: $viewModel.showAlert) {
-                    if !viewModel.isValidCode {
-                        VStack(alignment: .center) {
-                            HStack {
-                                Spacer()
-                                Text(StringConstants.Common.error)
-                                    .padding(.leading, 30)
-                                    .font(.verlagBoldAdaptive(size: 30))
-                                    .foregroundColor(.customWhite)
-                                    .padding(.bottom, 10)
-                                    .padding(.top, 20)
-                                
-                                Spacer()
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        viewModel.showAlert = false
+                    .customAlert(isPresented: $viewModel.showAlert) {
+                        if !viewModel.isValidCode {
+                            VStack(alignment: .center) {
+                                HStack {
+                                    Spacer()
+                                    Text(StringConstants.Common.error)
+                                        .padding(.leading, 30)
+                                        .font(.verlagBoldAdaptive(size: 30))
+                                        .foregroundColor(.customWhite)
+                                        .padding(.bottom, 10)
+                                        .padding(.top, 20)
+                                    
+                                    Spacer()
+                                    Button(action: {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            viewModel.showAlert = false
+                                        }
+                                    }) {
+                                        Image(StringConstants.DRTImages.crossImage)
+                                            .resizable()
+                                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                            .background(Color.clear)
+                                            .contentShape(Rectangle())
+                                            .padding(.trailing, 20)
                                     }
-                                }) {
-                                    Image(StringConstants.DRTImages.crossImage)
-                                        .resizable()
-                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                        .background(Color.clear)
-                                        .contentShape(Rectangle())
-                                        .padding(.trailing, 20)
                                 }
+                                
+                                Text(StringConstants.LandingView.invalidShowCode)
+                                    .font(.verlagBookAdaptive(size: 18))
+                                    .padding(.bottom)
+                                    .foregroundColor(.customWhite)
                             }
-                            
-                            Text(StringConstants.LandingView.invalidShowCode)
-                                .font(.verlagBookAdaptive(size: 18))
-                                .padding(.bottom)
-                                .foregroundColor(.customWhite)
+                            .padding()
+                            .background(Color.FFCE_62)
                         }
-                        .padding()
-                        .background(Color.FFCE_62)
                     }
-                }
             }
             if showSeatView {
                 SeatHomeView(showSeatView: $showSeatView)
@@ -303,5 +303,6 @@ struct LandingView: View {
                     .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }.frame(width: UIScreen.main.bounds.width)
+            .ignoresSafeArea(.keyboard)
     }
 }

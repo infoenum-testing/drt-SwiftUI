@@ -36,7 +36,8 @@ struct GoOfflineView: View {
     }
     
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
+            Spacer()
             HStack {
                 Spacer()
                 Text(StringConstants.SideMenuView.goOffline)
@@ -44,7 +45,10 @@ struct GoOfflineView: View {
                     .foregroundColor(.customWhite)
                     .padding(.trailing, -60)
                 Spacer()
-                Button(action: { isPresented = false }) {
+                Button(action: {
+                    isNameFieldFocused = false
+                    isPresented = false
+                }) {
                     Image(StringConstants.DRTImages.crossImage)
                         .resizable()
                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
@@ -65,7 +69,7 @@ struct GoOfflineView: View {
             
             HStack {
                 TextField("Type your name here", text: $name)
-                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 15 : 0)
+                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 10)
                     .font(.verlagBook(size: 25))
                     .background(Color.customWhite)
                     .foregroundColor(Color.gray)
@@ -73,6 +77,10 @@ struct GoOfflineView: View {
                     .multilineTextAlignment(.center)
                     .disabled(isSyncing)
                     .focused($isNameFieldFocused)
+                    .submitLabel(.done) // or .go, .next, etc.
+                        .onSubmit {
+                            isNameFieldFocused = false
+                        }
             }.padding(.horizontal)
             .frame(alignment: .center)
             
@@ -96,7 +104,10 @@ struct GoOfflineView: View {
             }
             
             HStack {
-                Button(action: goOffline) {
+                Button(action: {
+                    isNameFieldFocused = false
+                    goOffline()
+                }) {
                     Text(StringConstants.Common.continueTextAlert)
                         .padding()
                         .font(.verlagBoldAdaptive(size: 26))
@@ -106,7 +117,10 @@ struct GoOfflineView: View {
                 
                 Spacer()
                 
-                Button(action: { isPresented = false }) {
+                Button(action: {
+                    isNameFieldFocused = false
+                    isPresented = false }
+                ) {
                     Text(StringConstants.Common.cancel)
                         .padding()
                         .font(.verlagBoldAdaptive(size: 26))
@@ -114,18 +128,15 @@ struct GoOfflineView: View {
                 }
                 .disabled(isSyncing)
             }
+            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 2 + keyboardHeight)
+        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 1.8 + keyboardHeight)
         .padding(.bottom, keyboardHeight)
         .background(Color.FFCE_62)
         .edgesIgnoringSafeArea(.bottom)
+        Spacer()
         .onReceive(Publishers.keyboardHeight) { height in
-            withAnimation {
                 self.keyboardHeight = height
-            }
-        }
-        .onAppear {
-          //  isNameFieldFocused = true
         }
     }
     
@@ -136,12 +147,13 @@ struct GoOfflineView: View {
         progress = 0.0
         
         let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
-            if self.progress < 1.0 {
-                self.progress += 0.02
-            } else {
-                timer.invalidate()
+                if self.progress < 1.0 {
+                    self.progress += 0.02
+                    self.progress = min(self.progress, 1.0)
+                } else {
+                    timer.invalidate()
+                }
             }
-        }
         
         IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {

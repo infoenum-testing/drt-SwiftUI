@@ -362,14 +362,22 @@ struct ScannerView: View {
                     await viewModel.fetchStats()
                 }
             }
-            .onChange(of: scannerViewModel.shouldResetScanner) { _ in
-                startInactivityTimer()
-                isStopScanVisible = false
-                isCustomColorVisible = false
-                
-                startFlashInactivityTimer()
+            .onChange(of: scannerViewModel.shouldResetScanner) { newValue in
+                if newValue {
+                    resetCameraView()
+                }
+            }
+        }.onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
+            if isStopScanVisible {
+                resetScanner()
+            } else if isCustomColorVisible {
+                resetScanner()
+            }
+            else {
+                resetCameraView()
             }
         }
+
         .onAppear {
             setupScanner()
             startInactivityTimer()
@@ -519,6 +527,26 @@ struct ScannerView: View {
         startLineAnimation()
         startInactivityTimer()
         startFlashInactivityTimer()
+    }
+    
+    
+    private func resetCameraView() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            scannerController?.captureSession?.startRunning()
+        }
+        DispatchQueue.main.async {
+            isCustomColorVisible = false
+            isStopScanVisible = false
+            scannedCode = nil
+            scanResult = nil
+            isScanning = true
+            isScannerActive = true
+            isScanningCell = true
+            //        linePosition = 0
+            startLineAnimation()
+            startInactivityTimer()
+            startFlashInactivityTimer()
+        }
     }
     
     private func startInactivityTimer() {
