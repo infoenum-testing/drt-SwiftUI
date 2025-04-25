@@ -168,8 +168,10 @@ struct GoOfflineView: View {
                 return height / 5.5
             case 932: // iPhone 16 Pro Max
                 return height / 6.2
+            case 667:  // iPhone SE (3rd Gen) with screen height of 667
+                return height / 4.0
             default:
-                return height / 5.5 // fallback for general case
+                return height / 6.2 // fallback for general case
             }
         }
     }
