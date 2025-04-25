@@ -22,16 +22,15 @@ struct DRTScannerApp: App {
                     LandingView()
                         .padding([.leading, .trailing], 20)
                         .environmentObject(inactivityManager)
-                       // .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                        .ignoresSafeArea(.keyboard, edges: .bottom)
                 } else {
                     LandingView()
                         .padding([.leading, .trailing], 20)
                         .environmentObject(inactivityManager)
-                        .ignoresSafeArea(.keyboard)
-                       // .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                        .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
             } .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .ignoresSafeArea(.keyboard)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
             .detectGlobalTaps(disabled: false)
             .onAppear {
                 InactivityManager.shared.start()

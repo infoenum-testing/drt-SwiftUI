@@ -211,8 +211,7 @@ struct SeatHomeView: View {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
                 LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
                     .background(Color.clear)
-                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
-
+                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -224,7 +223,7 @@ struct SeatHomeView: View {
         .customSheetView(isPresented: $showLookupAlertByName) {
             LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
                 .background(Color.clear)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
         }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
@@ -234,7 +233,7 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
             SeatLookupView(isPresented: $showLookupAlertBySeat)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topPaddingForDevice() : UIScreen.main.bounds.height * 0.159)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {

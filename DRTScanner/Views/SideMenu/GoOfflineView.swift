@@ -37,7 +37,6 @@ struct GoOfflineView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Spacer()
             HStack {
                 Spacer()
                 Text(StringConstants.SideMenuView.goOffline)
@@ -47,7 +46,9 @@ struct GoOfflineView: View {
                 Spacer()
                 Button(action: {
                     isNameFieldFocused = false
-                    isPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                           isPresented = false
+                       }
                 }) {
                     Image(StringConstants.DRTImages.crossImage)
                         .resizable()
@@ -106,7 +107,9 @@ struct GoOfflineView: View {
             HStack {
                 Button(action: {
                     isNameFieldFocused = false
-                    goOffline()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        goOffline()
+                    }
                 }) {
                     Text(StringConstants.Common.continueTextAlert)
                         .padding()
@@ -119,7 +122,10 @@ struct GoOfflineView: View {
                 
                 Button(action: {
                     isNameFieldFocused = false
-                    isPresented = false }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                           isPresented = false
+                       }
+                }
                 ) {
                     Text(StringConstants.Common.cancel)
                         .padding()
@@ -128,17 +134,46 @@ struct GoOfflineView: View {
                 }
                 .disabled(isSyncing)
             }
-            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 1.8 + keyboardHeight)
-        .padding(.bottom, keyboardHeight)
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: UIDevice.current.userInterfaceIdiom == .pad ?
+            UIScreen.main.bounds.height / 1.5 :
+                UIScreen.main.bounds.height / 1.8
+        )
+
         .background(Color.FFCE_62)
         .edgesIgnoringSafeArea(.bottom)
-        Spacer()
+        .offset(y: getKeyboardOffset(for: keyboardHeight))
+        .animation(.easeInOut(duration: 0.001), value: keyboardHeight)
         .onReceive(Publishers.keyboardHeight) { height in
                 self.keyboardHeight = height
         }
     }
+    
+    private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return height / 3
+        } else {
+            switch screenHeight {
+            case 812: // iPhone X, XS, 13 mini
+                return height / 4.5
+            case 844: // iPhone 11, 12, 13, 14, etc.
+                return height / 5
+            case 896:
+                return height / 30
+            case 926: // iPhone 12/13/14 Pro Max
+                return height / 5.5
+            case 932: // iPhone 16 Pro Max
+                return height / 6.2
+            default:
+                return height / 5.5 // fallback for general case
+            }
+        }
+    }
+
     
     private func goOffline() {
         guard name.count >= 5 else { return }

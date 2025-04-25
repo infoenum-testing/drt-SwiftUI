@@ -60,12 +60,7 @@ extension CGFloat {
 
 func topPaddingForDevice() -> CGFloat {
     let nativeHeight = UIScreen.main.nativeBounds.height
-    let idiom = UIDevice.current.userInterfaceIdiom
 
-    guard idiom == .pad else {
-        // Default for iPhone
-        return UIScreen.main.bounds.height * 0.159
-    }
 
     switch nativeHeight {
     case 2732:
@@ -106,3 +101,13 @@ func scannerTopPadding(isFullScreen: Bool) -> CGFloat {
     }
 }
 
+import SwiftUI
+
+func topSafeAreaPadding() -> CGFloat {
+    let window = UIApplication.shared.connectedScenes
+        .compactMap { $0 as? UIWindowScene }
+        .flatMap { $0.windows }
+        .first { $0.isKeyWindow }
+
+    return window?.safeAreaInsets.top ?? 0
+}

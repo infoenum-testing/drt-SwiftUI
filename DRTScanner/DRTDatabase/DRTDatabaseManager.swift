@@ -160,7 +160,12 @@ class DRTDatabaseManager {
         seat.order_id = seatAttributes["order"] as? NSNumber
         seat.barcode = seatAttributes["barcode"] as? String
         seat.qrCode = seatAttributes["qrCode"] as? String
-        seat.handicapped = NSNumber(value: (seatAttributes["handicap"] as? Int ?? 0) == 1)
+        if let handicapValue = seatAttributes["handicap"] as? Int {
+            seat.handicapped = NSNumber(value: handicapValue == 1)
+        } else {
+            seat.handicapped = NSNumber(value: false)
+        }
+
         
         if let scannedString = seatAttributes["scanned"] as? String {
                let formatter = DateFormatter()

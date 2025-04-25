@@ -21,8 +21,9 @@ struct AlertViewModifierGoOfflineView<AlertContent: View>: ViewModifier {
             
             
             if isPresented {
-                Color.black.opacity(0.8)
+                Color.black.opacity(1.5)
                     .edgesIgnoringSafeArea(.all)
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
                     .transition(.opacity)
                     .allowsHitTesting(true)
                     .onTapGesture {
@@ -32,7 +33,6 @@ struct AlertViewModifierGoOfflineView<AlertContent: View>: ViewModifier {
                     }
                 
                 self.content()
-                //.background(Color.yellow)
                     .offset(y: 0)
                     .transition(.move(edge: .top))
                     .ignoresSafeArea(.keyboard, edges: .bottom)
