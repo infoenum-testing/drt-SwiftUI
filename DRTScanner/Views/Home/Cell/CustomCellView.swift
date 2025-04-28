@@ -17,6 +17,7 @@ struct CustomCellView: View {
     var buttonImage: String
     var showDivider: Bool = true
     var buttonAction: () -> Void
+    @AppStorage("isMerchandise") private var isMerchandise: Bool = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -47,9 +48,28 @@ struct CustomCellView: View {
         .frame(height: cellHeight)
         .frame(width: UIScreen.main.bounds.width)
         if showDivider {
-            Divider()
-                .frame(height: 0.5)
-                .foregroundColor(bottomLineColor)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                if !isMerchandise {
+                    Divider()
+                        .frame(height: 8.0)
+                        .foregroundColor(bottomLineColor)
+                } else {
+                    Divider()
+                        .frame(height: dividerHeight())
+                        .foregroundColor(bottomLineColor)
+                }
+            } else {
+                Divider()
+                    .frame(height: dividerHeight())
+                    .foregroundColor(bottomLineColor)
+            }
         }
     }
+    private func dividerHeight() -> CGFloat {
+           if UIDevice.current.userInterfaceIdiom == .pad {
+               return isMerchandise ? 0.5 : 0  // If not merchandise on iPad, use thicker divider
+           } else {
+               return 0.8 // Always 0.5 on iPhone
+           }
+       }
 }

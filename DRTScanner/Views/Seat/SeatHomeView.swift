@@ -49,7 +49,11 @@ struct SeatHomeView: View {
     
     private var dynamicCellHeight: CGFloat {
            let screenHeight = UIScreen.main.bounds.height
-           return isMerchandise ? screenHeight * 0.12 : screenHeight * 0.09
+        if UIDevice.current.userInterfaceIdiom == .pad {
+               return isMerchandise ? screenHeight * 0.12 : screenHeight * 0.09
+           } else {
+               return isMerchandise ? screenHeight * 0.12 : screenHeight * 0.09
+           }
        }
     
     var body: some View {
@@ -130,13 +134,7 @@ struct SeatHomeView: View {
                                     ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
                                 }
                             } else if isInvalidTicket {
-//                                InvalidTicketView()
-//                                ValidTicketView(orderName: "orderName", orderNumber: "3333876", isGoldenTicket: false)
-//                                PreviouslyScannedTicketView(orderName: "orderName", orderNumber: "3333876", scannedTime: "02:16 PM")
-//                                MerchandiseScanView()
-//                                PreviousMerchandiseScanView()
-//                                InvalidMerchandiseTicketView()
-                                InvalidSeatTicketView()
+                                InvalidTicketView()
                             }
                             //                            else if isMerchandise {
                             if isMerchPreScanned {
