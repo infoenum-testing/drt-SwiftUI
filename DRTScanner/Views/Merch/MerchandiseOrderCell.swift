@@ -95,8 +95,10 @@ struct MerchandiseOrderCell: View {
             Spacer()
             
             Button(action: {
-                withAnimation {
-                    updateMerchWithScannedQrCode()
+                if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
+                    withAnimation {
+                        updateMerchWithScannedQrCode()
+                    }
                 }
             }) {
                 if isLoading {
@@ -131,6 +133,7 @@ struct MerchandiseOrderCell: View {
         if isOffline {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 processScanResult(success: true, dateScanned: nil)
+                isLoading = false
             }
         } else {
             guard let qrCode = merchandiseOrder.qrCode else {
@@ -177,8 +180,7 @@ struct MerchandiseOrderCell: View {
             merchandiseOrder.date_Scanned = scannedTime ?? ""
         }
         
-        if merchandiseOrder.qty > 0 {
-            merchandiseOrder.qty -= 1
+        if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
             merchandiseOrder.qtyScanned += 1
         }
         
@@ -192,7 +194,7 @@ struct MerchandiseOrderCell: View {
     }
     
     private func saveScannedStatus(for order: MerchandiseOrder) {
-        guard let qrCode = order.qrCode, !qrCode.isEmpty else {
+        guard let qrCode = order.qrCode?.first, !qrCode.isEmpty else {
             print("QR Code is nil or empty.")
             return
         }
@@ -201,28 +203,37 @@ struct MerchandiseOrderCell: View {
         fetchRequest.predicate = NSPredicate(format: "qrCode == %@", qrCode)
         
         do {
-            if let product = try context.fetch(fetchRequest).first {
-                product.qty_scanned = Int64(order.qtyScanned)
-                product.qty = Int64(order.qty)
-                
-                if product.qty > 0 {
-                    product.qty -= 1
-                    product.qty_scanned += 1
-                }
-                
-                if product.qty == 0 {
-                    let currentDate = Date()
-                    product.date_scanned = currentDate
-                }
-                
-                try context.save()
-                
-                merchandiseOrder.qtyScanned = Int(product.qty_scanned)
-                merchandiseOrder.qty = Int(product.qty)
-                merchandiseOrder.date_Scanned = product.date_scanned != nil ? MerchandiseOrder.dateFormatter.string(from: product.date_scanned!) : ""
-                
-                isScanned = product.qty == product.qty_scanned
+            let products = try context.fetch(fetchRequest)
+            let product: Product
+            
+            if let existingProduct = products.first {
+                product = existingProduct
+            } else {
+                product = Product(context: context)
+                product.qrCode = qrCode
             }
+            
+            product.qty = Int64(order.qty)
+            product.qty_scanned = Int64(order.qtyScanned + 1)
+            
+            if product.qty_scanned > product.qty {
+                product.qty_scanned = product.qty
+            }
+            
+            if product.qty_scanned == product.qty {
+                product.date_scanned = Date()
+            }
+            
+            try context.save()
+            
+            merchandiseOrder.qty = Int(product.qty)
+            merchandiseOrder.qtyScanned = Int(product.qty_scanned)
+            if let dateScanned = product.date_scanned {
+                merchandiseOrder.date_Scanned = MerchandiseOrder.dateFormatter.string(from: dateScanned)
+            }
+            
+            isScanned = product.qty == product.qty_scanned
+            
         } catch {
             print("Failed to save scanned status: \(error)")
         }

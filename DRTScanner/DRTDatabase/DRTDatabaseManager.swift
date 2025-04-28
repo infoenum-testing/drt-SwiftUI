@@ -201,6 +201,9 @@ class DRTDatabaseManager {
         product.variantName = productAttributes["variantName"] as? String
         product.qrCode = productAttributes["qrCode"] as? String
         product.qty = productAttributes["qty"] as? Int64 ?? 0
+        if let timestamp = productAttributes["ts_scanned"] as? Int64 {
+                product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000)) // If timestamp is in milliseconds
+            }
         product.qty_scanned = productAttributes["qty_scanned"] as? Int64 ?? 0
         product.icon_src = productAttributes["icon_src"] as? String
         product.order_id = (productAttributes["orderId"] as? Int64) ?? 0
