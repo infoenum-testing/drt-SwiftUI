@@ -24,7 +24,6 @@ struct InvalidSeatTicketView: View {
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                Spacer().padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding([.top, .bottom], UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height * 0.10 : UIScreen.main.bounds.height * 0.18)

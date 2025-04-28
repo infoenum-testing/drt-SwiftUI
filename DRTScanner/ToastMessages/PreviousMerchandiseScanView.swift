@@ -18,6 +18,7 @@ struct PreviousMerchandiseScanView: View {
     var body: some View {
         VStack {
             VStack(spacing: 16) {
+                Spacer()
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
                     .scaledToFit()

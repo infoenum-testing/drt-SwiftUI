@@ -16,6 +16,7 @@ struct PreviouslyScannedTicketView: View {
     var body: some View {
         VStack {
             VStack {
+                Spacer()
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)

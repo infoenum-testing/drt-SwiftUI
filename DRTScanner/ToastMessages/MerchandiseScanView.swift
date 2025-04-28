@@ -18,6 +18,7 @@ struct MerchandiseScanView: View {
     var body: some View {
         VStack {
             VStack {
+                Spacer().padding()
                 Image(systemName: "checkmark.circle")
                     .resizable()
                     .scaledToFit()
@@ -37,10 +38,10 @@ struct MerchandiseScanView: View {
                 }
                 .foregroundColor(.white)
                 .font(.verlagBoldAdaptive(size: 26))
-                Spacer()
+                Spacer().padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.11))
+            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.12))
             .transition(.opacity)
             .background(Color.green)
 
