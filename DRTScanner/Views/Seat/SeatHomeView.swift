@@ -130,7 +130,13 @@ struct SeatHomeView: View {
                                     ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
                                 }
                             } else if isInvalidTicket {
-                                InvalidTicketView()
+//                                InvalidTicketView()
+//                                ValidTicketView(orderName: "orderName", orderNumber: "3333876", isGoldenTicket: false)
+//                                PreviouslyScannedTicketView(orderName: "orderName", orderNumber: "3333876", scannedTime: "02:16 PM")
+//                                MerchandiseScanView()
+//                                PreviousMerchandiseScanView()
+//                                InvalidMerchandiseTicketView()
+                                InvalidSeatTicketView()
                             }
                             //                            else if isMerchandise {
                             if isMerchPreScanned {

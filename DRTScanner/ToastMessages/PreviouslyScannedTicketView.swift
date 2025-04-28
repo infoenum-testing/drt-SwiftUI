@@ -14,13 +14,14 @@ struct PreviouslyScannedTicketView: View {
     let scannedTime: String
 
     var body: some View {
-        VStack {            
-            VStack(spacing: 15) {
+        VStack {
+            VStack {
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(.white)
+                    .padding(.top, 5)
                 
                 Text(orderName.capitalized)
                     .font(.verlagBlackAdaptive(size: 30))
@@ -34,9 +35,10 @@ struct PreviouslyScannedTicketView: View {
                     .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)
+            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.03 : 0.11))
             .transition(.opacity)
             .background(Color(red: 0.99, green: 0.35, blue: 0.0))
             

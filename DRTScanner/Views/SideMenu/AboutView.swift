@@ -35,7 +35,7 @@ struct AboutView: View {
                             .foregroundColor(.black)
                             .padding()
                     }
-                }.padding(.top, 0)
+                }.padding(.top)
                 Image(StringConstants.DRTImages.logo)
                     .resizable()
                     .scaledToFit()

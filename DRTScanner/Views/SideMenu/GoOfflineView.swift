@@ -46,7 +46,7 @@ struct GoOfflineView: View {
                 Spacer()
                 Button(action: {
                     isNameFieldFocused = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                            isPresented = false
                        }
                 }) {
@@ -122,7 +122,7 @@ struct GoOfflineView: View {
                 
                 Button(action: {
                     isNameFieldFocused = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                            isPresented = false
                        }
                 }

@@ -46,7 +46,7 @@ struct SeatLookupView: View {
                     }.padding(.leading, 20)
                     
                     //TextField("", text: $seatText)
-                    TextField("", text: $seatText, prompt: Text("Select Seat").font(.verlagBoldAdaptive(size: 30)))
+                    TextField("", text: $seatText, prompt: Text("Select Seat").font(.verlagBoldAdaptive(size: 30)).foregroundColor(Color.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 42))
                         .foregroundColor(.customWhite)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -82,9 +82,12 @@ struct SeatLookupView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .gray))
                                 .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                         } else {
-                            Text(StringConstants.Common.continueText)
-                                .font(.verlagBoldAdaptive(size: 36))
-                                .foregroundColor(.customWhite)
+                            VStack {
+                                Text(StringConstants.Common.continueText)
+                                    .font(.verlagBoldAdaptive(size: 36))
+                                    .foregroundColor(.customWhite)
+                                    .padding(.top, 5.adaptiveForIpad)  
+                            }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .background(Color.FFCE_62)
                         }

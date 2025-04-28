@@ -27,6 +27,7 @@ struct LookupByNumbersView: View {
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
     @State private var isLoading: Bool = false
+    @Environment(\.colorScheme) var colorScheme
     
     init(isPresented: Binding<Bool>, lookupType: LookupType) {
         _viewModel = StateObject(wrappedValue: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))

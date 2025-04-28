@@ -24,9 +24,11 @@ struct InvalidMerchandiseTicketView: View {
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.18)
+            .padding([.top], UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height * 0.10 :  UIScreen.main.bounds.height * 0.18)
+            .padding([.bottom], UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height * 0.10 :  UIScreen.main.bounds.height * 0.18)
             .transition(.opacity)
             .background(Color.red)
             

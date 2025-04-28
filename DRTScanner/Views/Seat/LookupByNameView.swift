@@ -64,7 +64,7 @@ struct LookupByNameView: View {
                             .animation(.easeInOut, value: inputText.isEmpty)
                     }
                     
-                    TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
+                    TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)).foregroundColor(Color.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 34))
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color.customWhite)

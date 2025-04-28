@@ -40,12 +40,14 @@ struct PreviousMerchandiseScanView: View {
                 }
                 .foregroundColor(.white)
                 .font(.verlagBoldAdaptive(size: 24))
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)
+            .padding([.top], UIDevice.current.userInterfaceIdiom == .pad ? 10 : UIScreen.main.bounds.height * 0.11)
+            .padding([.bottom], UIDevice.current.userInterfaceIdiom == .pad ? 0 : UIScreen.main.bounds.height * 0.11)
             .transition(.opacity)
             .background(Color(red: 0.99, green: 0.35, blue: 0.0))
-            .padding(.top)
+//            .padding(.top)
 
             Spacer()
         }

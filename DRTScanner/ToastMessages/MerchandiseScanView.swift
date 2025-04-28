@@ -17,12 +17,13 @@ struct MerchandiseScanView: View {
 
     var body: some View {
         VStack {
-            VStack(spacing: 16) {
+            VStack {
                 Image(systemName: "checkmark.circle")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
                     .foregroundColor(.white)
+                    .padding(.top, -10.adaptiveForIpad)
 
                 Text(itemName ?? "")
                     .font(.verlagBlackAdaptive(size: 30))
@@ -36,9 +37,10 @@ struct MerchandiseScanView: View {
                 }
                 .foregroundColor(.white)
                 .font(.verlagBoldAdaptive(size: 26))
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.11)
+            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.11))
             .transition(.opacity)
             .background(Color.green)
 

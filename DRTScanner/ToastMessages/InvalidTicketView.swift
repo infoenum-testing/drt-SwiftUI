@@ -12,6 +12,7 @@ struct InvalidTicketView: View {
     var body: some View {
         VStack {            
             VStack {
+                Spacer()
                 Image(systemName: "xmark.circle")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -23,9 +24,10 @@ struct InvalidTicketView: View {
                     .font(.verlagBlackAdaptive(size: 30))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.18)
+            .padding([.top, .bottom], UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height * 0.10 : UIScreen.main.bounds.height * 0.18)
             .transition(.opacity)
             .background(Color.red)
             

@@ -30,7 +30,7 @@ struct ValidTicketView: View {
                     .foregroundColor(.white)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * 0.15)
+            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.15))
             .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.3))
