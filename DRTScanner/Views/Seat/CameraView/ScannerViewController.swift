@@ -17,6 +17,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     var onScan: ((String) -> Void)?
     var isScanningBinding: Binding<Bool>?
     var flashControlHandler: ((Bool) -> Void)?
+    private var hasCheckedPermissions = false
 
     @AppStorage("kAutoEnableFlashTimeout") private var autoEnableFlashTimeout: Bool = false
 
@@ -32,7 +33,6 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCamera()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAutoFlash), name: .enableAutoFlash, object: nil)
     }
 
@@ -40,10 +40,59 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.bounds
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !hasCheckedPermissions {
+            hasCheckedPermissions = true
+            checkCameraPermission()
+        }
+    }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
         print("🗑️ ScannerViewController deinitialized")
+    }
+
+    // MARK: - Camera Permission Handling
+
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            setupCamera()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self.setupCamera()
+                    } else {
+                        self.showCameraPermissionAlert()
+                    }
+                }
+            }
+        case .denied, .restricted:
+            showCameraPermissionAlert()
+        @unknown default:
+            showCameraPermissionAlert()
+        }
+    }
+
+    private func showCameraPermissionAlert() {
+        let alert = UIAlertController(
+            title: "Camera Access Needed",
+            message: "Please enable camera access in Settings to scan QR codes.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsURL)
+            }
+        })
+
+        present(alert, animated: true)
     }
 
     // MARK: - Camera Setup

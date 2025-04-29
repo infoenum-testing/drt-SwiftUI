@@ -20,7 +20,7 @@ struct GoOnlineView: View {
     var body: some View {
         VStack(spacing: 20) {
             if !showErrorMessage {
-                Text("Go Online")
+                Text("GO ONLINE")
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
             }
@@ -53,7 +53,7 @@ struct GoOnlineView: View {
                 }
                    
             } else if showSuccessMessage {
-                Text("Upload Successful!")
+                Text("Database Upload Successful!")
                     .font(.verlagBoldAdaptive(size: 22))
                     .foregroundColor(.customWhite)
             }  else if showErrorMessage {

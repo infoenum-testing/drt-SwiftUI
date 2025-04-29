@@ -80,7 +80,6 @@ struct SeatHomeView: View {
                                 CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     seatHomeViewModel.selectedLookupType = .orderNumber
                                     isScanningCell = false
-                                    //   scnanerReset.disableFlash()
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLookupAlert = true
                                     }
@@ -169,7 +168,7 @@ struct SeatHomeView: View {
                                 Image(StringConstants.DRTImages.logo)
                                     .resizable()
                                     .frame(width: 120.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
-                                    .padding(.top, 40.adaptiveForIpad)
+                                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
                                     .padding(.leading, 10)
                                 Spacer()
                                 Button(action: {
@@ -180,7 +179,7 @@ struct SeatHomeView: View {
                                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                         .background(Color.clear)
                                         .contentShape(Rectangle())
-                                        .padding(.top, 40.adaptiveForIpad)
+                                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
                                 }
                             }
                             HStack {
@@ -192,22 +191,10 @@ struct SeatHomeView: View {
                                 Spacer()
                             }
                             .frame(width: UIScreen.main.bounds.width)
-                            .padding(10)
+                            .padding(12)
                             .background(Color.FFCE_62)
-                        }
+                        }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPadding())
                     }
-                    
-//                    ToolbarItem(placement: .topBarTrailing) {
-//                        Button(action: {
-//                            isSideMenuPresented.toggle()
-//                        }) {
-//                            Image("side_menu")
-//                                .resizable()
-//                                .frame(width: 25, height: 25)
-//                                .background(Color.clear)
-//                                .contentShape(Rectangle())
-//                        }
-//                    }
                 }
             }
         }
@@ -215,7 +202,7 @@ struct SeatHomeView: View {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
                 LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
                     .background(Color.clear)
-                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
+                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -227,7 +214,7 @@ struct SeatHomeView: View {
         .customSheetView(isPresented: $showLookupAlertByName) {
             LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
                 .background(Color.clear)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
         }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
@@ -237,7 +224,7 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
             SeatLookupView(isPresented: $showLookupAlertBySeat)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 90)
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {

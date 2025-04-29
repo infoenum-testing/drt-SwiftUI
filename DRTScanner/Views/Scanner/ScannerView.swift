@@ -78,7 +78,7 @@ struct ScannerView: View {
     @State var isVisibleText: Bool = false
     @State private var dragLocation: CGPoint = .zero
     @State private var isFlashOn = false
-    let dragAreaSize: CGSize = CGSize(width: 80, height: 80)
+    let dragAreaSize: CGSize = CGSize(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
     
     @Binding var isScanningCell: Bool
     @ObservedObject var scannerViewModel: ScannerViewModel
@@ -196,14 +196,17 @@ struct ScannerView: View {
                 }
                 VStack {
                     HStack {
+                        Text("")
+                    }
+                    HStack {
                         Spacer()
                         HStack {
                             Image(isFlashOn ? "FlashOff" : "FlashOn")
                                 .resizable()
                                 .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                                .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? 10 : -10)
-                                .padding(.top, isFullScreen ? 60 : (UIDevice.current.userInterfaceIdiom == .pad ? 60 : 0))
+                                .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? -50 : -10)
                         }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
+                            .padding(.top, isFullScreen ? 10 : 0)
                             .gesture(
                                 DragGesture(minimumDistance: 0)
                                     .onChanged { value in

@@ -39,11 +39,6 @@ struct GoOfflineView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Spacer()
-                Text(StringConstants.SideMenuView.goOffline)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(.customWhite)
-                    .padding(.trailing, -60)
-                Spacer()
                 Button(action: {
                     isNameFieldFocused = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -58,6 +53,14 @@ struct GoOfflineView: View {
                         .padding()
                 }
                 .disabled(isSyncing)
+            }
+            HStack {
+                Spacer()
+                Text(StringConstants.SideMenuView.goOffline)
+                    .font(.verlagBoldAdaptive(size: 30))
+                    .foregroundColor(.customWhite)
+//                    .padding(.trailing, -60)
+                Spacer()
             }
             
             Text(StringConstants.SideMenuView.goOfflineViewDiscription)

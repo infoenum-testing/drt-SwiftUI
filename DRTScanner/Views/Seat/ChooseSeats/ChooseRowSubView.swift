@@ -32,6 +32,7 @@ struct ChooseRowSubView: View {
                     }
                     .listRowBackground(Color.white)
                 Divider()
+                    .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
             .background(Color.customWhite)

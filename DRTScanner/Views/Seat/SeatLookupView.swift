@@ -93,6 +93,8 @@ struct SeatLookupView: View {
                         }
                     }
                     .disabled(isLoading)
+                    .disabled(selectedSeat.isEmpty)
+                    .opacity(selectedSeat.isEmpty ? 0.6 : 1.0)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: geometry.size.height * 0.08)

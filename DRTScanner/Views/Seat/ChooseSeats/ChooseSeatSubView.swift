@@ -31,6 +31,7 @@ struct ChooseSeatSubView: View {
                     }
                     .listRowBackground(Color.white)
                 Divider()
+                    .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
             .background(Color.customWhite)
