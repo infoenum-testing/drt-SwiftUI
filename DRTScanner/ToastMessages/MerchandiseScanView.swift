@@ -19,10 +19,9 @@ struct MerchandiseScanView: View {
         VStack {
             VStack {
                 Spacer().padding()
-                Image(systemName: "checkmark.circle")
+                Image("circle_and_check_icon")
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
+                    .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                     .foregroundColor(.white)
                     .padding(.top, -10.adaptiveForIpad)
 

@@ -13,7 +13,7 @@ struct InvalidTicketView: View {
         VStack {            
             VStack {
                 Spacer()
-                Image(systemName: "xmark.circle")
+                Image("circle_and_cross_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()

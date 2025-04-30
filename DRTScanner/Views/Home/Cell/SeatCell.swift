@@ -165,31 +165,31 @@ struct SeatCell: View {
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SECT:")
-                        .font(.verlagBoldAdaptive(size: 10))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
                     Text("\(seat.section)")
-                        .font(.verlagBoldAdaptive(size: 15))
+                        .font(.verlagBoldAdaptive(size: 20))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("ROW:")
-                        .font(.verlagBoldAdaptive(size: 10))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)
                     Text("\(seat.row)")
-                        .font(.verlagBoldAdaptive(size: 15))
+                        .font(.verlagBoldAdaptive(size: 20))
                         .foregroundColor(Color.customGreen)
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
                     Text("SEAT:")
-                        .font(.verlagBoldAdaptive(size: 10))
+                        .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)
                     Text("\(seat.seat)")
-                        .font(.verlagBoldAdaptive(size: 15))
+                        .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(Color.customGreen)
                 }
                 
@@ -201,7 +201,7 @@ struct SeatCell: View {
                         .padding(10)
                 } else {
                     Image(isScanned ? "Green_circle_check_btn" : "scan_now")
-                        .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                         .onTapGesture {
                             updateSeatWithScannedQrCode()
                         }

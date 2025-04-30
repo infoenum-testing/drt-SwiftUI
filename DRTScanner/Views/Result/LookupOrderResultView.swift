@@ -81,11 +81,14 @@ struct LookupOrderResultView: View {
                             Spacer()
                         }
                         else if !products.isEmpty {
-                            ForEach(products, id: \.self) { product in
-                                let merchandiseOrder = MerchandiseOrder(from: product)
+                            List {
+                                ForEach(products, id: \.self) { product in
+                                    let merchandiseOrder = MerchandiseOrder(from: product)
                                     MerchandiseOrderCell(merchandiseOrder: merchandiseOrder)
+                                }
                             }
-                            Spacer()
+                            .listStyle(.plain)
+                                .padding(0)
                         } else {
                             Text("No merchandise found.")
                                 .foregroundColor(Color.gray)

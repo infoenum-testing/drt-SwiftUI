@@ -19,10 +19,9 @@ struct PreviousMerchandiseScanView: View {
         VStack {
             VStack(spacing: 16) {
                 Spacer()
-                Image(systemName: "exclamationmark.circle")
+                Image("circle_and_!_icon")
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
+                    .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                     .foregroundColor(.white)
 
                 Text(StringConstants.DRTToastMessages.preScanned)

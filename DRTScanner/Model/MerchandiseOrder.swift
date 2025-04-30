@@ -78,7 +78,7 @@ class MerchandiseOrder: ObservableObject, Identifiable {
             variantName: merchandise.variantName ?? "",
             qrCode: merchandise.qr?.merch ?? [],
             qty: merchandise.qty ?? 0,
-            qtyScanned: 0 ?? 0,
+            qtyScanned: merchandise.qty ?? 0,
             iconSrc: merchandise.icon ?? "",
             date_Scanned: merchandise.scannedTime?.formatted() ?? ""
         )

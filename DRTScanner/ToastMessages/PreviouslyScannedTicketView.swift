@@ -17,7 +17,7 @@ struct PreviouslyScannedTicketView: View {
         VStack {
             VStack {
                 Spacer()
-                Image(systemName: "exclamationmark.circle")
+                Image("circle_and_!_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()

@@ -25,6 +25,11 @@
         <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order" syncable="YES"/>
         <relationship name="show" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Show" syncable="YES"/>
     </entity>
+    <entity name="ProductScan" representedClassName=".ProductScan" syncable="YES">
+        <attribute name="qrCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="scanDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" syncable="YES"/>
+    </entity>
     <entity name="Scan" representedClassName=".Scan" syncable="YES">
         <attribute name="barcode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="is_scanned_out" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>

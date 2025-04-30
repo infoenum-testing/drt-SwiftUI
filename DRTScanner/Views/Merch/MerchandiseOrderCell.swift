@@ -65,7 +65,7 @@ struct MerchandiseOrderCell: View {
                     .background(merchandiseOrder.qty == merchandiseOrder.qtyScanned ? Color.FFCE_62 : Color.FFCE_62)
                     .clipShape(Circle())
                     .padding(.top, -20)
-                    .padding(.trailing, -30)
+                    .padding(.leading, 20)
                 
 //                Text("Scanned: \(merchandiseOrder.qtyScanned)")
 //                    .font(.verlagBookAdaptive(size: 15))
@@ -81,7 +81,8 @@ struct MerchandiseOrderCell: View {
                     .font(.verlagBookAdaptive(size: 15))
                     .foregroundColor(.black)
                 Spacer()
-//                if isScanned {
+                
+//                if isScanned || !merchandiseOrder.date_Scanned.isEmpty {
 //                    Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
 //                        .font(.verlagBoldAdaptive(size: 18))
 //                        .foregroundColor(.green)

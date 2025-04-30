@@ -12,7 +12,7 @@ struct InvalidMerchandiseTicketView: View {
     var body: some View {
         VStack {
             VStack {
-                Image(systemName: "xmark.circle")
+                Image("circle_and_cross_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()

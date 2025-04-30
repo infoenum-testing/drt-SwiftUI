@@ -15,7 +15,7 @@ struct ValidTicketView: View {
     var body: some View {
         VStack {
             VStack(spacing: 15) {
-                Image(systemName: "checkmark.circle")
+                Image("circle_and_check_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
