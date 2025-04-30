@@ -14,6 +14,8 @@ struct MerchandiseOrderCell: View {
     let context = PersistenceController.shared.container.viewContext
     @State private var isScanning = false
     @State private var scannedTime: String?
+    @State private var scannedQty: Int?
+    @State private var qtyScanned: Int?
     @State private var isScanned = false
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
@@ -141,7 +143,7 @@ struct MerchandiseOrderCell: View {
                 isLoading = false
                 return
             }
-            
+
             IQAPIClient.scanProductQrCode(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -240,22 +242,6 @@ struct MerchandiseOrderCell: View {
     }
 }
 
-
-
-struct MerchandiseOrderCell_Previews: PreviewProvider {
-    static var previews: some View {
-        let context = PersistenceController.shared.container.viewContext
-        if let product = loadProductFromCoreData(context: context) {
-            let merchandiseOrder = MerchandiseOrder(from: product)
-            MerchandiseOrderCell(merchandiseOrder: .constant(merchandiseOrder))
-                .previewLayout(.fixed(width: 439, height: 133))
-        } else {
-            Text("Failed to load Core Data Product")
-                .foregroundColor(.red)
-        }
-    }
-}
-
 func loadProductFromCoreData(context: NSManagedObjectContext) -> Product? {
     let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
     do {
@@ -264,66 +250,5 @@ func loadProductFromCoreData(context: NSManagedObjectContext) -> Product? {
     } catch {
         print("Failed to fetch product: \(error)")
         return nil
-    }
-}
-
-import SwiftUI
-import WebKit
-struct SVGWebView: UIViewRepresentable {
-    let url: URL
-    @Binding var isLoading: Bool
-    func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
-        webView.scrollView.isScrollEnabled = false
-        webView.isOpaque = false
-        webView.backgroundColor = .clear
-        webView.navigationDelegate = context.coordinator
-        return webView
-    }
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        // Load SVG content directly
-        fetchSVGContent(from: url) { svgContent in
-            DispatchQueue.main.async {
-                let svgHTML = """
-        <html>
-        <head>
-          <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
-          <style>
-            body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; background-color: transparent; }
-            svg { width: 100%; height: 100%; }
-          </style>
-        </head>
-        <body>
-          \(svgContent) <!-- Directly insert SVG data -->
-        </body>
-        </html>
-        """
-                uiView.loadHTMLString(svgHTML, baseURL: nil)
-            }
-        }
-    }
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    class Coordinator: NSObject, WKNavigationDelegate {
-        var parent: SVGWebView
-        init(_ parent: SVGWebView) {
-            self.parent = parent
-        }
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            DispatchQueue.main.async {
-                self.parent.isLoading = false
-            }
-        }
-    }
-    /// Fetch SVG raw content as a string
-    func fetchSVGContent(from url: URL, completion: @escaping (String) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data, let svgString = String(data: data, encoding: .utf8) {
-                completion(svgString)
-            } else {
-                completion("") // Fallback if fetch fails
-            }
-        }.resume()
     }
 }

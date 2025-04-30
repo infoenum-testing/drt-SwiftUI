@@ -13,6 +13,7 @@ import SwiftUI
 class DRTDatabaseManager {
     var managedObjectContext: NSManagedObjectContext?
     @AppStorage("showCode") private var savedShowCode: String?
+    
     static let shared: DRTDatabaseManager = {
         let context = PersistenceController.shared.container.viewContext
         return DRTDatabaseManager(context: context)
@@ -43,13 +44,14 @@ class DRTDatabaseManager {
             let totalRecords = Float(orders.count + seats.count + products.count)
             var processedRecords: Float = 0
             
-            var orderDict: [NSNumber: Order] = [:]
+            // Normalize orderDict keys to Int64 for consistent lookup
+            var orderDict: [Int64: Order] = [:]
             
             for orderData in orders {
                 if let order = self.insertUpdateOrderRecord(orderAttributes: orderData, context: context) {
                     order.show = show
-                    if let orderId = order.oid {
-                        orderDict[orderId] = order
+                    if let orderIdNum = order.oid?.int64Value {
+                        orderDict[orderIdNum] = order
                     }
                 }
                 processedRecords += 1
@@ -60,8 +62,17 @@ class DRTDatabaseManager {
                 if let seat = self.insertSeatRecord(seatAttributes: seatDict, context: context) {
                     seat.show = show
                     
-                    if let orderId = seatDict["order"] as? NSNumber, let linkedOrder = orderDict[orderId] {
-                        seat.order = linkedOrder  
+                    // Normalize orderId to Int64 for lookup
+                    var orderIdInt64: Int64? = nil
+                    if let orderId = seatDict["order"] as? NSNumber {
+                        orderIdInt64 = orderId.int64Value
+                    } else if let orderId = seatDict["order"] as? Int {
+                        orderIdInt64 = Int64(orderId)
+                    } else if let orderId = seatDict["order"] as? String, let orderIdVal = Int64(orderId) {
+                        orderIdInt64 = orderIdVal
+                    }
+                    if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
+                        seat.order = linkedOrder
                     }
                 }
                 processedRecords += 1
@@ -72,7 +83,16 @@ class DRTDatabaseManager {
                 if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
                     product.show = show
                     
-                    if let orderId = productDict["orderId"] as? NSNumber, let linkedOrder = orderDict[orderId] {
+                    // Normalize orderId to Int64 for lookup
+                    var orderIdInt64: Int64? = nil
+                    if let orderId = productDict["orderId"] as? NSNumber {
+                        orderIdInt64 = orderId.int64Value
+                    } else if let orderId = productDict["orderId"] as? Int {
+                        orderIdInt64 = Int64(orderId)
+                    } else if let orderId = productDict["orderId"] as? String, let orderIdVal = Int64(orderId) {
+                        orderIdInt64 = orderIdVal
+                    }
+                    if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
                         product.order = linkedOrder
                     }
                 }
@@ -196,28 +216,66 @@ class DRTDatabaseManager {
     
     private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
         let product = Product(context: context)
-
+    
         product.name = productAttributes["name"] as? String
-        product.variantName = productAttributes["variantName"] as? String
-        product.qrCode = productAttributes["qrCode"] as? String
-        product.qty = productAttributes["qty"] as? Int64 ?? 0
-        if let timestamp = productAttributes["ts_scanned"] as? Int64 {
-                product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000)) // If timestamp is in milliseconds
-            }
-        product.qty_scanned = productAttributes["qty_scanned"] as? Int64 ?? 0
-        product.icon_src = productAttributes["icon_src"] as? String
-        product.order_id = (productAttributes["orderId"] as? Int64) ?? 0
-
-        do {
-            if context.hasChanges {
-                try context.save()
-                print("✅ Product saved with order_id \(product.order_id).")
-            }
-        } catch {
-            print("❌ Error saving product: \(error.localizedDescription)")
-            return nil
+    
+        if let variant = productAttributes["variantName"], !(variant is NSNull) {
+            product.variantName = variant as? String
+        } else {
+            product.variantName = nil
         }
-
+    
+        product.qrCode = productAttributes["qrCode"] as? String
+    
+        if let qty = productAttributes["qty"] as? Int64 {
+            product.qty = qty
+        } else if let qty = productAttributes["qty"] as? Int {
+            product.qty = Int64(qty)
+        } else if let qtyStr = productAttributes["qty"] as? String, let qty = Int64(qtyStr) {
+            product.qty = qty
+        } else {
+            product.qty = 0
+        }
+    
+        var qtyScanned: Int64 = 0
+        if let val = productAttributes["qty_scanned"] as? Int64 {
+            qtyScanned = val
+        } else if let val = productAttributes["qty_scanned"] as? Int {
+            qtyScanned = Int64(val)
+        } else if let val = productAttributes["qty_scanned"] as? String, let parsed = Int64(val) {
+            qtyScanned = parsed
+        }
+    
+        if !product.isFault && !product.isDeleted {
+            product.qty_scanned = qtyScanned
+        }
+    
+        product.icon_src = productAttributes["icon_src"] as? String
+    
+        if let orderId = productAttributes["orderId"] as? Int64 {
+            product.order_id = orderId
+        } else if let orderId = productAttributes["orderId"] as? Int {
+            product.order_id = Int64(orderId)
+        } else if let orderIdNum = productAttributes["orderId"] as? NSNumber {
+            product.order_id = orderIdNum.int64Value
+        } else if let orderIdStr = productAttributes["orderId"] as? String, let orderId = Int64(orderIdStr) {
+            product.order_id = orderId
+        } else {
+            product.order_id = 0
+        }
+    
+        if let timestamp = productAttributes["ts_scanned"] as? Int64 {
+            product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
+        } else if let timestamp = productAttributes["ts_scanned"] as? Int {
+            product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
+        } else if let timestamp = productAttributes["ts_scanned"] as? Double {
+            product.date_scanned = Date(timeIntervalSince1970: timestamp / 1000)
+        } else if let timestampStr = productAttributes["ts_scanned"] as? String, let timestamp = Double(timestampStr) {
+            product.date_scanned = Date(timeIntervalSince1970: timestamp / 1000)
+        } else {
+            product.date_scanned = nil
+        }
+    
         return product
     }
     
@@ -331,7 +389,7 @@ class DRTDatabaseManager {
     }
     
     
-    private func fetchProducts(context: NSManagedObjectContext) -> [[String: Any]] {
+     func fetchProducts(context: NSManagedObjectContext) -> [[String: Any]] {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
         
         do {
@@ -383,5 +441,13 @@ class DRTDatabaseManager {
             return show.db_code
         }
         return nil
+    }
+}
+
+
+func clearOrderSeats(order: Order) {
+    let seatsToRemove = Array(order.seats ?? [])
+    for seat in seatsToRemove {
+        order.removeFromSeats(seat)
     }
 }
