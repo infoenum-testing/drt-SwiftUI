@@ -257,16 +257,20 @@ struct ScannerView: View {
                                     }
                                 }
                         }
+                        if !isMerchandiseMode {
                         if showScanStats ?? false {
-                            if let stats = viewModel.stats {
-                                Spacer()
-                                Text("Scanned by Device: \(stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
-                                    .font(.verlagBookAdaptive(size: 16))
-                                    .padding(.bottom, -30)
-                                    .foregroundColor(.white)
-                                    .opacity(isVisibleText ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.3), value: isVisibleText)
-                                
+                                if let stats = viewModel.stats {
+                                    Spacer()
+                                    Text("Scanned by Device: \(stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
+                                        .font(.verlagBookAdaptive(size: 16))
+                                        .padding(.bottom, -30)
+                                        .foregroundColor(.white)
+                                        .opacity(isVisibleText ? 1 : 0)
+                                        .animation(.easeInOut(duration: 0.3), value: isVisibleText)
+                                    
+                                    Spacer()
+                                }
+                            } else {
                                 Spacer()
                             }
                         } else {

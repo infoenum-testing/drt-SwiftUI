@@ -10,7 +10,7 @@ import CoreData
 import IQAPIClient
 
 struct MerchandiseOrderCell: View {
-    @Binding var merchandiseOrder: MerchandiseOrder
+    @ObservedObject var merchandiseOrder: MerchandiseOrder
     let context = PersistenceController.shared.container.viewContext
     @State private var isScanning = false
     @State private var scannedTime: String?
@@ -61,18 +61,18 @@ struct MerchandiseOrderCell: View {
                 Text("\(merchandiseOrder.qty)")
                     .font(.verlagBookAdaptive(size: 20))
                     .foregroundColor(.white)
-                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-                    .background(merchandiseOrder.qty == merchandiseOrder.qtyScanned ? Color.green : Color.orange)
+                    .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                    .background(merchandiseOrder.qty == merchandiseOrder.qtyScanned ? Color.FFCE_62 : Color.FFCE_62)
                     .clipShape(Circle())
-                    .padding(.top, -30)
-                    .padding(.leading, -10)
+                    .padding(.top, -20)
+                    .padding(.trailing, -30)
                 
-                Text("Scanned: \(merchandiseOrder.qtyScanned)")
-                    .font(.verlagBookAdaptive(size: 15))
-                    .foregroundColor(.black)
+//                Text("Scanned: \(merchandiseOrder.qtyScanned)")
+//                    .font(.verlagBookAdaptive(size: 15))
+//                    .foregroundColor(.black)
             }
             
-            VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .center, spacing: 5) {
                 Text(merchandiseOrder.name)
                     .font(.verlagBoldAdaptive(size: 20))
                     .foregroundColor(Color.customGreen)
@@ -80,18 +80,18 @@ struct MerchandiseOrderCell: View {
                 Text(merchandiseOrder.variantName)
                     .font(.verlagBookAdaptive(size: 15))
                     .foregroundColor(.black)
-                
-                if isScanned {
-                    Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(.green)
-                        .padding(.top, 10)
-                } else {
-                    Text("Not yet scanned")
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.customGreen)
-                        .padding(.top, 10)
-                }
+                Spacer()
+//                if isScanned {
+//                    Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
+//                        .font(.verlagBoldAdaptive(size: 18))
+//                        .foregroundColor(.green)
+//                        .padding(.top, 10)
+//                } else {
+//                    Text("Not yet scanned")
+//                        .font(.verlagBoldAdaptive(size: 18))
+//                        .foregroundColor(Color.customGreen)
+//                        .padding(.top, 10)
+//                }
             }
             
             Spacer()
@@ -177,13 +177,13 @@ struct MerchandiseOrderCell: View {
         } else {
             let currentDate = Date()
             let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm"
+            formatter.dateFormat = "dd/MM/yyyy, HH:mm"
             scannedTime = formatter.string(from: currentDate)
             merchandiseOrder.date_Scanned = scannedTime ?? ""
         }
         
         if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
-            merchandiseOrder.qtyScanned += 1
+//            merchandiseOrder.qtyScanned += 1
         }
         
         isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned

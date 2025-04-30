@@ -83,7 +83,7 @@ struct LookupOrderResultView: View {
                         else if !products.isEmpty {
                             ForEach(products, id: \.self) { product in
                                 let merchandiseOrder = MerchandiseOrder(from: product)
-                                MerchandiseOrderCell(merchandiseOrder: .constant(merchandiseOrder))
+                                    MerchandiseOrderCell(merchandiseOrder: merchandiseOrder)
                             }
                             Spacer()
                         } else {
@@ -102,7 +102,7 @@ struct LookupOrderResultView: View {
                         else {
                             List {
                                 ForEach(merch.indices, id: \.self) { index in
-                                    MerchandiseOrderCell(merchandiseOrder: .constant(MerchandiseOrder(from: merch[index])))
+                                    MerchandiseOrderCell(merchandiseOrder: MerchandiseOrder(from: merch[index]))
                                 }
                             }.listStyle(.plain)
                                 .padding(0)
@@ -215,42 +215,42 @@ struct LookupOrderResultView: View {
     }
 }
 
-extension MerchandiseOrder {
-    
-    init(from product: Product) {
-        self.orderId = Int(product.order_id)
-        self.name = product.name ?? ""
-        self.variantName = product.variantName ?? ""
-        
-        if let qrCode = product.qrCode, !qrCode.isEmpty {
-            self.qrCode = [qrCode]
-        } else {
-            self.qrCode = []
-        }
-        
-        self.qty = Int(product.qty)
-        self.qtyScanned = Int(product.qty_scanned)
-        self.iconSrc = product.icon_src ?? ""
-        self.date_Scanned = product.date_scanned?.formatted() ?? ""
-    }
-}
-
-extension MerchandiseOrder {
-    init(from merchandise: Merchandise) {
-        self.orderId = 3333876
-        self.name = merchandise.name ?? ""
-        self.variantName = merchandise.variantName ?? ""
-        
-        if let qrMerch = merchandise.qr, !qrMerch.merch.isEmpty {
-            self.qrCode = qrMerch.merch
-        } else {
-            self.qrCode = []
-        }
-        
-        self.qty = merchandise.qty ?? 0
-        self.qtyScanned = merchandise.qty ?? 0
-        self.iconSrc = merchandise.icon ?? ""
-        self.date_Scanned = merchandise.scannedTime?.formatted() ?? ""
-    }
-}
-
+//extension MerchandiseOrder {
+//    
+//    init(from product: Product) {
+//        self.orderId = Int(product.order_id)
+//        self.name = product.name ?? ""
+//        self.variantName = product.variantName ?? ""
+//        
+//        if let qrCode = product.qrCode, !qrCode.isEmpty {
+//            self.qrCode = [qrCode]
+//        } else {
+//            self.qrCode = []
+//        }
+//        
+//        self.qty = Int(product.qty)
+//        self.qtyScanned = Int(product.qty_scanned)
+//        self.iconSrc = product.icon_src ?? ""
+//        self.date_Scanned = product.date_scanned?.formatted() ?? ""
+//    }
+//}
+//
+//extension MerchandiseOrder {
+//    init(from merchandise: Merchandise) {
+//        self.orderId = 3333876
+//        self.name = merchandise.name ?? ""
+//        self.variantName = merchandise.variantName ?? ""
+//        
+//        if let qrMerch = merchandise.qr, !qrMerch.merch.isEmpty {
+//            self.qrCode = qrMerch.merch
+//        } else {
+//            self.qrCode = []
+//        }
+//        
+//        self.qty = merchandise.qty ?? 0
+//        self.qtyScanned = merchandise.qty ?? 0
+//        self.iconSrc = merchandise.icon ?? ""
+//        self.date_Scanned = merchandise.scannedTime?.formatted() ?? ""
+//    }
+//}
+//

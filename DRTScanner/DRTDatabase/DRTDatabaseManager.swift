@@ -335,7 +335,7 @@ class DRTDatabaseManager {
                     switch result {
                     case .success(let response):
                         print(response)
-                        self.deleteAllRecords()
+//                        self.deleteAllRecords()
                         completionBlock(true, nil)
                     case .failure(let error):
                         print(error)
