@@ -10,11 +10,12 @@ import UIKit
 import Vision
 import SwiftUI
 
+// ScannerViewController handles camera setup, scanning, flash control, and barcode detection
 class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     var captureSession: AVCaptureSession?
     var previewLayer: AVCaptureVideoPreviewLayer?
-    var onScan: ((String) -> Void)?
+    var onScan: ((String) -> Void)? // Callback when a scan is successful
     var isScanningBinding: Binding<Bool>?
     var flashControlHandler: ((Bool) -> Void)?
     private var hasCheckedPermissions = false
@@ -31,16 +32,19 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     private var isFlashOn = false
     private var lastScanTime: Date = .distantPast
 
+    // Called after the controller's view is loaded into memory
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAutoFlash), name: .enableAutoFlash, object: nil)
     }
 
+    // Adjusts the preview layer's frame when the view's layout changes
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.bounds
     }
     
+    // Checks camera permissions when the view appears
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -50,6 +54,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         }
     }
 
+    // Cleans up observers when the controller is deallocated
     deinit {
         NotificationCenter.default.removeObserver(self)
         print("🗑️ ScannerViewController deinitialized")
@@ -78,6 +83,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         }
     }
 
+    // Shows an alert if camera permission is denied
     private func showCameraPermissionAlert() {
         let alert = UIAlertController(
             title: "Camera Access Needed",
@@ -149,11 +155,13 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // MARK: - Flash Control
 
+    // Handles auto flash notification
     @objc private func handleAutoFlash() {
         print("⚡ Auto flash triggered")
         turnFlashOn()
     }
 
+    // Turns the camera flash on
     func turnFlashOn() {
         guard !isFlashOn,
               let device = AVCaptureDevice.default(for: .video),
@@ -173,6 +181,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         }
     }
 
+    // Turns the camera flash off
     func turnFlashOff() {
         guard isFlashOn,
               let device = AVCaptureDevice.default(for: .video),
@@ -193,6 +202,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         }
     }
 
+    // Starts a timer to automatically turn off the flash after 5 seconds
     private func startFlashAutoOffTimer() {
         flashAutoOffTimer?.invalidate()
 
@@ -228,6 +238,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         }
     }
 
+    // Stops the scanning session
     func stopScanning() {
         if captureSession?.isRunning == true {
             captureSession?.stopRunning()
@@ -240,12 +251,14 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         scheduledFlashWorkItem = nil
     }
 
+    // Enables or disables scanning
     func enableScanning(_ enable: Bool) {
         isScanningEnabled = enable
     }
 
     // MARK: - Bounding Box Drawing
 
+    // Draws a bounding box around the detected barcode
     private func drawBoundingBox(for observation: VNBarcodeObservation) {
         guard let previewLayer = self.previewLayer else { return }
 
@@ -268,6 +281,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // MARK: - Barcode Detection
 
+    // Handles the output from the camera and processes barcode detection
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard isScanningBinding?.wrappedValue ?? true else { return }
         guard !didJustScan else { return }
@@ -312,6 +326,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
 // MARK: - Notification Extension
 
+// Extension to define custom notification names
 extension Notification.Name {
     static let enableAutoFlash = Notification.Name("enableAutoFlash")
 }

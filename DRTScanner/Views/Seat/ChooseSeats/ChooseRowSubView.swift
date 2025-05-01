@@ -20,12 +20,14 @@ struct ChooseRowSubView: View {
     @AppStorage("showCode") private var savedShowCode: String?
     
     var body: some View {
+        // Main view body: displays a list of rows for seat selection
         VStack {
             List(rowSelect, id: \.self) { seat in
                 ChooseRowCell(row: seat)
                     .frame(height: 80)
                     .listRowBackground(Color.white)
                     .onTapGesture {
+                        // When a seat is tapped, update selectedSeat and selectedRow, and dismiss the view
                         selectedSeat = seat
                         selectedRow = seat
                         isPresent = false
@@ -39,6 +41,7 @@ struct ChooseRowSubView: View {
         }
         .background(Color.customWhite)
         .onAppear {
+            // On appear, fetch rows either from Core Data (offline) or API (online)
             if isOfflineMode {
                 fetchRowsCoreData(for: selectedSection)
                 return
@@ -49,6 +52,7 @@ struct ChooseRowSubView: View {
         }
     }
     
+    // Fetch rows from API for the given section
     private func fetchRows(for section: String) {
         IQAPIClient.getRow(code: savedShowCode ?? "", section: section) { result in
                DispatchQueue.main.async {
@@ -61,6 +65,8 @@ struct ChooseRowSubView: View {
                }
            }
        }
+    
+    // Fetch rows from Core Data for the given section (offline mode)
     private func fetchRowsCoreData(for section: String) {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "section == %@", section)

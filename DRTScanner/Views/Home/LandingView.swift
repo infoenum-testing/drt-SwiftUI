@@ -8,10 +8,14 @@
 import SwiftUI
 import IQAPIClient
 
+// Main landing view for the app
 struct LandingView: View {
     @StateObject private var viewModel = LandingViewModel()
+    // Controls the display of the show code sheet
     @State private var showSheet = false
+    // Controls the display of the seat view
     @State private var showSeatView = false
+    // Controls the display of the logout alert
     @State private var showLogoutAlert = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     @AppStorage("showCode") private var showCode: String = ""
@@ -19,9 +23,11 @@ struct LandingView: View {
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("show") private var savedShow: String = ""
     @Environment(\.managedObjectContext) private var context
+    // Animation state variables
     @State private var animateLogo = false
     @State private var animateButtons = false
     
+    // Initializer to check if user is logged in based on showCode
     init() {
         if showCode.isEmpty {
             isUserLoggedIn = false
@@ -88,6 +94,7 @@ struct LandingView: View {
                     }
                     
                     Spacer()
+                    // Always show logo (with animation)
                     if viewModel.isLoading || !viewModel.isLoading {
                         Image(StringConstants.DRTImages.logo)
                             .resizable()
@@ -102,6 +109,7 @@ struct LandingView: View {
                     }
                     Spacer()
                     
+                    // Show scan options if code is valid and user is logged in
                     if viewModel.isValidCode && isUserLoggedIn {
                         VStack {
                             Text(StringConstants.LandingView.scanMerchOrSeat)
@@ -112,6 +120,7 @@ struct LandingView: View {
                                 .opacity(animateButtons ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
                             
+                            // Merchandise scan button
                             Button(action: {
                                 //  isUserLoggedIn = true
                                 isMerchandise = true
@@ -130,6 +139,7 @@ struct LandingView: View {
                                 .opacity(animateButtons ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateButtons)
                             
+                            // Seat scan button
                             Button(action: {
                                 //   isUserLoggedIn = true
                                 isMerchandise = false
@@ -148,6 +158,7 @@ struct LandingView: View {
                                 .animation(.easeInOut(duration: 0.6).delay(0.7), value: animateButtons)
                         }
                     } else {
+                        // Show code entry button if not logged in
                         Button(action: {
                             withAnimation(.spring()) {
                                 showSheet = true
@@ -165,6 +176,7 @@ struct LandingView: View {
                         .animation(.easeInOut(duration: 0.6).delay(0.9), value: animateButtons)
                     }
                     
+                    // Copyright text
                     Text(StringConstants.LandingView.copyRight)
                         .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(.white)
@@ -180,6 +192,7 @@ struct LandingView: View {
                     }
                 }
                 
+                // Logout confirmation alert
                 .customAlert(isPresented: $showLogoutAlert) {
                     VStack {
                         HStack {
@@ -212,6 +225,7 @@ struct LandingView: View {
                         
                         HStack {
                             if !isOfflineMode {
+                                // Logout button
                                 Button(action: {
                                     isUserLoggedIn = false
                                     isMerchandise = false
@@ -230,6 +244,7 @@ struct LandingView: View {
                                 
                                 Spacer()
                                 
+                                // Cancel button
                                 Button(action: {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showLogoutAlert = false
@@ -246,6 +261,7 @@ struct LandingView: View {
                     .padding()
                     .background(Color.FFCE_62)
                 }
+                // Show code entry sheet
                 .customAlert(isPresented: $showSheet) {
                     ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
                         showCode = code
@@ -257,6 +273,7 @@ struct LandingView: View {
                     //  .padding([.trailing, .leading], 50)
                 }.edgesIgnoringSafeArea(.bottom)
                 
+                    // Invalid code alert
                     .customAlert(isPresented: $viewModel.showAlert) {
                         if !viewModel.isValidCode {
                             VStack(alignment: .center) {
@@ -294,6 +311,7 @@ struct LandingView: View {
                         }
                     }
             }
+            // Show seat view overlay if selected
             if showSeatView {
                 SeatHomeView(showSeatView: $showSeatView)
                     .zIndex(1)

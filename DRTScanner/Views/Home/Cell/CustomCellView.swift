@@ -5,6 +5,8 @@
 //  Created by IE Mac 05 on 04/02/25.
 //
 
+// A customizable cell view with an image, title, subtitle, optional button image, and a conditional divider.
+// It adapts based on device type (iPad/iPhone) and a @AppStorage value for merchandise mode.
 
 import SwiftUI
 

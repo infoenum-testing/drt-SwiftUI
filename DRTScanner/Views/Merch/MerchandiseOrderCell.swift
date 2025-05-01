@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 import IQAPIClient
 
+// MerchandiseOrderCell displays a merchandise order item with scan functionality and status
 struct MerchandiseOrderCell: View {
     @ObservedObject var merchandiseOrder: MerchandiseOrder
     let context = PersistenceController.shared.container.viewContext
@@ -25,6 +26,7 @@ struct MerchandiseOrderCell: View {
     var body: some View {
         HStack(spacing: 15) {
             VStack {
+                // Display SVG or image for merchandise icon
                 if merchandiseOrder.iconSrc.lowercased().hasSuffix(".svg") {
                     if let url = URL(string: merchandiseOrder.iconSrc) {
                         ZStack {
@@ -58,6 +60,7 @@ struct MerchandiseOrderCell: View {
                     .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                 }
                 
+                // Display quantity
                 Text("\(merchandiseOrder.qty)")
                     .font(.verlagBookAdaptive(size: 20))
                     .foregroundColor(.white)
@@ -73,6 +76,7 @@ struct MerchandiseOrderCell: View {
             }
             
             HStack(alignment: .center, spacing: 5) {
+                // Display merchandise name and variant
                 Text(merchandiseOrder.name)
                     .font(.verlagBoldAdaptive(size: 20))
                     .foregroundColor(Color.customGreen)
@@ -97,6 +101,7 @@ struct MerchandiseOrderCell: View {
             
             Spacer()
             
+            // Scan button and status
             Button(action: {
                 if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
                     withAnimation {
@@ -129,6 +134,7 @@ struct MerchandiseOrderCell: View {
         }
     }
     
+    // Handles scanning logic, updates state and calls API if online
     private func updateMerchWithScannedQrCode() {
         guard merchandiseOrder.qty > 0 else { return }
         isLoading = true
@@ -169,6 +175,7 @@ struct MerchandiseOrderCell: View {
         }
     }
     
+    // Processes the result of a scan, updates scanned time and status
     private func processScanResult(success: Bool, dateScanned: String?) {
         guard success else { return }
         
@@ -192,10 +199,12 @@ struct MerchandiseOrderCell: View {
         saveScannedStatus(for: merchandiseOrder)
     }
     
+    // Loads the scanned time from the order
     private func loadScannedTime() {
         scannedTime = merchandiseOrder.date_Scanned
     }
     
+    // Saves the scanned status to Core Data for the given order
     private func saveScannedStatus(for order: MerchandiseOrder) {
         guard let qrCode = order.qrCode?.first, !qrCode.isEmpty else {
             print("QR Code is nil or empty.")
@@ -243,6 +252,7 @@ struct MerchandiseOrderCell: View {
     }
 }
 
+// Loads the first Product from Core Data
 func loadProductFromCoreData(context: NSManagedObjectContext) -> Product? {
     let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
     do {

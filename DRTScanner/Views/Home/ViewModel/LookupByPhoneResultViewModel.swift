@@ -24,6 +24,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
         self.managedObjectContext = managedObjectContext
     }
     
+    // Fetch seats/orders by phone number, either from API or Core Data depending on offline mode
     func fetchSeats(c: String, q: String) async {
         DispatchQueue.main.async {
             self.isLoading = true
@@ -31,6 +32,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
         }
         
         if isOfflineMode {
+            // If offline, fetch from Core Data after a short delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.fetchphoneFromCoreData(phoneNumber: q)
                 self.isLoading = false
@@ -39,6 +41,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
         }
         
         do {
+            // Fetch from API using IQAPIClient
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
                 IQAPIClient.getLookUpByPhone(code: c, phoneNumber: q) { result in
                     switch result {
@@ -56,6 +59,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
             }
             
         } catch {
+            // On error, show error message and fallback to Core Data
             DispatchQueue.main.async {
                 self.errorMessage = error.localizedDescription
                 self.isLoading = false
@@ -63,6 +67,8 @@ class LookupByPhoneResultViewModel: ObservableObject {
             }
         }
     }
+    
+    // Fetch orders from Core Data by phone number
     private func fetchphoneFromCoreData(phoneNumber: String) {
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "phone CONTAINS[cd] %@", phoneNumber)
@@ -70,6 +76,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
         do {
             let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
             
+            // Map Core Data Order objects to OrdersNewApi model
             let mappedOrders = fetchedOrders.map { order in
                 return OrdersNewApi(
                     buyerName: order.buyer_name ?? "",
@@ -91,6 +98,7 @@ class LookupByPhoneResultViewModel: ObservableObject {
             }
             
         } catch {
+            // Handle Core Data fetch error
             DispatchQueue.main.async {
                 self.errorMessage = "Error fetching from Core Data: \(error.localizedDescription)"
             }

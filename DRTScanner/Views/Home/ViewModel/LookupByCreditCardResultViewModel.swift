@@ -21,12 +21,21 @@ class LookupByCreditCardResultViewModel: ObservableObject {
         self.managedObjectContext = managedObjectContext
     }
     
+    // MARK: - Main Functionality
+    
+    /// Fetches seats/orders using credit card number.
+    /// - Parameters:
+    ///   - c: An API code or event code passed to the backend
+    ///   - q: The credit card number to look up
     func fetchSeats(c: String, q: String) async {
+        
+        // Start loading and reset error message
         DispatchQueue.main.async {
             self.isLoading = true
             self.errorMessage = nil
         }
         
+        // Handle Offline Mode: Fetch from Core Data if offline
         if isOfflineMode {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.fetchCCFromCoreData(ccNumber: q)
@@ -35,6 +44,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             return
         }
         
+        // Handle Online Mode: Fetch from API
         do {
             let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
                 IQAPIClient.getLookUpByCreditCard(code: c, ccNumber: q) { result in
@@ -47,6 +57,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
                 }
             }
             
+            // Update the UI on the main thread with fetched data
             DispatchQueue.main.async {
                 self.orders = fetchedSeats
                 self.isLoading = false
@@ -60,13 +71,20 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - Core Data Helper
+    
+    /// Fetches orders by credit card number from Core Data (offline mode).
+    /// - Parameter ccNumber: The credit card number to search for
     private func fetchCCFromCoreData(ccNumber: String) {
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "cc CONTAINS[cd] %@", ccNumber)
         
         do {
+            // Fetch matching orders from local Core Data store
             let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
             
+            // Convert Core Data objects to API model objects
             let mappedOrders = fetchedOrders.map { order in
                 return OrdersNewApi(
                     buyerName: order.buyer_name ?? "",
@@ -78,12 +96,14 @@ class LookupByCreditCardResultViewModel: ObservableObject {
                 )
             }
             
+            // Update UI with results
             DispatchQueue.main.async {
                 self.orders = mappedOrders
                 self.errorMessage = mappedOrders.isEmpty ? "No orders found in Core Data." : nil
             }
             
         } catch {
+            // Handle Core Data fetch errors
             DispatchQueue.main.async {
                 self.errorMessage = "Error fetching from Core Data: \(error.localizedDescription)"
             }

@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+/// A view that displays order lookup information in a tappable cell.
+/// Shows buyer name, order ID, CC, and phone number.
+/// Briefly highlights when tapped and triggers a callback with the order ID.
 struct LookupCellView: View {
     var result: OrdersNewApi
     var onCellTapped: (Int) -> Void

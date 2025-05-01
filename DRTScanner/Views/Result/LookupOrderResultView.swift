@@ -8,25 +8,27 @@
 import SwiftUI
 import CoreData
 
+// View to display the result of looking up an order by order number
 struct LookupOrderResultView: View {
-    let inputText: String
-    var dismissAction: () -> Void
-    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    @State private var seats: [SeatModel] = []
-    @State private var merch: [Merchandise] = []
-    @AppStorage("showCode") private var savedShowCode: String?
-    @AppStorage("isMerchandise") private var isMerchandise: Bool?
-    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
-    @State private var isLoadingMerch = true
-    @State private var showAlert = false
-    @State  var errorMessages: String? = nil
-    let errorMessage: String?
-    var order: OrdersNewApi?
+    let inputText: String // The input order number or code
+    var dismissAction: () -> Void // Action to dismiss this view
+    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext) // ViewModel for fetching order data
+    @State private var seats: [SeatModel] = [] // List of seat models for the order
+    @State private var merch: [Merchandise] = [] // List of merchandise for the order
+    @AppStorage("showCode") private var savedShowCode: String? // Saved show code from user defaults
+    @AppStorage("isMerchandise") private var isMerchandise: Bool? // Flag to indicate merchandise mode
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false // Flag for offline mode
+    @State private var isLoadingMerch = true // Loading state for merchandise
+    @State private var showAlert = false // State to show/hide error alert
+    @State  var errorMessages: String? = nil // Error message for alert
+    let errorMessage: String? // Error message passed in
+    var order: OrdersNewApi? // Order object
     
-    @State private var products: [Product] = []
+    @State private var products: [Product] = [] // List of products (for offline mode)
     
     var body: some View {
         VStack {
+            // Header section with back button and order/buyer info
             VStack {
                 HStack (alignment: .center){
                     Button(action: {
@@ -72,6 +74,7 @@ struct LookupOrderResultView: View {
                     .background(Color.FFCE_62)
                     .frame(maxWidth: .infinity)
             VStack {
+                // Merchandise section (online/offline)
                 if isMerchandise ?? false {
                     if isOfflineMode {
                         if isLoadingMerch {
@@ -112,6 +115,7 @@ struct LookupOrderResultView: View {
                         }
                     }
                 } else {
+                    // Seat section
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? "Loading..." : "")
                             .foregroundColor(Color.customWhite)
@@ -136,6 +140,7 @@ struct LookupOrderResultView: View {
         }
         .background(Color.customWhite)
         .task {
+            // Fetch seats and merchandise when view appears
             isLoadingMerch = true
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             self.seats = viewModel.seatsModel ?? []
@@ -147,6 +152,7 @@ struct LookupOrderResultView: View {
             isLoadingMerch = false
         }
         .customAlert(isPresented: $showAlert) {
+            // Custom alert for error messages
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
                     Color.black.opacity(0)
@@ -205,6 +211,7 @@ struct LookupOrderResultView: View {
         .edgesIgnoringSafeArea(.all)
     }
     
+    // Fetch products from Core Data for offline merchandise display
     private func fetchProducts(orderId: Int) {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "order_id == %@", NSNumber(value: orderId))

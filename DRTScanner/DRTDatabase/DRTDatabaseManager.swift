@@ -23,6 +23,14 @@ class DRTDatabaseManager {
         self.managedObjectContext = context
     }
 
+    // MARK: - Sync Method
+    
+    /// Syncs server data with local Core Data storage.
+    /// - Deletes existing records
+    /// - Inserts show, orders, seats, and products
+    /// - Links orders to seats/products
+    /// - Tracks progress and calls completion on main thread
+
     func syncServerData(serverDict: [String: Any], progressBlock: ((Float) -> Void)?, completionBlock: ((Bool, Error?) -> Void)?) {
         DispatchQueue.global(qos: .background).async {
             guard let context = self.managedObjectContext else {
@@ -32,11 +40,12 @@ class DRTDatabaseManager {
 
             self.deleteAllRecords()
 
+            // Insert or update the Show entity
             guard let show = self.insertUpdateShowRecord(showAttributes: serverDict, context: context) else {
                 DispatchQueue.main.async { completionBlock?(false, NSError(domain: "CoreData", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to insert show"])) }
                 return
             }
-
+            // Extract orders, seats, and products
             let orders = serverDict["orders"] as? [[String: Any]] ?? []
             let seats = serverDict["seats"] as? [[String: Any]] ?? []
             let products = serverDict["products"] as? [[String: Any]] ?? []
@@ -44,9 +53,10 @@ class DRTDatabaseManager {
             let totalRecords = Float(orders.count + seats.count + products.count)
             var processedRecords: Float = 0
             
-            // Normalize orderDict keys to Int64 for consistent lookup
+            // Temporary dictionary for looking up Orders by ID
             var orderDict: [Int64: Order] = [:]
-            
+           
+            // Insert/update orders
             for orderData in orders {
                 if let order = self.insertUpdateOrderRecord(orderAttributes: orderData, context: context) {
                     order.show = show
@@ -57,7 +67,8 @@ class DRTDatabaseManager {
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
             }
-
+            
+            // Insert seats and associate with orders
             for seatDict in seats {
                 if let seat = self.insertSeatRecord(seatAttributes: seatDict, context: context) {
                     seat.show = show
@@ -78,7 +89,8 @@ class DRTDatabaseManager {
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
             }
-
+            
+            // Insert products and associate with orders
             for productDict in products {
                 if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
                     product.show = show
@@ -109,8 +121,9 @@ class DRTDatabaseManager {
         }
     }
 
-    // MARK: - Helper Functions
-
+    // MARK: - Record Deletion
+    
+    /// Deletes all records from key entities
     private func deleteAllRecords() {
         deleteAllTableRecords(forEntity: Scan.self)
         deleteAllTableRecords(forEntity: Product.self)
@@ -119,10 +132,12 @@ class DRTDatabaseManager {
         deleteAllTableRecords(forEntity: Show.self)
     }
     
+    /// Deletes Skin records only
     func deleteSkin() {
         deleteAllTableRecords(forEntity: Skin.self)
     }
 
+    /// Generic deletion method for any entity type
     private func deleteAllTableRecords<T: NSManagedObject>(forEntity entity: T.Type) {
         guard let context = managedObjectContext else { return }
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: entity))
@@ -134,6 +149,9 @@ class DRTDatabaseManager {
         }
     }
 
+    // MARK: - Record Insert/Update
+    
+    /// Inserts or updates a Show record
     private func insertUpdateShowRecord(showAttributes: [String: Any], context: NSManagedObjectContext) -> Show? {
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
         if let showId = showAttributes["show_id"] as? Int {
@@ -149,6 +167,7 @@ class DRTDatabaseManager {
         return show
     }
     
+    /// Inserts or updates an Order record
     private func insertUpdateOrderRecord(orderAttributes: [String: Any], context: NSManagedObjectContext) -> Order? {
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
         if let orderId = orderAttributes["id"] as? Int {
@@ -163,6 +182,7 @@ class DRTDatabaseManager {
         return order
     }
     
+    /// Inserts or updates a Seat record
     private func insertSeatRecord(seatAttributes: [String: Any], context: NSManagedObjectContext) -> Seat? {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         if let barcode = seatAttributes["barcode"] as? String {
@@ -186,7 +206,7 @@ class DRTDatabaseManager {
             seat.handicapped = NSNumber(value: false)
         }
 
-        
+        // Parse scanned time string into Date
         if let scannedString = seatAttributes["scanned"] as? String {
                let formatter = DateFormatter()
                formatter.dateFormat = "h:mm a"
@@ -196,6 +216,7 @@ class DRTDatabaseManager {
                }
            }
         
+        // Split secRowSeat into section, row, seat
         if let secRowSeat = seatAttributes["secRowSeat"] as? String {
             let components = secRowSeat.split(separator: "-")
             if components.count == 3 {
@@ -205,6 +226,7 @@ class DRTDatabaseManager {
             }
         }
         
+        // Associate seat with order
         if let orderId = seatAttributes["order"] as? Int {
             let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
@@ -214,6 +236,7 @@ class DRTDatabaseManager {
         return seat
     }
     
+    /// Inserts a new Product record
     private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
         let product = Product(context: context)
     
@@ -227,6 +250,7 @@ class DRTDatabaseManager {
     
         product.qrCode = productAttributes["qrCode"] as? String
     
+        // Set quantity
         if let qty = productAttributes["qty"] as? Int64 {
             product.qty = qty
         } else if let qty = productAttributes["qty"] as? Int {
@@ -237,6 +261,7 @@ class DRTDatabaseManager {
             product.qty = 0
         }
     
+        // Set scanned quantity
         var qtyScanned: Int64 = 0
         if let val = productAttributes["qty_scanned"] as? Int64 {
             qtyScanned = val
@@ -252,6 +277,7 @@ class DRTDatabaseManager {
     
         product.icon_src = productAttributes["icon_src"] as? String
     
+        // Set order ID for linking
         if let orderId = productAttributes["orderId"] as? Int64 {
             product.order_id = orderId
         } else if let orderId = productAttributes["orderId"] as? Int {
@@ -279,9 +305,11 @@ class DRTDatabaseManager {
         return product
     }
     
+    // Inserts a new Skin entity or updates the existing one in Core Data using the provided SkinModel
     func insertOrUpdateSkin(skinModel: SkinModel, context: NSManagedObjectContext) {
         let fetchRequest: NSFetchRequest<Skin> = Skin.fetchRequest()
-
+        
+        // Try to fetch existing skin or create a new one
         let skin = (try? context.fetch(fetchRequest).first) ?? Skin(context: context)
         skin.color_1_bg = skinModel.color1Bg
         skin.color_1_text = skinModel.color1Text
@@ -300,8 +328,11 @@ class DRTDatabaseManager {
         }
     }
 
+    // Fetches offline-scanned data from Core Data and posts it to the server
     func fetchDataAndPostToServer(completionBlock: @escaping (Bool, Error?) -> Void) {
         DispatchQueue.global(qos: .background).async {
+            
+            // Ensure Core Data context is available
             guard let context = self.managedObjectContext else {
                 DispatchQueue.main.async {
                     completionBlock(false, NSError(domain: "CoreData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Managed Object Context is nil"]))
@@ -309,6 +340,7 @@ class DRTDatabaseManager {
                 return
             }
             
+            // Fetch scanned seat QR codes, full seat data, and scanned products
             let qr = self.fetchSeatsQr(context: context)
             let seats = self.fetchSeats(context: context)
             let products = self.fetchProducts(context: context)
@@ -321,6 +353,7 @@ class DRTDatabaseManager {
                 return
             }
             
+            // Prepare the data to upload
             let postData: [String: Any] = [
                 "db_code": dbCode,
                 "data": [
@@ -330,11 +363,13 @@ class DRTDatabaseManager {
                 ]
             ]
             
+            // Call API to upload data
             IQAPIClient.uploadAllOfflineData(code: self.savedShowCode ?? "36060-5E56", data: postData) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let response):
                         print(response)
+                        // Optionally clear data after successful upload
 //                        self.deleteAllRecords()
                         completionBlock(true, nil)
                     case .failure(let error):
@@ -346,7 +381,7 @@ class DRTDatabaseManager {
         }
     }
 
-        
+    // Fetches scanned seat QR codes from Core Data, formatted as "<qrCode>-<timestamp>"
     private func fetchSeatsQr(context: NSManagedObjectContext) -> [String] {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         do {
@@ -365,7 +400,7 @@ class DRTDatabaseManager {
         }
     }
 
-    
+    // Fetches detailed seat data from Core Data for upload
     private func fetchSeats(context: NSManagedObjectContext) -> [[String: Any]] {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         do {
@@ -388,7 +423,7 @@ class DRTDatabaseManager {
         }
     }
     
-    
+    // Fetches detailed product data from Core Data for upload
      func fetchProducts(context: NSManagedObjectContext) -> [[String: Any]] {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
         
@@ -413,7 +448,7 @@ class DRTDatabaseManager {
         }
     }
 
-    
+    // Extracts formatted barcode-timestamp strings from seat data
     private func extractSeatBarcodes(from seats: [[String: Any]]) -> [String] {
         return seats.compactMap { seat in
             guard let barcode = seat["barcode"] as? String, !barcode.isEmpty,
@@ -424,6 +459,7 @@ class DRTDatabaseManager {
         }
     }
     
+    // Extracts formatted QRCode-timestamp strings from product data
     private func extractProductQRCodes(from products: [[String: Any]]) -> [String] {
         return products.compactMap { product in
             guard let qrCode = product["qrCode"] as? String, !qrCode.isEmpty,
@@ -434,7 +470,7 @@ class DRTDatabaseManager {
         }
     }
 
-
+    // Fetches the db_code value from the stored Show object in Core Data
     private func fetchDbCodeFromCoreData() -> String? {
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
         if let show = try? managedObjectContext?.fetch(fetchRequest).first {
@@ -444,7 +480,7 @@ class DRTDatabaseManager {
     }
 }
 
-
+// Removes all associated seats from the given order object
 func clearOrderSeats(order: Order) {
     let seatsToRemove = Array(order.seats ?? [])
     for seat in seatsToRemove {

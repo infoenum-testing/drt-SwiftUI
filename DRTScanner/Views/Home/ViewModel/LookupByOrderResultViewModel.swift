@@ -27,20 +27,24 @@ class LookupByOrderResultViewModel: ObservableObject {
           self.managedObjectContext = managedObjectContext
       }
       
+    // Function to fetch order details (seats/merchandise) either from Core Data or from the API
       func fetchSeats(c: String, q: String) async {
-
+          
+          // Show loading spinner and reset previous error or orders
           DispatchQueue.main.async {
               self.orders = []
               self.isLoading = true
               self.errorMessage = nil
           }
           
+          // If offline mode is enabled, fetch orders from Core Data
           if isOfflineMode {
               fetchOrdersFromCoreData(orderNumber: q)
               return
           }
           
           do {
+              // Fetch order details from the API
               let fetchedOrder: [OrdersNewApi] = try await withCheckedThrowingContinuation { continuation in
                   IQAPIClient.getLookUpByOrder(code: c, orderNumber: q) { result in
                       switch result {
@@ -52,15 +56,20 @@ class LookupByOrderResultViewModel: ObservableObject {
                   }
               }
               
+              // Set the buyer's name fetched from the API
               DispatchQueue.main.async {
                   self.buyerName = fetchedOrder.first?.buyerName?.uppercased() ?? "No orders found"
               }
               
+              // Ensure orderId is present, throw error if not found
               guard let orderId = fetchedOrder.first?.orderId else {
                   throw NSError(domain: "OrderError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Order ID not found"])
               }
               
+              // Determine whether to fetch seats or merchandise based on the flag
               let type = isMerchandise ?? false ? "merch" : "seats"
+              
+              // Fetch detailed order info (either seats or merchandise) from the API
               let orderDetail: OrdersNewApi = try await withCheckedThrowingContinuation { continuation in
                   IQAPIClient.getOrderDetail(code: c, sid: savedShowId ?? "", oId: orderId, type: type) { result in
                       switch result {
@@ -73,6 +82,7 @@ class LookupByOrderResultViewModel: ObservableObject {
                   }
               }
               
+              // Update the UI with fetched data
               DispatchQueue.main.async {
                   if self.isMerchandise ?? false {
                       self.merchModel = orderDetail.merch
@@ -81,6 +91,8 @@ class LookupByOrderResultViewModel: ObservableObject {
                   }
                   self.isLoading = false
               }
+              
+              // Fetch the same order again (seats data) to update the orders list
               let fetchedSeats = try await withCheckedThrowingContinuation { continuation in
                   IQAPIClient.getLookUpByOrder(code: c, orderNumber: q) { result in
                       switch result {
@@ -93,6 +105,7 @@ class LookupByOrderResultViewModel: ObservableObject {
                   }
               }
               
+              // Update the UI with fetched seats
               DispatchQueue.main.async {
                   self.orders = fetchedSeats
                   self.isLoading = false
@@ -106,11 +119,13 @@ class LookupByOrderResultViewModel: ObservableObject {
           }
       }
     
+    // Function to fetch orders from Core Data based on the order number
     func fetchOrdersFromCoreData(orderNumber: String) {
         DispatchQueue.main.async {
             self.isLoading = true
         }
 
+        // If orders are found, map them to the OrdersNewApi format and update the UI
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "oid == %@", orderNumber)
         let seatRelationshipKey = "seats"
@@ -123,7 +138,8 @@ class LookupByOrderResultViewModel: ObservableObject {
                 if let firstOrder = fetchedOrders.first {
 
                     self.buyerName = firstOrder.buyer_name?.uppercased() ?? "UNKNOWN BUYER"
-
+                   
+                    // Map seats data from Core Data into SeatModel objects
                     let seats = firstOrder.seats?.compactMap { seat in
                         SeatModel(
                             section: seat.section ?? "",
@@ -137,6 +153,8 @@ class LookupByOrderResultViewModel: ObservableObject {
                     } ?? []
 
                     self.seatsModel = seats
+                    
+                    // Create a mock OrdersNewApi object from the Core Data order and update the orders
                     self.orders = [OrdersNewApi(
                         buyerName: firstOrder.buyer_name ?? "",
                         cc: firstOrder.cc ?? "",

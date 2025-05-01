@@ -7,87 +7,110 @@
 
 import SwiftUI
 
+/// View for displaying lookup results either by Credit Card or Phone Number.
 struct LookupResultCardOrPhoneView: View {
+
+    // MARK: - App Storage
     @AppStorage("showCode") private var savedShowCode: String?
-    let inputText: String
-    var dismissAction: () -> Void
+
+    // MARK: - Input Parameters
+    let inputText: String                         // User-entered query (credit card or phone number)
+    var dismissAction: () -> Void                 // Action to dismiss this view (back button)
+
+    // MARK: - View Models
     @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject private var phoneViewModel = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    @State private var isSheetPresented: Bool = false
+    @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext) // Currently unused
+
+    // MARK: - State
+    @State private var isSheetPresented: Bool = false            // Controls presentation of bottom sheet (not used directly here)
+    @State private var oId: String?                              // Selected order ID (used when navigating to order detail)
+    @State private var selectedOrder: OrdersNewApi?              // Holds the selected order model
+    @State private var navigateToOrderResult = false             // Controls custom sheet navigation
+
+    // MARK: - Input Error & Type
+    let errorMessage: String?                                    // Not used inside this view currently
+    let lookupType: LookupType                                   // Determines if lookup is by phone number or credit card
+
+    // MARK: - Computed Properties
+
+    /// Computed property to return the right list of orders based on lookup type
     var orders: [OrdersNewApi] {
         lookupType == .phoneNumber ? phoneViewModel.orders : creditCardViewModel.orders
     }
-    
+
+    /// Computed property to return loading state based on lookup type
     var isLoading: Bool {
         lookupType == .phoneNumber ? phoneViewModel.isLoading : creditCardViewModel.isLoading
     }
-    
-    let errorMessage: String?
-    let lookupType: LookupType
-    
-    @State private var oId: String?
-    
-    @State private var selectedOrder: OrdersNewApi?
-    @State private var navigateToOrderResult = false
 
+    // MARK: - View
     var body: some View {
         VStack {
-                VStack {
-                    HStack(alignment: .center) {
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image(StringConstants.DRTImages.leftSideArrow)
+            VStack {
+                HStack(alignment: .center) {
+                    // Back button to dismiss view
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            dismissAction()
                         }
-                        .padding(.leading, 20)
-                        
-                        Spacer()
-                        if isLoading {
-                            Text("Loading...")
-                                .foregroundColor(Color.customWhite)
-                                .font(.verlagBlackAdaptive(size: 25))
-                                .padding(.trailing, 20).frame(alignment: .leading)
-                            ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        }
-                        if !isLoading {
-                            Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(orders.count)")
-                                .foregroundColor(Color.customWhite)
-                                .font(.verlagBlackAdaptive(size: 25))
-                                .padding(.trailing, 20)
-                        }
-                            Spacer()
-                        
+                    }) {
+                        Image(StringConstants.DRTImages.leftSideArrow)
                     }
-                }
-               .padding([.top, .bottom], 20)
-                .background(Color.FFCE_62)
-                .frame(maxWidth: .infinity)
+                    .padding(.leading, 20)
 
-                VStack {
-                    if orders.isEmpty {
-                        Spacer()
-                    } else {
-                        List {
-                            ForEach(orders, id: \.orderId) { seat in
-                                LookupCellView(result: seat) { orderId in
-                                    selectedOrder = seat
-                                    oId = "\(orderId)"
-                                    navigateToOrderResult = true
-                                }.listRowBackground(Color.white)
-                            }
-                        }
-                        .listStyle(.plain)
-                        .padding(0)
+                    Spacer()
+
+                    // Show loading text & spinner
+                    if isLoading {
+                        Text("Loading...")
+                            .foregroundColor(Color.customWhite)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     }
+
+                    // Show result count or "No orders found"
+                    if !isLoading {
+                        Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(orders.count)")
+                            .foregroundColor(Color.customWhite)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                    }
+
+                    Spacer()
                 }
             }
+            .padding([.top, .bottom], 20)
+            .background(Color.FFCE_62)
+            .frame(maxWidth: .infinity)
+
+            // Orders List or Empty View
+            VStack {
+                if orders.isEmpty {
+                    Spacer() // Empty space if no orders found
+                } else {
+                    List {
+                        ForEach(orders, id: \.orderId) { seat in
+                            LookupCellView(result: seat) { orderId in
+                                selectedOrder = seat
+                                oId = "\(orderId)"             // Store selected order ID
+                                navigateToOrderResult = true   // Trigger sheet
+                            }
+                            .listRowBackground(Color.white)
+                        }
+                    }
+                    .listStyle(.plain)
+                    .padding(0)
+                }
+            }
+        }
         .frame(maxHeight: .infinity)
         .background(Color.customWhite)
         .ignoresSafeArea()
+
+        // MARK: - Task: Initial API call
         .task {
             if lookupType == .phoneNumber {
                 await phoneViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
@@ -95,11 +118,21 @@ struct LookupResultCardOrPhoneView: View {
                 await creditCardViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             }
         }
+
+        // MARK: - Sheet View for Order Detail
         .customSheetView(isPresented: $navigateToOrderResult) {
             if let selectedOrder = selectedOrder {
-                LookupOrderResultView(inputText: oId ?? "", dismissAction: { navigateToOrderResult = false }, errorMessage: nil, order: selectedOrder)
+                LookupOrderResultView(
+                    inputText: oId ?? "",
+                    dismissAction: { navigateToOrderResult = false },
+                    errorMessage: nil,
+                    order: selectedOrder
+                )
             }
-                    }.padding(.top, 0)
+        }
+        .padding(.top, 0)
+
+        // Optional: Debug print for sheet presentation
         .onChange(of: navigateToOrderResult) { newValue in
             print(newValue)
         }
