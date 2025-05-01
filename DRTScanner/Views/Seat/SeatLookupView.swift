@@ -9,7 +9,9 @@ import SwiftUI
 import IQAPIClient
 import CoreData
 
+// Main view for seat lookup functionality
 struct SeatLookupView: View {
+    // State variables for managing seat selection and view presentation
     @State private var seatText: String = ""
     @Binding var isPresented: Bool
     @State private var isSeatLookupPresented = false
@@ -27,6 +29,7 @@ struct SeatLookupView: View {
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
     
+    // Computed property to display selected seat information
     private var seatDisplayText: String {
         [selectedSection, selectedRow, selectedSeat]
             .filter { !$0.isEmpty }
@@ -36,6 +39,7 @@ struct SeatLookupView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
+                // Top bar with back button and seat display
                 HStack {
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.3)) {
@@ -45,7 +49,7 @@ struct SeatLookupView: View {
                         Image(StringConstants.DRTImages.leftSideArrow)
                     }.padding(.leading, 20)
                     
-                    //TextField("", text: $seatText)
+                    // Disabled text field showing selected seat
                     TextField("", text: $seatText, prompt: Text("Select Seat").font(.verlagBoldAdaptive(size: 30)).foregroundColor(Color.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 42))
                         .foregroundColor(.customWhite)
@@ -61,6 +65,7 @@ struct SeatLookupView: View {
                 .frame(maxWidth: .infinity, maxHeight: 90.adaptiveForIpad)
                 .background(Color.FFCE_62)
                 
+                // TableView for seat/section/row selection
                 TableView(
                     isSeatLookupPresented: $isSeatLookupPresented,
                     isSectionLookupPresented: $isSectionLookupPresented,
@@ -72,10 +77,11 @@ struct SeatLookupView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.clear)
                 
+                // Continue button at the bottom
                 HStack {
                     Spacer()
                     Button(action: {
-                        continueButtonTapped()
+                        continueButtonTapped() // Handles continue action
                     }) {
                         if isLoading {
                             ProgressView()
@@ -105,6 +111,7 @@ struct SeatLookupView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .edgesIgnoringSafeArea(.all)
         }
+        // Sheet for showing order result
         .customSheetView(isPresented: $showResultView) {
             LookupOrderResultView(
                 inputText: String(orderDetails.oid ?? 24241),
@@ -113,6 +120,7 @@ struct SeatLookupView: View {
                 order: order
             )
         }
+        // Sheet for seat selection
         .customSheetView(isPresented: $isSeatLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 ChooseSeatView(
@@ -123,11 +131,13 @@ struct SeatLookupView: View {
                 )
             }
         }
+        // Sheet for section selection
         .customSheetView(isPresented: $isSectionLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $selectedSection)
             }
         }
+        // Sheet for row selection
         .customSheetView(isPresented: $isRowLookupPresented) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 ChooseRowView(
@@ -140,6 +150,7 @@ struct SeatLookupView: View {
         }
     }
     
+    // Handles the logic when the continue button is tapped
     private func continueButtonTapped() {
         guard !selectedSection.isEmpty, !selectedRow.isEmpty, !selectedSeat.isEmpty else {
             print("Please select a section, row, and seat before continuing.")
@@ -149,6 +160,7 @@ struct SeatLookupView: View {
         isLoading = true
         
         if isOfflineMode {
+            // Fetch order details from Core Data if offline
             if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
                 self.order = OrdersNewApi(
                     buyerName: cachedOrder.buyer_name,
@@ -168,6 +180,7 @@ struct SeatLookupView: View {
             return
         }
         
+        // Fetch order details from API if online
         IQAPIClient.getSeatsResults(code: savedShowCode ?? "", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
             DispatchQueue.main.async {
                 self.isLoading = false
@@ -200,7 +213,7 @@ struct SeatLookupView: View {
         }
     }
     
-    
+    // Fetches order detail from Core Data for offline mode
     private func fetchOrderDetailFromCoreData(section: String, row: String, seat: String) -> Order? {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         
@@ -221,6 +234,7 @@ struct SeatLookupView: View {
     
 }
 
+// Preview provider for SwiftUI previews
 struct SeatLookupView_Previews: PreviewProvider {
     static var previews: some View {
         SeatLookupView(isPresented: .constant(false))

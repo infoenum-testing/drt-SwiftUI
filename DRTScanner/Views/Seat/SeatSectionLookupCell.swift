@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct SeatSectionLookupCell: View {
+    // Closure to be executed when the cell or button is tapped
     var action: (() -> Void)?
+    // The currently selected section to display
     var selectedSeat: String
     var body: some View {
         HStack {
+            // Displays the label for the section (e.g., "Section")
             Text(StringConstants.Common.section)
                 .font(.verlagBookAdaptive(size: 27))
                 .foregroundColor(Color.customGreen)
@@ -19,6 +22,7 @@ struct SeatSectionLookupCell: View {
             
             Spacer()
             
+            // Displays the selected section or a dash if empty
             Text(selectedSeat.isEmpty ? "-" : selectedSeat)
                 .font(.verlagBoldAdaptive(size: 40))
                 .foregroundColor(Color.FFCE_62)
@@ -28,6 +32,7 @@ struct SeatSectionLookupCell: View {
             
             Spacer()
             
+            // Button with an arrow image, triggers the action closure when tapped
             Button(action: {
                 action?()
             }) {
@@ -40,6 +45,7 @@ struct SeatSectionLookupCell: View {
         .padding([.top, .bottom], 10)
         .background(Color.white)
         .frame(height: 100)
+        // Triggers the action closure when the entire cell is tapped
         .onTapGesture {
             action?()
         }

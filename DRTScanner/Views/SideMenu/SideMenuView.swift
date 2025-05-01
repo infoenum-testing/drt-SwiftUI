@@ -7,30 +7,35 @@
 
 import SwiftUI
 
+// SideMenuView displays the side menu with navigation options and handles related actions
 struct SideMenuView: View {
+    // Bindings to control presentation and navigation
     @Binding var isPresented: Bool
     @Binding var showGoOfflineView: Bool
     @Binding var showScanningStatsView: Bool
     @Binding var showAboutView: Bool
     @Binding var showAlert: Bool
+    // Local state variables for view presentation
     @State private var showGoOnlineView = false
     @State private var showSettingsView = false
     @State var isSwitchingToMerchandise: Bool?
     @State private var showConfirmationAlert = false
     @State private var showWebsiteAlert = false
     
-    
+    // AppStorage properties for persistent mode flags
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .trailing) {
+                // Dimmed background
                 Color.black.opacity(0.3)
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
                     VStack(spacing: 5) {
+                        // Close button
                         HStack {
                             Spacer()
                             Button(action: { isPresented = false }) {
@@ -43,6 +48,7 @@ struct SideMenuView: View {
                             }
                             .padding(.top, 30)
                         }
+                        // Go Online/Offline option
                         if isOfflineMode {
                             SideMenuOption(title: StringConstants.SideMenuView.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
@@ -58,6 +64,7 @@ struct SideMenuView: View {
                                 // isPresented = false
                             }
                         }
+                        // Scanning Stats option (only if not in merchandise mode)
                         if !isMerchandise {
                             SideMenuOption(title: StringConstants.SideMenuView.scaningStats) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
@@ -66,13 +73,13 @@ struct SideMenuView: View {
                                 // isPresented = true
                             }
                         }
-                        
+                        // Settings option
                         SideMenuOption(title: StringConstants.SideMenuView.setting) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showSettingsView = true
                             }
                         }
-                        
+                        // Merchandise/Ticket switch option
                         if isMerchandise {
                             SideMenuOption(title: StringConstants.SideMenuView.scanTicket) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
@@ -88,25 +95,26 @@ struct SideMenuView: View {
                                 }
                             }
                         }
-                        
+                        // Logout option
                         SideMenuOption(title: StringConstants.SideMenuView.logout) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
                         }
-                        
+                        // About option
                         SideMenuOption(title: StringConstants.SideMenuView.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
                             //   isPresented = false
                         }
-                        
+                        // DRT Website option
                         SideMenuOption(title: StringConstants.SideMenuView.drtWebsite) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }
                         }
+                        // Alert for opening website
                         .alert(isPresented: $showWebsiteAlert) {
                             Alert(
                                 title: Text(StringConstants.SideMenuView.openDrtWebsiteTitle),
@@ -123,18 +131,22 @@ struct SideMenuView: View {
                     .background(Color.tealLight)
                     Spacer()
                 }.onAppear {
+                    // Set initial merchandise switch state
                     isSwitchingToMerchandise = !isMerchandise
                     print(isSwitchingToMerchandise ?? false,"")
                 }
             }
         }.sideMenuViewModify(isPresented: $showSettingsView) {
+            // Settings view presentation
             withAnimation(.easeInOut(duration: 0.3)) {
                 SettingsView(isPresented: $showSettingsView).padding(.top, 30)
             }
         }
+        // Go Online view presentation
         .customAlert(isPresented: $showGoOnlineView) {
             GoOnlineView(isPresented: $showGoOnlineView)
         }
+        // Confirmation alert for switching merchandise/ticket mode
         .customAlert(isPresented: $showConfirmationAlert) {
             GeometryReader { geometry in
                 ZStack(alignment: .top) {
@@ -147,13 +159,14 @@ struct SideMenuView: View {
                         }
                     
                     VStack(alignment: .center) {
-                        
+                        // Confirmation message
                         Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? StringConstants.SideMenuView.merchandise : StringConstants.SideMenuView.ticket)")
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                         
                         VStack {
+                            // NO button
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -172,6 +185,7 @@ struct SideMenuView: View {
                                 .padding(.horizontal, 30)
                                 .padding(.top)
                             
+                            // YES button
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -213,10 +227,12 @@ struct SideMenuView: View {
         }
     }
     
+    // Toggles the offline mode flag
     private func toggleOfflineMode() {
         isOfflineMode.toggle()
     }
     
+    // Opens the DRT website in the default browser
     private func openDRTWebsite() {
         if let url = URL(string: StringConstants.SideMenuView.drtWebsiteURL) {
             UIApplication.shared.open(url)

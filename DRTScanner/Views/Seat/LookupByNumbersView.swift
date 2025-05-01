@@ -7,34 +7,46 @@
 
 import SwiftUI
 
+// Enum to specify the type of lookup (order number, phone number, or credit card)
 enum LookupType {
     case orderNumber, phoneNumber, creditCard
 }
 
+// Main view for looking up orders by number, phone, or credit card
 struct LookupByNumbersView: View {
+    // Dismiss environment variable for closing the view
     @Environment(\.dismiss) var dismiss
+    // Core Data context
     @Environment(\.managedObjectContext) private var managedObjectContext
+    // AppStorage for saved show code
     @AppStorage("showCode") private var savedShowCode: String?
+    // State variables for input, loading, and results
     @State private var inputText: String = ""
     @State private var showResultView: Bool = false
     @State private var fetchedSeats: [LookupByOrderResultViewModel] = []
     @State private var order: [OrdersNewApi]?
+    // View models for different lookup types
     @StateObject var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject var phoneViewModels = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    // Binding to control presentation
     @Binding var isPresented: Bool
+    // The type of lookup to perform
     let lookupType: LookupType
+    // State for button click effects and loading
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
     @State private var isLoading: Bool = false
     @Environment(\.colorScheme) var colorScheme
     
+    // Custom initializer to set up view models and binding
     init(isPresented: Binding<Bool>, lookupType: LookupType) {
         _viewModel = StateObject(wrappedValue: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
         self._isPresented = isPresented
         self.lookupType = lookupType
     }
     
+    // Button layout for the keypad
     let buttons = [
         ["1", "2", "3"],
         ["4", "5", "6"],
@@ -42,6 +54,7 @@ struct LookupByNumbersView: View {
         ["-", "0", "OK"]
     ]
     
+    // Placeholder text based on lookup type
     var placeholderText: String {
         switch lookupType {
         case .orderNumber:
@@ -53,6 +66,7 @@ struct LookupByNumbersView: View {
         }
     }
     
+    // Determines if the OK button should be enabled based on input and lookup type
     var isOKButtonEnabled: Bool {
         switch lookupType {
         case .orderNumber:
@@ -64,11 +78,13 @@ struct LookupByNumbersView: View {
         }
     }
     
+    // Main body of the view
     var body: some View {
         ZStack {
             VStack {
                 VStack {
                     VStack {
+                        // Top bar with back button, input field, and delete button
                         HStack(alignment: .center){
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -110,6 +126,7 @@ struct LookupByNumbersView: View {
                         .padding(.horizontal, 20.adaptiveForIpad)
                         .padding([.top, .bottom], 20.adaptiveForIpad)
                     }.background(Color.FFCE_62)
+                    // Keypad for entering numbers and OK
                     HStack {
                         VStack(spacing: 1) {
                             ForEach(buttons, id: \.self) { row in
@@ -142,6 +159,7 @@ struct LookupByNumbersView: View {
                 .background(Color.FFCE_62)
             }
             
+            // Show result view if a lookup has been performed
             if showResultView {
                 VStack {
                     if let firstOrder = order {
@@ -170,6 +188,7 @@ struct LookupByNumbersView: View {
                     }
                 }
             }
+            // Loading overlay when fetching data
             if isLoading {
                 ZStack {
                     Color.black.opacity(0.1)
@@ -185,6 +204,7 @@ struct LookupByNumbersView: View {
         }
     }
     
+    // Handles button taps for keypad and OK button
     private func handleButtonTap(_ button: String) {
         if button == "OK" {
             if isOKButtonEnabled {
@@ -232,6 +252,7 @@ struct LookupByNumbersView: View {
     }
 }
 
+// Preview for SwiftUI canvas
 #Preview {
     LookupByNumbersView(isPresented: .constant(false), lookupType: .phoneNumber)
 }

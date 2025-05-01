@@ -7,21 +7,26 @@
 
 import SwiftUI
 
+// This struct defines a table view for selecting seat section, row, and seat with lookup dialogs.
 struct TableView: View {
+    // Bindings to control the presentation of lookup dialogs
     @Binding var isSeatLookupPresented: Bool
     @Binding var isSectionLookupPresented: Bool
     @Binding var isRowLookupPresented: Bool
+    // Bindings for the currently selected section, row, and seat
     @Binding var selectedSection: String
     @Binding var selectedRow: String
     @Binding var selectedSeat: String
     
     var body: some View {
         List {
+            // Section selection cell
             SeatSectionLookupCell(action: {
                 isSectionLookupPresented = true
             }, selectedSeat: selectedSection)
             .listRowBackground(Color.white)
             .frame(height: 100.adaptiveForIpad)
+            // When section changes, reset row and seat
             .onChange(of: selectedSection) { _ in
                 if !selectedSection.isEmpty {
                     selectedRow = ""
@@ -29,24 +34,29 @@ struct TableView: View {
                 }
             }
             
+            // Row selection cell
             SeatRowLookupCell(action: {
                 isRowLookupPresented = true
             }, selectedSeat: selectedRow)
             .listRowBackground(Color.white)
             .frame(height: 100.adaptiveForIpad)
+            // Disable if no section is selected
             .disabled(selectedSection.isEmpty)
             .opacity(selectedSection.isEmpty ? 0.5 : 1.0)
+            // When row changes, reset seat
             .onChange(of: selectedRow) { _ in
                 if !selectedRow.isEmpty {
                     selectedSeat = ""
                 }
             }
             
+            // Seat selection cell
             SeatLookupCell(action: {
                 isSeatLookupPresented = true
             }, selectedSeat: selectedSeat)
             .listRowBackground(Color.white)
             .frame(height: 100.adaptiveForIpad)
+            // Disable if no row is selected
             .disabled(selectedRow.isEmpty)
             .opacity(selectedRow.isEmpty ? 0.5 : 1.0)
         }.listStyle(.plain)

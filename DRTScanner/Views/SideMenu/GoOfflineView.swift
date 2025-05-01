@@ -10,6 +10,7 @@ import IQAPIClient
 import Combine
 
 struct GoOfflineView: View {
+    // State variables for progress, alerts, and user input
     @State private var progress: CGFloat = 0.0
     @State private var showAlert = false
     @State private var alertTitle = ""
@@ -27,9 +28,9 @@ struct GoOfflineView: View {
     @Binding var showOfflineSuccessAlert: Bool
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
-    @FocusState private var isNameFieldFocused: Bool
-    @State private var keyboardHeight: CGFloat = 0
-    @ObservedObject var viewModel: LookupByOrderResultViewModel
+    @FocusState private var isNameFieldFocused: Bool // Manages keyboard focus
+    @State private var keyboardHeight: CGFloat = 0 // Tracks keyboard height
+    @ObservedObject var viewModel: LookupByOrderResultViewModel // ViewModel for error handling
     
     var isContinueDisabled: Bool {
         name.count < 5 || isSyncing
@@ -54,6 +55,7 @@ struct GoOfflineView: View {
                 }
                 .disabled(isSyncing)
             }
+            // Title
             HStack {
                 Spacer()
                 Text(StringConstants.SideMenuView.goOffline)
@@ -63,6 +65,7 @@ struct GoOfflineView: View {
                 Spacer()
             }
             
+            // Description
             Text(StringConstants.SideMenuView.goOfflineViewDiscription)
                 .font(.verlagBookAdaptive(size: 18))
                 .foregroundColor(Color.customWhite)
@@ -71,6 +74,7 @@ struct GoOfflineView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
             
+            // Name input field
             HStack {
                 TextField("Type your name here", text: $name)
                     .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 10)
@@ -88,6 +92,7 @@ struct GoOfflineView: View {
             }.padding(.horizontal)
             .frame(alignment: .center)
             
+            // Progress indicators shown during syncing
             if isSyncing {
                 VStack {
                     ProgressView()
@@ -107,6 +112,7 @@ struct GoOfflineView: View {
                 }
             }
             
+            // Continue and Cancel buttons
             HStack {
                 Button(action: {
                     isNameFieldFocused = false
@@ -154,6 +160,7 @@ struct GoOfflineView: View {
         }
     }
     
+    // Calculates the offset for the view when the keyboard appears
     private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
         let screenHeight = UIScreen.main.bounds.height
         
@@ -179,13 +186,14 @@ struct GoOfflineView: View {
         }
     }
 
-    
+    // Handles the offline process, including API call and local sync
     private func goOffline() {
         guard name.count >= 5 else { return }
         
         isSyncing = true
         progress = 0.0
         
+        // Timer to update progress bar
         let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
                 if self.progress < 1.0 {
                     self.progress += 0.02
@@ -195,6 +203,7 @@ struct GoOfflineView: View {
                 }
             }
         
+        // API call to get all data for offline mode
         IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {
             case .success(let response):
@@ -272,6 +281,7 @@ struct GoOfflineView: View {
     }
 }
 
+// Publisher extension to observe keyboard height changes
 extension Publishers {
     static var keyboardHeight: AnyPublisher<CGFloat, Never> {
         let willShow = NotificationCenter.default

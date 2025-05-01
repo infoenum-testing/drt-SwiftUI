@@ -7,21 +7,29 @@
 
 import SwiftUI
 
+// ShowCodeView is a SwiftUI view for entering or scanning a code, with a custom keypad and camera scanner.
 struct ShowCodeView: View {
+    // Stores the code entered by the user
     @State private var showCode: String = ""
+    // Controls the visibility of the sheet
     @Binding var showSheet: Bool
+    // Callback when a code is entered
     var onCodeEntered: (String) -> Void
+    // Used to dismiss the view
     @Environment(\.dismiss) var dismiss
+    // Controls the visibility of the camera scanner
     @State private var isScannerVisible = false
+    // Tracks which button was last clicked
     @State private var clickedButton: String? = nil
+    // Checks if the OK button was clicked
     private var isOKButtonClicked: Bool {
         clickedButton == "OK"
     }
-
+    // Checks if the OK button should be enabled
     private var isOKButtonEnabled: Bool {
         !showCode.isEmpty
     }
-
+    // Layout for the custom keypad buttons
     let buttons = [
         ["A", "B", "C"],
         ["D", "E", "F"],
@@ -34,6 +42,7 @@ struct ShowCodeView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // If scanner is visible, show camera scanner view
                 if isScannerVisible {
                     CameraScannerView(
                         onScan: { scannedCode in
@@ -48,6 +57,7 @@ struct ShowCodeView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .edgesIgnoringSafeArea(.all)
 
+                    // Close button for scanner
                     VStack {
                         HStack {
                             Spacer()
@@ -67,6 +77,7 @@ struct ShowCodeView: View {
                         Spacer()
                     }
                 } else {
+                    // Background image for the main view
                     Image("background")
                         .resizable()
                         .scaledToFill()
@@ -75,14 +86,17 @@ struct ShowCodeView: View {
                         .edgesIgnoringSafeArea(.all)
 
                     VStack(spacing: 20) {
-                            HStack {
-                                Image(StringConstants.DRTImages.logo)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
-                                    .padding(.top, 10)
-                            }
+                        // Logo at the top
                         HStack {
+                            Image(StringConstants.DRTImages.logo)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
+                                .padding(.top, 10)
+                        }
+                        // Top bar with close button, code display, and backspace
+                        HStack {
+                            // Close button
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showSheet = false
@@ -96,6 +110,7 @@ struct ShowCodeView: View {
                             }
 
                             Spacer()
+                            // Code display field (disabled TextField)
                             ZStack(alignment: .center) {
                                 if !showCode.isEmpty {
 //                                    Text(StringConstants.Common.showCode)
@@ -112,6 +127,7 @@ struct ShowCodeView: View {
                                     .background(Color.clear)
                                     .disabled(true)
                             }
+                            // Backspace button
                             Button(action: {
                                 if !showCode.isEmpty {
                                     showCode.removeLast()
@@ -126,6 +142,7 @@ struct ShowCodeView: View {
                         }
                         .padding(.horizontal, 20)
 
+                        // Camera scanner button
                         HStack {
                             Button(action: {
                                 withAnimation {
@@ -140,6 +157,7 @@ struct ShowCodeView: View {
                         }
                         .padding(.horizontal, 15)
 
+                        // Custom keypad grid
                         Grid(alignment: .center, horizontalSpacing: 0, verticalSpacing: 0.5) {
                             ForEach(buttons, id: \.self) { row in
                                 GridRow {
@@ -192,6 +210,7 @@ struct ShowCodeView: View {
     }
 }
 
+// Preview for SwiftUI canvas
 #Preview {
     ShowCodeView(showSheet: .constant(true), onCodeEntered: { _ in })
 }

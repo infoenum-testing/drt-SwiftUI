@@ -43,7 +43,7 @@ struct GoOnlineView: View {
                             .padding()
                             .animation(.easeInOut, value: progress)
                             .onAppear {
-                                startUpload()
+                                startUpload() // Starts the upload process when view appears
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
@@ -106,6 +106,7 @@ struct GoOnlineView: View {
             }
         }
         
+        // Simulates progress bar animation
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
             if progress < 1.0 {
                 progress += 0.2
@@ -116,6 +117,7 @@ struct GoOnlineView: View {
     }
 }
 
+// Custom alert view for displaying error messages
 struct CustomAlertForError: View {
     @Binding var isPresented: Bool
     var message: String

@@ -15,6 +15,7 @@ class ScanningStatsViewModel: ObservableObject {
     @Published var stats: StatsModel?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    // Tracks if stats have been saved to Core Data
     private var isStatsSaved = false
     private let viewContext: NSManagedObjectContext
     
@@ -25,6 +26,7 @@ class ScanningStatsViewModel: ObservableObject {
         self.viewContext = context
     }
     
+    // Fetches stats from API or Core Data depending on offline mode
     func fetchStats() async {
         isLoading = true
         errorMessage = nil
@@ -51,6 +53,7 @@ class ScanningStatsViewModel: ObservableObject {
         loadStatsFromCoreData()
     }
     
+    // Loads stats from Core Data and saves them if not already saved
     private func loadStatsFromCoreData() {
         let totalSeats = fetchTotalSeats()
         let scannableSeats = fetchScannableSeats()
@@ -71,6 +74,7 @@ class ScanningStatsViewModel: ObservableObject {
         }
     }
     
+    // Deletes old stats from Core Data
     private func deleteOldStats() async {
         let fetchRequest: NSFetchRequest<Stats> = Stats.fetchRequest()
         
@@ -84,6 +88,7 @@ class ScanningStatsViewModel: ObservableObject {
         }
     }
     
+    // Saves new stats to Core Data
     private func saveStatsToCoreData(totalSeats: Int, scannableSeats: Int, scannedSeats: Int) async {
         let statsEntity = Stats(context: viewContext)
         statsEntity.total_seats = NSNumber(value: totalSeats)
@@ -99,6 +104,7 @@ class ScanningStatsViewModel: ObservableObject {
         }
     }
     
+    // Fetches scanning stats from the API
     private func getScanningStats() async throws -> StatsModel {
         return try await withCheckedThrowingContinuation { continuation in
             IQAPIClient.getShowCodeData(code: savedShowCode ?? "") { result in
@@ -112,10 +118,12 @@ class ScanningStatsViewModel: ObservableObject {
         }
     }
     
+    // Fetches the total number of seats from Core Data
     private func fetchTotalSeats() -> Int {
         fetchSeatCount(predicate: nil)
     }
     
+    // Fetches the number of scannable seats (total minus non-scannable)
     private func fetchScannableSeats() -> Int {
         let totalSeats = fetchTotalSeats()
         let nonScannableSeats = fetchSeatCount(predicate: NSPredicate(format: "oid == ''"))
@@ -125,10 +133,12 @@ class ScanningStatsViewModel: ObservableObject {
         return scannableSeats
     }
     
+    // Fetches the number of scanned seats
     private func fetchScannedSeats() -> Int {
         fetchSeatCount(predicate: NSPredicate(format: "date_scanned != nil"))
     }
     
+    // Helper to fetch seat count with an optional predicate
     private func fetchSeatCount(predicate: NSPredicate?) -> Int {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
         fetchRequest.predicate = predicate
