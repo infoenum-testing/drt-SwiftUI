@@ -29,7 +29,7 @@ struct ScannerView: View {
     // Position of the animated scan line
     @State private var linePosition: CGFloat
     // Speed of the scan line animation
-    private let lineSpeed: CGFloat = 90.0
+    private let lineSpeed: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 120.0 : 90.0
     // Timer for scan line animation
     @State private var timer: Timer?
     // Indicates if the scanner is active
@@ -157,6 +157,8 @@ struct ScannerView: View {
     @State private var scannedExternalCode: String = ""
     // Audio player for beep sound
     @State private var audioPlayer: AVAudioPlayer?
+    
+    @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
 
     /// Initializes the ScannerView with all required bindings and view models
     init(seat: Binding<SeatModel?>,
@@ -222,7 +224,14 @@ struct ScannerView: View {
                                 scannerController?.stopScanning()
                             }
                         }
-                        // Overlay for full screen ticket/merchandise/invalid views
+                    if !isCameraAuthorized {
+                        Color.black
+                            .frame(height: isFullScreen ? nil : scanViewHeight + 30.adaptiveForIpad)
+                            .frame(maxWidth: .infinity)
+                            .opacity(1)
+                            .padding(.bottom, -30)
+                    }
+                    // Overlay for full screen ticket/merchandise/invalid views
                     if isFullScreen {
                         VStack {
                             Spacer()
@@ -263,11 +272,13 @@ struct ScannerView: View {
                         HStack {
                             Spacer()
                             HStack {
-                                // Flashlight toggle icon and gesture
-                                Image(isFlashOn ? "FlashOff" : "FlashOn")
+                                if isCameraAuthorized {
+                                    // Flashlight toggle icon and gesture
+                                    Image(isFlashOn ? "FlashOff" : "FlashOn")
                                     .resizable()
                                     .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                                     .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? -50 : -10)
+                            }
                             }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
                                 .padding(.top, isFullScreen ? 10 : 0)
                                 .gesture(
@@ -423,16 +434,27 @@ struct ScannerView: View {
                     }
                     
                     // Animated scan line overlay
-                    if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
-                        Rectangle()
-                            .frame(height: 1.5)
-                            .foregroundColor(.red)
-                            .shadow(color: .black, radius: 1.5)
-                            .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / 2))
-                            .onAppear {
-                                startLineAnimation() // Start scan line animation
+                    Group {
+                        if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
+                            if isCameraAuthorized {
+                                Rectangle()
+                                    .frame(height: 1.5)
+                                    .foregroundColor(.red)
+                                    .shadow(color: .black, radius: 1.5)
+                                    .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / (isFullScreen ? 2 : UIDevice.current.userInterfaceIdiom == .pad ? 2.1 : 2.2)))
+                                    .onAppear {
+                                        startLineAnimation()
+                                    }
                             }
+                        }
                     }
+                    .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                        isCameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+                        if isCameraAuthorized {
+                            startLineAnimation()
+                        }
+                    }
+
                 }.onAppear {
                     Task {
                         await viewModel.fetchStats() // Fetch scan stats on appear
@@ -575,12 +597,14 @@ struct ScannerView: View {
     
     // Starts the animation for the scanning line
     private func startLineAnimation() {
-        let animationHeight = isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight
-        if isFullScreen {
-            linePosition = 0
-        }
-        withAnimation(Animation.linear(duration: Double(animationHeight / lineSpeed)).repeatForever(autoreverses: true)) {
-            linePosition = animationHeight
+        if isCameraAuthorized {
+            let animationHeight = isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight
+            if isFullScreen {
+                linePosition = 0
+            }
+            withAnimation(Animation.linear(duration: Double(animationHeight / lineSpeed)).repeatForever(autoreverses: true)) {
+                linePosition = animationHeight
+            }
         }
     }
     

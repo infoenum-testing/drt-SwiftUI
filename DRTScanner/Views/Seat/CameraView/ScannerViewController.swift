@@ -103,6 +103,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // MARK: - Camera Setup
 
+    var onCameraReady: (() -> Void)?
     func setupCamera() {
         let session = AVCaptureSession()
         session.sessionPreset = .hd1280x720
@@ -149,6 +150,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             session.startRunning()
             DispatchQueue.main.async {
                 self.isScanning = true
+                self.onCameraReady?() // Notify SwiftUI to start animation
             }
         }
     }

@@ -28,6 +28,7 @@ struct SeatLookupView: View {
     @State private var showResultView = false
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
+    @State private var errorMessage: String? = nil
     
     // Computed property to display selected seat information
     private var seatDisplayText: String {
@@ -116,7 +117,7 @@ struct SeatLookupView: View {
             LookupOrderResultView(
                 inputText: String(orderDetails.oid ?? 24241),
                 dismissAction: { showResultView = false },
-                errorMessage: nil,
+                errorMessage: errorMessage,
                 order: order
             )
         }
@@ -160,23 +161,29 @@ struct SeatLookupView: View {
         isLoading = true
         
         if isOfflineMode {
-            // Fetch order details from Core Data if offline
-            if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
-                self.order = OrdersNewApi(
-                    buyerName: cachedOrder.buyer_name,
-                    cc: cachedOrder.cc,
-                    phone: cachedOrder.phone,
-                    orderId: cachedOrder.oid?.intValue,
-                    valid: true,
-                    goldenTicketText: "",
-                    isGoldenTicket: nil,
-                    message: "",
-                    seats: [],
-                    merch: []
-                )
+            isLoading = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if let cachedOrder = fetchOrderDetailFromCoreData(section: selectedSection, row: selectedRow, seat: selectedSeat) {
+                    self.order = OrdersNewApi(
+                        buyerName: cachedOrder.buyer_name,
+                        cc: cachedOrder.cc,
+                        phone: cachedOrder.phone,
+                        orderId: cachedOrder.oid?.intValue,
+                        valid: true,
+                        goldenTicketText: "",
+                        isGoldenTicket: nil,
+                        message: "",
+                        seats: [],
+                        merch: []
+                    )
+                    self.errorMessage = nil
+                } else {
+                    self.order = nil
+                    self.errorMessage = "No orders found"
+                }
                 self.showResultView = true
+                self.isLoading = false
             }
-            isLoading = false
             return
         }
         
