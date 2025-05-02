@@ -102,7 +102,7 @@ struct SeatHomeView: View {
             ZStack {
                 // Shows background image unless in full screen
                 if !isFullScreen {
-                    Image("background")
+                    Image(StringConstants.DRTImages.backgound)
                         .resizable()
                         .scaledToFill()
                         .edgesIgnoringSafeArea(.all)
@@ -413,7 +413,7 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text("Error")
+                    Text(StringConstants.Common.error)
                         .padding(.leading, 20)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
@@ -449,7 +449,7 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text("Success")
+                    Text(StringConstants.Common.success)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.bottom, 10)
@@ -459,7 +459,7 @@ struct SeatHomeView: View {
                 }
                 
                 VStack {
-                    Text("Database download successfully")
+                    Text(StringConstants.SeatHomeView.successDbDownloadAlert)
                         .font(.verlagBookAdaptive(size: 18))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)

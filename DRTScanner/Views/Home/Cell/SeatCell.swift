@@ -39,13 +39,13 @@ struct SeatCell: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(isScanned ? "PREVIOUSLY SCANNED AT \(scannedTime ?? "")" : "NOT YET SCANNED")
+                Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : StringConstants.LandingView.notYetScanned)
                     .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(Color.customGreen)
             }
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text("SECT:")
+                    Text(StringConstants.LandingView.sectionLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
@@ -55,7 +55,7 @@ struct SeatCell: View {
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text("ROW:")
+                    Text(StringConstants.LandingView.rowLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)
@@ -65,7 +65,7 @@ struct SeatCell: View {
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text("SEAT:")
+                    Text(StringConstants.LandingView.seatLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)
@@ -81,7 +81,7 @@ struct SeatCell: View {
                         .scaleEffect(1.0)
                         .padding(10)
                 } else {
-                    Image(isScanned ? "Green_circle_check_btn" : "scan_now")
+                    Image(isScanned ? StringConstants.DRTImages.greenCheckImage : StringConstants.DRTImages.scanNow)
                         .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                         .onTapGesture {
                             updateSeatWithScannedQrCode()
@@ -209,9 +209,9 @@ struct SeatCell: View {
                     self.seat.scannedTime = savedDate
                 }
                 else {
-                           scannedTime = nil
-                           isScanned = false
-                       }
+                    scannedTime = nil
+                    isScanned = false
+                }
             }
             
             let scanFetchRequest: NSFetchRequest<Scan> = Scan.fetchRequest()

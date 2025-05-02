@@ -50,7 +50,7 @@ struct SeatLookupView: View {
                     }.padding(.leading, 20)
                     
                     // Disabled text field showing selected seat
-                    TextField("", text: $seatText, prompt: Text("Select Seat").font(.verlagBoldAdaptive(size: 30)).foregroundColor(Color.black.opacity(0.2)))
+                    TextField("", text: $seatText, prompt: Text(StringConstants.SeatHomeView.selectSeat).font(.verlagBoldAdaptive(size: 30)).foregroundColor(Color.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 42))
                         .foregroundColor(.customWhite)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -23,7 +23,7 @@ struct SettingsView: View {
                 HStack {
                     Spacer()
                     // Title for the Settings screen
-                    Text("Settings")
+                    Text(StringConstants.SideMenuView.settingSmall)
                         .font(.verlagBoldAdaptive(size: 24))
                         .padding(.leading, 10)
                         .foregroundColor(.white)

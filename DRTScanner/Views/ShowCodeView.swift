@@ -78,7 +78,7 @@ struct ShowCodeView: View {
                     }
                 } else {
                     // Background image for the main view
-                    Image("background")
+                    Image(StringConstants.DRTImages.backgound)
                         .resizable()
                         .scaledToFill()
                         .frame(width: geometry.size.width, height: geometry.size.height)
@@ -133,7 +133,7 @@ struct ShowCodeView: View {
                                     showCode.removeLast()
                                 }
                             }) {
-                                Image("arrow_with_cross_btn")
+                                Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
                                     .resizable()
                                     .frame(width: 40.adaptiveForIpad, height: 30.adaptiveForIpad)
                                     .background(Color.clear)

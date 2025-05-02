@@ -76,7 +76,7 @@ struct GoOfflineView: View {
             
             // Name input field
             HStack {
-                TextField("Type your name here", text: $name)
+                TextField(StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
                     .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 10)
                     .font(.verlagBook(size: 25))
                     .background(Color.customWhite)

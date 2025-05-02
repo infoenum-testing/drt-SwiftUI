@@ -19,6 +19,14 @@ struct StringConstants {
         static let scanMerchOrSeat = "Do you want to scan merchandise or seats?"
         static let isOfflineAlertMessage = "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out"
         static let logoutConfirm = "Are you sure you want to log out?"
+        static let orderLabel = "ORDER"
+        static let ccLabel = "CC"
+        static let phoneLabel = "PHONE NUMBER"
+        static let previouslyScannedAt = "PREVIOUSLY SCANNED AT %@"
+        static let notYetScanned = "NOT YET SCANNED"
+        static let sectionLabel = "SECT:"
+        static let rowLabel = "ROW:"
+        static let seatLabel = "SEAT:"
     }
     
     // MARK: - Common -
@@ -86,6 +94,8 @@ struct StringConstants {
         static let ordersNotFound = "Orders not found."
         static let showCode = "Show Code"
         static let selectTime = "Select Time"
+        static let seats = "seats"
+        static let merch = "merch"
     }
     
     struct httpMethod {
@@ -147,6 +157,7 @@ struct StringConstants {
         static let scanNow = "scan_now"
         static let greenCheckImage = "Green_circle_check_btn"
         static let leftSideArrow = "left_side_arrow"
+        static let arrowWithCrossBtnImage = "arrow_with_cross_btn"
     }
     
     struct Formate {
@@ -178,6 +189,8 @@ struct StringConstants {
         static let danceRecitalTicketing = "Dance Recital Ticketing"
         static let danceNationals = "2016 DANCE NATIONALS"
         static let areYouSureYouWantToLogout = "Are you sure you want to logout?"
+        static let successDbDownloadAlert = "Database download successfully"
+        static let selectSeat = "Select Seat"
     }
     
     struct SideMenuView {
@@ -185,18 +198,27 @@ struct StringConstants {
         static let goOfflineViewText = "Go offline"
         static let goOfflineViewDiscription = "By going offline, the database will be downloaded to this device, and nobody else will be able to scan tickets for this show until I go back online. When I return online, the scanned tickets will be uploaded back to the server.\n\nBy signing my name, I understand and agree to the above:"
         static let goOnline = "GO ONLINE"
+        static let goOnlineServer = "Uploading scanned tickets to the server..."
+        static let goOnlineSuccess = "Database Upload Successful!"
+        static let goOnlineFailed = "Database upload failed! Please try again."
         static let scanTicket = "SCAN TICKETS"
         static let ticket = "tickets?"
         static let merchandise = "merchandise?"
         static let scanMerchandise = "SCAN MERCHANDISE"
         static let scaningStats = "SCANNING STATS"
+        static let scaningStatsTitle = "Scanning Stats"
         static let about = "ABOUT"
         static let logout = "LOG OUT"
         static let drtWebsite = "DRT WEBSITE"
         static let setting = "SETTINGS"
+        static let settingSmall = "Settings"
+        static let goOfflineViewTextFieldText = "Type your name here"
         static let openDrtWebsiteTitle = "Open DRT Website?"
         static let openDrtWebsiteMessage = "Do you want to visit the DRT website?"
         static let drtWebsiteURL = "https://www.drtwebsite.com"
+        static let copyRightTitle = "Copyright(c) 2013-2025. DRT Performance Tix."
+        static let copyRightTitle2 = "All Rights Reserved"
+        static let aboutDescriptionText = "Our purpose and mission is to provide small bussinesses with the advantages to grow and prosper through innovative solution and lifelong relationships."
     }
     
     // MARK: - API Error -

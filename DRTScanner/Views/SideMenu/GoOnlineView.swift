@@ -20,12 +20,12 @@ struct GoOnlineView: View {
     var body: some View {
         VStack(spacing: 20) {
             if !showErrorMessage {
-                Text("GO ONLINE")
+                Text(StringConstants.SideMenuView.goOnline)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
             }
             if isUploading {
-                Text("Uploading scanned tickets to the server...")
+                Text(StringConstants.SideMenuView.goOnlineServer)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.customWhite)
                     .multilineTextAlignment(.leading)
@@ -53,11 +53,11 @@ struct GoOnlineView: View {
                 }
                    
             } else if showSuccessMessage {
-                Text("Database Upload Successful!")
+                Text(StringConstants.SideMenuView.goOnlineSuccess)
                     .font(.verlagBoldAdaptive(size: 22))
                     .foregroundColor(.customWhite)
             }  else if showErrorMessage {
-                Text("Database upload failed! Please try again.")
+                Text(StringConstants.SideMenuView.goOnlineFailed)
                     .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
@@ -126,7 +126,7 @@ struct CustomAlertForError: View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text("Error")
+                Text(StringConstants.Common.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.white)
                     .padding(.bottom, 10)

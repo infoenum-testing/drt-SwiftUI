@@ -34,7 +34,7 @@ struct SeatLookupCell: View {
             Button(action: {
                 action?()
             }) {
-                Image("right_side_arrow")
+                Image(StringConstants.SeatHomeView.rightSideArrow)
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
             .background(Color.clear)

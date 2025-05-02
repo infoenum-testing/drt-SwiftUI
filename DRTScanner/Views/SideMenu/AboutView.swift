@@ -14,7 +14,7 @@ struct AboutView: View {
     static let urlString = "www.drttix.com"
     var body: some View {
         ZStack {
-            Image("background")
+            Image(StringConstants.DRTImages.backgound)
                 .resizable()
                // .scaledToFit()
            
@@ -41,7 +41,7 @@ struct AboutView: View {
                     .scaledToFit()
                     .frame(height: 150.adaptiveForIpad)
                 VStack {
-                    Text("Our purpose and mission is to provide small bussinesses with the advantages to grow and prosper through innovative solution and lifelong relationships.")
+                    Text(StringConstants.SideMenuView.aboutDescriptionText)
                         .font(.verlagBoldAdaptive(size: 16))
                         .foregroundColor(Color.customWhite)
                         .multilineTextAlignment(.center)
@@ -61,9 +61,9 @@ struct AboutView: View {
                             }
                             .alert(isPresented: $showWebsiteAlert) {
                                 Alert(
-                                    title: Text("Open DRT Website?")
+                                    title: Text(StringConstants.SideMenuView.openDrtWebsiteTitle)
                                         .font(UIDevice.current.userInterfaceIdiom == .pad ? .title : .headline),
-                                    message: Text("Do you want to visit the DRT website?")
+                                    message: Text(StringConstants.SideMenuView.openDrtWebsiteMessage)
                                         .font(UIDevice.current.userInterfaceIdiom == .pad ? .title3 : .subheadline),
                                     primaryButton: .default(Text("Yes")) {
                                         openWebsite()
@@ -73,12 +73,12 @@ struct AboutView: View {
                             }
                             .padding()
                     
-                    Text("Copyright(c) 2013-2025. DRT Performance Tix.")
+                    Text(StringConstants.SideMenuView.copyRightTitle)
                         .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(Color.customWhite)
                         .multilineTextAlignment(.center)
                     
-                    Text("All Rights Reserved")
+                    Text(StringConstants.SideMenuView.copyRightTitle2)
                         .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(Color.customWhite)
                         .multilineTextAlignment(.center)

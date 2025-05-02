@@ -120,7 +120,7 @@ struct LookupByNumbersView: View {
                                     inputText.removeLast()
                                 }
                             }) {
-                                Image("arrow_with_cross_btn")
+                                Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
                             }
                         }
                         .padding(.horizontal, 20.adaptiveForIpad)

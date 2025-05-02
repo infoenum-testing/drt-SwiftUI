@@ -166,7 +166,7 @@ struct LookupOrderResultView: View {
                     VStack(alignment: .center) {
                         HStack {
                             Spacer()
-                            Text("Error")
+                            Text(StringConstants.Common.error)
                                 .padding(.leading, 20)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(.white)

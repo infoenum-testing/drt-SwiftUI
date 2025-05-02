@@ -25,17 +25,17 @@ struct LookupCellView: View {
             
             HStack {
                 
-                Text("ORDER: \(result.orderId ?? 0)")
+                Text("\(StringConstants.LandingView.orderLabel): \(result.orderId ?? 0)")
                     .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
                 
-                Text("CC: \(result.cc ?? "")")
+                Text("\(StringConstants.LandingView.ccLabel): \(result.cc ?? "")")
                     .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
             }
             .padding(.top, 1)
             
-            Text("PHONE NUMBER: \(result.phone ?? "")")
+            Text("\(StringConstants.LandingView.phoneLabel): \(result.phone ?? "")")
                 .font(.verlagBoldAdaptive(size: 15))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)

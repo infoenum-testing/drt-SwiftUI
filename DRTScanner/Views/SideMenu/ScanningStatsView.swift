@@ -23,7 +23,7 @@ struct ScanningStatsView: View {
         VStack(spacing: 5) {
             HStack {
                 Spacer()
-                Text("Scanning Stats")
+                Text(StringConstants.SideMenuView.scaningStatsTitle)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
                     .frame(alignment: .center)
