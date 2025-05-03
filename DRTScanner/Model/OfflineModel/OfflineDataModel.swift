@@ -27,21 +27,3 @@ struct OfflineDataModel: Codable {
         case orders = "orders"
     }
 }
-
-import Foundation
-
-struct OrdersOfflineModel: Codable {
-
-    let oid: Int?
-    let buyerName: String?
-    let cc: String?
-    let phone: String?
-
-    private enum CodingKeys: String, CodingKey {
-        case oid = "0"
-        case buyerName = "1"
-        case cc = "2"
-        case phone = "3"
-    }
-
-}
