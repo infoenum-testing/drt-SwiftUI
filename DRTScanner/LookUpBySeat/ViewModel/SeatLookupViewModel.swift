@@ -27,19 +27,24 @@ class SeatLookupViewModel: ObservableObject {
     private var viewContext: NSManagedObjectContext
     private var lookupByOrderViewModel: LookupByOrderResultViewModel
 
+    // Initializes the SeatLookupViewModel with a Core Data context
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.viewContext = context
         self.lookupByOrderViewModel = LookupByOrderResultViewModel(managedObjectContext: context)
     }
     
+    // Returns a formatted string representing the selected seat (Section - Row - Seat)
     var seatDisplayText: String {
         [selectedSection, selectedRow, selectedSeat].filter { !$0.isEmpty }.joined(separator: " - ")
     }
 
+    // Updates the seatText whenever section, row, or seat changes
     func onSeatDataChanged() {
         seatText = seatDisplayText
     }
 
+    // Handles the logic when the Continue button is tapped
+    // Fetches order details either from Core Data (offline) or API (online)
     func continueButtonTapped() {
         guard !selectedSection.isEmpty, !selectedRow.isEmpty, !selectedSeat.isEmpty else {
             errorMessage = "Please select a section, row, and seat before continuing."
@@ -49,6 +54,7 @@ class SeatLookupViewModel: ObservableObject {
         isLoading = true
 
         if isOfflineMode {
+            // Fetch order details from Core Data in offline mode
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if let cachedOrder = self.fetchOrderDetailFromCoreData() {
                     self.order = OrdersNewApi(
@@ -72,6 +78,7 @@ class SeatLookupViewModel: ObservableObject {
                 self.isLoading = false
             }
         } else {
+            // Fetch order details from API in online mode
             IQAPIClient.getSeatsResults(code: savedShowCode ?? "", section: selectedSection, row: selectedRow, seat: selectedSeat) { result in
                 DispatchQueue.main.async {
                     self.isLoading = false
@@ -102,6 +109,7 @@ class SeatLookupViewModel: ObservableObject {
         }
     }
 
+    // Fetches order details from Core Data for the selected seat
     private func fetchOrderDetailFromCoreData() -> Order? {
         let request: NSFetchRequest<Seat> = Seat.fetchRequest()
         request.predicate = NSPredicate(format: "section == %@ AND row == %@ AND seat == %@", selectedSection, selectedRow, selectedSeat)

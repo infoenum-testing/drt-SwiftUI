@@ -21,8 +21,8 @@
 		98E3FDB22D53A3FB00DB8EF6 /* Exceptions for "DRTScanner" folder in "DRTScanner" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Color+Extensions.swift",
 				Info.plist,
+				"Resources/Color/Color+Extensions.swift",
 			);
 			target = 98E3FC732D539E9300DB8EF6 /* DRTScanner */;
 		};
@@ -33,7 +33,7 @@
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 98E3FC722D539E9300DB8EF6 /* Resources */;
 			membershipExceptions = (
-				"Color+Extensions.swift",
+				"Resources/Color/Color+Extensions.swift",
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -349,7 +349,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"DRTScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D46TEELVUP;
@@ -392,7 +392,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"DRTScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D46TEELVUP;

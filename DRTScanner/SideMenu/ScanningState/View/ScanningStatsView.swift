@@ -9,11 +9,13 @@
 import SwiftUI
 import CoreData
 
+import SwiftUI
+import CoreData
+
 struct ScanningStatsView: View {
     @Binding var isPresented: Bool
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel: ScanningStatsViewModel
-//    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     init(isPresented: Binding<Bool>, context: NSManagedObjectContext) {
         self._isPresented = isPresented
@@ -27,7 +29,6 @@ struct ScanningStatsView: View {
                 Text(StringConstants.SideMenuView.scaningStatsTitle)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
-                    .frame(alignment: .center)
                     .padding(.leading, 10)
                 Spacer()
                 Button(action: {
@@ -44,13 +45,20 @@ struct ScanningStatsView: View {
                 }
             }
 
-            if let stats = viewModel.stats {
-                statsRow(title: "Total Seats:", value: viewModel.stats?.totalSeats)
+            if viewModel.isLoading {
+                ProgressView("Loading stats...")
+                    .padding(.top)
+            } else if let stats = viewModel.stats {
+                statsRow(title: "Total Seats:", value: stats.totalSeats)
                 statsRow(title: "Total Scannable Seats:", value: stats.seatsScannable)
                 statsRow(title: "Total Scanned Seats:", value: stats.seatsScannedTotal)
                 statsRow(title: "Tickets Scanned by Device:", value: stats.seatsScannedByDevice)
+            } else if let error = viewModel.errorMessage {
+                Text(error)
+                    .font(.verlagBookAdaptive(size: 16))
+                    .foregroundColor(.red)
+                    .padding(.top)
             }
-            
         }
         .padding(20)
         .background(Color.FFCE_62)
@@ -71,6 +79,7 @@ struct ScanningStatsView: View {
             Text(value.map { "\($0)" } ?? "N/A")
                 .font(.verlagBoldAdaptive(size: 20))
                 .foregroundColor(.customWhite)
-        }.padding(.bottom)
+        }
+        .padding(.bottom)
     }
 }

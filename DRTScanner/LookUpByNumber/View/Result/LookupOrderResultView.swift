@@ -183,7 +183,7 @@ struct LookupOrderResultView: View {
                                     .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                     .background(Color.clear)
                                     .contentShape(Rectangle())
-                            }
+                            }.padding(.bottom, 10)
                         }
 
                         VStack {

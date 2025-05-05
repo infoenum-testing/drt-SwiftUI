@@ -18,8 +18,10 @@ struct SeatLookupView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
+                // Top bar with back button and seat text field
                 HStack {
                     Button {
+                        // Dismiss the SeatLookupView
                         withAnimation(.easeInOut) {
                             isPresented = false
                         }
@@ -28,6 +30,7 @@ struct SeatLookupView: View {
                     }
                     .padding(.leading, 20)
 
+                    // Display selected seat (disabled text field)
                     TextField("", text: $viewModel.seatText, prompt: Text(StringConstants.SeatHomeView.selectSeat)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.black.opacity(0.2)))
@@ -40,6 +43,7 @@ struct SeatLookupView: View {
                 .frame(maxHeight: 90.adaptiveForIpad)
                 .background(Color.FFCE_62)
 
+                // TableView for selecting section, row, and seat
                 TableView(
                     isSeatLookupPresented: $isSeatLookupPresented,
                     isSectionLookupPresented: $isSectionLookupPresented,
@@ -48,12 +52,14 @@ struct SeatLookupView: View {
                     selectedRow: $viewModel.selectedRow,
                     selectedSeat: $viewModel.selectedSeat
                 )
+                // Update seat data when selection changes
                 .onChange(of: viewModel.selectedSection) { _ in viewModel.onSeatDataChanged() }
                 .onChange(of: viewModel.selectedRow) { _ in viewModel.onSeatDataChanged() }
                 .onChange(of: viewModel.selectedSeat) { _ in viewModel.onSeatDataChanged() }
 
                 Spacer()
                 
+                // Continue button to trigger seat lookup
                 Button {
                     viewModel.continueButtonTapped()
                 } label: {
@@ -77,6 +83,7 @@ struct SeatLookupView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        // Sheet for displaying lookup result
         .customSheetView(isPresented: $viewModel.showResultView) {
             LookupOrderResultView(
                 inputText: String(viewModel.orderDetails.oid ?? 24241),
@@ -85,6 +92,7 @@ struct SeatLookupView: View {
                 order: viewModel.order
             )
         }
+        // Sheet for choosing seat
         .customSheetView(isPresented: $isSeatLookupPresented) {
             ChooseSeatView(
                 isPresented: $isSeatLookupPresented,
@@ -93,9 +101,11 @@ struct SeatLookupView: View {
                 selectedRow: $viewModel.selectedRow
             )
         }
+        // Sheet for choosing section
         .customSheetView(isPresented: $isSectionLookupPresented) {
             ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $viewModel.selectedSection)
         }
+        // Sheet for choosing row
         .customSheetView(isPresented: $isRowLookupPresented) {
             ChooseRowView(
                 isPresented: $isRowLookupPresented,
