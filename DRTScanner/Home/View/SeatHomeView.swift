@@ -86,7 +86,7 @@ struct SeatHomeView: View {
     // ViewModel for lookup by order result
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     
-//    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     // Computes the dynamic cell height based on device and mode
     private var dynamicCellHeight: CGFloat {
@@ -389,7 +389,7 @@ struct SeatHomeView: View {
                                         savedShowId = nil
                                         showAlert = false
                                         showSeatView = false
-//                                        deviceScanCount = 0
+                                        deviceScanCount = 0
                                         DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }

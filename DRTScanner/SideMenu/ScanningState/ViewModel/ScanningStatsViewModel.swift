@@ -21,6 +21,7 @@ class ScanningStatsViewModel: ObservableObject {
     
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     init(context: NSManagedObjectContext) {
         self.viewContext = context
@@ -96,7 +97,7 @@ class ScanningStatsViewModel: ObservableObject {
         statsEntity.total_seats = NSNumber(value: totalSeats)
         statsEntity.seats_scannable = NSNumber(value: scannableSeats)
         statsEntity.seats_scanned_total = NSNumber(value: scannedSeats)
-        statsEntity.seats_scanned_by_device = 0
+        statsEntity.seats_scanned_by_device = NSNumber(value: deviceScanCount)
         
         do {
             try viewContext.save()
@@ -164,23 +165,29 @@ class ScanningStatsViewModel: ObservableObject {
     // ✅ Call this after each successful scan in offline mode
     func incrementDeviceScannedCount() {
         let fetchRequest: NSFetchRequest<Stats> = Stats.fetchRequest()
-        
         do {
             let results = try viewContext.fetch(fetchRequest)
-            guard let statsEntity = results.first else {
-                print("No Stats entity found to update.")
-                return
+            let statsEntity: Stats
+            if let existingStats = results.first {
+                statsEntity = existingStats
+            } else {
+                // If no Stats entity exists, create one
+                statsEntity = Stats(context: viewContext)
+                statsEntity.total_seats = 0
+                statsEntity.seats_scannable = 0
+                statsEntity.seats_scanned_total = 0
+                statsEntity.seats_scanned_by_device = 0
             }
-            
             let currentCount = statsEntity.seats_scanned_by_device?.intValue ?? 0
             statsEntity.seats_scanned_by_device = NSNumber(value: currentCount + 1)
-            
             try viewContext.save()
             print("Device scanned count incremented to \(currentCount + 1)")
-            
+            // Update the published stats property as well
+            if stats == nil {
+                stats = StatsModel()
+            }
             stats?.seatsScannedByDevice = currentCount + 1
             objectWillChange.send()
-            
         } catch {
             print("Failed to increment scanned count: \(error)")
         }

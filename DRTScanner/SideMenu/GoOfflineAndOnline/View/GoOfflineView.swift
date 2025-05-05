@@ -33,7 +33,7 @@ struct GoOfflineView: View {
     @ObservedObject var viewModel: LookupByOrderResultViewModel // ViewModel for error handling
     
     var isContinueDisabled: Bool {
-        name.count < 5 || isSyncing
+        name.count < 5 || isSyncing || !isValidName(name)
     }
     
     var body: some View {
@@ -160,6 +160,14 @@ struct GoOfflineView: View {
         }
     }
     
+    func isValidName(_ name: String) -> Bool {
+        let pattern = "^[A-Za-z]+([ '-][A-Za-z]+)*$"
+        let regex = try? NSRegularExpression(pattern: pattern)
+        let range = NSRange(location: 0, length: name.utf16.count)
+        return regex?.firstMatch(in: name, options: [], range: range) != nil
+    }
+
+    
     // Calculates the offset for the view when the keyboard appears
     private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
         let screenHeight = UIScreen.main.bounds.height
@@ -189,21 +197,9 @@ struct GoOfflineView: View {
     // Handles the offline process, including API call and local sync
     private func goOffline() {
         guard name.count >= 5 else { return }
-        
         isSyncing = true
         progress = 0.0
-        
-        // Timer to update progress bar
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
-                if self.progress < 1.0 {
-                    self.progress += 0.02
-                    self.progress = min(self.progress, 1.0)
-                } else {
-                    timer.invalidate()
-                }
-            }
-        
-        // API call to get all data for offline mode
+        // Remove the timer that artificially updates progress
         IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {
             case .success(let response):
@@ -220,21 +216,19 @@ struct GoOfflineView: View {
                     }
                     return
                 }
-                
                 if let orderDetails = response as? [String: Any] {
                     DispatchQueue.global(qos: .userInitiated).async {
                         DRTDatabaseManager.shared.syncServerData(
                             serverDict: orderDetails,
                             progressBlock: { syncProgress in
                                 DispatchQueue.main.async {
-                                    self.progress = min(CGFloat(syncProgress), 1.0)
+                                    self.progress = min(CGFloat(syncProgress), 0.99) // Never set to 1.0 here
                                 }
                             },
                             completionBlock: { success, error in
                                 DispatchQueue.main.async {
                                     isSyncing = false
-                                    progress = 1.0
-                                    
+                                    progress = 1.0 // Only set to 1.0 after saving is complete
                                     if success {
                                         DispatchQueue.main.async {
                                             isOfflineMode = true
@@ -260,18 +254,15 @@ struct GoOfflineView: View {
                     DispatchQueue.main.async {
                         isSyncing = false
                         isPresented = false
-                        timer.invalidate()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             showOfflineAlert = true
                         }
                     }
                 }
-                
             case .failure(_):
                 DispatchQueue.main.async {
                     isSyncing = false
                     isPresented = false
-                    timer.invalidate()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showOfflineAlert = true
                     }

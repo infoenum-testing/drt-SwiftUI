@@ -506,6 +506,23 @@ class DRTDatabaseManager {
         }
         return nil
     }
+    
+    func saveScannedSeat(barcode: String, qrCode: String, isScannedOut: Bool, timeStamp: NSNumber) {
+        guard let context = self.managedObjectContext else { return }
+        context.performAndWait {
+            let scan = Scan(context: context)
+            scan.barcode = barcode
+            scan.qrCode = qrCode
+            scan.is_scanned_out = NSNumber(value: isScannedOut)
+            scan.timeStamp = timeStamp
+            do {
+                try context.save()
+                print("✅ Scan saved.")
+            } catch {
+                print("❌ Failed to save scan: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 // Removes all associated seats from the given order object

@@ -16,6 +16,7 @@ struct GoOnlineView: View {
     @State private var showErrorMessage = false
     @State private var errorMessage = ""
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = true
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     var body: some View {
         VStack(spacing: 20) {
@@ -44,12 +45,15 @@ struct GoOnlineView: View {
                             .animation(.easeInOut, value: progress)
                             .onAppear {
                                 startUpload() // Starts the upload process when view appears
+                                deviceScanCount = 0
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
                             .font(.verlagBoldAdaptive(size: 16))
                             .foregroundColor(.white)
+                        
                     }
+                  
                 }
                    
             } else if showSuccessMessage {

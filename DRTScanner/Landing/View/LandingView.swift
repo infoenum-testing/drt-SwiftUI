@@ -22,7 +22,7 @@ struct LandingView: View {
     @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("show") private var savedShow: String = ""
-//    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @Environment(\.managedObjectContext) private var context
     // Animation state variables
     @State private var animateLogo = false
@@ -234,7 +234,7 @@ struct LandingView: View {
                                         showCode = ""
                                         viewModel.isValidCode = false
                                         showLogoutAlert = false
-//                                        deviceScanCount = 0
+                                        deviceScanCount = 0
                                         DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }) {

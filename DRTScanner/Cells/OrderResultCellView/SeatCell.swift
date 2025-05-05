@@ -15,7 +15,7 @@ struct SeatCell: View {
     @State private var isLoading = false
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
-//    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showAlert: Bool
     @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
@@ -120,7 +120,7 @@ struct SeatCell: View {
                 isScanned = true
                 isLoading = false
                 saveScannedStatus(for: seat)
-//                incrementDeviceScanCount()
+                incrementDeviceScanCount()
             }
         } else {
             
@@ -199,7 +199,7 @@ struct SeatCell: View {
     }
  
     private func incrementDeviceScanCount() {
-//        deviceScanCount += 1
+        deviceScanCount += 1
         // The @AppStorage property wrapper will automatically persist the updated value
     }
 

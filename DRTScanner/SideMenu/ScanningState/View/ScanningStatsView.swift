@@ -16,6 +16,8 @@ struct ScanningStatsView: View {
     @Binding var isPresented: Bool
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel: ScanningStatsViewModel
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("isOfflineMode") private var isOffline: Bool = false
     
     init(isPresented: Binding<Bool>, context: NSManagedObjectContext) {
         self._isPresented = isPresented
@@ -46,13 +48,13 @@ struct ScanningStatsView: View {
             }
 
             if viewModel.isLoading {
-                ProgressView("Loading stats...")
+                ProgressView("")
                     .padding(.top)
             } else if let stats = viewModel.stats {
                 statsRow(title: "Total Seats:", value: stats.totalSeats)
                 statsRow(title: "Total Scannable Seats:", value: stats.seatsScannable)
                 statsRow(title: "Total Scanned Seats:", value: stats.seatsScannedTotal)
-                statsRow(title: "Tickets Scanned by Device:", value: stats.seatsScannedByDevice)
+                statsRow(title: "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
             } else if let error = viewModel.errorMessage {
                 Text(error)
                     .font(.verlagBookAdaptive(size: 16))

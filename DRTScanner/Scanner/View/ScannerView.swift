@@ -160,7 +160,7 @@ struct ScannerView: View {
     
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     
-//    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
 
     /// Initializes the ScannerView with all required bindings and view models
     init(seat: Binding<SeatModel?>,
@@ -339,7 +339,7 @@ struct ScannerView: View {
                                     if let stats = viewModel.stats {
                                         Spacer()
                                         // Display scan statistics
-                                        Text("Scanned by Device: \(stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
+                                        Text("Scanned by Device: \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
                                             .font(.verlagBookAdaptive(size: 16))
                                             .padding(.bottom, -30)
                                             .foregroundColor(.white)
