@@ -58,58 +58,78 @@ class DRTDatabaseManager {
            
             // Insert/update orders
             for orderData in orders {
-                if let order = self.insertUpdateOrderRecord(orderAttributes: orderData, context: context) {
-                    order.show = show
-                    if let orderIdNum = order.oid?.int64Value {
-                        orderDict[orderIdNum] = order
+                context.performAndWait {
+                    if let order = self.insertUpdateOrderRecord(orderAttributes: orderData, context: context) {
+                        order.show = show
+                        if let orderIdNum = order.oid?.int64Value {
+                            orderDict[orderIdNum] = order
+                        }
                     }
                 }
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
+                do {
+                    try context.save()
+                } catch {
+                    print("Order save error: \(error.localizedDescription)")
+                }
+                usleep(50000) // 0.05 seconds delay
             }
-            
-            // Insert seats and associate with orders
+    
             for seatDict in seats {
-                if let seat = self.insertSeatRecord(seatAttributes: seatDict, context: context) {
-                    seat.show = show
-                    
-                    // Normalize orderId to Int64 for lookup
-                    var orderIdInt64: Int64? = nil
-                    if let orderId = seatDict["order"] as? NSNumber {
-                        orderIdInt64 = orderId.int64Value
-                    } else if let orderId = seatDict["order"] as? Int {
-                        orderIdInt64 = Int64(orderId)
-                    } else if let orderId = seatDict["order"] as? String, let orderIdVal = Int64(orderId) {
-                        orderIdInt64 = orderIdVal
-                    }
-                    if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
-                        seat.order = linkedOrder
+                context.performAndWait {
+                    if let seat = self.insertSeatRecord(seatAttributes: seatDict, context: context) {
+                        seat.show = show
+                        // Normalize orderId to Int64 for lookup
+                        var orderIdInt64: Int64? = nil
+                        if let orderId = seatDict["order"] as? NSNumber {
+                            orderIdInt64 = orderId.int64Value
+                        } else if let orderId = seatDict["order"] as? Int {
+                            orderIdInt64 = Int64(orderId)
+                        } else if let orderId = seatDict["order"] as? String, let orderIdVal = Int64(orderId) {
+                            orderIdInt64 = orderIdVal
+                        }
+                        if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
+                            seat.order = linkedOrder
+                        }
+                        do {
+                            try context.save()
+                        } catch {
+                            print("Seat save error: \(error.localizedDescription)")
+                        }
+                        usleep(50000) // 0.05 seconds delay
                     }
                 }
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
             }
-            
-            // Insert products and associate with orders
+    
             for productDict in products {
-                if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
-                    product.show = show
-                    
-                    // Normalize orderId to Int64 for lookup
-                    var orderIdInt64: Int64? = nil
-                    if let orderId = productDict["orderId"] as? NSNumber {
-                        orderIdInt64 = orderId.int64Value
-                    } else if let orderId = productDict["orderId"] as? Int {
-                        orderIdInt64 = Int64(orderId)
-                    } else if let orderId = productDict["orderId"] as? String, let orderIdVal = Int64(orderId) {
-                        orderIdInt64 = orderIdVal
-                    }
-                    if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
-                        product.order = linkedOrder
+                context.performAndWait {
+                    if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
+                        product.show = show
+                        // Normalize orderId to Int64 for lookup
+                        var orderIdInt64: Int64? = nil
+                        if let orderId = productDict["orderId"] as? NSNumber {
+                            orderIdInt64 = orderId.int64Value
+                        } else if let orderId = productDict["orderId"] as? Int {
+                            orderIdInt64 = Int64(orderId)
+                        } else if let orderId = productDict["orderId"] as? String, let orderIdVal = Int64(orderId) {
+                            orderIdInt64 = orderIdVal
+                        }
+                        if let orderIdInt64 = orderIdInt64, let linkedOrder = orderDict[orderIdInt64] {
+                            product.order = linkedOrder
+                        }
                     }
                 }
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
+                do {
+                    try context.save()
+                } catch {
+                    print("Product save error: \(error.localizedDescription)")
+                }
+                usleep(50000) // 0.05 seconds delay
             }
 
             do {
@@ -126,10 +146,15 @@ class DRTDatabaseManager {
     /// Deletes all records from key entities
     private func deleteAllRecords() {
         deleteAllTableRecords(forEntity: Scan.self)
+        usleep(50000) // 0.05 seconds delay
         deleteAllTableRecords(forEntity: Product.self)
+        usleep(50000)
         deleteAllTableRecords(forEntity: Seat.self)
+        usleep(50000)
         deleteAllTableRecords(forEntity: Order.self)
+        usleep(50000)
         deleteAllTableRecords(forEntity: Show.self)
+        usleep(50000)
     }
     
     /// Deletes Skin records only
@@ -144,6 +169,7 @@ class DRTDatabaseManager {
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
             try context.execute(deleteRequest)
+            usleep(50000) // 0.05 seconds delay
         } catch {
             print("Failed to delete \(entity): \(error.localizedDescription)")
         }
@@ -230,7 +256,9 @@ class DRTDatabaseManager {
         if let orderId = seatAttributes["order"] as? Int {
             let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
-            seat.order = try? context.fetch(fetchRequest).first
+            context.performAndWait {
+                seat.order = try? context.fetch(fetchRequest).first
+            }
         }
         
         return seat
