@@ -23,7 +23,7 @@ struct DRTUser: Codable {
     enum CodingKeys: String, CodingKey {
         case phoneFormat = "phone_format"
         case showId = "show_id"
-        case showDt = "show_dt"
+        case showDt = "showDt"
         case stats
         case valid
         case studioId = "studio_id"

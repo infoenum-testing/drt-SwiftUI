@@ -45,7 +45,7 @@ struct GoOnlineView: View {
                             .animation(.easeInOut, value: progress)
                             .onAppear {
                                 startUpload() // Starts the upload process when view appears
-                                deviceScanCount = 0
+                               
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
@@ -97,6 +97,7 @@ struct GoOnlineView: View {
                 isUploading = false
                 showSuccessMessage = true
                 isOfflineMode = false
+                deviceScanCount = 0
                 print(isOfflineMode)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     isPresented = false

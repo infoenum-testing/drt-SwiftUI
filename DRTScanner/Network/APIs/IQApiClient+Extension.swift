@@ -113,7 +113,7 @@ extension IQAPIClient {
     static func scanTicket(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/ticket?c=\(code)&devicename=\(deviceName)"
-        let param: [String: Any] = ["qr" : qr]
+        let param: [String: Any] = ["seat" : qr]
         
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }

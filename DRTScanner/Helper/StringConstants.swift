@@ -118,7 +118,7 @@ struct StringConstants {
         static let datesScanned = "date_scanned"
         static let showId = "show_id"
         static let message = "message"
-        static let showDt = "show_dt"
+        static let showDt = "showDt"
         static let studioId = "studio_id"
         static let valid = "valid"
         static let logoHref = "logo_href"
