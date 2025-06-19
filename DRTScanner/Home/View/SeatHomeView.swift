@@ -122,7 +122,7 @@ struct SeatHomeView: View {
                     // Scrollable area containing lookup options and ticket status views
                     ScrollView {
                         // Show lookup options only if no ticket state is currently active
-                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket {
+                        if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket && !isMerchPreScanned {
                             // List of lookup methods (order number, name, phone, credit card, seat)
                             VStack(spacing: 1) {
                                 // Lookup by order number
@@ -200,10 +200,10 @@ struct SeatHomeView: View {
                             //                            else if isMerchandise {
                             // Show merchandise-related ticket status views
                             if isMerchPreScanned {
-                                PreviousMerchandiseScanView()
+                                PreviousMerchandiseScanView(name: orderNumber, variantName: orderName, message: orderDateScanned)
                             }
                             if isMerchTicketValid {
-                                MerchandiseScanView()
+                                MerchandiseScanView(variantName: orderName, name: orderNumber)
                             }
                             if isInvalidMerchTicket {
                                 InvalidMerchandiseTicketView()

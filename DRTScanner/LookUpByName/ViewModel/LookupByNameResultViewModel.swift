@@ -91,7 +91,7 @@ class LookupByNameResultViewModel: ObservableObject {
     func fetchOrdersFromCoreData(orderName: String) {
         
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "buyer_name CONTAINS[cd] %@", orderName)
+        fetchRequest.predicate = NSPredicate(format: "buyerName CONTAINS[cd] %@", orderName)
         
         do {
             let fetchedOrders = try managedObjectContext.fetch(fetchRequest)
@@ -101,10 +101,10 @@ class LookupByNameResultViewModel: ObservableObject {
                 // Map Core Data `Order` to API-like `OrdersNewApi` model
                 let mappedOrders = fetchedOrders.map { order in
                     return OrdersNewApi(
-                        buyerName: order.buyer_name ?? "",
+                        buyerName: order.buyerName ?? "",
                         cc: order.cc ?? "",
                         phone: order.phone ?? "",
-                        orderId: order.oid?.intValue ?? 0,
+                        orderId: order.orderId?.intValue ?? 0,
                         valid: true,
                         goldenTicketText: "",
                         isGoldenTicket: nil,
@@ -137,7 +137,7 @@ class LookupByNameResultViewModel: ObservableObject {
     /// - Parameter orderId: Order ID to filter merchandise
     func fetchProducts(orderId: Int) {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "order_id == %@", NSNumber(value: orderId))
+        fetchRequest.predicate = NSPredicate(format: "orderId == %@", NSNumber(value: orderId))
         
         do {
             let fetchedProducts = try managedObjectContext.fetch(fetchRequest)

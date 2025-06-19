@@ -247,10 +247,10 @@ struct ScannerView: View {
                                 InvalidTicketView()
                             } /*else if isMerchandiseMode {*/
                             if isMerchPreScanned {
-                                PreviousMerchandiseScanView()
+                                PreviousMerchandiseScanView(name: orderNumber, variantName: orderName, message: orderDateScanned)
                             }
                             if isMerchTicketValid {
-                                MerchandiseScanView()
+                                MerchandiseScanView(variantName: orderName, name: orderNumber)
                             }
                             if isInvalidMerchTicket {
                                 InvalidMerchandiseTicketView()
@@ -736,11 +736,6 @@ struct ScannerView: View {
     /// Supports both online and offline modes, handles duplicate suppression,
     /// updates Core Data if offline, or hits API endpoints if online.
     private func sendScanRequest(qr: String) {
-        //        let cleanedQR = qr
-        //            .replacingOccurrences(of: "{\"seat\":[", with: "")
-        //            .replacingOccurrences(of: "{\"merch\":[", with: "")
-        //            .replacingOccurrences(of: "]}", with: "")
-        //            .replacingOccurrences(of: "\"", with: "")
         
         // MARK: - Step 1: Determine scan type and clean up QR string
         var scanType = ""
@@ -773,42 +768,6 @@ struct ScannerView: View {
         // let scanType = isMerch ? "merch" : "seat"
         guard let qrCode = qrCodes.first else { return }
         
-        //        let now = Date()
-        //        let suppressionSeconds = Double(duplicateScanSuppression)
-        //
-        //        let beforeCleanup = lastScanTimes.count
-        //         lastScanTimes = lastScanTimes.filter { now.timeIntervalSince($0.value) < suppressionSeconds }
-        //         suppressedOnce = suppressedOnce.filter { lastScanTimes[$0] != nil }
-        //         print("🧹 Cleaned up old QR entries. Before: \(beforeCleanup), After: \(lastScanTimes.count)")
-        //
-        //         if suppressionSeconds > 0,
-        //            let lastScan = lastScanTimes[cleanedQR] {
-        //             let timeSinceLast = now.timeIntervalSince(lastScan)
-        //             print("⏱️ QR '\(cleanedQR)' was last scanned \(timeSinceLast) seconds ago")
-        //
-        //             if timeSinceLast < suppressionSeconds {
-        //                 if !suppressedOnce.contains(cleanedQR) {
-        //                     print("⚠️ Duplicate scan suppressed for: \(cleanedQR)")
-        //                     suppressedOnce.insert(cleanedQR)
-        //                     lastScanTimes[cleanedQR] = now
-        //
-        //                     isTicketValid = true
-        //                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-        //                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-        //                         withAnimation { isTicketValid = false }
-        //                     }
-        //                     isScanning = false
-        //                     return
-        //                 }
-        //             } else {
-        //                 print("✅ Suppression window expired for: \(cleanedQR)")
-        //                 suppressedOnce.remove(cleanedQR)
-        //             }
-        //         } else {
-        //             print("🆕 First time scanning QR: \(cleanedQR)")
-        //         }
-        //
-        //         print("📡 Sending scan request for QR: \(cleanedQR), Type: \(scanType)")
         
         // MARK: - Step 2: Duplicate suppression check
         let now = Date()
@@ -891,8 +850,8 @@ struct ScannerView: View {
                             // Already scanned seat
                             isPreScanned = true
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyer_name ?? "Unknown"
-                            orderNumber = seatEntity.order_id.map(String.init) ?? "N/A"
+                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -906,8 +865,8 @@ struct ScannerView: View {
                             seatEntity.date_scanned = Date()
                             try viewContext.save()
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyer_name ?? "Unknown"
-                            orderNumber = seatEntity.order_id.map(String.init) ?? "N/A"
+                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -942,8 +901,8 @@ struct ScannerView: View {
                         if let scannedTime = seatEntity.date_scanned {
                             isPreScanned = true
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyer_name ?? "Unknown"
-                            orderNumber = seatEntity.order_id.map(String.init) ?? "N/A"
+                            orderName = seatEntity.order?.buyerName ?? "Bloked Ticket"
+                            orderNumber = seatEntity.orderId.map(String.init) ?? ""
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -956,8 +915,8 @@ struct ScannerView: View {
                             seatEntity.date_scanned = Date()
                             try viewContext.save()
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyer_name ?? "Unknown"
-                            orderNumber = seatEntity.order_id.map(String.init) ?? "N/A"
+                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -1049,16 +1008,31 @@ struct ScannerView: View {
                             DispatchQueue.main.async {
                                 switch result {
                                 case .success(let responseData):
-                                    if let responseDict = responseData as? [String: Any], let message = responseDict["message"] as? String {
-                                        if message == "Previously Scanned" {
-                                            if let scannedTime = responseDict["date_scanned"] as? String {
-                                                showToastMessage("This merchandise was previously scanned at \(scannedTime).")
-                                            } else {
-                                                showToastMessage("This merchandise has been previously scanned.")
+                                    if let responseDict = responseData as? [String: Any] {
+                                        let message = responseDict["message"] as? String ?? ""
+
+                                        // Extract fields
+                                        let name = responseDict["name"] as? String ?? ""
+                                        let variantName = responseDict["variantName"] as? String ?? ""
+
+                                        // Save into state
+                                        orderName = variantName
+                                        orderNumber = name
+                                        orderDateScanned = message
+
+                                        if message.contains("Previously scanned") {
+                                            isMerchPreScanned = true
+                                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                            
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                withAnimation {
+                                                    isMerchPreScanned = false
+                                                }
                                             }
                                         } else {
                                             isMerchTicketValid = true
                                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 withAnimation {
                                                     isMerchTicketValid = false
@@ -1066,14 +1040,16 @@ struct ScannerView: View {
                                             }
                                         }
                                     }
+
                                 case .failure(let error):
                                     showToastMessage("Error: \(error.localizedDescription)")
                                 }
                             }
                         }
-                    }  else {
+                    } else {
                         isInvalidMerchTicket = true
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidMerchTicket = false

@@ -94,10 +94,10 @@ class ScanningStatsViewModel: ObservableObject {
     
     private func saveStatsToCoreData(totalSeats: Int, scannableSeats: Int, scannedSeats: Int) async {
         let statsEntity = Stats(context: viewContext)
-        statsEntity.total_seats = NSNumber(value: totalSeats)
-        statsEntity.seats_scannable = NSNumber(value: scannableSeats)
-        statsEntity.seats_scanned_total = NSNumber(value: scannedSeats)
-        statsEntity.seats_scanned_by_device = NSNumber(value: deviceScanCount)
+        statsEntity.totalSeats = NSNumber(value: totalSeats)
+        statsEntity.seatsScannable = NSNumber(value: scannableSeats)
+        statsEntity.seatsScannedTotal = NSNumber(value: scannedSeats)
+        statsEntity.seatsScannedByDevice = NSNumber(value: deviceScanCount)
         
         do {
             try viewContext.save()
@@ -126,7 +126,7 @@ class ScanningStatsViewModel: ObservableObject {
     
     private func fetchScannableSeats() -> Int {
         let totalSeats = fetchTotalSeats()
-        let nonScannableSeats = fetchSeatCount(predicate: NSPredicate(format: "oid == ''"))
+        let nonScannableSeats = fetchSeatCount(predicate: NSPredicate(format: "orderId == ''"))
         
         let scannableSeats = totalSeats - nonScannableSeats
         print("Scannable Seats Count:", scannableSeats)
@@ -155,7 +155,7 @@ class ScanningStatsViewModel: ObservableObject {
         
         do {
             let results = try viewContext.fetch(fetchRequest)
-            return results.first?.seats_scanned_by_device?.intValue ?? 0
+            return results.first?.seatsScannedByDevice?.intValue ?? 0
         } catch {
             print("Failed to fetch device scanned count: \(error)")
             return 0
@@ -173,13 +173,13 @@ class ScanningStatsViewModel: ObservableObject {
             } else {
                 // If no Stats entity exists, create one
                 statsEntity = Stats(context: viewContext)
-                statsEntity.total_seats = 0
-                statsEntity.seats_scannable = 0
-                statsEntity.seats_scanned_total = 0
-                statsEntity.seats_scanned_by_device = 0
+                statsEntity.totalSeats = 0
+                statsEntity.seatsScannable = 0
+                statsEntity.seatsScannedTotal = 0
+                statsEntity.seatsScannedByDevice = 0
             }
-            let currentCount = statsEntity.seats_scanned_by_device?.intValue ?? 0
-            statsEntity.seats_scanned_by_device = NSNumber(value: currentCount + 1)
+            let currentCount = statsEntity.seatsScannedByDevice?.intValue ?? 0
+            statsEntity.seatsScannedByDevice = NSNumber(value: currentCount + 1)
             try viewContext.save()
             print("Device scanned count incremented to \(currentCount + 1)")
             // Update the published stats property as well

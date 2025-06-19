@@ -1,13 +1,14 @@
 //
 //  Show+CoreDataProperties.swift
-//  DRTScanner
+//  
 //
-//  Created by IE Mac 05 on 15/02/25.
+//  Created by IE Mac 05 on 19/06/25.
 //
 //
 
 import Foundation
 import CoreData
+
 
 extension Show {
 
@@ -15,12 +16,12 @@ extension Show {
         return NSFetchRequest<Show>(entityName: "Show")
     }
 
+    @NSManaged public var dbCode: String?
     @NSManaged public var message: String?
-    @NSManaged public var show_dt: String?
-    @NSManaged public var show_id: String?
-    @NSManaged public var studio_id: String?
+    @NSManaged public var showDt: String?
+    @NSManaged public var showId: String?
+    @NSManaged public var studioId: String?
     @NSManaged public var valid: NSNumber?
-    @NSManaged public var db_code: String?
     @NSManaged public var orders: NSSet?
     @NSManaged public var seats: NSSet?
 
@@ -57,17 +58,5 @@ extension Show {
 
     @objc(removeSeats:)
     @NSManaged public func removeFromSeats(_ values: NSSet)
-    
-    var isValid: Bool {
-        return valid?.boolValue ?? false
-    }
-
-    func setValid(isValid: Bool) {
-        valid = NSNumber(value: isValid)
-    }
-
-}
-
-extension Show : Identifiable {
 
 }

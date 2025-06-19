@@ -87,10 +87,10 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             // Convert Core Data objects to API model objects
             let mappedOrders = fetchedOrders.map { order in
                 return OrdersNewApi(
-                    buyerName: order.buyer_name ?? "",
+                    buyerName: order.buyerName ?? "",
                     cc: order.cc ?? "",
                     phone: order.phone ?? "",
-                    orderId: order.oid?.intValue ?? 0, valid: true, goldenTicketText: "", isGoldenTicket: nil, message: "",
+                    orderId: order.orderId?.intValue ?? 0, valid: true, goldenTicketText: "", isGoldenTicket: nil, message: "",
                     seats: [],
                     merch: []
                 )

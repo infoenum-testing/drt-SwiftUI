@@ -9,11 +9,8 @@
 import SwiftUI
 
 struct MerchandiseScanView: View {
-    var itemName: String? = nil
-    var purchased: Int? = nil
-    var scanned: Int? = nil
-    var orderName: String? = nil
-    var orderNumber: String? = nil
+    var variantName: String
+    var name: String
 
     var body: some View {
         VStack {
@@ -25,15 +22,9 @@ struct MerchandiseScanView: View {
                     .foregroundColor(.white)
                     .padding(.top, -10.adaptiveForIpad)
 
-                Text(itemName ?? "")
-                    .font(.verlagBlackAdaptive(size: 30))
-                    .foregroundColor(.white)
-
                 VStack(spacing: 5) {
-                    Text("Purchased : \(purchased)")
-                    Text("Scanned : \(scanned)")
-                    Text("Order Name : \(orderName)")
-                    Text("Order Number : \(orderNumber)")
+                    Text("\(name)")
+                    Text("Variant Name : \(variantName)")
                 }
                 .foregroundColor(.white)
                 .font(.verlagBoldAdaptive(size: 26))
@@ -51,8 +42,8 @@ struct MerchandiseScanView: View {
     }
 }
 
-struct MerchandiseScanView_Previews: PreviewProvider {
-    static var previews: some View {
-        MerchandiseScanView()
-    }
-}
+//struct MerchandiseScanView_Previews: PreviewProvider {
+//    static var previews: some View {
+////        MerchandiseScanView()
+//    }
+//}

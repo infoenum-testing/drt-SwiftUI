@@ -61,7 +61,7 @@ class DRTDatabaseManager {
                 context.performAndWait {
                     if let order = self.insertUpdateOrderRecord(orderAttributes: orderData, context: context) {
                         order.show = show
-                        if let orderIdNum = order.oid?.int64Value {
+                        if let orderIdNum = order.orderId?.int64Value {
                             orderDict[orderIdNum] = order
                         }
                     }
@@ -180,29 +180,29 @@ class DRTDatabaseManager {
     /// Inserts or updates a Show record
     private func insertUpdateShowRecord(showAttributes: [String: Any], context: NSManagedObjectContext) -> Show? {
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
-        if let showId = showAttributes["show_id"] as? Int {
-            fetchRequest.predicate = NSPredicate(format: "show_id == %d", showId)
+        if let showId = showAttributes["showId"] as? Int {
+            fetchRequest.predicate = NSPredicate(format: "showId == %d", showId)
         }
         
         let show = (try? context.fetch(fetchRequest).first) ?? Show(context: context)
-        show.show_id = (showAttributes["show_id"] as? Int)?.description
-        show.studio_id = (showAttributes["studio_id"] as? Int)?.description
-        show.show_dt = showAttributes["show_dt"] as? String
+        show.showId = (showAttributes["showId"] as? Int)?.description
+        show.studioId = (showAttributes["studioId"] as? Int)?.description
+        show.showDt = showAttributes["showDt"] as? String
         show.valid = NSNumber(value: showAttributes["valid"] as? Bool ?? false)
-        show.db_code = showAttributes["db_code"] as? String
+        show.dbCode = showAttributes["dbCode"] as? String
         return show
     }
     
     /// Inserts or updates an Order record
     private func insertUpdateOrderRecord(orderAttributes: [String: Any], context: NSManagedObjectContext) -> Order? {
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-        if let orderId = orderAttributes["id"] as? Int {
-            fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
+        if let orderId = orderAttributes["orderId"] as? Int {
+            fetchRequest.predicate = NSPredicate(format: "orderId == %d", orderId)
         }
         
         let order = (try? context.fetch(fetchRequest).first) ?? Order(context: context)
-        order.oid = orderAttributes["id"] as? NSNumber
-        order.buyer_name = orderAttributes["name"] as? String
+        order.orderId = orderAttributes["orderId"] as? NSNumber
+        order.buyerName = orderAttributes["buyerName"] as? String
         order.cc = orderAttributes["cc"] as? String
         order.phone = orderAttributes["phone"] as? String
         return order
@@ -222,8 +222,8 @@ class DRTDatabaseManager {
             seat = Seat(context: context)
         }
         
-        seat.oid = seatAttributes["id"] as? NSNumber
-        seat.order_id = seatAttributes["order"] as? NSNumber
+        seat.id = seatAttributes["id"] as? NSNumber
+        seat.orderId = seatAttributes["order"] as? NSNumber
         seat.barcode = seatAttributes["barcode"] as? String
         seat.qrCode = seatAttributes["qrCode"] as? String
         if let handicapValue = seatAttributes["handicap"] as? Int {
@@ -255,7 +255,7 @@ class DRTDatabaseManager {
         // Associate seat with order
         if let orderId = seatAttributes["order"] as? Int {
             let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "oid == %d", orderId)
+            fetchRequest.predicate = NSPredicate(format: "orderId == %d", orderId)
             context.performAndWait {
                 seat.order = try? context.fetch(fetchRequest).first
             }
@@ -291,31 +291,31 @@ class DRTDatabaseManager {
     
         // Set scanned quantity
         var qtyScanned: Int64 = 0
-        if let val = productAttributes["qty_scanned"] as? Int64 {
+        if let val = productAttributes["qtyScanned"] as? Int64 {
             qtyScanned = val
-        } else if let val = productAttributes["qty_scanned"] as? Int {
+        } else if let val = productAttributes["qtyScanned"] as? Int {
             qtyScanned = Int64(val)
-        } else if let val = productAttributes["qty_scanned"] as? String, let parsed = Int64(val) {
+        } else if let val = productAttributes["qtyScanned"] as? String, let parsed = Int64(val) {
             qtyScanned = parsed
         }
     
         if !product.isFault && !product.isDeleted {
-            product.qty_scanned = qtyScanned
+            product.qtyScanned = qtyScanned
         }
     
-        product.icon_src = productAttributes["icon_src"] as? String
+        product.iconSrc = productAttributes["iconSrc"] as? String
     
         // Set order ID for linking
         if let orderId = productAttributes["orderId"] as? Int64 {
-            product.order_id = orderId
+            product.orderId = orderId
         } else if let orderId = productAttributes["orderId"] as? Int {
-            product.order_id = Int64(orderId)
+            product.orderId = Int64(orderId)
         } else if let orderIdNum = productAttributes["orderId"] as? NSNumber {
-            product.order_id = orderIdNum.int64Value
+            product.orderId = orderIdNum.int64Value
         } else if let orderIdStr = productAttributes["orderId"] as? String, let orderId = Int64(orderIdStr) {
-            product.order_id = orderId
+            product.orderId = orderId
         } else {
-            product.order_id = 0
+            product.orderId = 0
         }
     
         if let timestamp = productAttributes["ts_scanned"] as? Int64 {
@@ -372,6 +372,7 @@ class DRTDatabaseManager {
             let qr = self.fetchSeatsQr(context: context)
             let seats = self.fetchSeats(context: context)
             let products = self.fetchProducts(context: context)
+            //Here I get multiple QRs joined with || as string inside products
             let dbCode = self.fetchDbCodeFromCoreData()
             
             guard let dbCode = dbCode else {
@@ -383,7 +384,7 @@ class DRTDatabaseManager {
             
             // Prepare the data to upload
             let postData: [String: Any] = [
-                "db_code": dbCode,
+                "dbCode": dbCode,
                 "data": [
                     "seats": qr,
                     "seatBarcodes": self.extractSeatBarcodes(from: seats),
@@ -412,16 +413,27 @@ class DRTDatabaseManager {
     // Fetches scanned seat QR codes from Core Data, formatted as "<qrCode>-<timestamp>"
     private func fetchSeatsQr(context: NSManagedObjectContext) -> [String] {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
+        
         do {
             let seats = try context.fetch(fetchRequest)
             
-            return seats.compactMap { seat in
+            var extractedQRCodes: [String] = []
+            
+            for seat in seats {
                 guard let qrCode = seat.qrCode, !qrCode.isEmpty,
-                      let dateScanned = seat.date_scanned else { return nil } 
+                      let dateScanned = seat.date_scanned,
+                      seat.locally_scanned > 0 else { continue }
                 
-                let dateScannedTimestamp = Int(dateScanned.timeIntervalSince1970)
-                return "\(qrCode)-\(dateScannedTimestamp)"
+                let timestamp = Int(dateScanned.timeIntervalSince1970)
+                let formattedString = "\(qrCode)-\(timestamp)"
+                
+                for _ in 0..<seat.locally_scanned {
+                    extractedQRCodes.append(formattedString)
+                }
             }
+            
+            return extractedQRCodes
+            
         } catch {
             print("Error fetching seats: \(error.localizedDescription)")
             return []
@@ -436,12 +448,13 @@ class DRTDatabaseManager {
             return seats.map { seat in
                 guard let dateScanned = seat.date_scanned else { return ["" : ""] }
                 return [
-                    "id": seat.oid as Any,
+                    "id": seat.id as Any,
                     "secRowSeat": "\(seat.section ?? "")-\(seat.row ?? "")-\(seat.seat ?? "")",
                     "barcode": seat.barcode ?? "",
                     "qrCode": seat.qrCode ?? "",
+                    "locally_scanned": seat.locally_scanned,
                     "handicap": seat.handicapped ?? false,
-                    "order": seat.order_id ?? "",
+                    "order": seat.orderId ?? "",
                     "date_Scanned": dateScanned
                 ]
             }
@@ -464,9 +477,10 @@ class DRTDatabaseManager {
                     "variantName": product.variantName ?? "",
                     "qrCode": product.qrCode ?? "", 
                     "qty": product.qty,
-                    "qty_scanned": product.qty_scanned,
-                    "icon_src": product.icon_src ?? "",
-                    "order": product.order?.oid ?? "",
+                    "qty_scanned": product.qtyScanned,
+                    "locally_scanned": product.locally_scanned,
+                    "icon_src": product.iconSrc ?? "",
+                    "order": product.order?.orderId ?? "",
                     "date_Scanned": dateScanned
                 ]
             }
@@ -478,31 +492,48 @@ class DRTDatabaseManager {
 
     // Extracts formatted barcode-timestamp strings from seat data
     private func extractSeatBarcodes(from seats: [[String: Any]]) -> [String] {
-        return seats.compactMap { seat in
-            guard let barcode = seat["barcode"] as? String, !barcode.isEmpty,
-                  let dateScanned = seat["date_Scanned"] as? Date else { return nil }
-            
-            let dateScannedTimestamp = Int(dateScanned.timeIntervalSince1970)
-            return "\(barcode)-\(dateScannedTimestamp)"
-        }
+        var extractedBarcodes: [String] = []
+
+            for seat in seats {
+                guard let barcode = seat["barcode"] as? String, !barcode.isEmpty,
+                      let dateScanned = seat["date_Scanned"] as? Date,
+                      let quantityCount = seat["locally_scanned"] as? Int64, quantityCount > 0 else { continue }
+
+                let timestamp = Int(dateScanned.timeIntervalSince1970)
+                let formattedBarcode = "\(barcode)-\(timestamp)"
+
+                for _ in 0..<quantityCount {
+                    extractedBarcodes.append(formattedBarcode)
+                }
+            }
+            return extractedBarcodes
     }
     
     // Extracts formatted QRCode-timestamp strings from product data
     private func extractProductQRCodes(from products: [[String: Any]]) -> [String] {
-        return products.compactMap { product in
+        var extractedQRCodes: [String] = []
+
+        for product in products {
             guard let qrCode = product["qrCode"] as? String, !qrCode.isEmpty,
-                  let dateScanned = product["date_Scanned"] as? Date else { return nil }
-            
-            let dateScannedTimestamp = Int(dateScanned.timeIntervalSince1970)
-            return "\(qrCode)-\(dateScannedTimestamp)" 
+                  let dateScanned = product["date_Scanned"] as? Date,
+                  let quantityCount = product["locally_scanned"] as? Int64 else { continue }
+
+            let timestamp = Int(dateScanned.timeIntervalSince1970)
+            let fullString = "\(qrCode)-\(timestamp)"
+
+            for _ in 0..<quantityCount {
+                extractedQRCodes.append(fullString)
+            }
         }
+
+        return extractedQRCodes
     }
 
     // Fetches the db_code value from the stored Show object in Core Data
     private func fetchDbCodeFromCoreData() -> String? {
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()
         if let show = try? managedObjectContext?.fetch(fetchRequest).first {
-            return show.db_code
+            return show.dbCode
         }
         return nil
     }

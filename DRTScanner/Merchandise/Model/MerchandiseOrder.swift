@@ -32,13 +32,13 @@ class MerchandiseOrder: ObservableObject, Identifiable {
     
     convenience init(from product: Product) {
         self.init(
-            orderId: Int(product.order_id),
+            orderId: Int(product.orderId),
             name: product.name ?? "",
             variantName: product.variantName ?? "",
             qrCode: product.qrCode?.isEmpty == false ? [product.qrCode!] : [],
             qty: Int(product.qty),
-            qtyScanned: Int(product.qty_scanned),
-            iconSrc: product.icon_src ?? "",
+            qtyScanned: Int(product.qtyScanned),
+            iconSrc: product.iconSrc ?? "",
             date_Scanned: product.date_scanned?.formatted() ?? ""
         )
     }

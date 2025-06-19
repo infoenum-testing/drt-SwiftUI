@@ -226,25 +226,26 @@ struct MerchandiseOrderCell: View {
             }
             
             product.qty = Int64(order.qty)
-            product.qty_scanned = Int64(order.qtyScanned + 1)
+            product.qtyScanned = Int64(order.qtyScanned + 1)
+            product.locally_scanned += 1
             
-            if product.qty_scanned > product.qty {
-                product.qty_scanned = product.qty
+            if product.qtyScanned > product.qty {
+                product.qtyScanned = product.qty
             }
             
-            if product.qty_scanned == product.qty {
+//            if product.qtyScanned == product.qty {
                 product.date_scanned = Date()
-            }
+//            }
             
             try context.save()
             
             merchandiseOrder.qty = Int(product.qty)
-            merchandiseOrder.qtyScanned = Int(product.qty_scanned)
+            merchandiseOrder.qtyScanned = Int(product.qtyScanned)
             if let dateScanned = product.date_scanned {
                 merchandiseOrder.date_Scanned = MerchandiseOrder.dateFormatter.string(from: dateScanned)
             }
             
-            isScanned = product.qty == product.qty_scanned
+            isScanned = product.qty == product.qtyScanned
             
         } catch {
             print("Failed to save scanned status: \(error)")

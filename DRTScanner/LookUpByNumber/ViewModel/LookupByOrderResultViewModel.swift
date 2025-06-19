@@ -127,7 +127,7 @@ class LookupByOrderResultViewModel: ObservableObject {
 
         // If orders are found, map them to the OrdersNewApi format and update the UI
         let fetchRequest: NSFetchRequest<Order> = Order.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "oid == %@", orderNumber)
+        fetchRequest.predicate = NSPredicate(format: "orderId == %@", orderNumber)
         let seatRelationshipKey = "seats"
         fetchRequest.relationshipKeyPathsForPrefetching = [seatRelationshipKey]
 
@@ -137,7 +137,7 @@ class LookupByOrderResultViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if let firstOrder = fetchedOrders.first {
 
-                    self.buyerName = firstOrder.buyer_name?.uppercased() ?? "UNKNOWN BUYER"
+                    self.buyerName = firstOrder.buyerName?.uppercased() ?? "UNKNOWN BUYER"
                    
                     // Map seats data from Core Data into SeatModel objects
                     let seats = firstOrder.seats?.compactMap { seat in
@@ -148,7 +148,7 @@ class LookupByOrderResultViewModel: ObservableObject {
                             barcode: seat.barcode,
                             qrCode: seat.qrCode,
                             qr: seat.qrCode != nil ? Qr(seat: [seat.qrCode!]) : nil,
-                            tsScanned: Int(seat.date_scanned?.description ?? "0")
+                            tsScanned: seat.date_scanned?.description ?? "0"
                         )
                     } ?? []
 
@@ -156,10 +156,10 @@ class LookupByOrderResultViewModel: ObservableObject {
                     
                     // Create a mock OrdersNewApi object from the Core Data order and update the orders
                     self.orders = [OrdersNewApi(
-                        buyerName: firstOrder.buyer_name ?? "",
+                        buyerName: firstOrder.buyerName ?? "",
                         cc: firstOrder.cc ?? "",
                         phone: firstOrder.phone ?? "",
-                        orderId: firstOrder.oid?.intValue ?? 0,
+                        orderId: firstOrder.orderId?.intValue ?? 0,
                         valid: true,
                         goldenTicketText: "",
                         isGoldenTicket: nil,

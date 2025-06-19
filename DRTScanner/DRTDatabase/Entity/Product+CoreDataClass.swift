@@ -2,7 +2,7 @@
 //  Product+CoreDataClass.swift
 //  
 //
-//  Created by IE Mac 05 on 07/03/25.
+//  Created by IE Mac 05 on 19/06/25.
 //
 //
 

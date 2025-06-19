@@ -214,7 +214,7 @@ struct LookupOrderResultView: View {
     // Fetch products from Core Data for offline merchandise display
     private func fetchProducts(orderId: Int) {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "order_id == %@", NSNumber(value: orderId))
+        fetchRequest.predicate = NSPredicate(format: "orderId == %@", NSNumber(value: orderId))
         
         do {
             let fetchedProducts = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)

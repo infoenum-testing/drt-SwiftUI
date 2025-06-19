@@ -26,11 +26,11 @@ struct ScanResponse: Codable {
 
     enum CodingKeys: String, CodingKey {
         case valid, cc, section, handicap, oid, message, seat, row, stats
-        case buyerName = "buyer_name"
-        case goldenTicketText = "golden_ticket_text"
-        case displayMessage = "display_message"
-        case isGoldenTicket = "is_golden_ticket"
-        case tsScanned = "ts_scanned"
-        case dateScanned = "date_scanned"
+        case buyerName = "buyerName"
+        case goldenTicketText = "goldenTicketText"
+        case displayMessage = "displayMessage"
+        case isGoldenTicket = "isGoldenTicket"
+        case tsScanned = "tsScanned"
+        case dateScanned = "dateScanned"
     }
 }

@@ -2,7 +2,7 @@
 //  ProductScan+CoreDataProperties.swift
 //  
 //
-//  Created by IE Mac 05 on 30/04/25.
+//  Created by IE Mac 05 on 19/06/25.
 //
 //
 

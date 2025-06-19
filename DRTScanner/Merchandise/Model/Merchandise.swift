@@ -40,14 +40,14 @@ struct Merchandise: Codable {
     // Custom decoding for `ts_scanned`
     enum CodingKeys: String, CodingKey {
         case name
-        case variantName = "variant_name"
+        case variantName = "variantName"
         case qty
         case icon
         case qr
         case tsScanned = "ts_scanned"
         case message
-        case orderId = "order_id"
-        case qtyScanned = "qty_scanned"
+        case orderId = "orderId"
+        case qtyScanned = "qtyScanned"
     }
     
     init(name: String? = nil, variantName: String? = nil, qty: Int? = nil, icon: String? = nil, message: String? = nil, qr: QrMerchandise? = nil, tsScanned: Int64? = nil, orderId: Int? = nil, qtyScanned: Int? = nil) {

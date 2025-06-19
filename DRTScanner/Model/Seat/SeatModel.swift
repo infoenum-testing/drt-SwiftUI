@@ -14,19 +14,22 @@ struct SeatModel: Codable {
     let barcode: String?
     let qrCode: String?
     let qr: Qr?
-    var tsScanned: Int?
+    var tsScanned: String?
     var scannedTime: Date? {
-            get {
-                guard let tsScanned = tsScanned else { return nil }
-                return Date(timeIntervalSince1970: TimeInterval(tsScanned))
-            }
-            set {
-                if let newValue = newValue {
-                    tsScanned = Int(newValue.timeIntervalSince1970)
-                } else {
-                    tsScanned = nil
-                }
-            }
+        get {
+               guard let tsScanned = tsScanned,
+                     let timestamp = Double(tsScanned) else { return nil }
+               return Date(timeIntervalSince1970: timestamp / 1000) // assuming ms
+           }
+           set {
+               if let newValue = newValue {
+                   // Convert Date to milliseconds string
+                   let milliseconds = Int(newValue.timeIntervalSince1970 * 1000)
+                   tsScanned = String(milliseconds)
+               } else {
+                   tsScanned = nil
+               }
+           }
         }
 
     enum CodingKeys: String, CodingKey {
@@ -34,7 +37,7 @@ struct SeatModel: Codable {
         case row = "row"
         case seat = "seat"
         case qr = "qr"
-        case tsScanned = "ts_scanned"
+        case tsScanned = "tsScanned"
         case barcode
         case qrCode
     }

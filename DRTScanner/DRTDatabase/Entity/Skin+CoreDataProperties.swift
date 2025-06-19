@@ -1,8 +1,8 @@
 //
 //  Skin+CoreDataProperties.swift
-//  DRTScanner
+//  
 //
-//  Created by IE Mac 05 on 15/02/25.
+//  Created by IE Mac 05 on 19/06/25.
 //
 //
 
@@ -21,12 +21,8 @@ extension Skin {
     @NSManaged public var color_1_text: String?
     @NSManaged public var color_2_bg: String?
     @NSManaged public var color_2_text: String?
-    @NSManaged public var logo_href: String?
     @NSManaged public var color_neutral_bg: String?
     @NSManaged public var color_neutral_text: String?
-
-}
-
-extension Skin : Identifiable {
+    @NSManaged public var logo_href: String?
 
 }

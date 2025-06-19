@@ -1,8 +1,8 @@
 //
 //  Order+CoreDataProperties.swift
-//  DRTScanner
+//  
 //
-//  Created by IE Mac 05 on 15/02/25.
+//  Created by IE Mac 05 on 19/06/25.
 //
 //
 
@@ -16,9 +16,9 @@ extension Order {
         return NSFetchRequest<Order>(entityName: "Order")
     }
 
-    @NSManaged public var buyer_name: String?
+    @NSManaged public var buyerName: String?
     @NSManaged public var cc: String?
-    @NSManaged public var oid: NSNumber?
+    @NSManaged public var orderId: NSNumber?
     @NSManaged public var phone: String?
     @NSManaged public var seats: Set<Seat>?
     @NSManaged public var show: Show?

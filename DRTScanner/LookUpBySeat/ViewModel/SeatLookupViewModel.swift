@@ -58,10 +58,10 @@ class SeatLookupViewModel: ObservableObject {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if let cachedOrder = self.fetchOrderDetailFromCoreData() {
                     self.order = OrdersNewApi(
-                        buyerName: cachedOrder.buyer_name,
+                        buyerName: cachedOrder.buyerName,
                         cc: cachedOrder.cc,
                         phone: cachedOrder.phone,
-                        orderId: cachedOrder.oid?.intValue,
+                        orderId: cachedOrder.orderId?.intValue,
                         valid: true,
                         goldenTicketText: "",
                         isGoldenTicket: nil,
@@ -117,7 +117,7 @@ class SeatLookupViewModel: ObservableObject {
         do {
             let results = try viewContext.fetch(request)
             if let seat = results.first {
-                self.orderDetails.oid = seat.order_id?.intValue
+                self.orderDetails.oid = seat.orderId?.intValue
                 return seat.order
             }
         } catch {

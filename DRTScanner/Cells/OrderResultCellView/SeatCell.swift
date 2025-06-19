@@ -176,7 +176,7 @@ struct SeatCell: View {
             seatEntity.row = seat.row
             seatEntity.seat = seat.seat
             seatEntity.date_scanned = seat.scannedTime
-            
+            seatEntity.locally_scanned += 1
             try viewContext.save()
         } catch {
             print("Error saving scanned status: \(error.localizedDescription)")

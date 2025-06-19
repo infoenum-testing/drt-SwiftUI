@@ -8,24 +8,25 @@
 import Foundation
 
 struct SkinModel: Codable {
-    let color2Bg: String
-    let colorNeutralBg: String
+    
     let colorNeutralText: String
-    let logoHref: String
-    let color2Text: String
-    let color1Bg: String
-    let backgroundHref: String
+    let colorNeutralBg: String
     let color1Text: String
+    let backgroundHref: String
+    let color2Bg: String
+    let color1Bg: String
+    let color2Text: String
+    let logoHref: String
     
     private enum CodingKeys: String, CodingKey {
-        case color2Bg = "color_2_bg"
-        case colorNeutralBg = "color_neutral_bg"
-        case colorNeutralText = "color_neutral_text"
-        case logoHref = "logo_href"
-        case color2Text = "color_2_text"
-        case color1Bg = "color_1_bg"
-        case backgroundHref = "background_href"
-        case color1Text = "color_1_text"
+        case colorNeutralText = "colorNeutralText"
+        case colorNeutralBg = "colorNeutralBg"
+        case color1Text = "color1Text"
+        case backgroundHref = "backgroundHref"
+        case color2Bg = "color2Bg"
+        case color1Bg = "color1Bg"
+        case color2Text = "color2Text"
+        case logoHref = "logoHref"
     }
     
 }

@@ -23,7 +23,7 @@ struct OfflineDataModel: Codable {
         case showId = "show_id"
         case studioId = "studio_id"
         case showDt = "showDt"
-        case dbCode = "db_code"
+        case dbCode = "dbCode"
         case orders = "orders"
     }
 }

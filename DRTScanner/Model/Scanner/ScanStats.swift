@@ -13,8 +13,8 @@ struct ScanStats: Codable {
     let seatsScannable: Int
 
     enum CodingKeys: String, CodingKey {
-        case seatsScannedByDevice = "seats_scanned_by_device"
-        case seatsScannedTotal = "seats_scanned_total"
-        case seatsScannable = "seats_scannable"
+        case seatsScannedByDevice = "seatsScannedByDevice"
+        case seatsScannedTotal = "seatsScannedTotal"
+        case seatsScannable = "seatsScannable"
     }
 }

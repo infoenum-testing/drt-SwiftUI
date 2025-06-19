@@ -204,7 +204,7 @@ struct GoOfflineView: View {
             switch result {
             case .success(let response):
                 if let responseDict = response as? [String: Any],
-                   let success = responseDict["success"] as? Bool,
+                   let success = responseDict["valid"] as? Bool,
                    !success {
                     DispatchQueue.main.async {
                         isSyncing = false

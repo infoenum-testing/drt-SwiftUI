@@ -25,7 +25,7 @@ struct OrderDetailModel: Codable {
     
     private enum CodingKeys: String, CodingKey {
         case valid = "valid"
-        case buyerName = "buyer_name"
+        case buyerName = "buyerName"
         case cc = "cc"
         case seats = "seats"
         case oid = "oid"

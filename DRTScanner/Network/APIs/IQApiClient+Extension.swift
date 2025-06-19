@@ -133,7 +133,7 @@ extension IQAPIClient {
     @discardableResult
     static func scanProductQrCode(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
-        let path = "https://api.drttix.com/scanner/merch/?c=\(code)&devicename=\(deviceName)"
+        let path = "https://api.drttix.com/scanner-v3/merch/?c=\(code)&devicename=\(deviceName)"
         
         let param: [String: Any] = ["merch": qr]
         
@@ -164,13 +164,13 @@ extension IQAPIClient {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/db/ul?c=\(code)&devicename=\(deviceName)"
         
-        guard let dbCode = data["db_code"] as? String,
+        guard let dbCode = data["dbCode"] as? String,
               let requestData = data["data"] as? [String: Any] else {
             completionHandler(.failure(NSError(domain: "Invalid Data", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid db_code/data"])))
             return nil
         }
         
-        let param: [String: Any] = ["db_code": dbCode, "data": requestData]
+        let param: [String: Any] = ["dbCode": dbCode, "data": requestData]
 
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }
