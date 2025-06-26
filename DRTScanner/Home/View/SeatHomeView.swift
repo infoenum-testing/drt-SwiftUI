@@ -71,6 +71,7 @@ struct SeatHomeView: View {
     @State private var orderDateScanned: String = ""
     // Stores error messages
     @State private var errorMessage : String = ""
+    @State private var invalidMessage : String = ""
     // Indicates if the ticket is a golden ticket
     @State private var isGoldenTicket: Bool = false
     // Indicates if the merchandise ticket is valid
@@ -83,6 +84,10 @@ struct SeatHomeView: View {
     @State private var isScanningCell = true
     // ViewModel to trigger scanner reset
     @StateObject private var scnanerReset = ScannerViewModel()
+    
+    @State private var merchOrderName = ""
+    @State private var merchVariantName = ""
+    
     // ViewModel for lookup by order result
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     
@@ -113,7 +118,7 @@ struct SeatHomeView: View {
                 }
                 VStack {
                     // Scanner view for scanning tickets
-                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, orderDateScanned: $orderDateScanned, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
+                    ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
                         .frame(width: UIScreen.main.bounds.width)
                         .frame(maxHeight: isFullScreen ? .infinity : nil)
                         .padding(.top, scannerTopPadding(isFullScreen: isFullScreen))
@@ -195,22 +200,22 @@ struct SeatHomeView: View {
                                 }
                             } else if isInvalidTicket {
                                 // Show invalid ticket view
-                                InvalidTicketView()
+                                InvalidTicketView(message: invalidMessage)
                             }
                             //                            else if isMerchandise {
                             // Show merchandise-related ticket status views
                             if isMerchPreScanned {
-                                PreviousMerchandiseScanView(name: orderNumber, variantName: orderName, message: orderDateScanned)
+                                PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned)
                             }
                             if isMerchTicketValid {
-                                MerchandiseScanView(variantName: orderName, name: orderNumber)
+                                MerchandiseScanView(variantName: merchVariantName, name: merchOrderName)
                             }
                             if isInvalidMerchTicket {
                                 InvalidMerchandiseTicketView()
                             }
                             // Show invalid seat ticket view
                             if isInvalidSeatTicket {
-                                InvalidSeatTicketView()
+                                InvalidSeatTicketView(message: invalidMessage)
                             }
                             //                            }
                         }

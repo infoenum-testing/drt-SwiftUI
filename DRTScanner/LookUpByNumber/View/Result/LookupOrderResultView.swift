@@ -15,6 +15,8 @@ struct LookupOrderResultView: View {
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext) // ViewModel for fetching order data
     @State private var seats: [SeatModel] = [] // List of seat models for the order
     @State private var merch: [Merchandise] = [] // List of merchandise for the order
+    @State private var merchOrders: [MerchandiseOrder] = []
+    @State private var productOrders: [MerchandiseOrder] = []
     @AppStorage("showCode") private var savedShowCode: String? // Saved show code from user defaults
     @AppStorage("isMerchandise") private var isMerchandise: Bool? // Flag to indicate merchandise mode
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false // Flag for offline mode
@@ -85,9 +87,12 @@ struct LookupOrderResultView: View {
                         }
                         else if !products.isEmpty {
                             List {
-                                ForEach(products, id: \.self) { product in
-                                    let merchandiseOrder = MerchandiseOrder(from: product)
-                                    MerchandiseOrderCell(merchandiseOrder: merchandiseOrder)
+                                ForEach(productOrders) { order in
+                                    MerchandiseOrderCell(
+                                        merchandiseOrder: order,
+                                        lookupByOrderResultViewModel: viewModel,
+                                        showAlert: $showAlert
+                                    )
                                 }
                             }
                             .listStyle(.plain)
@@ -107,10 +112,15 @@ struct LookupOrderResultView: View {
                         }
                         else {
                             List {
-                                ForEach(merch.indices, id: \.self) { index in
-                                    MerchandiseOrderCell(merchandiseOrder: MerchandiseOrder(from: merch[index]))
+                                ForEach(merchOrders) { order in
+                                    MerchandiseOrderCell(
+                                        merchandiseOrder: order,
+                                        lookupByOrderResultViewModel: viewModel,
+                                        showAlert: $showAlert
+                                    )
                                 }
-                            }.listStyle(.plain)
+                            }
+                            .listStyle(.plain)
                                 .padding(0)
                         }
                     }
@@ -145,6 +155,7 @@ struct LookupOrderResultView: View {
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             self.seats = viewModel.seatsModel ?? []
             self.merch = viewModel.merchModel ?? []
+            self.merchOrders = merch.map { MerchandiseOrder(from: $0) }
            
             if let orderId = order?.orderId {
                 fetchProducts(orderId: orderId)
@@ -212,6 +223,7 @@ struct LookupOrderResultView: View {
     }
     
     // Fetch products from Core Data for offline merchandise display
+    @MainActor
     private func fetchProducts(orderId: Int) {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "orderId == %@", NSNumber(value: orderId))
@@ -219,6 +231,7 @@ struct LookupOrderResultView: View {
         do {
             let fetchedProducts = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
             self.products = fetchedProducts
+            self.productOrders = fetchedProducts.map { MerchandiseOrder(from: $0) } // ✅ Track these for UI
         } catch {
             print("Error fetching products: \(error)")
         }

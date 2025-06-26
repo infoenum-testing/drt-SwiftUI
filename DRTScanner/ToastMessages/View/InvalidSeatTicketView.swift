@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct InvalidSeatTicketView: View {
+    let message: String
     var body: some View {
         VStack {
             VStack {

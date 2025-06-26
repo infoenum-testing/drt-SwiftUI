@@ -28,6 +28,7 @@ struct GoOfflineView: View {
     @Binding var showOfflineSuccessAlert: Bool
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @FocusState private var isNameFieldFocused: Bool // Manages keyboard focus
     @State private var keyboardHeight: CGFloat = 0 // Tracks keyboard height
     @ObservedObject var viewModel: LookupByOrderResultViewModel // ViewModel for error handling
@@ -228,6 +229,13 @@ struct GoOfflineView: View {
                             completionBlock: { success, error in
                                 DispatchQueue.main.async {
                                     isSyncing = false
+                                    Task {
+                                        let viewModel = ScanningStatsViewModel(context: PersistenceController.shared.container.viewContext)
+                                        await viewModel.fetchStats()
+                                        if let stats = viewModel.stats {
+                                            deviceScanCount = stats.seatsScannedByDevice ?? 0
+                                        }
+                                    }
                                     progress = 1.0 // Only set to 1.0 after saving is complete
                                     if success {
                                         DispatchQueue.main.async {

@@ -47,7 +47,7 @@ struct Merchandise: Codable {
         case tsScanned = "ts_scanned"
         case message
         case orderId = "orderId"
-        case qtyScanned = "qtyScanned"
+        case qtyScanned
     }
     
     init(name: String? = nil, variantName: String? = nil, qty: Int? = nil, icon: String? = nil, message: String? = nil, qr: QrMerchandise? = nil, tsScanned: Int64? = nil, orderId: Int? = nil, qtyScanned: Int? = nil) {

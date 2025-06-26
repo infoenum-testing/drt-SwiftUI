@@ -80,7 +80,7 @@ struct SeatLookupView: View {
                 .frame(height: geometry.size.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.white)
-            }
+            }.background(Color.white)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         // Sheet for displaying lookup result

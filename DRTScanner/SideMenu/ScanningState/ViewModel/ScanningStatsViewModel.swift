@@ -107,7 +107,7 @@ class ScanningStatsViewModel: ObservableObject {
         }
     }
     
-    private func getScanningStats() async throws -> StatsModel {
+    func getScanningStats() async throws -> StatsModel {
         return try await withCheckedThrowingContinuation { continuation in
             IQAPIClient.getShowCodeData(code: savedShowCode ?? "") { result in
                 switch result {

@@ -22,6 +22,8 @@ struct MerchandiseOrderCell: View {
     @AppStorage("showCode") private var savedShowCode: String?
     @State private var isLoading = false
     @State private var isLoadingSvgImage = false
+    @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
+    @Binding var showAlert: Bool
     
     var body: some View {
         HStack(spacing: 15) {
@@ -69,10 +71,6 @@ struct MerchandiseOrderCell: View {
                     .clipShape(Circle())
                     .padding(.top, -20)
                     .padding(.leading, 20)
-                
-//                Text("Scanned: \(merchandiseOrder.qtyScanned)")
-//                    .font(.verlagBookAdaptive(size: 15))
-//                    .foregroundColor(.black)
             }
             
             HStack(alignment: .center, spacing: 5) {
@@ -85,18 +83,6 @@ struct MerchandiseOrderCell: View {
                     .font(.verlagBookAdaptive(size: 15))
                     .foregroundColor(.black)
                 Spacer()
-                
-//                if isScanned || !merchandiseOrder.date_Scanned.isEmpty {
-//                    Text("Scanned at \(scannedTime ?? merchandiseOrder.date_Scanned)")
-//                        .font(.verlagBoldAdaptive(size: 18))
-//                        .foregroundColor(.green)
-//                        .padding(.top, 10)
-//                } else {
-//                    Text("Not yet scanned")
-//                        .font(.verlagBoldAdaptive(size: 18))
-//                        .foregroundColor(Color.customGreen)
-//                        .padding(.top, 10)
-//                }
             }
             
             Spacer()
@@ -132,6 +118,10 @@ struct MerchandiseOrderCell: View {
             loadScannedTime()
             isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned
         }
+        .onChange(of: merchandiseOrder.qtyScanned) { newValue in
+            print("qtyScanned updated to \(newValue)")
+            isScanned = merchandiseOrder.qty == newValue
+        }
     }
     
     // Handles scanning logic, updates state and calls API if online
@@ -153,23 +143,31 @@ struct MerchandiseOrderCell: View {
 
             IQAPIClient.scanProductQrCode(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
+                    isLoading = false
+
                     switch result {
                     case .success(let jsonResponse):
                         let valid = jsonResponse["valid"] as? Bool ?? false
                         let message = jsonResponse["message"] as? String ?? "Unknown error"
-                        let scannedAt = jsonResponse["date_scanned"] as? String
-                        let qty = jsonResponse["qty"] as? Int ?? merchandiseOrder.qty
-                        let qtyScanned = jsonResponse["qty_scanned"] as? Int ?? merchandiseOrder.qtyScanned
-                        
-                        if valid || message.contains("Previously scanned") {
-                            processScanResult(success: true, dateScanned: scannedAt)
-                        } else {
-                            print("Scan failed: \(message)")
+                        let scannedAt = jsonResponse["tsScanned"] as? String
+                        let newQty = jsonResponse["qty"] as? Int ?? merchandiseOrder.qty
+                        let newQtyScanned = jsonResponse["qtyScanned"] as? Int ?? merchandiseOrder.qtyScanned
+
+                        if !valid {
+                            lookupByOrderResultViewModel.errorMessage = message
+                            showAlert = true
+                            return
                         }
+                        merchandiseOrder.objectWillChange.send()
+                        merchandiseOrder.qty = newQty
+                        merchandiseOrder.qtyScanned = newQtyScanned
+                        merchandiseOrder.date_Scanned = scannedAt ?? MerchandiseOrder.dateFormatter.string(from: Date())
+                        isScanned = merchandiseOrder.qty ==  merchandiseOrder.qtyScanned
+                        
                     case .failure(let error):
-                        print("Error scanning merchandise: \(error.localizedDescription)")
+                        lookupByOrderResultViewModel.errorMessage = error.localizedDescription
+                        showAlert = true
                     }
-                    isLoading = false
                 }
             }
         }

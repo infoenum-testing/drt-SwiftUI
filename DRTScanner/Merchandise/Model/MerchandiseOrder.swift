@@ -50,7 +50,7 @@ class MerchandiseOrder: ObservableObject, Identifiable {
             variantName: merchandise.variantName ?? "",
             qrCode: merchandise.qr?.merch ?? [],
             qty: merchandise.qty ?? 0,
-            qtyScanned: merchandise.qty ?? 0,
+            qtyScanned: merchandise.qtyScanned ?? 0,
             iconSrc: merchandise.icon ?? "",
             date_Scanned: merchandise.scannedTime?.formatted() ?? ""
         )
@@ -58,7 +58,9 @@ class MerchandiseOrder: ObservableObject, Identifiable {
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateFormat = "@HH:mm a"
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
         formatter.timeZone = TimeZone.current
         return formatter
     }()

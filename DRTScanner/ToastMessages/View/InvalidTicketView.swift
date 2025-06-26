@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct InvalidTicketView: View {
+    let message: String
     var body: some View {
         VStack {            
             VStack {
@@ -20,7 +21,7 @@ struct InvalidTicketView: View {
                     .foregroundColor(.white)
                     .padding(.bottom)
                 
-                Text(StringConstants.DRTToastMessages.inValidShow)
+                Text(message)
                     .font(.verlagBlackAdaptive(size: 30))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
@@ -36,8 +37,4 @@ struct InvalidTicketView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
     }
-}
-
-#Preview {
-    InvalidTicketView()
 }

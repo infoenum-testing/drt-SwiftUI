@@ -65,7 +65,7 @@ struct ScannerView: View {
     // Delay before auto flash turns on
     @AppStorage("kAutoEnableFlashDelay") private var autoEnableFlashDelay: Int = 10
     // Time window for duplicate scan suppression
-    @AppStorage("kDuplicateScanSuppression") private var duplicateScanSuppression: Int = 0
+    @AppStorage("kDuplicateScanSuppression") private var duplicateScanSuppression: Int = 10
     // Tracks last scan times for duplicate suppression
     @State private var lastScanTimes: [String: Date] = [:]
     // Tracks codes that have been suppressed once
@@ -116,7 +116,8 @@ struct ScannerView: View {
     // Indicates if the view is in full screen mode (binding from parent)
     @Binding var isFullScreen: Bool
     // Indicates if the merchandise was previously scanned
-    @State private var isMerchPreScanned = false
+    @Binding var isMerchPreScanned: Bool
+    @Binding var invalidMessage: String
     // ViewModel for scanning stats
     @StateObject private var viewModel = ScanningStatsViewModel(context: PersistenceController.shared.container.viewContext)
     // Controls visibility of scan stats text
@@ -158,6 +159,10 @@ struct ScannerView: View {
     // Audio player for beep sound
     @State private var audioPlayer: AVAudioPlayer?
     
+    @Binding var merchOrderName: String
+    
+    @Binding var merchVariantName: String
+    
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
@@ -169,13 +174,17 @@ struct ScannerView: View {
          isInvalidTicket: Binding<Bool>,
          orderName: Binding<String>,
          orderNumber: Binding<String>,
+         merchOrderName: Binding<String>,
+         merchVariantName: Binding<String>,
          orderDateScanned: Binding<String>,
+         invalidMessage: Binding<String>,
          isMerchTicketValid: Binding<Bool>,
          isFullScreen: Binding<Bool>,
          isScanningCell: Binding<Bool>,
          isGoldenTicket: Binding<Bool>,
          isInvalidSeatTicket: Binding<Bool>,
          isInvalidMerchTicket: Binding<Bool>,
+         isMerchPreScanned: Binding<Bool>,
          scannerViewModel: ScannerViewModel,
          lookupByOrderResultViewModel: LookupByOrderResultViewModel,
          showOfflineAlert: Binding<Bool>) {
@@ -186,6 +195,8 @@ struct ScannerView: View {
         _isInvalidTicket = isInvalidTicket
         _orderName = orderName
         _orderNumber = orderNumber
+        _merchOrderName =  merchOrderName
+        _merchVariantName =  merchVariantName
         _orderDateScanned = orderDateScanned
         _isMerchTicketValid = isMerchTicketValid
         _isFullScreen = isFullScreen
@@ -193,9 +204,11 @@ struct ScannerView: View {
         _isGoldenTicket = isGoldenTicket
         _isInvalidSeatTicket = isInvalidSeatTicket
         _isInvalidMerchTicket = isInvalidMerchTicket
+        _isMerchPreScanned = isMerchPreScanned
         self.scannerViewModel = scannerViewModel
         self.lookupByOrderResultViewModel = lookupByOrderResultViewModel
         _showOfflineAlert = showOfflineAlert
+        _invalidMessage = invalidMessage
     }
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
@@ -244,7 +257,7 @@ struct ScannerView: View {
                                     ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
                                 }
                             } else if isInvalidTicket {
-                                InvalidTicketView()
+                                InvalidTicketView(message: invalidMessage)
                             } /*else if isMerchandiseMode {*/
                             if isMerchPreScanned {
                                 PreviousMerchandiseScanView(name: orderNumber, variantName: orderName, message: orderDateScanned)
@@ -257,7 +270,7 @@ struct ScannerView: View {
                             }
                             
                             if isInvalidSeatTicket {
-                                InvalidSeatTicketView()
+                                InvalidSeatTicketView(message: invalidMessage)
                             }
                             //                        }
                             Spacer()
@@ -465,6 +478,9 @@ struct ScannerView: View {
                 .onChange(of: scannerViewModel.shouldResetScanner) { newValue in
                     if newValue {
                         resetCameraView()  // Reset camera view if requested
+                    }
+                    Task {
+                        await viewModel.fetchStats()
                     }
                 }
             } // Listen for camera reset notifications
@@ -760,6 +776,15 @@ struct ScannerView: View {
                 .replacingOccurrences(of: "{\"merch\":[", with: "")
                 .replacingOccurrences(of: "]}", with: "")
                 .replacingOccurrences(of: "\"", with: "")
+        } else {
+            isInvalidTicket = true
+            invalidMessage = "Invalid QR Code"
+            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    isInvalidTicket = false
+                }
+            }
         }
         
         // Extract individual codes (comma-separated QR values)
@@ -803,35 +828,69 @@ struct ScannerView: View {
             
             if isMerchandiseMode {
                 // Offline merchandise lookup in Core Data
-                let qrCodesArray = separatedQRCodes.components(separatedBy: "-")
+                let fullCode = qrCodes.joined(separator: "-")
                 let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "qrCode IN %@", qrCodesArray)
-                
+                fetchRequest.predicate = NSPredicate(format: "qrCode == %@", fullCode)
+
                 do {
                     let results = try viewContext.fetch(fetchRequest)
-                    if let order = results.first {
-                        // Check if already scanned
-                        if let scannedTime = order.date_scanned {
-                            showToastMessage("This merchandise was already scanned at \(scannedTime).")
-                        } else {
-                            // Mark as scanned and show success
-                            order.date_scanned = Date()
+                    if let product = results.first {
+                        let totalQty = product.qty
+                        let scannedQty = product.qtyScanned
+
+                        if scannedQty < totalQty {
+                            // ✅ Valid scan, mark as scanned and increment
+                            product.qtyScanned += 1
+                            product.locally_scanned += 1
+                            product.date_scanned = Date()
                             try viewContext.save()
+
+                            // Optional: update UI info
+                            merchOrderName = product.name ?? ""
+                            merchVariantName = product.variantName ?? ""
+
                             isMerchTicketValid = true
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isMerchTicketValid = false
                                 }
                             }
+                        } else {
+                            // ⚠️ Already fully scanned
+                            if let scannedTime = product.date_scanned {
+                                let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedTime)
+                                showToastMessage("This merchandise was already scanned at \(formattedDate).")
+                            } else {
+                                showToastMessage("This merchandise has already been fully scanned.")
+                            }
+
+                            // Set state to show previous scan view
+                            merchOrderName = product.name ?? ""
+                            merchVariantName = product.variantName ?? ""
+                            if let scannedDate = product.date_scanned {
+                                let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedDate)
+                                orderDateScanned = "Previously scanned at \(formattedDate)"
+                            }
+
+                            isMerchPreScanned = true
+                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    isMerchPreScanned = false
+                                }
+                            }
                         }
                     } else {
-                        // No matching merchandise found
-                        isInvalidTicket = true
+                        // ❌ No matching product found
+                        isInvalidMerchTicket = true
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
-                                isInvalidTicket = false
+                                isInvalidMerchTicket = false
                             }
                         }
                     }
@@ -850,7 +909,7 @@ struct ScannerView: View {
                             // Already scanned seat
                             isPreScanned = true
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -862,10 +921,12 @@ struct ScannerView: View {
                             }
                         } else {
                             // Mark as scanned
+                            seatEntity.locally_scanned += 1
+                            deviceScanCount += 1
                             seatEntity.date_scanned = Date()
                             try viewContext.save()
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -879,6 +940,7 @@ struct ScannerView: View {
                     } else {
                         // Invalid offline seat QR
                         isInvalidTicket = true
+                        invalidMessage = "Invalid Barcode"
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -901,7 +963,7 @@ struct ScannerView: View {
                         if let scannedTime = seatEntity.date_scanned {
                             isPreScanned = true
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Bloked Ticket"
+                            orderName = seatEntity.order?.buyerName ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? ""
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -912,10 +974,12 @@ struct ScannerView: View {
                                 }
                             }
                         } else {
+                            seatEntity.locally_scanned += 1
+                            deviceScanCount += 1
                             seatEntity.date_scanned = Date()
                             try viewContext.save()
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Unknown"
+                            orderName = seatEntity.order?.buyerName ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -928,6 +992,7 @@ struct ScannerView: View {
                         }
                     } else {
                         isInvalidTicket = true
+                        invalidMessage = "Invalid Barcode"
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -937,6 +1002,7 @@ struct ScannerView: View {
                     }
                 } catch {
                     isInvalidTicket = true
+                    invalidMessage = "Invalid Barcode"
                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation {
@@ -959,8 +1025,8 @@ struct ScannerView: View {
                                     if let scannedTime = responseDict["date_scanned"] as? String {
                                         isPreScanned = true
                                         isTicketValid = true
-                                        orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Unknown"
-                                        orderNumber = String(responseDict["oid"] as? Int ?? 3333876)
+                                        orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? ""
+                                        orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                         orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                         
                                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -975,7 +1041,7 @@ struct ScannerView: View {
                                     }
                                 } else {
                                     isTicketValid = true
-                                    orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Unknown"
+                                    orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Blocked Ticket"
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                     isGoldenTicket = (responseDict["is_golden_ticket"] == nil)
@@ -985,13 +1051,18 @@ struct ScannerView: View {
                                             isTicketValid = false
                                         }
                                     }
+                                    Task {
+                                        await viewModel.fetchStats()
+                                    }
                                     lastScanTimes[cleanedQR] = now
                                     suppressedOnce.remove(cleanedQR)
                                 }
                             }
-                        case .failure(_):
-                            isInvalidTicket = true
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        case .failure(let error):
+                                    invalidMessage = error.localizedDescription
+                                    isInvalidTicket = true
+                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isInvalidTicket = false
@@ -1010,43 +1081,65 @@ struct ScannerView: View {
                                 case .success(let responseData):
                                     if let responseDict = responseData as? [String: Any] {
                                         let message = responseDict["message"] as? String ?? ""
-
-                                        // Extract fields
+                                        let isValid = responseDict["valid"] as? Bool ?? false
+                                        
                                         let name = responseDict["name"] as? String ?? ""
                                         let variantName = responseDict["variantName"] as? String ?? ""
-
-                                        // Save into state
-                                        orderName = variantName
-                                        orderNumber = name
+                                        
+                                        merchOrderName = name
+                                        merchVariantName = variantName
                                         orderDateScanned = message
 
-                                        if message.contains("Previously scanned") {
-                                            isMerchPreScanned = true
-                                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-                                            
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                                withAnimation {
-                                                    isMerchPreScanned = false
+                                        if isValid {
+                                            if message.contains("Previously scanned") {
+                                                isMerchPreScanned = true
+                                                playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                    withAnimation {
+                                                        isMerchPreScanned = false
+                                                    }
+                                                }
+                                            } else {
+                                                isMerchTicketValid = true
+                                                playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                    withAnimation {
+                                                        isMerchTicketValid = false
+                                                    }
                                                 }
                                             }
                                         } else {
-                                            isMerchTicketValid = true
+                                            // ❗ Show error message if valid is false
+                                            isInvalidTicket = true
+                                            invalidMessage = message
                                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
 
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 withAnimation {
-                                                    isMerchTicketValid = false
+                                                    isInvalidTicket = false
                                                 }
                                             }
                                         }
                                     }
 
                                 case .failure(let error):
-                                    showToastMessage("Error: \(error.localizedDescription)")
+                                    // ❗ Show error if API call failed entirely
+                                    isInvalidTicket = true
+                                    invalidMessage = error.localizedDescription
+                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation {
+                                            isInvalidTicket = false
+                                        }
+                                    }
                                 }
                             }
                         }
                     } else {
+                        // Offline or wrong scan type
                         isInvalidMerchTicket = true
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
 
@@ -1058,10 +1151,11 @@ struct ScannerView: View {
                         isScanning = false
                     }
                 }
+
                 else {
                     // Online seat QR scan
                     if scanType == "seat" {
-                        IQAPIClient.scanTicketQrCode(code: savedShowCode ?? "36060-5E56", type: scanType, qr: qrCodes) { result in
+                        IQAPIClient.scanTicketQrCode(code: savedShowCode ?? "", type: scanType, qr: qrCodes) { result in
                             DispatchQueue.main.async {
                                 switch result {
                                 case .success(let responseData):
@@ -1074,7 +1168,7 @@ struct ScannerView: View {
                                                 if scanResponse.valid {
                                                     
                                                     isTicketValid = true
-                                                    orderName = scanResponse.buyerName ?? "Unknown"
+                                                    orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
                                                     isGoldenTicket = scanResponse.isGoldenTicket ?? false
                                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -1086,13 +1180,16 @@ struct ScannerView: View {
                                                     
                                                     seat?.scannedTime = Date()
                                                     isScanning = false
+                                                    Task {
+                                                        await viewModel.fetchStats()
+                                                    }
                                                     lastScanTimes[cleanedQR] = now
                                                     suppressedOnce.remove(cleanedQR)
                                                 } else if scanResponse.message == "Previously Scanned" {
                                                     isPreScanned = true
                                                     isTicketValid = true
-                                                    orderName = scanResponse.buyerName ?? "Unknown"
-                                                    orderNumber = String(scanResponse.oid ?? 3333876)
+                                                    orderName = scanResponse.buyerName ?? ""
+                                                    orderNumber = String(scanResponse.oid ?? 0)
                                                     orderDateScanned = scanResponse.dateScanned ?? ""
                                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -1134,9 +1231,12 @@ struct ScannerView: View {
                                         isScanning = false
                                     }
                                     
-                                case .failure(_):
+                                case .failure(let error):
+                                    invalidMessage = error.localizedDescription
+                                       
                                     isInvalidTicket = true
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                    
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation { isInvalidTicket = false }
                                     }

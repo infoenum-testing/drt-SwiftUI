@@ -9,9 +9,6 @@
 import SwiftUI
 import CoreData
 
-import SwiftUI
-import CoreData
-
 struct ScanningStatsView: View {
     @Binding var isPresented: Bool
     @Environment(\.managedObjectContext) private var viewContext

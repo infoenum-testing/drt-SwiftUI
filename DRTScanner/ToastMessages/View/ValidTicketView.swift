@@ -25,16 +25,18 @@ struct ValidTicketView: View {
                     .font(.verlagBlackAdaptive(size: 30))
                     .foregroundColor(.white)
 
-                Text("Order: \(orderNumber)")
-                    .font(.verlagBoldAdaptive(size: 26))
-                    .foregroundColor(.white)
+                if orderNumber != "0" {
+                    Text("Order: \(orderNumber)")
+                        .font(.verlagBoldAdaptive(size: 26))
+                        .foregroundColor(.white)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.15))
+            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.17))
             .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.3))
-            Spacer()
+//            Spacer()
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
     }

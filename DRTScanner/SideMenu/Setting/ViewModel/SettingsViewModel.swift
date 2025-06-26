@@ -17,7 +17,7 @@ class SettingsViewModel: ObservableObject {
     @AppStorage("kPauseScanTimeout") var pauseScanTimeout: Int = 0
     
     // Scan behavior settings related to duplicate suppression
-    @AppStorage("kDuplicateScanSuppression") var duplicateScanSuppression: Int = 0
+    @AppStorage("kDuplicateScanSuppression") var duplicateScanSuppression: Int = 10
     @AppStorage("kShowScanStats") var showScanStats: Bool = false
     @AppStorage("kAutoEnableFlashTimeout") var autoEnableFlashTimeout: Bool = false
     

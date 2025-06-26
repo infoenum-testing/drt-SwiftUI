@@ -192,6 +192,7 @@ struct SideMenuView: View {
                                     withAnimation(.easeInOut(duration: 0.5)) {
                                         isMerchandise = isSwitchingToMerchandise ?? false
                                         showConfirmationAlert = false
+                                        isPresented = false
                                     }
                                 }) {
                                     Text("YES")

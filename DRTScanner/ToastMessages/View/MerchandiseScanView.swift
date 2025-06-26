@@ -24,7 +24,9 @@ struct MerchandiseScanView: View {
 
                 VStack(spacing: 5) {
                     Text("\(name)")
-                    Text("Variant Name : \(variantName)")
+                    if variantName != "" {
+                        Text("Variant Name : \(variantName)")
+                    }
                 }
                 .foregroundColor(.white)
                 .font(.verlagBoldAdaptive(size: 26))
@@ -41,9 +43,3 @@ struct MerchandiseScanView: View {
         .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
     }
 }
-
-//struct MerchandiseScanView_Previews: PreviewProvider {
-//    static var previews: some View {
-////        MerchandiseScanView()
-//    }
-//}

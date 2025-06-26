@@ -198,7 +198,7 @@ struct SeatCell: View {
         }
     }
  
-    private func incrementDeviceScanCount() {
+    func incrementDeviceScanCount() {
         deviceScanCount += 1
         // The @AppStorage property wrapper will automatically persist the updated value
     }
