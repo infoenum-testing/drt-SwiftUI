@@ -12,11 +12,21 @@ struct PreviouslyScannedTicketView: View {
     let orderName: String
     let orderNumber: String
     let scannedTime: String
-
+    let isInFullScreen: Bool
+    
     var body: some View {
         VStack {
             VStack {
-                Spacer()
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 35)
+                }
+                
+                
                 Image("circle_and_!_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -32,27 +42,34 @@ struct PreviouslyScannedTicketView: View {
                     Text("Order: \(orderNumber)")
                         .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(.white)
-                } 
+                }
                 
                 Text("Previously Scanned @\n\(scannedTime)")
                     .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
-                Spacer()
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 80)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.03 : 0.13))
-            .transition(.opacity)
-            .background(Color(red: 0.99, green: 0.35, blue: 0.0))
-            }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
+              .background(Color(red: 0.99, green: 0.35, blue: 0.0))
+              .ignoresSafeArea(edges: .bottom)
+              .transition(.opacity)
     }
 }
 
 // Preview
 struct PreviouslyScannedTicketView_Previews: PreviewProvider {
     static var previews: some View {
-        PreviouslyScannedTicketView(orderName: "Order Name", orderNumber: "1234567", scannedTime: "02:16 PM")
+        PreviouslyScannedTicketView(orderName: "Order Name", orderNumber: "1234567", scannedTime: "02:16 PM", isInFullScreen: true)
+//            .frame(height: UIScreen.main.bounds.height * 0.5)
     }
 }

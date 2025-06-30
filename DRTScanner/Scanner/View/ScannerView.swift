@@ -252,25 +252,25 @@ struct ScannerView: View {
                             Spacer()
                             if isTicketValid {
                                 if isPreScanned {
-                                    PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned)
+                                    PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true)
                                 } else {
-                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
+                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true)
                                 }
                             } else if isInvalidTicket {
-                                InvalidTicketView(message: invalidMessage)
+                                InvalidTicketView(message: invalidMessage, isInFullScreen: true)
                             } /*else if isMerchandiseMode {*/
                             if isMerchPreScanned {
-                                PreviousMerchandiseScanView(name: orderNumber, variantName: orderName, message: orderDateScanned)
+                                PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true)
                             }
                             if isMerchTicketValid {
-                                MerchandiseScanView(variantName: orderName, name: orderNumber)
+                                MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true)
                             }
                             if isInvalidMerchTicket {
-                                InvalidMerchandiseTicketView()
+                                InvalidMerchandiseTicketView(isInFullScreen: true)
                             }
                             
                             if isInvalidSeatTicket {
-                                InvalidSeatTicketView(message: invalidMessage)
+                                InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true)
                             }
                             //                        }
                             Spacer()
@@ -295,7 +295,7 @@ struct ScannerView: View {
                                     .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? -50 : -10)
                             }
                             }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
-                                .padding(.top, isFullScreen ? 10 : 0)
+                                .padding(.top, isFullScreen ? 10 : 10)
                                 .gesture(
                                     DragGesture(minimumDistance: 0)
                                         .onChanged { value in
@@ -354,6 +354,8 @@ struct ScannerView: View {
                                         // Display scan statistics
                                         Text("Scanned by Device: \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
                                             .font(.verlagBookAdaptive(size: 16))
+                                            .minimumScaleFactor(0.5)
+                                            .lineLimit(1)
                                             .padding(.bottom, -30)
                                             .foregroundColor(.white)
                                             .opacity(isVisibleText ? 1 : 0)
@@ -506,6 +508,19 @@ struct ScannerView: View {
                 withAnimation {
                     isVisibleText = true
                 }
+//                isTicketValid = true
+//                isPreScanned = true
+//                isInvalidTicket = true
+//                invalidMessage = "Invalid barcode"
+//                isMerchTicketValid = true
+//                isMerchPreScanned = true
+//                merchOrderName = "T-Shirt Variants"
+//                merchVariantName = "Medium"
+//                orderName = "OrderName"
+//                orderNumber = "123456"
+//                orderDateScanned = "Previously scanned at @02:15 AM"
+//                isInvalidMerchTicket = true
+//                isInvalidSeatTicket = true
             }
             .onDisappear {
                 stopLineAnimation() // Stop scan line animation
@@ -1090,7 +1105,7 @@ struct ScannerView: View {
                                         merchVariantName = variantName
                                         orderDateScanned = message
 
-                                        if isValid {
+                                        if message.contains("Previously scanned") {
                                             if message.contains("Previously scanned") {
                                                 isMerchPreScanned = true
                                                 playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)

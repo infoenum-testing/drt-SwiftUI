@@ -111,3 +111,19 @@ func topSafeAreaPadding() -> CGFloat {
 
     return window?.safeAreaInsets.top ?? 0
 }
+
+func calculatedTopPadding() -> CGFloat {
+    let device = UIDevice.current.userInterfaceIdiom
+    let screenHeight = UIScreen.main.bounds.height
+    let safeTop = topSafeAreaPadding()
+
+    if device == .pad {
+        return safeTop + 160
+    } else if screenHeight <= 667 {
+        // iPhone SE 2nd gen, iPhone 8, iPhone 6/7
+        return safeTop + 90
+    } else {
+        // All other regular iPhones (e.g., 11, 12, 13, 14...)
+        return safeTop + 105
+    }
+}

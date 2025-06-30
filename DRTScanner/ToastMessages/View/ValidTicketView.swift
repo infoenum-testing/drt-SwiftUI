@@ -11,10 +11,20 @@ struct ValidTicketView: View {
     let orderName: String
     let orderNumber: String
     let isGoldenTicket: Bool
+    let isInFullScreen: Bool
     
     var body: some View {
         VStack {
+            
             VStack(spacing: 15) {
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 35)
+                }
                 Image("circle_and_check_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -30,14 +40,21 @@ struct ValidTicketView: View {
                         .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(.white)
                 }
+                
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 80)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top, .bottom], UIScreen.main.bounds.height * (UIDevice.current.userInterfaceIdiom == .pad ? 0.1 : 0.17))
-            .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
-            .transition(.opacity)
-            .animation(.easeInOut(duration: 0.3))
-//            Spacer()
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
+          
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
+        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
+        .transition(.opacity)
     }
 }

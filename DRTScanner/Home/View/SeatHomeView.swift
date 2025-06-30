@@ -125,7 +125,7 @@ struct SeatHomeView: View {
                         .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
                     
                     // Scrollable area containing lookup options and ticket status views
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         // Show lookup options only if no ticket state is currently active
                         if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket && !isMerchPreScanned {
                             // List of lookup methods (order number, name, phone, credit card, seat)
@@ -192,34 +192,34 @@ struct SeatHomeView: View {
                             // Show previously scanned ticket view if ticket is valid and already scanned
                             if isTicketValid {
                                 if isPreScanned {
-                                    PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned)
+                                    PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: false)
                                     
                                 } else {
                                     // Show valid ticket view
-                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket)
+                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: false)
                                 }
                             } else if isInvalidTicket {
                                 // Show invalid ticket view
-                                InvalidTicketView(message: invalidMessage)
+                                InvalidTicketView(message: invalidMessage, isInFullScreen: false)
                             }
                             //                            else if isMerchandise {
                             // Show merchandise-related ticket status views
                             if isMerchPreScanned {
-                                PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned)
+                                PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: false)
                             }
                             if isMerchTicketValid {
-                                MerchandiseScanView(variantName: merchVariantName, name: merchOrderName)
+                                MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: false)
                             }
                             if isInvalidMerchTicket {
-                                InvalidMerchandiseTicketView()
+                                InvalidMerchandiseTicketView(isInFullScreen: false)
                             }
                             // Show invalid seat ticket view
                             if isInvalidSeatTicket {
-                                InvalidSeatTicketView(message: invalidMessage)
+                                InvalidSeatTicketView(message: invalidMessage, isInFullScreen: false)
                             }
                             //                            }
                         }
-                    }
+                    }.scrollDisabled(true)
                     // Set opacity and animation for the scroll view
                     .opacity(!isFullScreen ? 1 : 0)
                     .animation(.easeInOut(duration: 0.4), value: isFullScreen)
@@ -254,7 +254,7 @@ struct SeatHomeView: View {
                                         .contentShape(Rectangle())
                                         .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
                                 }
-                            }
+                            }.padding(.top)
                             // Bottom row: show name
                             HStack {
                                 Spacer()
@@ -276,7 +276,7 @@ struct SeatHomeView: View {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
                 LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
                     .background(Color.clear)
-                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
+                    .padding(.top, calculatedTopPadding())
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -288,7 +288,7 @@ struct SeatHomeView: View {
         .customSheetView(isPresented: $showLookupAlertByName) {
             LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
                 .background(Color.clear)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
+                .padding(.top, calculatedTopPadding())
         }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
@@ -298,7 +298,7 @@ struct SeatHomeView: View {
         }
         .customSheetView(isPresented: $showLookupAlertBySeat) {
             SeatLookupView(isPresented: $showLookupAlertBySeat)
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? topSafeAreaPadding() + 150 : topSafeAreaPadding() + 95)
+                .padding(.top, calculatedTopPadding())
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {

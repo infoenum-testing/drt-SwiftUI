@@ -5,91 +5,62 @@
 //  Created by IE Mac 05 on 27/03/25.
 //
 
-
-import SwiftUI
-
-//struct PreviousMerchandiseScanView: View {
-//    var name: String
-//    var variantName: String
-//    var message: String
-//
-//    var body: some View {
-//        VStack {
-//            VStack(spacing: 16) {
-//                Spacer()
-//                Image("circle_and_!_icon")
-//                    .resizable()
-//                    .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
-//                    .foregroundColor(.white)
-//
-//
-//                VStack(spacing: 5) {
-//                    Text("\(name)")
-//                    Text("Variant name: \(variantName)")
-//                    Text("\(message)")
-//                }
-//                .foregroundColor(.white)
-//                .font(.verlagBoldAdaptive(size: 24))
-//                Spacer()
-//            }
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .padding([.top], UIDevice.current.userInterfaceIdiom == .pad ? 10 : UIScreen.main.bounds.height * 0.11)
-//            .padding([.bottom], UIDevice.current.userInterfaceIdiom == .pad ? 0 : UIScreen.main.bounds.height * 0.11)
-//            .transition(.opacity)
-//            .background(Color(red: 0.99, green: 0.35, blue: 0.0))
-////            .padding(.top)
-//
-//            Spacer()
-//        }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
-//    }
-//}
-
 import SwiftUI
 
 struct PreviousMerchandiseScanView: View {
-    var name: String
-    var variantName: String
-    var message: String
+    let name: String
+    let variantName: String
+    let message: String
+    let isInFullScreen: Bool
 
     var body: some View {
-        ZStack {
-            Color(red: 0.99, green: 0.35, blue: 0.0) // Background color
-                .edgesIgnoringSafeArea(.all)
-
+        VStack {
             VStack(spacing: 20) {
-                Spacer()
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 35)
+                }
                 Image("circle_and_!_icon")
                     .resizable()
-                    .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
+                    .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
+                    .bold()
                     .foregroundColor(.white)
+                    .padding([.top, .bottom], 5)
 
                 VStack(spacing: 8) {
                     Text(name)
+                        .font(.verlagBlackAdaptive(size: 30))
+                        .foregroundColor(.white)
                     if variantName != "" {
                         Text("Variant name: \(variantName)")
+                            .font(.verlagBoldAdaptive(size: 26))
+                            .foregroundColor(.white)
                     }
                     Text(message)
+                        .font(.verlagBoldAdaptive(size: 26))
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.white)
                 }
-                .foregroundColor(.white)
-                .font(.verlagBoldAdaptive(size: 24))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 20)
 
-                Spacer()
+                if isInFullScreen {
+                    Spacer()
+                } else {
+                    VStack {
+                        
+                    }
+                    .frame(height: 80)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding([.top], UIDevice.current.userInterfaceIdiom == .pad ? 10 : UIScreen.main.bounds.height * 0.11)
-            .padding([.bottom], UIDevice.current.userInterfaceIdiom == .pad ? 0 : UIScreen.main.bounds.height * 0.11)
-            .transition(.opacity)
-            .background(Color(red: 0.99, green: 0.35, blue: 0.0))
-//            .padding(.top)
-
-            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0).edgesIgnoringSafeArea(.all))
+        .frame(maxWidth: .infinity)
+        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
+        .background(Color(red: 0.99, green: 0.35, blue: 0.0))
+        .ignoresSafeArea(edges: .bottom)
+        .transition(.opacity)
     }
 }
 
@@ -99,7 +70,7 @@ struct PreviousMerchandiseScanView: View {
         PreviousMerchandiseScanView(
             name: "Test Product",
             variantName: "N/A",
-            message: "This item was already scanned."
+            message: "This item was already scanned.", isInFullScreen: true
         )
         .frame(height: UIScreen.main.bounds.height * 0.5)
     }

@@ -245,8 +245,8 @@ struct StringConstants {
     }
     
     struct DRTToastMessages {
-        static let inValidMerchandiseVoucher = "This is an invalid merchandise voucher."
-        static let inValidTicketVoucher = "This is an invalid seating ticket."
+        static let inValidMerchandiseVoucher = "You are currently in merchandise scanning mode."
+        static let inValidTicketVoucher = "You are currently in seat scanning mode."
         static let inValidShow = "INVALID SHOW"
         static let preScanned = "Previously Scanned"
     }
