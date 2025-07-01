@@ -13,6 +13,7 @@ struct ChooseSectionView: View {
     @State private var sectionsTitle: String = "SECTION"
     @Binding var isPresented: Bool
     @Binding var selectedSeat: String
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack {
@@ -32,7 +33,7 @@ struct ChooseSectionView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(width: 20, height: 20)
                 } else {
-                    Text(sectionsTitle)
+                    Text(stringManager.strings?.seat.section ?? sectionsTitle)
                         .font(.verlagBlackAdaptive(size: 30))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.white)

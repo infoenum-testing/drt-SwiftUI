@@ -25,7 +25,7 @@ struct LookupOrderResultView: View {
     @State  var errorMessages: String? = nil // Error message for alert
     let errorMessage: String? // Error message passed in
     var order: OrdersNewApi? // Order object
-    
+    @EnvironmentObject var stringManager: StringManager
     @State private var products: [Product] = [] // List of products (for offline mode)
     
     var body: some View {
@@ -63,10 +63,10 @@ struct LookupOrderResultView: View {
                 if !viewModel.isLoading {
                     if viewModel.buyerName != "No orders found" {
                     HStack(alignment: .center) {
-                        Text("\(StringConstants.Common.Order) \(order?.orderId ?? 0)")
+                        Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order) \(order?.orderId ?? 0)")
                             .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.customWhite)
-                        Text("CC \(order?.cc ?? "")")
+                        Text("\(stringManager.strings?.searchResults.cc ?? "CC")" + " \(order?.cc ?? "")")
                             .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.customWhite)
                     }

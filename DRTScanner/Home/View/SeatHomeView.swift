@@ -92,6 +92,7 @@ struct SeatHomeView: View {
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @EnvironmentObject var stringManager: StringManager
     
     // Computes the dynamic cell height based on device and mode
     private var dynamicCellHeight: CGFloat {
@@ -131,7 +132,7 @@ struct SeatHomeView: View {
                             // List of lookup methods (order number, name, phone, credit card, seat)
                             VStack(spacing: 1) {
                                 // Lookup by order number
-                                CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.orderNumber ?? StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     // Set lookup type and show alert for order number
                                     seatHomeViewModel.selectedLookupType = .orderNumber
                                     isScanningCell = false
@@ -140,7 +141,7 @@ struct SeatHomeView: View {
                                     }
                                 }
                                 // Lookup by name
-                                CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.name,
+                                CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.name ?? StringConstants.SeatHomeView.name,
                                                cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     // Set lookup type and show alert for name
                                     selectedLookupByName = .name
@@ -150,7 +151,7 @@ struct SeatHomeView: View {
                                     }
                                 }
                                 // Lookup by phone number
-                                CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.phoneNumber,
+                                CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.phoneNumber ?? StringConstants.SeatHomeView.phoneNumber,
                                                cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                     // Set lookup type and show alert for phone number
                                     seatHomeViewModel.selectedLookupType = .phoneNumber
@@ -160,7 +161,7 @@ struct SeatHomeView: View {
                                     }
                                 }
                                 // Lookup by credit card
-                                CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.creditCard,
+                                CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.creditCard ?? StringConstants.SeatHomeView.creditCard,
                                                cellHeight: dynamicCellHeight,
                                                bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                showDivider: isMerchandise ? false : true
@@ -174,7 +175,7 @@ struct SeatHomeView: View {
                                 }
                                 // Lookup by seat (only if not in merchandise mode)
                                 if !isMerchandise {
-                                    CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: StringConstants.SeatHomeView.lookUpBy, subtitle: StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,
+                                    CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.seat ?? StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,
                                                    buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                    showDivider: false
                                     ) {
@@ -350,7 +351,7 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text(isOfflineMode ? StringConstants.Common.alert : StringConstants.Common.confirm)
+                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineTitle ?? StringConstants.Common.alert : stringManager.strings?.dialogLogout.confirm ?? StringConstants.Common.confirm)
                         .padding(.leading, 20)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.white)
@@ -373,7 +374,7 @@ struct SeatHomeView: View {
                 }
                 
                 VStack {
-                    Text(isOfflineMode ? StringConstants.LandingView.isOfflineAlertMessage :
+                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
                             StringConstants.LandingView.logoutConfirm)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.white)
@@ -382,7 +383,7 @@ struct SeatHomeView: View {
                 HStack {
                     if !isOfflineMode {
                         HStack {
-                            Text(StringConstants.Common.logout)
+                            Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
                                 .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.leading, 30)
@@ -399,7 +400,7 @@ struct SeatHomeView: View {
                                     }
                                 }
                             Spacer()
-                            Text(StringConstants.Common.cancel)
+                            Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
                                 .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.customGreen)
                                 .padding(.trailing, 30)

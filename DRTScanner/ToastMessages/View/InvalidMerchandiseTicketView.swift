@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct InvalidMerchandiseTicketView: View {
+    @EnvironmentObject var stringManager: StringManager
     let isInFullScreen: Bool
     var body: some View {
         VStack {
@@ -28,7 +29,7 @@ struct InvalidMerchandiseTicketView: View {
                     .foregroundColor(.white)
                     .padding(.bottom)
                 
-                Text(StringConstants.DRTToastMessages.inValidMerchandiseVoucher)
+                Text(stringManager.strings?.incorrectMode.tickets ?? StringConstants.DRTToastMessages.inValidMerchandiseVoucher)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)

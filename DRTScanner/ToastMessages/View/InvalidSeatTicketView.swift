@@ -11,6 +11,7 @@ import SwiftUI
 struct InvalidSeatTicketView: View {
     let message: String
     let isInFullScreen: Bool
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack {
@@ -31,7 +32,7 @@ struct InvalidSeatTicketView: View {
                     .foregroundColor(.white)
                     .padding(.bottom)
                 
-                Text(StringConstants.DRTToastMessages.inValidTicketVoucher)
+                Text(stringManager.strings?.incorrectMode.merch ?? StringConstants.DRTToastMessages.inValidTicketVoucher)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)

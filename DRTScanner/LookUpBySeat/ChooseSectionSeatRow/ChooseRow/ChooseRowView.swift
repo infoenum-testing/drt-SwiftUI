@@ -14,6 +14,7 @@ struct ChooseRowView: View {
     @Binding var selectedSeat: String
     @Binding var selectedSection: String
     @Binding var selectedRow: String
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack {
@@ -33,7 +34,7 @@ struct ChooseRowView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(width: 20, height: 20)
                 } else {
-                    Text(RowTitle)
+                    Text(stringManager.strings?.seat.row ?? RowTitle)
                         .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(.white)
                         .padding(.trailing, 50)

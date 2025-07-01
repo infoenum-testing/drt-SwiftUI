@@ -12,6 +12,8 @@ struct AboutView: View {
     @Binding var isPresented: Bool
     @State private var showWebsiteAlert = false
     static let urlString = "www.drttix.com"
+    @EnvironmentObject var stringManager: StringManager
+    
     var body: some View {
         ZStack {
             Image(StringConstants.DRTImages.backgound)
@@ -41,7 +43,7 @@ struct AboutView: View {
                     .scaledToFit()
                     .frame(height: 150.adaptiveForIpad)
                 VStack {
-                    Text(StringConstants.SideMenuView.aboutDescriptionText)
+                    Text(stringManager.strings?.mission ?? StringConstants.SideMenuView.aboutDescriptionText)
                         .font(.verlagBoldAdaptive(size: 16))
                         .foregroundColor(Color.customWhite)
                         .multilineTextAlignment(.center)
@@ -61,27 +63,23 @@ struct AboutView: View {
                             }
                             .alert(isPresented: $showWebsiteAlert) {
                                 Alert(
-                                    title: Text(StringConstants.SideMenuView.openDrtWebsiteTitle)
+                                    title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage)
                                         .font(UIDevice.current.userInterfaceIdiom == .pad ? .title : .headline),
-                                    message: Text(StringConstants.SideMenuView.openDrtWebsiteMessage)
+                                    message: Text("")
                                         .font(UIDevice.current.userInterfaceIdiom == .pad ? .title3 : .subheadline),
-                                    primaryButton: .default(Text("Yes")) {
+                                    primaryButton: .default(Text("OPEN")) {
                                         openWebsite()
                                     },
-                                    secondaryButton: .cancel(Text("No"))
+                                    secondaryButton: .cancel(Text("CANCEL"))
                                 )
                             }
                             .padding()
                     
-                    Text(StringConstants.SideMenuView.copyRightTitle)
+                    Text(stringManager.strings?.copyright.replacingOccurrences(of: ". All", with: ".\n All") ?? StringConstants.LandingView.copyRight)
                         .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(Color.customWhite)
                         .multilineTextAlignment(.center)
-                    
-                    Text(StringConstants.SideMenuView.copyRightTitle2)
-                        .font(.verlagBookAdaptive(size: 14))
-                        .foregroundColor(Color.customWhite)
-                        .multilineTextAlignment(.center)
+                        .frame(height: 40.adaptiveForIpad)
                     
                 }
                

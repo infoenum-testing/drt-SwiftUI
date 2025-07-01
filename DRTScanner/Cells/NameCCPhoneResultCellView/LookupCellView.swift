@@ -14,6 +14,7 @@ struct LookupCellView: View {
     var result: OrdersNewApi
     var onCellTapped: (Int) -> Void
     @State private var isTapped = false
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack(alignment: .center) {
@@ -25,17 +26,17 @@ struct LookupCellView: View {
             
             HStack {
                 
-                Text("\(StringConstants.LandingView.orderLabel): \(result.orderId ?? 0)")
+                Text("\(stringManager.strings?.searchResults.order ?? StringConstants.LandingView.orderLabel): \(result.orderId ?? 0)")
                     .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
                 
-                Text("\(StringConstants.LandingView.ccLabel): \(result.cc ?? "")")
+                Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel): \(result.cc ?? "")")
                     .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
             }
             .padding(.top, 1)
             
-            Text("\(StringConstants.LandingView.phoneLabel): \(result.phone ?? "")")
+            Text("\(stringManager.strings?.searchResults.phoneNumber ?? StringConstants.LandingView.phoneLabel): \(result.phone ?? "")")
                 .font(.verlagBoldAdaptive(size: 15))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .center)

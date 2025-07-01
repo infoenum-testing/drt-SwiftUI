@@ -38,6 +38,7 @@ struct LookupByNumbersView: View {
     @State private var clickedButton: String? = nil
     @State private var isLoading: Bool = false
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var stringManager: StringManager
     
     // Custom initializer to set up view models and binding
     init(isPresented: Binding<Bool>, lookupType: LookupType) {
@@ -58,11 +59,11 @@ struct LookupByNumbersView: View {
     var placeholderText: String {
         switch lookupType {
         case .orderNumber:
-            return "ORDER NUMBER"
+            return stringManager.strings?.home.orderNumber ?? "ORDER NUMBER"
         case .phoneNumber:
-            return "PHONE NUMBER"
+            return stringManager.strings?.home.phoneNumber ?? "PHONE NUMBER"
         case .creditCard:
-            return "CREDIT CARD"
+            return stringManager.strings?.home.creditCard ?? "CREDIT CARD"
         }
     }
     

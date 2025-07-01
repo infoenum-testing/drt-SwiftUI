@@ -25,6 +25,7 @@ struct SideMenuView: View {
     // AppStorage properties for persistent mode flags
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         GeometryReader { geometry in
@@ -50,14 +51,14 @@ struct SideMenuView: View {
                         }
                         // Go Online/Offline option
                         if isOfflineMode {
-                            SideMenuOption(title: StringConstants.SideMenuView.goOnline) {
+                            SideMenuOption(title: stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOnlineView = true
                                 }
                             }
                             
                         } else {
-                            SideMenuOption(title: StringConstants.SideMenuView.goOffline) {
+                            SideMenuOption(title: stringManager.strings?.menu.goOffline ?? StringConstants.SideMenuView.goOffline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
@@ -102,14 +103,14 @@ struct SideMenuView: View {
                             }
                         }
                         // About option
-                        SideMenuOption(title: StringConstants.SideMenuView.about) {
+                        SideMenuOption(title: stringManager.strings?.menu.about ?? StringConstants.SideMenuView.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
                             //   isPresented = false
                         }
                         // DRT Website option
-                        SideMenuOption(title: StringConstants.SideMenuView.drtWebsite) {
+                        SideMenuOption(title: stringManager.strings?.menu.website ?? StringConstants.SideMenuView.drtWebsite) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }
@@ -117,12 +118,12 @@ struct SideMenuView: View {
                         // Alert for opening website
                         .alert(isPresented: $showWebsiteAlert) {
                             Alert(
-                                title: Text(StringConstants.SideMenuView.openDrtWebsiteTitle),
-                                message: Text(StringConstants.SideMenuView.openDrtWebsiteMessage),
-                                primaryButton: .default(Text(StringConstants.Common.yes)) {
+                                title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
+                                message: Text(""),
+                                primaryButton: .default(Text( "OPEN")) {
                                     openDRTWebsite()
                                 },
-                                secondaryButton: .cancel(Text(StringConstants.Common.no))
+                                secondaryButton: .cancel(Text("CANCEL"))
                             )
                         }
                         
@@ -160,7 +161,7 @@ struct SideMenuView: View {
                     
                     VStack(alignment: .center) {
                         // Confirmation message
-                        Text("Switch to scanning \(isSwitchingToMerchandise ?? !isMerchandise ? StringConstants.SideMenuView.merchandise : StringConstants.SideMenuView.ticket)")
+                        Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? StringConstants.SideMenuView.merchandise : stringManager.strings?.switchMode.tickets ?? StringConstants.SideMenuView.ticket)")
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)

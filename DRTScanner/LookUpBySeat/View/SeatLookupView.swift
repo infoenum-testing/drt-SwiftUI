@@ -14,6 +14,7 @@ struct SeatLookupView: View {
     @State private var isSeatLookupPresented = false
     @State private var isSectionLookupPresented = false
     @State private var isRowLookupPresented = false
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         GeometryReader { geometry in
@@ -67,7 +68,7 @@ struct SeatLookupView: View {
                         ProgressView()
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        Text(StringConstants.Common.continueText)
+                        Text(stringManager.strings?.seat.continueField ?? StringConstants.Common.continueText)
                             .font(.verlagBoldAdaptive(size: 36))
                             .foregroundColor(.customWhite)
                             .padding(.top, 5.adaptiveForIpad)

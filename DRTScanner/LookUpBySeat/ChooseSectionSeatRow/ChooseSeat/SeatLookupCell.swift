@@ -12,10 +12,11 @@ struct SeatLookupCell: View {
     var action: (() -> Void)?
     // The currently selected seat to display
     var selectedSeat: String
+    @EnvironmentObject var stringManager: StringManager
     var body: some View {
         HStack {
             // Displays the seat label
-            Text(StringConstants.LandingView.seatSection)
+            Text(stringManager.strings?.seat.seat ?? StringConstants.LandingView.seatSection)
                 .font(.verlagBookAdaptive(size: 27))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .leading)

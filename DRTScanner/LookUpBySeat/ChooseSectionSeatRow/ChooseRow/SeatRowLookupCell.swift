@@ -12,10 +12,11 @@ struct SeatRowLookupCell: View {
     var action: (() -> Void)?
     // The currently selected seat to display
     var selectedSeat: String
+    @EnvironmentObject var stringManager: StringManager
     var body: some View {
         HStack {
             // Displays the label for the row (e.g., "Row")
-            Text(StringConstants.Common.row)
+            Text(stringManager.strings?.seat.row ?? StringConstants.Common.row)
                 .font(.verlagBookAdaptive(size: 27))
                 .foregroundColor(Color.customGreen)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -27,6 +27,7 @@ struct LookupResultCardOrPhoneView: View {
     @State private var oId: String?                              // Selected order ID (used when navigating to order detail)
     @State private var selectedOrder: OrdersNewApi?              // Holds the selected order model
     @State private var navigateToOrderResult = false             // Controls custom sheet navigation
+    @EnvironmentObject var stringManager: StringManager
 
     // MARK: - Input Error & Type
     let errorMessage: String?                                    // Not used inside this view currently
@@ -73,7 +74,7 @@ struct LookupResultCardOrPhoneView: View {
 
                     // Show result count or "No orders found"
                     if !isLoading {
-                        Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(orders.count)")
+                        Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(orders.count)")
                             .foregroundColor(Color.customWhite)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)

@@ -32,6 +32,7 @@ struct LookupByNameView: View {
     @State private var clickedButton: String? = nil
     // ViewModel for fetching results
     @StateObject var viewModel = LookupByNameResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
+    @EnvironmentObject var stringManager: StringManager
     // Lookup type (currently only .name)
     let lookupType: LookupByName
     // Button layout for the on-screen keyboard
@@ -49,7 +50,7 @@ struct LookupByNameView: View {
     var placeholderText: String {
         switch lookupType {
         case .name:
-            return "NAME"
+            return stringManager.strings?.home.name ?? "NAME"
         }
     }
     

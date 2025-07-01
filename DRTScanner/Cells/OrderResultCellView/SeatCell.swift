@@ -19,6 +19,7 @@ struct SeatCell: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var showAlert: Bool
     @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
+    @EnvironmentObject var stringManager: StringManager
     
     
     // MARK: - Init
@@ -41,13 +42,13 @@ struct SeatCell: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : StringConstants.LandingView.notYetScanned)
+                Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
                     .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(Color.customGreen)
             }
             HStack(alignment: .center) {
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text(StringConstants.LandingView.sectionLabel)
+                    Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
@@ -57,7 +58,7 @@ struct SeatCell: View {
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text(StringConstants.LandingView.rowLabel)
+                    Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)
@@ -67,7 +68,7 @@ struct SeatCell: View {
                 }
                 Spacer()
                 HStack(alignment: .bottom, spacing: 0) {
-                    Text(StringConstants.LandingView.seatLabel)
+                    Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.customGreen)
                         .padding(.bottom, 1.adaptiveForIpad)

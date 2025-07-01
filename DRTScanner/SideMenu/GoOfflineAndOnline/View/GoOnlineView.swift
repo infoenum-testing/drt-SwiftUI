@@ -17,6 +17,7 @@ struct GoOnlineView: View {
     @State private var errorMessage = ""
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = true
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack(spacing: 20) {
@@ -26,7 +27,7 @@ struct GoOnlineView: View {
                     .foregroundColor(.customWhite)
             }
             if isUploading {
-                Text(StringConstants.SideMenuView.goOnlineServer)
+                Text(stringManager.strings?.dialogGoOnline.uploading ?? StringConstants.SideMenuView.goOnlineServer)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(.customWhite)
                     .multilineTextAlignment(.leading)

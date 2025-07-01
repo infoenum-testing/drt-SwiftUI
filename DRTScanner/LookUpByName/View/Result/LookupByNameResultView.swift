@@ -19,7 +19,8 @@ struct LookupByNameResultView: View {
     @State private var navigateToOrderResult = false // Controls navigation to order result view
     @AppStorage("showCode") private var savedShowCode: String? // Saved show code from app storage
     @State private var showTextAfterDelay = false // Controls delayed text display (not used in this snippet)
-
+    @EnvironmentObject var stringManager: StringManager
+    
     var body: some View {
         VStack {
                 VStack {
@@ -48,7 +49,7 @@ struct LookupByNameResultView: View {
                         // Display total results or no orders found
                         if !viewModel.isLoading {
                             
-                            Text(viewModel.orders.isEmpty ? StringConstants.Common.noOrdersFound : "Total Results: \(viewModel.orders.count)")
+                            Text(viewModel.orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(viewModel.orders.count)")
                                 .foregroundColor(Color.customWhite)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)

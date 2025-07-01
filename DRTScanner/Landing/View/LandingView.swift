@@ -10,7 +10,7 @@ import IQAPIClient
 
 // Main landing view for the app
 struct LandingView: View {
-    @StateObject private var viewModel = LandingViewModel()
+    @StateObject private var viewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     // Controls the display of the show code sheet
     @State private var showSheet = false
     // Controls the display of the seat view
@@ -24,6 +24,7 @@ struct LandingView: View {
     @AppStorage("show") private var savedShow: String = ""
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @Environment(\.managedObjectContext) private var context
+    @EnvironmentObject var stringManager: StringManager
     // Animation state variables
     @State private var animateLogo = false
     @State private var animateButtons = false
@@ -165,7 +166,7 @@ struct LandingView: View {
                                 showSheet = true
                             }
                         }) {
-                            Text(StringConstants.LandingView.showCode)
+                            Text(stringManager.strings?.login.enterShowCode ?? StringConstants.LandingView.showCode)
                                 .font(.verlagBoldAdaptive(size: 18))
                                 .padding()
                                 .frame(maxWidth: .infinity)
@@ -177,7 +178,7 @@ struct LandingView: View {
                     }
                     
                     // Copyright text
-                    Text(StringConstants.LandingView.copyRight)
+                    Text(stringManager.strings?.copyright.replacingOccurrences(of: ". All", with: ".\n All") ?? StringConstants.LandingView.copyRight)
                         .font(.verlagBookAdaptive(size: 14))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -197,7 +198,7 @@ struct LandingView: View {
                     VStack {
                         HStack {
                             Spacer()
-                            Text(isOfflineMode ? StringConstants.Common.alert : StringConstants.Common.confirm)
+                            Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineTitle ?? StringConstants.Common.alert : stringManager.strings?.dialogLogout.confirm ?? StringConstants.Common.confirm)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(.white)
                                 .padding(.top, 20)
@@ -216,7 +217,7 @@ struct LandingView: View {
                             }.padding(.trailing)
                         }
                         
-                        Text(isOfflineMode ? StringConstants.LandingView.isOfflineAlertMessage :
+                        Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
                                 StringConstants.LandingView.logoutConfirm)
                         .font(.verlagBookAdaptive(size: 18))
                         .foregroundStyle(Color.white)
@@ -238,7 +239,7 @@ struct LandingView: View {
                                         DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }) {
-                                    Text(StringConstants.Common.logout)
+                                    Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .foregroundColor(.customGreen)
                                 }
@@ -251,7 +252,7 @@ struct LandingView: View {
                                         showLogoutAlert = false
                                     }
                                 }) {
-                                    Text(StringConstants.Common.cancel)
+                                    Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .foregroundColor(.customGreen)
                                 }
@@ -302,7 +303,7 @@ struct LandingView: View {
                                     }
                                 }
                                 
-                                Text(StringConstants.LandingView.invalidShowCode)
+                                Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? StringConstants.LandingView.invalidShowCode)
                                     .font(.verlagBookAdaptive(size: 18))
                                     .padding(.bottom)
                                     .foregroundColor(.customWhite)

@@ -13,10 +13,9 @@ extension IQAPIClient {
     
     /// Fetches localized string data (e.g., translations or labels).
     @discardableResult
-    static func getStringLanguage(completionHandler: @Sendable @escaping (_ result: Swift.Result<DRTUser, Error>) -> Void) -> DataRequest? {
+    static func getStringLanguage(completionHandler: @Sendable @escaping (_ result: Swift.Result<AppStrings, Error>) -> Void) -> DataRequest? {
         let path = APIPath.stringLang.rawValue
-        let param: [String: Any] = ["lang" : "en-US"]
-        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: nil, completionHandler: completionHandler)
     }
     
     /// Retrieves show-related data using a specific code.
