@@ -166,6 +166,7 @@ struct ScannerView: View {
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @EnvironmentObject var stringManager: StringManager
 
     /// Initializes the ScannerView with all required bindings and view models
     init(seat: Binding<SeatModel?>,
@@ -352,7 +353,7 @@ struct ScannerView: View {
                                     if let stats = viewModel.stats {
                                         Spacer()
                                         // Display scan statistics
-                                        Text("Scanned by Device: \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0) Scannable Overall: \( stats.seatsScannable ?? 0)")
+                                        Text("\(stringManager.strings?.stats.scanned ?? "Scanned by Device"): \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0)     \(stringManager.strings?.stats.scannable ?? "Scannable Overall"): \(stats.seatsScannable ?? 0)")
                                             .font(.verlagBookAdaptive(size: 16))
                                             .minimumScaleFactor(0.5)
                                             .lineLimit(1)
@@ -518,7 +519,7 @@ struct ScannerView: View {
 //                merchVariantName = "Medium"
 //                orderName = "OrderName"
 //                orderNumber = "123456"
-//                orderDateScanned = "Previously scanned at @02:15 AM"
+//               orderDateScanned = "@02:15 AM"
 //                isInvalidMerchTicket = true
 //                isInvalidSeatTicket = true
             }
@@ -886,7 +887,7 @@ struct ScannerView: View {
                             merchVariantName = product.variantName ?? ""
                             if let scannedDate = product.date_scanned {
                                 let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedDate)
-                                orderDateScanned = "Previously scanned at \(formattedDate)"
+                                orderDateScanned = "\(formattedDate)"
                             }
 
                             isMerchPreScanned = true
@@ -1096,6 +1097,7 @@ struct ScannerView: View {
                                 case .success(let responseData):
                                     if let responseDict = responseData as? [String: Any] {
                                         let message = responseDict["message"] as? String ?? ""
+                                        let tsString = responseDict["tsScanned"] as? String ?? ""
                                         let isValid = responseDict["valid"] as? Bool ?? false
                                         
                                         let name = responseDict["name"] as? String ?? ""
@@ -1103,9 +1105,21 @@ struct ScannerView: View {
                                         
                                         merchOrderName = name
                                         merchVariantName = variantName
-                                        orderDateScanned = message
+                                        if let timestampMillis = TimeInterval(tsString) {
+                                                let date = Date(timeIntervalSince1970: timestampMillis / 1000)
 
-                                        if message.contains("Previously scanned") {
+                                                let formatter = DateFormatter()
+                                                formatter.dateFormat = "h:mm a"
+                                                formatter.amSymbol = "AM"
+                                                formatter.pmSymbol = "PM"
+                                                formatter.timeZone = TimeZone.current
+
+                                                orderDateScanned = formatter.string(from: date)
+                                            } else {
+                                                orderDateScanned = ""
+                                            }
+                                        
+                                        if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
                                                 isMerchPreScanned = true
                                                 playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -1205,7 +1219,23 @@ struct ScannerView: View {
                                                     isTicketValid = true
                                                     orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
-                                                    orderDateScanned = scanResponse.dateScanned ?? ""
+
+                                                    if let tsString = scanResponse.tsScanned,
+                                                       let timestampMillis = TimeInterval(tsString) {
+                                                        
+                                                        let date = Date(timeIntervalSince1970: timestampMillis / 1000)
+                                                        
+                                                        let formatter = DateFormatter()
+                                                        formatter.dateFormat = "h:mm a"
+                                                        formatter.amSymbol = "AM"
+                                                        formatter.pmSymbol = "PM"
+                                                        formatter.timeZone = TimeZone.current
+                                                        
+                                                        orderDateScanned = formatter.string(from: date)
+                                                    } else {
+                                                        orderDateScanned = ""
+                                                    }
+
                                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {

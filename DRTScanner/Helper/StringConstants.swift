@@ -8,7 +8,7 @@
 struct StringConstants {
     
     enum LandingView {
-        static let showCode = "Enter Show Code"
+        static let showCode = "ENTER SHOW CODE"
         static let copyRight = "Copyright(c) 2013-2025. DRT Performance Tix.\nAll Rights Reserved"
         static let invalidShowCode = "Invalid show code."
         static let validShowCode = "Do you want to scan merchandise or seat?"
@@ -16,7 +16,7 @@ struct StringConstants {
         static let seat = "SEAT"
         static let seatSection = "Seat"
         static let changeShow = "Change Show"
-        static let scanMerchOrSeat = "Do you want to scan merchandise or seats?"
+        static let scanMerchOrSeat = "What would you like to scan?"
         static let isOfflineAlertMessage = "You are currently scanning in OFFLINE MODE and therefore cannot log out. First, find connectivity and go back into online mode. Then you may log out"
         static let logoutConfirm = "Are you sure you want to log out?"
         static let orderLabel = "ORDER"
@@ -215,7 +215,7 @@ struct StringConstants {
         static let goOfflineViewTextFieldText = "Type your name here"
         static let openDrtWebsiteTitle = "Open DRT Website?"
         static let openDrtWebsiteMessage = "Do you want to visit the DRT website?"
-        static let drtWebsiteURL = "https://www.drtwebsite.com"
+        static let drtWebsiteURL = "http://www.dancerecitalticketing.com"
         static let copyRightTitle = "Copyright(c) 2013-2025. DRT Performance Tix."
         static let copyRightTitle2 = "All Rights Reserved"
         static let aboutDescriptionText = "Our purpose and mission is to provide small bussinesses with the advantages to grow and prosper through innovative solution and lifelong relationships."

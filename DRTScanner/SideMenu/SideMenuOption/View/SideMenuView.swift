@@ -165,28 +165,10 @@ struct SideMenuView: View {
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
+                            .padding(.top, 20)
                         
                         VStack {
                             // NO button
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showConfirmationAlert = false
-                                    }
-                                }) {
-                                    Text("NO")
-                                        .font(.verlagBoldAdaptive(size: 30))
-                                        .foregroundColor(Color.customWhite)
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                }
-                                Spacer()
-                            }.background(Color.FFCE_62)
-                                .padding(.horizontal, 30)
-                                .padding(.top)
-                            
-                            // YES button
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -202,19 +184,45 @@ struct SideMenuView: View {
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                 }
+                                .background(Color.FFCE_62)
+                                   .cornerRadius(12)
                                 Spacer()
-                            }.background(Color.FFCE_62)
-                                .padding(.horizontal, 30)
+                            }
+                            
+                                .padding(.horizontal)
+                                .padding(.top)
+                            
+                            // YES button
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showConfirmationAlert = false
+                                    }
+                                }) {
+                                    Text("NO")
+                                        .font(.verlagBoldAdaptive(size: 30))
+                                        .foregroundColor(Color.customWhite)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                }
+                                Spacer()
+                            }.background(Color.clear)
+                                .padding(.horizontal)
                             
                         }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
                             isMerchandise = newValue
                         }
                     }
-                    .padding(.top, 100)
+                    .padding(.top, 70)
                     .padding(.bottom)
                     .background {
                         Image(StringConstants.DRTImages.backgound)
                             .resizable()
+                            .scaledToFill()
+                            .frame(height: UIScreen.main.bounds.height * 0.38)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
                             .edgesIgnoringSafeArea(.top)
                     }
                     .frame(width: geometry.size.width * 1)
@@ -236,7 +244,7 @@ struct SideMenuView: View {
     
     // Opens the DRT website in the default browser
     private func openDRTWebsite() {
-        if let url = URL(string: StringConstants.SideMenuView.drtWebsiteURL) {
+        if let url = URL(string: stringManager.strings?.serviceHref ?? StringConstants.SideMenuView.drtWebsiteURL) {
             UIApplication.shared.open(url)
         }
     }

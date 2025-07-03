@@ -68,7 +68,12 @@ struct SeatHomeView: View {
     // Stores the order number
     @State private var orderNumber: String = ""
     // Stores the date/time the order was scanned
-    @State private var orderDateScanned: String = ""
+    @State private var orderDateScanned: String = "" {
+        didSet {
+            print(_orderDateScanned)
+            print(orderDateScanned)
+        }
+    }
     // Stores error messages
     @State private var errorMessage : String = ""
     @State private var invalidMessage : String = ""
@@ -225,7 +230,11 @@ struct SeatHomeView: View {
                     .opacity(!isFullScreen ? 1 : 0)
                     .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                     .background(Color.customWhite)
-                }
+                    .onChange(of: orderDateScanned) { newValue in
+                        print(newValue)
+                        print(newValue)
+                    }
+                }/*.padding(.top, topSafeAreaPadding() - 10)*/
             }
             // Toolbar section for the navigation bar
             .toolbar {
@@ -269,6 +278,7 @@ struct SeatHomeView: View {
                             .padding(12)
                             .background(Color.FFCE_62)
                         }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPadding())
+//                            .padding(.top, topSafeAreaPadding() + 30)
                     }
                 }
             }
@@ -348,45 +358,33 @@ struct SeatHomeView: View {
         }
         
         .customAlert(isPresented: $showAlert) {
+            ZStack {
+//                Image(StringConstants.DRTImages.backgound)
+//                    .resizable()
+//                    .edgesIgnoringSafeArea(.top)
             VStack(alignment: .center) {
-                HStack {
-                    Spacer()
-                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineTitle ?? StringConstants.Common.alert : stringManager.strings?.dialogLogout.confirm ?? StringConstants.Common.confirm)
-                        .padding(.leading, 20)
-                        .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(.white)
-                        .padding(.bottom, 10)
-                        .padding(.top, 20)
-                    
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showAlert = false
-                            isMerchandise = false
-                        }
-                    }) {
-                        Image(StringConstants.DRTImages.crossImage)
-                            .resizable()
-                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                            .background(Color.clear)
-                            .contentShape(Rectangle())
-                    }
+                VStack {
+                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
+                         StringConstants.LandingView.logoutConfirm)
+                    .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(isOfflineMode ? 10 : 1)
+                    .padding(.top, 20)
+                    .padding(.bottom)
                 }
                 
                 VStack {
-                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
-                            StringConstants.LandingView.logoutConfirm)
-                    .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(.white)
-                }
-                
-                HStack {
                     if !isOfflineMode {
                         HStack {
                             Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
-                                .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(Color.customGreen)
-                                .padding(.leading, 30)
+                                .font(.verlagBoldAdaptive(size: 30))
+                                .foregroundColor(Color.customWhite)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.FFCE_62)
+                                .cornerRadius(12)
                                 .onTapGesture {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         DeviceManager.shared.deleteDeviceName()
@@ -399,11 +397,13 @@ struct SeatHomeView: View {
                                         DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }
-                            Spacer()
+                        }
+                        HStack {
                             Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
-                                .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(Color.customGreen)
-                                .padding(.trailing, 30)
+                                .font(.verlagBoldAdaptive(size: 30))
+                                .foregroundColor(Color.customWhite)
+                                .padding()
+                                .frame(maxWidth: .infinity)
                                 .onTapGesture {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         showAlert = false
@@ -413,10 +413,19 @@ struct SeatHomeView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding()
             }
             .padding()
-            .background(Color.FFCE_62)
+            
+        }
+            .background {
+                Image(StringConstants.DRTImages.backgound)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: UIScreen.main.bounds.height * 0.35)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .edgesIgnoringSafeArea(.top)
+            }
         }
         .customAlert(isPresented: $showOfflineAlert) {
             VStack(alignment: .center) {
@@ -476,7 +485,15 @@ struct SeatHomeView: View {
                 }
             }
             .padding()
-            .background(Color.FFCE_62)
+            .background {
+                Image(StringConstants.DRTImages.backgound)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: UIScreen.main.bounds.height * 0.25)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .edgesIgnoringSafeArea(.top)
+            }
         }
         .ignoresSafeArea()
     }

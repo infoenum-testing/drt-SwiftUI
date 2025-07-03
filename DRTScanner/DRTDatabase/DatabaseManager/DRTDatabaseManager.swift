@@ -325,8 +325,14 @@ class DRTDatabaseManager {
         } else if let timestamp = productAttributes["ts_scanned"] as? Double {
             product.date_scanned = Date(timeIntervalSince1970: timestamp / 1000)
         } else if let timestampStr = productAttributes["ts_scanned"] as? String, let timestamp = Double(timestampStr) {
-            product.date_scanned = Date(timeIntervalSince1970: timestamp / 1000)
-        } else {
+        } else if let timestampStr = productAttributes["scanned"] as? String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "hh:mm a"
+            formatter.locale = Locale(identifier: "en_US_POSIX") // ensures consistent parsing
+            if let date = formatter.date(from: timestampStr) {
+                product.date_scanned = date
+            }
+        } else  {
             product.date_scanned = nil
         }
     

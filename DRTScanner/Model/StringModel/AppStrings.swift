@@ -8,6 +8,8 @@ import Foundation
 
 struct AppStrings: Codable {
 
+    let stats: StatsStrings
+    let settings: Settings
 	let dialogLogout: DialogLogout
 	let mission: String
     let seat: SeatStrings
@@ -29,6 +31,8 @@ struct AppStrings: Codable {
     let home: HomeStrings
 
 	private enum CodingKeys: String, CodingKey {
+        case stats = "stats"
+        case settings =  "settings"
         case dialogLogout = "dialog-logout"
 		case mission = "mission"
 		case seat = "seat"

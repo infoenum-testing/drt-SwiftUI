@@ -15,43 +15,49 @@ struct LookupCellView: View {
     var onCellTapped: (Int) -> Void
     @State private var isTapped = false
     @EnvironmentObject var stringManager: StringManager
-    
+
     var body: some View {
-        VStack(alignment: .center) {
-            Text(result.buyerName ?? "")
-                .font(.verlagBlackAdaptive(size: 24))
-                .foregroundColor(Color.customGreen)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 0)
-            
-            HStack {
-                
-                Text("\(stringManager.strings?.searchResults.order ?? StringConstants.LandingView.orderLabel): \(result.orderId ?? 0)")
-                    .font(.verlagBoldAdaptive(size: 15))
+        VStack {
+        HStack(alignment: .center) {
+            // Left content
+            VStack(alignment: .leading, spacing: 6) {
+                Text(result.buyerName ?? "")
+                    .font(.verlagBlackAdaptive(size: 24))
                     .foregroundColor(Color.customGreen)
-                
-                Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel): \(result.cc ?? "")")
+
+                HStack(spacing: 12) {
+                    Text("\(stringManager.strings?.searchResults.order ?? StringConstants.LandingView.orderLabel): \(String(result.orderId ?? 0))")
+                    Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel) \(result.cc ?? "")")
+                }
+                .font(.verlagBoldAdaptive(size: 15))
+                .foregroundColor(Color.customGreen)
+
+                Text("\(stringManager.strings?.searchResults.phoneNumber ?? StringConstants.LandingView.phoneLabel) \(result.phone ?? "")")
                     .font(.verlagBoldAdaptive(size: 15))
                     .foregroundColor(Color.customGreen)
             }
-            .padding(.top, 1)
-            
-            Text("\(stringManager.strings?.searchResults.phoneNumber ?? StringConstants.LandingView.phoneLabel): \(result.phone ?? "")")
-                .font(.verlagBoldAdaptive(size: 15))
-                .foregroundColor(Color.customGreen)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 5)
+
+            Spacer()
+
+            // Right arrow
+            Image(StringConstants.SeatHomeView.rightSideArrow)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
         }
-        .padding(10)
-        .background(isTapped ? Color.black.opacity(0.2) : Color.white)
+        .padding([.leading, .top, .trailing])
+        .padding(.bottom, 5)
+        .background(isTapped ? Color.black.opacity(0.1) : Color.white)
+        .shadow(color: isTapped ? Color.black.opacity(0.05) : Color.clear, radius: 4, x: 0, y: 2)
         .animation(.easeInOut(duration: 0.2), value: isTapped)
         .onTapGesture {
             isTapped = true
             onCellTapped(result.orderId ?? 0)
-            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 isTapped = false
             }
         }
+        Divider()
+        }.edgesIgnoringSafeArea(.leading)
     }
 }

@@ -75,6 +75,8 @@ struct LookupByNameResultView: View {
                                     navigateToOrderResult = true
                                 }.listRowBackground(Color.white)
                             }
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
                         }
                         .listStyle(.plain)
                         .padding(0)

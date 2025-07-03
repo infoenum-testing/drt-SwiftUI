@@ -38,32 +38,7 @@ struct GoOfflineView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Spacer()
-                Button(action: {
-                    isNameFieldFocused = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        isPresented = false
-                    }
-                }) {
-                    Image(StringConstants.DRTImages.crossImage)
-                        .resizable()
-                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                        .background(Color.clear)
-                        .contentShape(Rectangle())
-                        .padding()
-                }
-                .disabled(isSyncing)
-            }
-
-            HStack {
-                Spacer()
-                Text(stringManager.strings?.dialogGoOffline.title ?? StringConstants.SideMenuView.goOffline)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(.customWhite)
-                Spacer()
-            }
-
+    
             Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
                 .font(.verlagBookAdaptive(size: 18))
                 .foregroundColor(Color.customWhite)
@@ -74,14 +49,15 @@ struct GoOfflineView: View {
 
             if !isSyncing {
                 TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
-                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 10)
-                    .font(.verlagBook(size: 25))
+                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
+                    .font(.verlagBook(size: 30))
                     .background(Color.customWhite)
                     .foregroundColor(Color.gray)
                     .frame(alignment: .center)
                     .multilineTextAlignment(.center)
                     .focused($isNameFieldFocused)
                     .submitLabel(.done)
+                    .cornerRadius(12)
                     .onSubmit {
                         isNameFieldFocused = false
                     }
@@ -112,6 +88,7 @@ struct GoOfflineView: View {
 
             if !isSyncing {
                 HStack {
+                    Spacer()
                     Button(action: {
                         isNameFieldFocused = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -119,14 +96,18 @@ struct GoOfflineView: View {
                         }
                     }) {
                         Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
+                            .font(.verlagBoldAdaptive(size: 30))
+                            .foregroundColor(isContinueDisabled ? .gray : Color.customWhite)
                             .padding()
-                            .font(.verlagBoldAdaptive(size: 26))
-                            .foregroundColor(isContinueDisabled ? .gray : Color.customGreen)
+                            .frame(maxWidth: .infinity)
                     }
+                    .background(Color.FFCE_62)
+                    .cornerRadius(12)
                     .disabled(isContinueDisabled)
-
                     Spacer()
-
+                }.padding(.top)
+                    .padding(.horizontal)
+                HStack {
                     Button(action: {
                         isNameFieldFocused = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -134,10 +115,13 @@ struct GoOfflineView: View {
                         }
                     }) {
                         Text(stringManager.strings?.dialogGoOffline.cancel ?? StringConstants.Common.cancel)
+                            .font(.verlagBoldAdaptive(size: 30))
+                            .foregroundColor(Color.customWhite)
                             .padding()
-                            .font(.verlagBoldAdaptive(size: 26))
-                            .foregroundColor(Color.customGreen)
+                            .frame(maxWidth: .infinity)
                     }
+                    .background(Color.clear)
+                    .padding(.horizontal)
                     .disabled(isSyncing)
                 }
             }
@@ -146,7 +130,15 @@ struct GoOfflineView: View {
             maxWidth: .infinity,
             maxHeight: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height / 1.5 : UIScreen.main.bounds.height / 1.8
         )
-        .background(Color.FFCE_62)
+        .background {
+            Image(StringConstants.DRTImages.backgound)
+                .resizable()
+                .scaledToFill()
+                .frame(height: UIScreen.main.bounds.height * 0.60)
+                .frame(maxWidth: .infinity)
+                .clipped()
+                .edgesIgnoringSafeArea(.top)
+        }
         .edgesIgnoringSafeArea(.bottom)
         .offset(y: getKeyboardOffset(for: keyboardHeight))
         .animation(.easeInOut(duration: 0.001), value: keyboardHeight)
@@ -168,13 +160,26 @@ struct GoOfflineView: View {
             return height / 3
         } else {
             switch screenHeight {
-            case 812: return height / 4.5
-            case 844: return height / 5
-            case 896: return height / 30
-            case 926: return height / 5.5
-            case 932: return height / 6.2
-            case 667: return height / 4.0
-            default: return height / 6.2
+            case 667:
+                return height / 2.5
+            case 736:  // iPhone 6+/7+/8+
+                return height / 3.0
+            case 812:  // iPhone X, XS, 11 Pro, 13 Mini, 12 Mini
+                return height / 3.0
+            case 844:  // iPhone 12, 12 Pro, 13, 13 Pro, 14
+                return height / 3.0
+            case 852:  // iPhone 15, 15 Pro
+                return height / 3.0
+            case 896:  // iPhone XR, XS Max, 11, 11 Pro Max
+                return height / 3.0
+            case 926:  // iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+                return height / 3.0
+            case 932:  // iPhone 14 Pro Max
+                return height / 3.2
+            case 932...1000: // Future taller phones
+                return height / 3.0
+            default:
+                return height / 3.0 // Fallback for unknown screen heights
             }
         }
     }

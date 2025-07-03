@@ -22,7 +22,7 @@ struct PreviousMerchandiseScanView: View {
                     VStack {
                         
                     }
-                    .frame(height: 35)
+                    .frame(height: 0)
                 }
                 Image("circle_and_!_icon")
                     .resizable()
@@ -40,7 +40,7 @@ struct PreviousMerchandiseScanView: View {
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                     }
-                    Text(message)
+                    Text("Previously scanned at \(message)")
                         .font(.verlagBoldAdaptive(size: 26))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.white)
@@ -52,7 +52,7 @@ struct PreviousMerchandiseScanView: View {
                     VStack {
                         
                     }
-                    .frame(height: 80)
+                    .frame(height: 110)
                 }
             }
         }

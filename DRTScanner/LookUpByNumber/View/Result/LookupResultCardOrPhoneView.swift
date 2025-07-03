@@ -100,6 +100,8 @@ struct LookupResultCardOrPhoneView: View {
                                 navigateToOrderResult = true   // Trigger sheet
                             }
                             .listRowBackground(Color.white)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
                         }
                     }
                     .listStyle(.plain)

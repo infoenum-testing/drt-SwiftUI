@@ -11,17 +11,20 @@ import SwiftUI
 struct AboutView: View {
     @Binding var isPresented: Bool
     @State private var showWebsiteAlert = false
-    static let urlString = "www.drttix.com"
+    static let urlString = "www.Drttix.com"
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         ZStack {
             Image(StringConstants.DRTImages.backgound)
                 .resizable()
-               // .scaledToFit()
+                .scaledToFill()
+                .frame(height: UIScreen.main.bounds.height * 0.65)
+                .frame(maxWidth: .infinity)
+                .clipped()
+                .edgesIgnoringSafeArea(.top)
            
             VStack(spacing: 20) {
-                Spacer()
                 HStack {
                     Spacer()
                     Button(action: {
@@ -35,13 +38,13 @@ struct AboutView: View {
                             .background(Color.clear)
                             .contentShape(Rectangle())
                             .foregroundColor(.black)
-                            .padding()
+                            .padding(.trailing)
                     }
                 }.padding(.top)
                 Image(StringConstants.DRTImages.logo)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 150.adaptiveForIpad)
+                    .frame(height: 120.adaptiveForIpad)
                 VStack {
                     Text(stringManager.strings?.mission ?? StringConstants.SideMenuView.aboutDescriptionText)
                         .font(.verlagBoldAdaptive(size: 16))
@@ -90,7 +93,7 @@ struct AboutView: View {
     }
     
     func openWebsite() {
-        if let url = URL(string: "http://www.dancerecitalticketing.com") {
+        if let url = URL(string: stringManager.strings?.serviceHref ?? "http://www.dancerecitalticketing.com") {
             UIApplication.shared.open(url)
         }
     }

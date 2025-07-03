@@ -63,7 +63,7 @@ struct LookupOrderResultView: View {
                 if !viewModel.isLoading {
                     if viewModel.buyerName != "No orders found" {
                     HStack(alignment: .center) {
-                        Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order) \(order?.orderId ?? 0)")
+                        Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order?.orderId ?? 0))")
                             .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.customWhite)
                         Text("\(stringManager.strings?.searchResults.cc ?? "CC")" + " \(order?.cc ?? "")")
@@ -142,6 +142,8 @@ struct LookupOrderResultView: View {
                                 SeatCell(seat: $seats[index], showAlert: $showAlert, lookupByOrderResultViewModel: viewModel)
                                     .listRowBackground(Color.white)
                             }
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
                         }.listStyle(.plain)
                             .padding(0)
                     }

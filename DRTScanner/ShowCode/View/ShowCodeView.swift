@@ -13,7 +13,8 @@ struct ShowCodeView: View {
 
     @StateObject private var viewModel = ShowCodeViewModel() // ViewModel for handling logic
     @Environment(\.dismiss) var dismiss // Dismiss environment for fallback
-
+    @Environment(\.sizeData) var sizeData
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {

@@ -23,7 +23,7 @@ struct ValidTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 35)
+                    .frame(height: 0)
                 }
                 Image("circle_and_check_icon")
                     .resizable()
@@ -47,7 +47,7 @@ struct ValidTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 80)
+                    .frame(height: 110)
                 }
             }
           

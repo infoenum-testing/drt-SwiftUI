@@ -24,18 +24,26 @@ extension Font {
 
 extension Font {
     static func verlagBookAdaptive(size: CGFloat) -> Font {
-        let finalSize = UIDevice.isIpad ? size * 2 : size
+        let finalSize = adaptiveFontSize(for: size)
         return .verlagBook(size: finalSize)
     }
     
     static func verlagBoldAdaptive(size: CGFloat) -> Font {
-        let finalSize = UIDevice.isIpad ? size * 2 : size
+        let finalSize = adaptiveFontSize(for: size)
         return .verlagBold(size: finalSize)
     }
     
     static func verlagBlackAdaptive(size: CGFloat) -> Font {
-        let finalSize = UIDevice.isIpad ? size * 2 : size
+        let finalSize = adaptiveFontSize(for: size)
         return .verlagBlack(size: finalSize)
+    }
+
+    private static func adaptiveFontSize(for baseSize: CGFloat) -> CGFloat {
+        if UIDevice.isIpad {
+            return UIDevice.isLandscape ? baseSize * 1.5 : baseSize * 2
+        } else {
+            return baseSize
+        }
     }
 }
 
@@ -43,6 +51,10 @@ extension UIDevice {
     static var isIpad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
+    
+    static var isLandscape: Bool {
+           return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
+       }
 }
 
 extension BinaryInteger {
@@ -124,6 +136,6 @@ func calculatedTopPadding() -> CGFloat {
         return safeTop + 90
     } else {
         // All other regular iPhones (e.g., 11, 12, 13, 14...)
-        return safeTop + 105
+        return safeTop + 100
     }
 }

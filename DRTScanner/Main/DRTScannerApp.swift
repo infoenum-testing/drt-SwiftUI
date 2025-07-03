@@ -16,30 +16,25 @@ struct DRTScannerApp: App {
     @StateObject var stringManager = StringManager.shared
     
     @StateObject private var inactivityManager = InactivityManager.shared
+    @State private var sizeData: SizeData = .empty
     
     var body: some Scene {
         WindowGroup {
             ZStack {
-                if isUserLoggedIn {
-                    LandingView()
-                        .padding([.leading, .trailing], 20)
-                        .environmentObject(inactivityManager)
-                        .environmentObject(stringManager)
-                        .ignoresSafeArea(.keyboard, edges: .bottom)
-                } else {
-                    LandingView()
-                        .padding([.leading, .trailing], 20)
-                        .environmentObject(inactivityManager)
-                        .environmentObject(stringManager)
-                        .ignoresSafeArea(.keyboard, edges: .bottom)
-                }
+                LandingView()
+                    .padding([.leading, .trailing], 20)
+                    .environmentObject(inactivityManager)
+                    .environmentObject(stringManager)
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
+                    .environment(\.sizeData, sizeData)
+                    .readSizeData($sizeData)
             } .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
-            .detectGlobalTaps(disabled: false)
-            .onAppear {
-                InactivityManager.shared.start()
-                stringManager.loadStrings()
-            }
+                .detectGlobalTaps(disabled: false)
+                .onAppear {
+                    InactivityManager.shared.start()
+                    stringManager.loadStrings()
+                }
         }
     }
 }

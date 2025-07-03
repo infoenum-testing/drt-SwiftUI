@@ -70,7 +70,15 @@ struct GoOnlineView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 3)
-        .background(Color.FFCE_62)
+        .background {
+            Image(StringConstants.DRTImages.backgound)
+                .resizable()
+                .scaledToFill()
+                .frame(height: UIScreen.main.bounds.height * 0.35)
+                .frame(maxWidth: .infinity)
+                .clipped()
+                .edgesIgnoringSafeArea(.top)
+        }
         .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }
     

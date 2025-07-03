@@ -23,7 +23,7 @@ struct PreviouslyScannedTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 35)
+                    .frame(height: 0)
                 }
                 
                 
@@ -44,7 +44,7 @@ struct PreviouslyScannedTicketView: View {
                         .foregroundColor(.white)
                 }
                 
-                Text("Previously Scanned @\n\(scannedTime)")
+                Text("Previously Scanned @\(scannedTime)")
                     .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
@@ -54,7 +54,7 @@ struct PreviouslyScannedTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 80)
+                    .frame(height: 110)
                 }
             }
         }

@@ -40,66 +40,69 @@ struct SeatCell: View {
     
     // MARK: - View
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
-                    .font(.verlagBoldAdaptive(size: 18))
-                    .foregroundColor(Color.customGreen)
+        VStack {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
+                        .font(.verlagBoldAdaptive(size: 18))
+                        .foregroundColor(Color.customGreen)
+                }
+                HStack(alignment: .center) {
+                    HStack(alignment: .bottom, spacing: 0) {
+                        Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
+                            .font(.verlagBoldAdaptive(size: 15))
+                            .foregroundColor(Color.customGreen)
+                            .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
+                        Text("\(seat.section)")
+                            .font(.verlagBoldAdaptive(size: 20))
+                            .foregroundColor(Color.customGreen)
+                    }
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: 0) {
+                        Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
+                            .font(.verlagBoldAdaptive(size: 15))
+                            .foregroundColor(Color.customGreen)
+                            .padding(.bottom, 1.adaptiveForIpad)
+                        Text("\(seat.row)")
+                            .font(.verlagBoldAdaptive(size: 20))
+                            .foregroundColor(Color.customGreen)
+                    }
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: 0) {
+                        Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
+                            .font(.verlagBoldAdaptive(size: 15))
+                            .foregroundColor(Color.customGreen)
+                            .padding(.bottom, 1.adaptiveForIpad)
+                        Text("\(seat.seat)")
+                            .font(.verlagBoldAdaptive(size: 22))
+                            .foregroundColor(Color.customGreen)
+                    }
+                    
+                    Spacer()
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                            .scaleEffect(1.0)
+                            .padding(10)
+                    } else {
+                        Image(isScanned ? StringConstants.DRTImages.greenCheckImage : StringConstants.DRTImages.scanNow)
+                            .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                            .onTapGesture {
+                                updateSeatWithScannedQrCode()
+                            }
+                            .disabled(isScanned)
+                            .opacity(isScanned ? 0.5 : 1.0)
+                    }
+                }
             }
-            HStack(alignment: .center) {
-                HStack(alignment: .bottom, spacing: 0) {
-                    Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
-                        .font(.verlagBoldAdaptive(size: 15))
-                        .foregroundColor(Color.customGreen)
-                        .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
-                    Text("\(seat.section)")
-                        .font(.verlagBoldAdaptive(size: 20))
-                        .foregroundColor(Color.customGreen)
-                }
-                Spacer()
-                HStack(alignment: .bottom, spacing: 0) {
-                    Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
-                        .font(.verlagBoldAdaptive(size: 15))
-                        .foregroundColor(Color.customGreen)
-                        .padding(.bottom, 1.adaptiveForIpad)
-                    Text("\(seat.row)")
-                        .font(.verlagBoldAdaptive(size: 20))
-                        .foregroundColor(Color.customGreen)
-                }
-                Spacer()
-                HStack(alignment: .bottom, spacing: 0) {
-                    Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
-                        .font(.verlagBoldAdaptive(size: 15))
-                        .foregroundColor(Color.customGreen)
-                        .padding(.bottom, 1.adaptiveForIpad)
-                    Text("\(seat.seat)")
-                        .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(Color.customGreen)
-                }
-                
-                Spacer()
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                        .scaleEffect(1.0)
-                        .padding(10)
-                } else {
-                    Image(isScanned ? StringConstants.DRTImages.greenCheckImage : StringConstants.DRTImages.scanNow)
-                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-                        .onTapGesture {
-                            updateSeatWithScannedQrCode()
-                        }
-                        .disabled(isScanned)
-                        .opacity(isScanned ? 0.5 : 1.0)
-                }
+            .background(Color.customWhite)
+            .padding([.leading, .top, .trailing])
+            .padding(.bottom, 5)
+            .onAppear {
+                loadScannedStatus(for: seat)
             }
-        }
-        .background(Color.customWhite)
-        .padding(0)
-        .onAppear {
-            loadScannedStatus(for: seat)
-        }
-      
+            Divider()
+        }.edgesIgnoringSafeArea(.leading)
     }
     
     /// Updates seat as scanned, saving locally or sending to API depending on mode

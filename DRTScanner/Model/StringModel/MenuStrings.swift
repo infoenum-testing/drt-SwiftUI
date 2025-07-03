@@ -7,7 +7,7 @@
 import Foundation
 
 struct MenuStrings: Codable {
-
+    let change: String
 	let stopScanning: String
 	let goOnline: String
 	let goOffline: String
@@ -15,6 +15,7 @@ struct MenuStrings: Codable {
 	let website: String
 
 	private enum CodingKeys: String, CodingKey {
+        case change = "change"
 		case stopScanning = "stop-scanning"
 		case goOnline = "go-online"
 		case goOffline = "go-offline"

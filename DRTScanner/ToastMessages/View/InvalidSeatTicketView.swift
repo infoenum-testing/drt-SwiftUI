@@ -22,7 +22,7 @@ struct InvalidSeatTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 35)
+                    .frame(height: 0)
                 }
                 
                 Image("circle_and_cross_icon")
@@ -44,7 +44,7 @@ struct InvalidSeatTicketView: View {
                     VStack {
                         
                     }
-                    .frame(height: 80)
+                    .frame(height: 110)
                 }
             }
         }

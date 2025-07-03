@@ -15,6 +15,7 @@ struct SettingsView: View {
     
     // State to track which timer index is selected for editing
     @State private var selectedTimerIndex: IdentifiableIndex?
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         ZStack (alignment: .trailing){
@@ -105,20 +106,20 @@ struct SettingsView: View {
     // Array of all setting items to display
     private var settingItems: [SettingItem] {
         var items: [SettingItem] = [
-            SettingItem(title: "SOUND", toggleBinding: $viewModel.shouldPlayBeep),
-            SettingItem(title: "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
-            SettingItem(title: "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
-            SettingItem(title: "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
-            SettingItem(title: "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText)
+            SettingItem(title: stringManager.strings?.settings.sound ?? "SOUND", toggleBinding: $viewModel.shouldPlayBeep),
+            SettingItem(title: stringManager.strings?.settings.haptics ?? "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
+            SettingItem(title: stringManager.strings?.settings.sleepTimer ?? "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
+            SettingItem(title: stringManager.strings?.settings.timer ?? "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
+            SettingItem(title: stringManager.strings?.settings.duplicate ?? "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText)
         ]
         
         // Add scan stats toggle if not in Merchandise mode
         if !isMerchandise {
-            items.append(SettingItem(title: "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats))
+            items.append(SettingItem(title: stringManager.strings?.settings.scanStats ?? "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats))
         }
 
         // Add auto enable flash timeout toggle
-        items.append(SettingItem(title: "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout))
+        items.append(SettingItem(title: stringManager.strings?.settings.flashTimeout ?? "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout))
         
         return items
     }
