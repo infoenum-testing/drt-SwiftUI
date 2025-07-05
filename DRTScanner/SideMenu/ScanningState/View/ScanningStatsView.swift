@@ -29,6 +29,8 @@ struct ScanningStatsView: View {
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(.customWhite)
                     .padding(.leading, 10)
+                    .padding(.top, 60)
+                
                 Spacer()
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.5)) {
@@ -40,7 +42,8 @@ struct ScanningStatsView: View {
                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                         .background(Color.clear)
                         .contentShape(Rectangle())
-                        .padding([.bottom, .top])
+                        .padding(.top, 60)
+                        .padding(.bottom)
                 }
             }
 
@@ -61,6 +64,8 @@ struct ScanningStatsView: View {
         }
         .padding(20)
         .background(Color.FFCE_62)
+        .edgesIgnoringSafeArea(.all)
+        .padding(.top, -60)
         .onAppear {
             Task {
                 await viewModel.fetchStats()

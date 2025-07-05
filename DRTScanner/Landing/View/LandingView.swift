@@ -38,7 +38,7 @@ struct LandingView: View {
     }
     
     var body: some View {
-//        ScrollView {
+        ScrollView {
             ZStack {
                 Image(StringConstants.DRTImages.backgound)
                     .resizable()
@@ -92,7 +92,7 @@ struct LandingView: View {
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.top, 20)
+                            .padding(.top, 40)
                             .transition(.opacity)
                         }
                         
@@ -277,6 +277,7 @@ struct LandingView: View {
                         })
                         .background(Color.clear)
                         //  .padding([.trailing, .leading], 50)
+                       
                     }.edgesIgnoringSafeArea(.bottom)
                     
                     // Invalid code alert
@@ -326,14 +327,16 @@ struct LandingView: View {
                         .animation(.easeInOut(duration: 0.3), value: showSeatView)
                         .ignoresSafeArea(.keyboard, edges: .bottom)
                 }
-            }.ignoresSafeArea(.keyboard)
+            }
+            .ignoresSafeArea(.keyboard)
                 .onChange(of: sizeData.isPortrait) { newValue in
                     //                viewModel.isLoading = true
                     //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
                     //                    viewModel.isLoading = false
                     //                }
                 }
-//        }.scrollDisabled(true)
-//            .ignoresSafeArea(edges: .top)
+        }
+        .scrollDisabled(true)
+        .ignoresSafeArea(edges: .top)
     }
 }

@@ -78,6 +78,7 @@ struct GoOnlineView: View {
                 .frame(maxWidth: .infinity)
                 .clipped()
                 .edgesIgnoringSafeArea(.top)
+                .padding(.top, -30)
         }
         .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }

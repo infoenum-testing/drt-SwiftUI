@@ -77,7 +77,7 @@ struct LookupOrderResultView: View {
                     .frame(maxWidth: .infinity)
             VStack {
                 // Merchandise section (online/offline)
-                if isMerchandise ?? false {
+                if let isMerchandise, isMerchandise {
                     if isOfflineMode {
                         if isLoadingMerch {
                             ProgressView()

@@ -60,20 +60,20 @@ struct OrdersNewApi: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        self.buyerName = try? container.decodeIfPresent(String.self, forKey: .buyer_name)
+        self.buyerName = try container.decodeIfPresent(String.self, forKey: .buyer_name)
             ?? container.decodeIfPresent(String.self, forKey: .buyerName)
         
-        self.orderId = try? container.decodeIfPresent(Int.self, forKey: .order_id)
+        self.orderId = try container.decodeIfPresent(Int.self, forKey: .order_id)
             ?? container.decodeIfPresent(Int.self, forKey: .orderId)
 
-        self.cc = try? container.decodeIfPresent(String.self, forKey: .cc)
-        self.phone = try? container.decodeIfPresent(String.self, forKey: .phone)
-        self.valid = try? container.decodeIfPresent(Bool.self, forKey: .valid)
-        self.goldenTicketText = try? container.decodeIfPresent(String.self, forKey: .goldenTicketText)
-        self.isGoldenTicket = try? container.decodeIfPresent(Bool.self, forKey: .isGoldenTicket)
-        self.message = try? container.decodeIfPresent(String.self, forKey: .message)
-        self.seats = try? container.decodeIfPresent([SeatModel].self, forKey: .seats)
-        self.merch = try? container.decodeIfPresent([Merchandise].self, forKey: .merch)
+        self.cc = try container.decodeIfPresent(String.self, forKey: .cc)
+        self.phone = try container.decodeIfPresent(String.self, forKey: .phone)
+        self.valid = try container.decodeIfPresent(Bool.self, forKey: .valid)
+        self.goldenTicketText = try container.decodeIfPresent(String.self, forKey: .goldenTicketText)
+        self.isGoldenTicket = try container.decodeIfPresent(Bool.self, forKey: .isGoldenTicket)
+        self.message = try container.decodeIfPresent(String.self, forKey: .message)
+        self.seats = try container.decodeIfPresent([SeatModel].self, forKey: .seats)
+        self.merch = try container.decodeIfPresent([Merchandise].self, forKey: .merch)
     }
 
     // MARK: - Encoding

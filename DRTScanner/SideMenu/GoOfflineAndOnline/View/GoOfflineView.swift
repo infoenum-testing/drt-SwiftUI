@@ -138,13 +138,14 @@ struct GoOfflineView: View {
                 .frame(maxWidth: .infinity)
                 .clipped()
                 .edgesIgnoringSafeArea(.top)
+                .padding(.top, -30)
         }
-        .edgesIgnoringSafeArea(.bottom)
-        .offset(y: getKeyboardOffset(for: keyboardHeight))
-        .animation(.easeInOut(duration: 0.001), value: keyboardHeight)
-        .onReceive(Publishers.keyboardHeight) { height in
-            self.keyboardHeight = height
-        }
+//        .edgesIgnoringSafeArea(.bottom)
+//        .offset(y: getKeyboardOffset(for: keyboardHeight))
+//        .animation(.easeInOut(duration: 0.001), value: keyboardHeight)
+//        .onReceive(Publishers.keyboardHeight) { height in
+//            self.keyboardHeight = height
+//        }
     }
 
     func isValidName(_ name: String) -> Bool {
@@ -154,35 +155,35 @@ struct GoOfflineView: View {
         return regex?.firstMatch(in: name, options: [], range: range) != nil
     }
 
-    private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
-        let screenHeight = UIScreen.main.bounds.height
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return height / 3
-        } else {
-            switch screenHeight {
-            case 667:
-                return height / 2.5
-            case 736:  // iPhone 6+/7+/8+
-                return height / 3.0
-            case 812:  // iPhone X, XS, 11 Pro, 13 Mini, 12 Mini
-                return height / 3.0
-            case 844:  // iPhone 12, 12 Pro, 13, 13 Pro, 14
-                return height / 3.0
-            case 852:  // iPhone 15, 15 Pro
-                return height / 3.0
-            case 896:  // iPhone XR, XS Max, 11, 11 Pro Max
-                return height / 3.0
-            case 926:  // iPhone 12 Pro Max, 13 Pro Max, 14 Plus
-                return height / 3.0
-            case 932:  // iPhone 14 Pro Max
-                return height / 3.2
-            case 932...1000: // Future taller phones
-                return height / 3.0
-            default:
-                return height / 3.0 // Fallback for unknown screen heights
-            }
-        }
-    }
+//    private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
+//        let screenHeight = UIScreen.main.bounds.height
+//        if UIDevice.current.userInterfaceIdiom == .pad {
+//            return height / 3
+//        } else {
+//            switch screenHeight {
+//            case 667:
+//                return height / 2.5
+//            case 736:  // iPhone 6+/7+/8+
+//                return height / 3.0
+//            case 812:  // iPhone X, XS, 11 Pro, 13 Mini, 12 Mini
+//                return height / 3.0
+//            case 844:  // iPhone 12, 12 Pro, 13, 13 Pro, 14
+//                return height / 3.0
+//            case 852:  // iPhone 15, 15 Pro
+//                return height / 3.0
+//            case 896:  // iPhone XR, XS Max, 11, 11 Pro Max
+//                return height / 3.0
+//            case 926:  // iPhone 12 Pro Max, 13 Pro Max, 14 Plus
+//                return height / 3.0
+//            case 932:  // iPhone 14 Pro Max
+//                return height / 3.2
+//            case 932...1000: // Future taller phones
+//                return height / 3.0
+//            default:
+//                return height / 3.0 // Fallback for unknown screen heights
+//            }
+//        }
+//    }
 
     private func goOffline() {
         guard name.count >= 5 else { return }

@@ -230,7 +230,8 @@ struct ScannerView: View {
                             }
                         },
                         isScanning: $isScanningCell  // Bind scanning state
-                    ).padding(.bottom, -30)
+                    )
+                    .padding(.bottom, -30)
                         .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
                         .frame(maxWidth: .infinity)
                         .onChange(of: isScanning) { newValue in // Start or stop scanning based on state
@@ -296,7 +297,7 @@ struct ScannerView: View {
                                     .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? -50 : -10)
                             }
                             }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
-                                .padding(.top, isFullScreen ? 10 : 10)
+//                                .padding(.top, isFullScreen ? 10 : 10)
                                 .gesture(
                                     DragGesture(minimumDistance: 0)
                                         .onChanged { value in
@@ -463,6 +464,7 @@ struct ScannerView: View {
                                     .onAppear {
                                         startLineAnimation()
                                     }
+                                    .padding(.bottom, 20)
                             }
                         }
                     }
@@ -631,6 +633,7 @@ struct ScannerView: View {
     
     // Starts the animation for the scanning line
     private func startLineAnimation() {
+        isStopScanVisible = false
         if isCameraAuthorized {
             let animationHeight = isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight
             if isFullScreen {
@@ -644,6 +647,7 @@ struct ScannerView: View {
     
     // Stops the animation for the scanning line
     private func stopLineAnimation() {
+        isStopScanVisible = true
         linePosition = 0
     }
     
@@ -1097,7 +1101,15 @@ struct ScannerView: View {
                                 case .success(let responseData):
                                     if let responseDict = responseData as? [String: Any] {
                                         let message = responseDict["message"] as? String ?? ""
-                                        let tsString = responseDict["tsScanned"] as? String ?? ""
+                                        let ts: String
+                                        if let tsString = responseDict["tsScanned"] as? String {
+                                            ts = tsString
+                                        } else if let tsString = responseDict["tsScanned"] as? Double {
+                                            ts = String(tsString)
+                                        } else {
+                                            ts = ""
+                                        }
+                                        
                                         let isValid = responseDict["valid"] as? Bool ?? false
                                         
                                         let name = responseDict["name"] as? String ?? ""
@@ -1105,7 +1117,7 @@ struct ScannerView: View {
                                         
                                         merchOrderName = name
                                         merchVariantName = variantName
-                                        if let timestampMillis = TimeInterval(tsString) {
+                                        if let timestampMillis = TimeInterval(ts) {
                                                 let date = Date(timeIntervalSince1970: timestampMillis / 1000)
 
                                                 let formatter = DateFormatter()

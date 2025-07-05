@@ -103,15 +103,65 @@ struct SeatHomeView: View {
     private var dynamicCellHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
         if UIDevice.current.userInterfaceIdiom == .pad {
-            return isMerchandise ? screenHeight * 0.12 : screenHeight * 0.09
+            return isMerchandise ? screenHeight * 0.11 : screenHeight * 0.09
         } else {
-            return isMerchandise ? screenHeight * 0.12 : screenHeight * 0.09
+            return isMerchandise ? screenHeight * 0.11 : screenHeight * 0.09
         }
     }
     
     // Main body of the SeatHomeView, containing the UI layout and navigation logic
     var body: some View {
         NavigationStack {
+            VStack(spacing: 0) {
+            if !isFullScreen {
+                VStack {
+                    // Top row: empty space, logo, and side menu button
+                    HStack {
+                        Text("")
+                            .frame(width: 25, height: 25)
+                        Spacer()
+                        Image(StringConstants.DRTImages.logo)
+                            .resizable()
+                            .frame(width: 120.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
+                            .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
+                            .padding(.leading, 10)
+                        Spacer()
+                        Button(action: {
+                            // Toggle side menu
+                            isSideMenuPresented.toggle()
+                        }) {
+                            Image("side_menu")
+                                .resizable()
+                                .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                .background(Color.clear)
+                                .contentShape(Rectangle())
+                                .padding(.top, UIDevice.isIpad ? 80 : 0)
+                            
+                        }
+                        .padding(.trailing, 20)
+                    }
+                    .background {
+                        Image(StringConstants.DRTImages.backgound)
+                            .resizable()
+                            .scaledToFill()
+                    }
+                    // Bottom row: show name
+                    HStack {
+                        Spacer()
+                        Text(savedShow)
+                            .font(.verlagBoldAdaptive(size: 20))
+                            .foregroundColor(Color.white)
+                            .padding(.leading, 5)
+                        Spacer()
+                    }
+                    .frame(width: UIScreen.main.bounds.width)
+                    .padding(12)
+                    .background(Color.FFCE_62)
+                    
+                }
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPadding())
+                
+            }
             ZStack {
                 // Shows background image unless in full screen
                 if !isFullScreen {
@@ -227,61 +277,17 @@ struct SeatHomeView: View {
                         }
                     }.scrollDisabled(true)
                     // Set opacity and animation for the scroll view
-                    .opacity(!isFullScreen ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.4), value: isFullScreen)
-                    .background(Color.customWhite)
-                    .onChange(of: orderDateScanned) { newValue in
-                        print(newValue)
-                        print(newValue)
-                    }
-                }/*.padding(.top, topSafeAreaPadding() - 10)*/
+                        .opacity(!isFullScreen ? 1 : 0)
+                        .animation(.easeInOut(duration: 0.4), value: isFullScreen)
+                        .background(Color.customWhite)
+                        .onChange(of: orderDateScanned) { newValue in
+                            print(newValue)
+                            print(newValue)
+                        }
+                }.padding(.top, UIDevice.isIpad ? -80 : 0)
             }
             // Toolbar section for the navigation bar
-            .toolbar {
-                // Only show toolbar if not in full screen mode
-                if !isFullScreen {
-                    ToolbarItem(placement: .principal) {
-                        VStack {
-                            // Top row: empty space, logo, and side menu button
-                            HStack {
-                                Text("")
-                                    .frame(width: 25, height: 25)
-                                Spacer()
-                                Image(StringConstants.DRTImages.logo)
-                                    .resizable()
-                                    .frame(width: 120.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
-                                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
-                                    .padding(.leading, 10)
-                                Spacer()
-                                Button(action: {
-                                    // Toggle side menu
-                                    isSideMenuPresented.toggle()
-                                }) {
-                                    Image("side_menu")
-                                        .resizable()
-                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                        .background(Color.clear)
-                                        .contentShape(Rectangle())
-                                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
-                                }
-                            }.padding(.top)
-                            // Bottom row: show name
-                            HStack {
-                                Spacer()
-                                Text(savedShow)
-                                    .font(.verlagBoldAdaptive(size: 20))
-                                    .foregroundColor(Color.white)
-                                    .padding(.leading, 5)
-                                Spacer()
-                            }
-                            .frame(width: UIScreen.main.bounds.width)
-                            .padding(12)
-                            .background(Color.FFCE_62)
-                        }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPadding())
-//                            .padding(.top, topSafeAreaPadding() + 30)
-                    }
-                }
-            }
+        }
         }
         .customSheetView(isPresented: $showLookupAlert) {
             if let selectedLookupType = seatHomeViewModel.selectedLookupType {
@@ -336,16 +342,6 @@ struct SeatHomeView: View {
                 GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
             }
         }
-//        .onChange(of: showGoOfflineView) { newValue in
-//            if newValue {
-//                isScanningCell = false
-//            } else {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-//                    isScanningCell = true
-//                    scnanerReset.triggerReset()
-//                }
-//            }
-//        }
         .customAlert(isPresented: $showScanningStatsView) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
@@ -359,64 +355,61 @@ struct SeatHomeView: View {
         
         .customAlert(isPresented: $showAlert) {
             ZStack {
-//                Image(StringConstants.DRTImages.backgound)
-//                    .resizable()
-//                    .edgesIgnoringSafeArea(.top)
-            VStack(alignment: .center) {
-                VStack {
-                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
-                         StringConstants.LandingView.logoutConfirm)
-                    .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(isOfflineMode ? 10 : 1)
-                    .padding(.top, 20)
-                    .padding(.bottom)
-                }
-                
-                VStack {
-                    if !isOfflineMode {
-                        HStack {
-                            Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
-                                .font(.verlagBoldAdaptive(size: 30))
-                                .foregroundColor(Color.customWhite)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.FFCE_62)
-                                .cornerRadius(12)
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        DeviceManager.shared.deleteDeviceName()
-                                        isUserLoggedIn = false
-                                        savedShowCode = nil
-                                        savedShowId = nil
-                                        showAlert = false
-                                        showSeatView = false
-                                        deviceScanCount = 0
-                                        DRTDatabaseManager.shared.deleteSkin()
+                VStack(alignment: .center) {
+                    VStack {
+                        Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
+                             StringConstants.LandingView.logoutConfirm)
+                        .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(isOfflineMode ? 10 : 1)
+                        .padding(.top, 20)
+                        .padding(.bottom)
+                    }
+                    
+                    VStack {
+                        if !isOfflineMode {
+                            HStack {
+                                Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
+                                    .font(.verlagBoldAdaptive(size: 30))
+                                    .foregroundColor(Color.customWhite)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.FFCE_62)
+                                    .cornerRadius(12)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            DeviceManager.shared.deleteDeviceName()
+                                            isUserLoggedIn = false
+                                            savedShowCode = nil
+                                            savedShowId = nil
+                                            showAlert = false
+                                            showSeatView = false
+                                            deviceScanCount = 0
+                                            DRTDatabaseManager.shared.deleteSkin()
+                                        }
                                     }
-                                }
-                        }
-                        HStack {
-                            Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
-                                .font(.verlagBoldAdaptive(size: 30))
-                                .foregroundColor(Color.customWhite)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showAlert = false
+                            }
+                            HStack {
+                                Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
+                                    .font(.verlagBoldAdaptive(size: 30))
+                                    .foregroundColor(Color.customWhite)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showAlert = false
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
+                .padding()
+                
             }
-            .padding()
-            
-        }
             .background {
                 Image(StringConstants.DRTImages.backgound)
                     .resizable()

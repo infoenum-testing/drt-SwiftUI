@@ -27,6 +27,7 @@ struct SettingsView: View {
                     Text(StringConstants.SideMenuView.settingSmall)
                         .font(.verlagBoldAdaptive(size: 24))
                         .padding(.leading, 10)
+                        .padding(.top, 30)
                         .foregroundColor(.white)
                     Spacer()
                     // Button to close the Settings view
@@ -35,6 +36,7 @@ struct SettingsView: View {
                             .resizable()
                             .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                             .background(Color.clear)
+                            .padding(.top, 30)
                             .contentShape(Rectangle())
                     }
                 }.background(Color.FDB_54_E)
@@ -52,6 +54,7 @@ struct SettingsView: View {
             
                 .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
                 .background(Color.FDB_54_E)
+                .padding(.top, -30)
             // Overlay for time picker modal
             ZStack {
                 Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
