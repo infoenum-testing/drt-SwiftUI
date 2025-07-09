@@ -92,7 +92,7 @@ struct LandingView: View {
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.top, 40)
+                            .padding(.top, 20)
                             .transition(.opacity)
                         }
                         
@@ -139,6 +139,7 @@ struct LandingView: View {
                                         .background(Color.FFCE_62)
                                         .foregroundColor(.white)
                                         .cornerRadius(12)
+                                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 }.padding(.horizontal)
                                     .padding(.bottom, 10)
                                     .opacity(animateButtons ? 1 : 0)
@@ -159,6 +160,7 @@ struct LandingView: View {
                                         .background(Color.FFCE_62)
                                         .foregroundColor(.white)
                                         .cornerRadius(12)
+                                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 }.padding(.horizontal)
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.6).delay(0.7), value: animateButtons)
@@ -177,6 +179,7 @@ struct LandingView: View {
                                     .background(Color.FFCE_62)
                                     .foregroundColor(.white)
                                     .cornerRadius(12)
+                                    .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                             }.padding(.horizontal)
                             
                                 .opacity(animateButtons ? 1 : 0)
@@ -235,6 +238,7 @@ struct LandingView: View {
                                                 .frame(maxWidth: .infinity)
                                                 .background(Color.FFCE_62)
                                                 .cornerRadius(12)
+                                                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                         }
                                     }
                                     //                                Spacer()
@@ -265,6 +269,13 @@ struct LandingView: View {
                                 .frame(maxWidth: .infinity)
                                 .clipped()
                                 .edgesIgnoringSafeArea(.top)
+                                .overlay(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                                        startPoint: .top,
+                                        endPoint: .center
+                                    )
+                                )
                         }
                     }
                     // Show code entry sheet

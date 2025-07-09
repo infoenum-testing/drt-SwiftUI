@@ -54,7 +54,7 @@ struct ValidTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.green)
+        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.validCustomGreen)
         .transition(.opacity)
     }
 }

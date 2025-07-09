@@ -61,7 +61,7 @@ struct LookupByNameView: View {
                             Text(placeholderText)
                                 .font(.verlagBookAdaptive(size: 10))
                                 .foregroundColor(.gray)
-                                .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -50 : -25)
+                                .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
                                 .animation(.easeInOut, value: inputText.isEmpty)
                         }
 
@@ -111,9 +111,13 @@ struct LookupByNameView: View {
                         Text("Search")
                             .font(.verlagBoldAdaptive(size: 36))
                             .foregroundColor(.customWhite)
-                            .padding(.top, 5.adaptiveForIpad)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                            .padding(.top, 5.adaptiveForIpad)
+//                            .font(.verlagBoldAdaptive(size: 30))
+                            .padding()
+                            .frame(maxWidth: .infinity)
                             .background(Color.FFCE_62)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
                 }
                 .disabled(isSearching || inputText.isEmpty)
@@ -121,6 +125,8 @@ struct LookupByNameView: View {
                 .frame(height: geometry.size.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.white)
+                .padding(.horizontal)
+                
             }
             .background(Color.white)
             .customSheetView(isPresented: $showResultView) {
@@ -140,7 +146,7 @@ struct LookupByNameView: View {
                     )
                 }
             }
-        }
+        }.hideKeyboardOnTap()
     }
 
     private func performSearch() {

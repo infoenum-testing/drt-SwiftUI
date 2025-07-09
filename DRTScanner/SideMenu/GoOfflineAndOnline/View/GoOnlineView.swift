@@ -79,6 +79,13 @@ struct GoOnlineView: View {
                 .clipped()
                 .edgesIgnoringSafeArea(.top)
                 .padding(.top, -30)
+                .overlay(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                        startPoint: .top,
+                        endPoint: .center
+                    )
+                )
         }
         .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }

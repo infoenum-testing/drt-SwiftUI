@@ -74,6 +74,8 @@ struct SeatLookupView: View {
                             .padding(.top, 5.adaptiveForIpad)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .background(Color.FFCE_62)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
                 }
                 .disabled(viewModel.isLoading || viewModel.selectedSeat.isEmpty)
@@ -81,6 +83,7 @@ struct SeatLookupView: View {
                 .frame(height: geometry.size.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.white)
+                .padding(.horizontal)
             }.background(Color.white)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

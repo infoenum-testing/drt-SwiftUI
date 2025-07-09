@@ -49,7 +49,7 @@ struct MerchandiseScanView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.green)
+        .background(Color.validCustomGreen)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

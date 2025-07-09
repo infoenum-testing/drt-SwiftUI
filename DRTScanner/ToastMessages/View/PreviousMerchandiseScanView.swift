@@ -12,6 +12,7 @@ struct PreviousMerchandiseScanView: View {
     let variantName: String
     let message: String
     let isInFullScreen: Bool
+    @EnvironmentObject var stringManager: StringManager
 
     var body: some View {
         VStack {
@@ -40,7 +41,8 @@ struct PreviousMerchandiseScanView: View {
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(.white)
                     }
-                    Text("Previously scanned at \(message)")
+                    let raw = stringManager.strings?.orderDetail.previouslyscanned ?? "PREVIOUSLY SCANNED AT %@"
+                    Text(raw.replacingOccurrences(of: "%@", with: message))
                         .font(.verlagBoldAdaptive(size: 26))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.white)
@@ -58,7 +60,7 @@ struct PreviousMerchandiseScanView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color(red: 0.99, green: 0.35, blue: 0.0))
+        .background(Color.customOrange)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

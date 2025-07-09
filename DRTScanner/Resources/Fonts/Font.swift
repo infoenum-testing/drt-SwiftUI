@@ -60,7 +60,7 @@ extension UIDevice {
 extension BinaryInteger {
     var adaptiveForIpad: CGFloat {
         let value = CGFloat(self)
-        return UIDevice.isIpad ? value * 2 : value
+        return UIDevice.isIpad ? value * (UIDevice.isLandscape ? 1.1 : 2) : value
     }
 }
 
@@ -121,8 +121,28 @@ func topSafeAreaPadding() -> CGFloat {
         .flatMap { $0.windows }
         .first { $0.isKeyWindow }
 
-    return window?.safeAreaInsets.top ?? 0
+    let topInset = window?.safeAreaInsets.top ?? 0
+  
+    return topInset
 }
+
+import SwiftUI
+
+func topSafeAreaPaddingHeader() -> CGFloat {
+    let screenHeight = UIScreen.main.bounds.height
+    let window = UIApplication.shared.connectedScenes
+        .compactMap { $0 as? UIWindowScene }
+        .flatMap { $0.windows }
+        .first { $0.isKeyWindow }
+
+    let topInset = window?.safeAreaInsets.top ?? 0
+    if screenHeight <= 667 {
+            return 120
+    }
+
+    return topInset
+}
+
 
 func calculatedTopPadding() -> CGFloat {
     let device = UIDevice.current.userInterfaceIdiom
@@ -130,7 +150,7 @@ func calculatedTopPadding() -> CGFloat {
     let safeTop = topSafeAreaPadding()
 
     if device == .pad {
-        return safeTop + 160
+        return safeTop + (UIDevice.isLandscape ? 120 : 180)
     } else if screenHeight <= 667 {
         // iPhone SE 2nd gen, iPhone 8, iPhone 6/7
         return safeTop + 90

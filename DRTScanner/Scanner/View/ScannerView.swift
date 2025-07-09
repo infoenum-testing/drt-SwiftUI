@@ -294,7 +294,7 @@ struct ScannerView: View {
                                     Image(isFlashOn ? "FlashOff" : "FlashOn")
                                     .resizable()
                                     .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                                    .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? -50 : -10)
+                                    .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -20 : -50) : -10)
                             }
                             }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
 //                                .padding(.top, isFullScreen ? 10 : 10)
@@ -410,8 +410,13 @@ struct ScannerView: View {
                                 .opacity(1)
                                 .frame(height: scanViewHeight + 30.adaptiveForIpad)
                                 .frame(height: 50.adaptiveForIpad)
+
                                 .overlay(
                                     VStack(spacing: 12) {
+                                        Text("Attached")
+                                        .font(.verlagBookAdaptive(size: 25))
+                                        .foregroundColor(.customWhite)
+                                        .padding(.top, -40)
                                         Image("scan__cirle_icon")
                                             .resizable()
                                           //  .scaleEffect(x: -1, y: 1)
@@ -420,6 +425,7 @@ struct ScannerView: View {
                                             .onTapGesture {
                                                 resetScanner()
                                             }
+                                        Spacer()
                                     }
                                 )
                                 .padding(.bottom, -30)

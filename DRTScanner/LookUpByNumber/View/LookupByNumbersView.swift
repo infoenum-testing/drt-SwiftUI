@@ -101,7 +101,7 @@ struct LookupByNumbersView: View {
                                     Text(placeholderText)
                                         .font(.verlagBookAdaptive(size: 10))
                                         .foregroundColor(.gray)
-                                        .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? -50 : -25)
+                                        .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
                                         .animation(.easeInOut, value: inputText.isEmpty)
                                 }
                                 

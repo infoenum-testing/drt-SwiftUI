@@ -136,6 +136,8 @@ struct SideMenuView: View {
                     isSwitchingToMerchandise = !isMerchandise
                     print(isSwitchingToMerchandise ?? false,"")
                 }
+            }.onTapGesture {
+                isPresented = false
             }
         }.sideMenuViewModify(isPresented: $showSettingsView) {
             // Settings view presentation
@@ -186,6 +188,7 @@ struct SideMenuView: View {
                                 }
                                 .background(Color.FFCE_62)
                                    .cornerRadius(12)
+                                   .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 Spacer()
                             }
                             
@@ -224,6 +227,13 @@ struct SideMenuView: View {
                             .frame(maxWidth: .infinity)
                             .clipped()
                             .edgesIgnoringSafeArea(.top)
+                            .overlay(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                                    startPoint: .top,
+                                    endPoint: .center
+                                )
+                            )
                     }
                     .frame(width: geometry.size.width * 1)
                     .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)

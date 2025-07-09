@@ -103,6 +103,7 @@ struct GoOfflineView: View {
                     }
                     .background(Color.FFCE_62)
                     .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     .disabled(isContinueDisabled)
                     Spacer()
                 }.padding(.top)
@@ -134,11 +135,18 @@ struct GoOfflineView: View {
             Image(StringConstants.DRTImages.backgound)
                 .resizable()
                 .scaledToFill()
-                .frame(height: UIScreen.main.bounds.height * 0.60)
+                .frame(height: UIScreen.main.bounds.height * 0.65)
                 .frame(maxWidth: .infinity)
                 .clipped()
                 .edgesIgnoringSafeArea(.top)
                 .padding(.top, -30)
+                .overlay(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                        startPoint: .top,
+                        endPoint: .center
+                    )
+                ).padding(.top, -60)
         }
 //        .edgesIgnoringSafeArea(.bottom)
 //        .offset(y: getKeyboardOffset(for: keyboardHeight))

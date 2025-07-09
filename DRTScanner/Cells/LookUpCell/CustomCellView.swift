@@ -22,50 +22,53 @@ struct CustomCellView: View {
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
 
     var body: some View {
-        HStack(spacing: 12) {
+        VStack {
             
             Button(action: {
                     buttonAction()
             }) {
-                Image(imageName)
-                    .resizable()
-                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(title)
-                        .font(.verlagBookAdaptive(size: 15))
-                        .foregroundColor(Color.customGreen)
-                    Text(subtitle)
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.FFCE_62)
+                HStack(alignment: .center) {
+                    Image(imageName)
+                        .resizable()
+                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(title)
+                            .font(.verlagBookAdaptive(size: 15))
+                            .foregroundColor(Color.customGreen)
+                        Text(subtitle)
+                            .font(.verlagBoldAdaptive(size: 18))
+                            .foregroundColor(Color.FFCE_62)
+                    }
+                    Spacer()
+                    Image(buttonImage)
+                        .resizable()
+                        .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
                 }
-                Spacer()
-                Image(buttonImage)
-                    .resizable()
-                    .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
+                .padding(.horizontal)
+                .padding(.bottom, 5)
             }
-        }
-        .padding()
-        .background(Color.customWhite)
-        .frame(height: cellHeight)
-        .frame(width: UIScreen.main.bounds.width)
-        if showDivider {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                if !isMerchandise {
-                    Divider()
-                        .frame(height: 8.0)
-                        .foregroundColor(bottomLineColor)
+            
+            if showDivider {
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    if !isMerchandise {
+                        Divider()
+                            .frame(height: 8.0)
+                            .foregroundColor(bottomLineColor)
+                    } else {
+                        Divider()
+                            .frame(height: dividerHeight())
+                            .foregroundColor(bottomLineColor)
+                    }
                 } else {
                     Divider()
                         .frame(height: dividerHeight())
                         .foregroundColor(bottomLineColor)
                 }
-            } else {
-                Divider()
-                    .frame(height: dividerHeight())
-                    .foregroundColor(bottomLineColor)
             }
         }
+        .padding(.horizontal, 0)
+        .frame(width: UIScreen.main.bounds.width, height: cellHeight)
+        .background(Color.customWhite)
     }
     private func dividerHeight() -> CGFloat {
            if UIDevice.current.userInterfaceIdiom == .pad {

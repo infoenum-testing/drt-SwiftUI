@@ -45,7 +45,7 @@ struct InvalidTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.red)
+        .background(Color.customRed)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

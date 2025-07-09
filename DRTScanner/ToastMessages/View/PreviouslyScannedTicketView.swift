@@ -13,6 +13,7 @@ struct PreviouslyScannedTicketView: View {
     let orderNumber: String
     let scannedTime: String
     let isInFullScreen: Bool
+    @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack {
@@ -44,7 +45,8 @@ struct PreviouslyScannedTicketView: View {
                         .foregroundColor(.white)
                 }
                 
-                Text("Previously Scanned @\(scannedTime)")
+                let raw = stringManager.strings?.orderDetail.previouslyscanned ?? "PREVIOUSLY SCANNED AT %@"
+                Text(raw.replacingOccurrences(of: "%@", with: scannedTime))
                     .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
@@ -60,7 +62,7 @@ struct PreviouslyScannedTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-              .background(Color(red: 0.99, green: 0.35, blue: 0.0))
+        .background(Color.customOrange)
               .ignoresSafeArea(edges: .bottom)
               .transition(.opacity)
     }
