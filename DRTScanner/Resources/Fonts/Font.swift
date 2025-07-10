@@ -159,3 +159,19 @@ func calculatedTopPadding() -> CGFloat {
         return safeTop + 100
     }
 }
+
+func calculatedBottomPadding() -> CGFloat {
+    let device = UIDevice.current.userInterfaceIdiom
+    let screenHeight = UIScreen.main.bounds.height
+    let safeTop = topSafeAreaPadding()
+
+    if device == .pad {
+        return safeTop + (UIDevice.isLandscape ? screenHeight * 2.2 : screenHeight * 0.62)
+    } else if screenHeight <= 667 {
+        // iPhone SE 2nd gen, iPhone 8, iPhone 6/7
+        return screenHeight * 0.35
+    } else {
+        // All other regular iPhones (e.g., 11, 12, 13, 14...)
+        return screenHeight * 0.2
+    }
+}

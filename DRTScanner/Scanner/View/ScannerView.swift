@@ -14,13 +14,17 @@ import CoreData
 import AudioToolbox
 
 struct ScannerView: View {
+    @EnvironmentObject var stringManager: StringManager
     // The currently selected seat model (binding from parent)
     @Binding var seat: SeatModel?
     // Stores the last scanned code
+    @Binding var scannerLineAnimation: Bool
+    
     @State private var scannedCode: String?
     // Stores the scan result string
     @State private var scanResult: String?
     // Indicates if scanning is active
+    
     @State private var isScanning = true
     // Reference to the device's flashlight
     @State private var flashLight: AVCaptureDevice?
@@ -39,7 +43,7 @@ struct ScannerView: View {
     // Controls visibility of stop scan overlay
     @State private var isStopScanVisible = false
     // Reference to the scanner controller
-    @State private var scannerController: ScannerViewController?
+    @State private var scannerController: ScannerViewController? =  ScannerViewController()
     // Indicates if a scan has occurred
     @State private var isScanned = false
     // Stores the time of the last scan
@@ -166,10 +170,10 @@ struct ScannerView: View {
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
-    @EnvironmentObject var stringManager: StringManager
-
+    
     /// Initializes the ScannerView with all required bindings and view models
     init(seat: Binding<SeatModel?>,
+         scannerLineAnimation: Binding<Bool>,
          isTicketValid: Binding<Bool>,
          isPreScanned: Binding<Bool>,
          isInvalidTicket: Binding<Bool>,
@@ -191,6 +195,7 @@ struct ScannerView: View {
          showOfflineAlert: Binding<Bool>) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
+        _scannerLineAnimation = scannerLineAnimation
         _isTicketValid = isTicketValid
         _isPreScanned = isPreScanned
         _isInvalidTicket = isInvalidTicket
@@ -214,9 +219,10 @@ struct ScannerView: View {
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
     var body: some View {
-            VStack {
+        VStack {
+            ZStack {
+                // Camera scanner view with scan callback and controller setup
                 ZStack {
-                    // Camera scanner view with scan callback and controller setup
                     CameraScannerView(
                         onScan: { scanned in
                             scannedCode = scanned
@@ -231,356 +237,363 @@ struct ScannerView: View {
                         },
                         isScanning: $isScanningCell  // Bind scanning state
                     )
-                    .padding(.bottom, -30)
-                        .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
+                }
+                .padding(.bottom, -30)
+                .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
+                .frame(maxWidth: .infinity)
+                .onChange(of: isScanning) { newValue in // Start or stop scanning based on state
+                    if newValue {
+                        scannerController?.startScanning()
+                    } else {
+                        scannerController?.stopScanning()
+                    }
+                }
+                if !isCameraAuthorized {
+                    Color.black
+                        .frame(height: isFullScreen ? nil : scanViewHeight + 30.adaptiveForIpad)
                         .frame(maxWidth: .infinity)
-                        .onChange(of: isScanning) { newValue in // Start or stop scanning based on state
-                            if newValue {
-                                scannerController?.startScanning()
-                            } else {
-                                scannerController?.stopScanning()
-                            }
-                        }
-                    if !isCameraAuthorized {
-                        Color.black
-                            .frame(height: isFullScreen ? nil : scanViewHeight + 30.adaptiveForIpad)
-                            .frame(maxWidth: .infinity)
-                            .opacity(1)
-                            .padding(.bottom, -30)
-                    }
-                    // Overlay for full screen ticket/merchandise/invalid views
-                    if isFullScreen {
-                        VStack {
-                            Spacer()
-                            if isTicketValid {
-                                if isPreScanned {
-                                    PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true)
-                                } else {
-                                    ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true)
-                                }
-                            } else if isInvalidTicket {
-                                InvalidTicketView(message: invalidMessage, isInFullScreen: true)
-                            } /*else if isMerchandiseMode {*/
-                            if isMerchPreScanned {
-                                PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true)
-                            }
-                            if isMerchTicketValid {
-                                MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true)
-                            }
-                            if isInvalidMerchTicket {
-                                InvalidMerchandiseTicketView(isInFullScreen: true)
-                            }
-                            
-                            if isInvalidSeatTicket {
-                                InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true)
-                            }
-                            //                        }
-                            Spacer()
-                        }.frame(height: isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight)
-                            .onAppear {
-                                startInactivityTimer()  // Start inactivity timer when overlay appears
-                            }
-                        AnyView(EmptyView())
-                    }
+                        .opacity(1)
+                        .padding(.bottom, -30)
+                }
+                // Overlay for full screen ticket/merchandise/invalid views
+                if isFullScreen {
                     VStack {
-                        HStack {
-                            Text("")
+                        Spacer()
+                        if isTicketValid {
+                            if isPreScanned {
+                                PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true)
+                            } else {
+                                ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true)
+                            }
+                        } else if isInvalidTicket {
+                            InvalidTicketView(message: invalidMessage, isInFullScreen: true)
+                        } /*else if isMerchandiseMode {*/
+                        if isMerchPreScanned {
+                            PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true)
                         }
+                        if isMerchTicketValid {
+                            MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true)
+                        }
+                        if isInvalidMerchTicket {
+                            InvalidMerchandiseTicketView(isInFullScreen: true)
+                        }
+                        
+                        if isInvalidSeatTicket {
+                            InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true)
+                        }
+                        //                        }
+                        Spacer()
+                    }.frame(height: isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight)
+                        .onAppear {
+                            startInactivityTimer()  // Start inactivity timer when overlay appears
+                        }
+                    AnyView(EmptyView())
+                }
+                VStack {
+                    HStack {
+                        Text("")
+                    }
+                    HStack {
+                        Spacer()
                         HStack {
-                            Spacer()
-                            HStack {
-                                if isCameraAuthorized {
-                                    // Flashlight toggle icon and gesture
-                                    Image(isFlashOn ? "FlashOff" : "FlashOn")
+                            if isCameraAuthorized {
+                                // Flashlight toggle icon and gesture
+                                Image(isFlashOn ? "FlashOff" : "FlashOn")
                                     .resizable()
                                     .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                                     .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -20 : -50) : -10)
                             }
-                            }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
-//                                .padding(.top, isFullScreen ? 10 : 10)
-                                .gesture(
-                                    DragGesture(minimumDistance: 0)
-                                        .onChanged { value in
-                                            let location = value.location
-                                            if isInsideBounds(location) {
-                                                if !isFlashOn {
-                                                    isFlashOn = true
-                                                    toggleTorch(status: true) // Turn on flashlight
-                                                }
-                                            } else {
-                                                if isFlashOn {
-                                                    isFlashOn = false
-                                                    toggleTorch(status: false) // Turn off flashlight
-                                                    flashAutoOffTimer?.invalidate()
-                                                }
+                        }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
+                        //                                .padding(.top, isFullScreen ? 10 : 10)
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let location = value.location
+                                        if isInsideBounds(location) {
+                                            if !isFlashOn {
+                                                isFlashOn = true
+                                                toggleTorch(status: true) // Turn on flashlight
                                             }
-                                            startFlashInactivityTimer()
-                                            startInactivityTimer()
-                                        }
-                                        .onEnded { _ in
+                                        } else {
                                             if isFlashOn {
                                                 isFlashOn = false
-                                                toggleTorch(status: false)
+                                                toggleTorch(status: false) // Turn off flashlight
                                                 flashAutoOffTimer?.invalidate()
                                             }
-                                            startFlashInactivityTimer()
                                         }
-                                )
+                                        startFlashInactivityTimer()
+                                        startInactivityTimer()
+                                    }
+                                    .onEnded { _ in
+                                        if isFlashOn {
+                                            isFlashOn = false
+                                            toggleTorch(status: false)
+                                            flashAutoOffTimer?.invalidate()
+                                        }
+                                        startFlashInactivityTimer()
+                                    }
+                            )
+                    }
+                    
+                    Spacer()
+                    
+                    // External scanner and scan stats UI
+                    HStack {
+                        if !isFullScreen {
+                            // Button to activate external scanner input
+                            Image("Scan_icon")
+                                .resizable()
+                            // .scaleEffect(x: -1, y: 1)
+                                .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                                .background(Color.clear)
+                                .padding([.leading, .top])
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    DispatchQueue.main.async {
+                                        externalScannerAction()
+                                        isCustomColorVisible = true
+                                        isInputActive = true
+                                    }
+                                }
                         }
-                        
-                        Spacer()
-                        
-                        // External scanner and scan stats UI
-                        HStack {
-                            if !isFullScreen {
-                                // Button to activate external scanner input
-                                Image("Scan_icon")
-                                    .resizable()
-                                   // .scaleEffect(x: -1, y: 1)
-                                    .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                                    .background(Color.clear)
-                                    .padding([.leading, .top])
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        DispatchQueue.main.async {
-                                            externalScannerAction()
-                                            isCustomColorVisible = true
-                                            isInputActive = true
-                                        }
-                                    }
-                            }
-                            if !isMerchandiseMode {
+                        if !isMerchandiseMode {
                             if showScanStats ?? false {
-                                    if let stats = viewModel.stats {
-                                        Spacer()
-                                        // Display scan statistics
-                                        Text("\(stringManager.strings?.stats.scanned ?? "Scanned by Device"): \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0)     \(stringManager.strings?.stats.scannable ?? "Scannable Overall"): \(stats.seatsScannable ?? 0)")
-                                            .font(.verlagBookAdaptive(size: 16))
-                                            .minimumScaleFactor(0.5)
-                                            .lineLimit(1)
-                                            .padding(.bottom, -30)
-                                            .foregroundColor(.white)
-                                            .opacity(isVisibleText ? 1 : 0)
-                                            .animation(.easeInOut(duration: 0.3), value: isVisibleText)
-                                        
-                                        Spacer()
-                                    }
-                                } else {
+                                if let stats = viewModel.stats {
+                                    Spacer()
+                                    // Display scan statistics
+                                    Text("\(stringManager.strings?.stats.scanned ?? "Scanned by Device"): \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0)     \(stringManager.strings?.stats.scannable ?? "Scannable Overall"): \(stats.seatsScannable ?? 0)")
+                                        .font(.verlagBookAdaptive(size: 16))
+                                        .minimumScaleFactor(0.5)
+                                        .lineLimit(1)
+                                        .padding(.bottom, -30)
+                                        .foregroundColor(.white)
+                                        .opacity(isVisibleText ? 1 : 0)
+                                        .animation(.easeInOut(duration: 0.3), value: isVisibleText)
+                                    
                                     Spacer()
                                 }
                             } else {
                                 Spacer()
                             }
-
-                            // Full screen toggle button
-                            Image(isFullScreen ? "video_Default_screen_icon" : "video_full_screen_icon")
-                                .resizable()
-                                .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                                .background(Color.clear)
-                                .padding([.top, .trailing])
-                                .contentShape(Rectangle())
-                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-                                .onTapGesture {
-                                    withAnimation {
-                                        resetScanner()
-                                        isFullScreen.toggle()
-                                    }
-                                }
-                        }.allowsHitTesting(true)
-                            .frame(maxWidth: .infinity)
-                            .padding(.bottom, isFullScreen ? 20 : 10)
-                    }.frame(maxHeight: isFullScreen ? .infinity : scanViewHeight, alignment: .bottom)
-                    
-                    // Overlay for external barcode input
-                    if isCustomColorVisible && !isFullScreen {
-                        ZStack {
-                            ExternalBarcodeInputField(scannedCode: $scannedExternalCode, isActive: $isInputActive)
-                                .frame(width: 200, height: 50)
-                                .opacity(0.01)
-                                .allowsHitTesting(true)
-                            TextField("Enter barcode manually", text: $scannedExternalCode)
-                                .padding()
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .frame(width: 250, height: 50)
-                                .onChange(of: scannedExternalCode) { newValue in
-                                    print("Manual input: \(newValue)")
-                                }
-                            
-                            Color.FFCE_62
-                                .opacity(1)
-                                .frame(height: scanViewHeight + 30.adaptiveForIpad)
-                                .frame(height: 50.adaptiveForIpad)
-
-                                .overlay(
-                                    VStack(spacing: 12) {
-                                        Text("Attached")
-                                        .font(.verlagBookAdaptive(size: 25))
-                                        .foregroundColor(.customWhite)
-                                        .padding(.top, -40)
-                                        Image("scan__cirle_icon")
-                                            .resizable()
-                                          //  .scaleEffect(x: -1, y: 1)
-                                            .scaledToFit()
-                                            .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
-                                            .onTapGesture {
-                                                resetScanner()
-                                            }
-                                        Spacer()
-                                    }
-                                )
-                                .padding(.bottom, -30)
+                        } else {
+                            Spacer()
                         }
-                        .onChange(of: scannedExternalCode) { newCode in
-                            print("New barcode code received: \(newCode)")
-                            if !newCode.isEmpty {
-                                sendScanRequest(qr: newCode)
-                                scannedExternalCode = ""
+                        
+                        // Full screen toggle button
+                        Image(isFullScreen ? "video_Default_screen_icon" : "video_full_screen_icon")
+                            .resizable()
+                            .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                            .background(Color.clear)
+                            .padding([.top, .trailing])
+                            .contentShape(Rectangle())
+                            .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                            .onTapGesture {
+                                withAnimation {
+                                    resetScanner()
+                                    isFullScreen.toggle()
+                                }
                             }
-                        }
-                    }
-                    
-                      // Overlay for pause scan UI
-                    if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
+                    }.allowsHitTesting(true)
+                        .frame(maxWidth: .infinity)
+                        .padding(.bottom, isFullScreen ? 20 : 10)
+                }.frame(maxHeight: isFullScreen ? .infinity : scanViewHeight, alignment: .bottom)
+                
+                // Overlay for external barcode input
+                if isCustomColorVisible && !isFullScreen {
+                    ZStack {
+                        ExternalBarcodeInputField(scannedCode: $scannedExternalCode, isActive: $isInputActive)
+                            .frame(width: 200, height: 50)
+                            .opacity(0.01)
+                            .allowsHitTesting(true)
+                        TextField("Enter barcode manually", text: $scannedExternalCode)
+                            .padding()
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 250, height: 50)
+                            .onChange(of: scannedExternalCode) { newValue in
+                                print("Manual input: \(newValue)")
+                            }
+                        
                         Color.FFCE_62
                             .opacity(1)
                             .frame(height: scanViewHeight + 30.adaptiveForIpad)
                             .frame(height: 50.adaptiveForIpad)
+                        
                             .overlay(
-                                Text("Pause, click to resume")
-                                    .font(.verlagBoldAdaptive(size: 20))
-                                    .foregroundColor(.white)
-                                    .onTapGesture {
-                                        resetScanner()
-                                    }
-                            ).onTapGesture {
-                                resetScanner()
-                            }
+                                VStack(spacing: 12) {
+                                    Text(stringManager.strings?.attached ?? "Using Attached Scanner")
+                                        .font(.verlagBookAdaptive(size: 25))
+                                        .foregroundColor(.customWhite)
+                                        .padding(.top, -40)
+                                    Image("scan__cirle_icon")
+                                        .resizable()
+                                    //  .scaleEffect(x: -1, y: 1)
+                                        .scaledToFit()
+                                        .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
+                                        .onTapGesture {
+                                            resetScanner()
+                                        }
+                                    Spacer()
+                                }
+                            )
                             .padding(.bottom, -30)
                     }
-                    
-                    // Animated scan line overlay
-                    Group {
-                        if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
-                            if isCameraAuthorized {
-                                Rectangle()
-                                    .frame(height: 1.5)
-                                    .foregroundColor(.red)
-                                    .shadow(color: .black, radius: 1.5)
-                                    .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / (isFullScreen ? 2 : UIDevice.current.userInterfaceIdiom == .pad ? 2.1 : 2.2)))
-                                    .onAppear {
-                                        startLineAnimation()
-                                    }
-                                    .padding(.bottom, 20)
-                            }
+                    .onChange(of: scannedExternalCode) { newCode in
+                        print("New barcode code received: \(newCode)")
+                        if !newCode.isEmpty {
+                            sendScanRequest(qr: newCode)
+                            scannedExternalCode = ""
                         }
                     }
-                    .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-                        isCameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+                }
+                
+                // Overlay for pause scan UI
+                if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
+                    Color.FFCE_62
+                        .opacity(1)
+                        .frame(height: scanViewHeight + 30.adaptiveForIpad)
+                        .frame(height: 50.adaptiveForIpad)
+                        .overlay(
+                            Text("Pause, click to resume")
+                                .font(.verlagBoldAdaptive(size: 20))
+                                .foregroundColor(.white)
+                                .onTapGesture {
+                                    resetScanner()
+                                }
+                        ).onTapGesture {
+                            resetScanner()
+                        }
+                        .padding(.bottom, -30)
+                }
+                
+                // Animated scan line overlay
+                Group {
+                    if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
                         if isCameraAuthorized {
-                            startLineAnimation()
+                            Rectangle()
+                                .frame(height: 1.5)
+                                .foregroundColor(.red)
+                                .shadow(color: .black, radius: 1.5)
+                                .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / (isFullScreen ? 2 : UIDevice.current.userInterfaceIdiom == .pad ? 2.1 : 2.2)))
+                                .onAppear {
+                                    startLineAnimation()
+                                }
+                                .padding(.bottom, 20)
                         }
                     }
-
-                }.onAppear {
-                    Task {
-                        await viewModel.fetchStats() // Fetch scan stats on appear
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    isCameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+                    if isCameraAuthorized {
+                        startLineAnimation()
                     }
                 }
-                .onChange(of: scannerViewModel.shouldResetScanner) { newValue in
-                    if newValue {
-                        resetCameraView()  // Reset camera view if requested
-                    }
-                    Task {
-                        await viewModel.fetchStats()
-                    }
-                }
-            } // Listen for camera reset notifications
-            .onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
-                if isStopScanVisible {
-                    resetScanner()
-                } else if isCustomColorVisible {
-                    resetScanner()
-                }
-                else {
-                    resetCameraView()
+                
+            }.onAppear {
+                Task {
+                    await viewModel.fetchStats() // Fetch scan stats on appear
                 }
             }
-            // Setup and state management on appear/disappear and state changes
-            .onAppear {
-                setupScanner() // Initial scanner setup
-                startInactivityTimer() // Start inactivity timer
-                isOfflineMode = isOffline
-                isMerchandiseMode = isMerchandise ?? false
-                shouldPlayHapticNew = shouldPlayHaptic ?? false
-                shouldPlayBeepSound = shouldPlayBeep ?? false
-                duplicateScanSuppressionNew = duplicateScanSuppression
-                withAnimation {
-                    isVisibleText = true
+            .onChange(of: scannerViewModel.shouldResetScanner) { newValue in
+                if newValue {
+                    resetCameraView()  // Reset camera view if requested
                 }
-//                isTicketValid = true
-//                isPreScanned = true
-//                isInvalidTicket = true
-//                invalidMessage = "Invalid barcode"
-//                isMerchTicketValid = true
-//                isMerchPreScanned = true
-//                merchOrderName = "T-Shirt Variants"
-//                merchVariantName = "Medium"
-//                orderName = "OrderName"
-//                orderNumber = "123456"
-//               orderDateScanned = "@02:15 AM"
-//                isInvalidMerchTicket = true
-//                isInvalidSeatTicket = true
-            }
-            .onDisappear {
-                stopLineAnimation() // Stop scan line animation
-                stopInactivityTimer()  // Stop inactivity timer
-                isOfflineMode = isOffline
-                isMerchandiseMode = isMerchandise ?? false
-            }
-            .onChange(of: keyboardObserver.isKeyboardVisible) { isVisible in
-                if isVisible {
-                    stopLineAnimation()
-                } else {
-                    startLineAnimation()
+                Task {
+                    await viewModel.fetchStats()
                 }
             }
-            
-            .onChange(of: isOffline) { newValue in
-                DispatchQueue.main.async {
-                    isOfflineMode = newValue
-                }
+        } // Listen for camera reset notifications
+        .onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
+            if isStopScanVisible {
+                resetScanner()
+            } else if isCustomColorVisible {
+                resetScanner()
             }
-            .onChange(of: isMerchandise) { newValue in
-                DispatchQueue.main.async {
-                    isMerchandiseMode = newValue ?? false
-                }
-            }
-            .onChange(of: isFullScreen) { _ in
-                stopLineAnimation()
-                startLineAnimation()
-            }
-            .onChange(of: shouldPlayBeep) { newValue in
-                DispatchQueue.main.async {
-                    shouldPlayBeepSound = newValue ?? false
-                }
-            }
-            .onChange(of: shouldPlayHaptic) { newValue in
-                DispatchQueue.main.async {
-                    shouldPlayHapticNew = newValue ?? false
-                }
-            }
-            .onChange(of: duplicateScanSuppression) { newValue in
-                DispatchQueue.main.async {
-                    duplicateScanSuppressionNew = newValue
-                }
-            }
-            .onAppear {
-                startFlashInactivityTimer() // Start flash inactivity timer
-            }
-            .onDisappear {
-                stopFlashInactivityTimer() // Stop flash inactivity timer
+            else {
+                resetCameraView()
             }
         }
+        // Setup and state management on appear/disappear and state changes
+        .onAppear {
+            setupScanner() // Initial scanner setup
+            startInactivityTimer() // Start inactivity timer
+            isOfflineMode = isOffline
+            isMerchandiseMode = isMerchandise ?? false
+            shouldPlayHapticNew = shouldPlayHaptic ?? false
+            shouldPlayBeepSound = shouldPlayBeep ?? false
+            duplicateScanSuppressionNew = duplicateScanSuppression
+            withAnimation {
+                isVisibleText = true
+            }
+            //                isTicketValid = true
+            //                isPreScanned = true
+            //                isInvalidTicket = true
+            //                invalidMessage = "Invalid barcode"
+            //                isMerchTicketValid = true
+            //                isMerchPreScanned = true
+            //                merchOrderName = "T-Shirt Variants"
+            //                merchVariantName = "Medium"
+            //                orderName = "OrderName"
+            //                orderNumber = "123456"
+            //               orderDateScanned = "@02:15 AM"
+            //                isInvalidMerchTicket = true
+            //                isInvalidSeatTicket = true
+        }
+        .onDisappear {
+            stopLineAnimation() // Stop scan line animation
+            stopInactivityTimer()  // Stop inactivity timer
+            isOfflineMode = isOffline
+            isMerchandiseMode = isMerchandise ?? false
+        }
+        .onChange(of: keyboardObserver.isKeyboardVisible) { isVisible in
+            if isVisible {
+                stopLineAnimation()
+            } else {
+                startLineAnimation()
+            }
+        }
+        .onChange(of: scannerLineAnimation) { isVisible in
+            if !isVisible {
+                stopLineAnimation()
+            } else {
+                startLineAnimation()
+            }
+        }
+        .onChange(of: isOffline) { newValue in
+            DispatchQueue.main.async {
+                isOfflineMode = newValue
+            }
+        }
+        .onChange(of: isMerchandise) { newValue in
+            DispatchQueue.main.async {
+                isMerchandiseMode = newValue ?? false
+            }
+        }
+        .onChange(of: isFullScreen) { _ in
+            stopLineAnimation()
+            startLineAnimation()
+        }
+        .onChange(of: shouldPlayBeep) { newValue in
+            DispatchQueue.main.async {
+                shouldPlayBeepSound = newValue ?? false
+            }
+        }
+        .onChange(of: shouldPlayHaptic) { newValue in
+            DispatchQueue.main.async {
+                shouldPlayHapticNew = newValue ?? false
+            }
+        }
+        .onChange(of: duplicateScanSuppression) { newValue in
+            DispatchQueue.main.async {
+                duplicateScanSuppressionNew = newValue
+            }
+        }
+        .onAppear {
+            startFlashInactivityTimer() // Start flash inactivity timer
+        }
+        .onDisappear {
+            stopFlashInactivityTimer() // Stop flash inactivity timer
+        }
+    }
     
     // Starts the timer that will automatically turn on the flashlight after a delay
     private func startFlashInactivityTimer() {
@@ -857,27 +870,27 @@ struct ScannerView: View {
                 let fullCode = qrCodes.joined(separator: "-")
                 let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
                 fetchRequest.predicate = NSPredicate(format: "qrCode == %@", fullCode)
-
+                
                 do {
                     let results = try viewContext.fetch(fetchRequest)
                     if let product = results.first {
                         let totalQty = product.qty
                         let scannedQty = product.qtyScanned
-
+                        
                         if scannedQty < totalQty {
                             // ✅ Valid scan, mark as scanned and increment
                             product.qtyScanned += 1
                             product.locally_scanned += 1
                             product.date_scanned = Date()
                             try viewContext.save()
-
+                            
                             // Optional: update UI info
                             merchOrderName = product.name ?? ""
                             merchVariantName = product.variantName ?? ""
-
+                            
                             isMerchTicketValid = true
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isMerchTicketValid = false
@@ -891,7 +904,7 @@ struct ScannerView: View {
                             } else {
                                 showToastMessage("This merchandise has already been fully scanned.")
                             }
-
+                            
                             // Set state to show previous scan view
                             merchOrderName = product.name ?? ""
                             merchVariantName = product.variantName ?? ""
@@ -899,10 +912,10 @@ struct ScannerView: View {
                                 let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedDate)
                                 orderDateScanned = "\(formattedDate)"
                             }
-
+                            
                             isMerchPreScanned = true
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isMerchPreScanned = false
@@ -913,7 +926,7 @@ struct ScannerView: View {
                         // ❌ No matching product found
                         isInvalidMerchTicket = true
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidMerchTicket = false
@@ -1085,10 +1098,10 @@ struct ScannerView: View {
                                 }
                             }
                         case .failure(let error):
-                                    invalidMessage = error.localizedDescription
-                                    isInvalidTicket = true
-                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                            invalidMessage = error.localizedDescription
+                            isInvalidTicket = true
+                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isInvalidTicket = false
@@ -1124,18 +1137,18 @@ struct ScannerView: View {
                                         merchOrderName = name
                                         merchVariantName = variantName
                                         if let timestampMillis = TimeInterval(ts) {
-                                                let date = Date(timeIntervalSince1970: timestampMillis / 1000)
-
-                                                let formatter = DateFormatter()
-                                                formatter.dateFormat = "h:mm a"
-                                                formatter.amSymbol = "AM"
-                                                formatter.pmSymbol = "PM"
-                                                formatter.timeZone = TimeZone.current
-
-                                                orderDateScanned = formatter.string(from: date)
-                                            } else {
-                                                orderDateScanned = ""
-                                            }
+                                            let date = Date(timeIntervalSince1970: timestampMillis / 1000)
+                                            
+                                            let formatter = DateFormatter()
+                                            formatter.dateFormat = "h:mm a"
+                                            formatter.amSymbol = "AM"
+                                            formatter.pmSymbol = "PM"
+                                            formatter.timeZone = TimeZone.current
+                                            
+                                            orderDateScanned = formatter.string(from: date)
+                                        } else {
+                                            orderDateScanned = ""
+                                        }
                                         
                                         if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
@@ -1150,7 +1163,7 @@ struct ScannerView: View {
                                             } else {
                                                 isMerchTicketValid = true
                                                 playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                                                
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                     withAnimation {
                                                         isMerchTicketValid = false
@@ -1162,7 +1175,7 @@ struct ScannerView: View {
                                             isInvalidTicket = true
                                             invalidMessage = message
                                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                                            
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 withAnimation {
                                                     isInvalidTicket = false
@@ -1170,13 +1183,13 @@ struct ScannerView: View {
                                             }
                                         }
                                     }
-
+                                    
                                 case .failure(let error):
                                     // ❗ Show error if API call failed entirely
                                     isInvalidTicket = true
                                     invalidMessage = error.localizedDescription
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                                    
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
                                             isInvalidTicket = false
@@ -1189,7 +1202,7 @@ struct ScannerView: View {
                         // Offline or wrong scan type
                         isInvalidMerchTicket = true
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
-
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidMerchTicket = false
@@ -1198,7 +1211,7 @@ struct ScannerView: View {
                         isScanning = false
                     }
                 }
-
+                
                 else {
                     // Online seat QR scan
                     if scanType == "seat" {
@@ -1237,7 +1250,7 @@ struct ScannerView: View {
                                                     isTicketValid = true
                                                     orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
-
+                                                    
                                                     if let tsString = scanResponse.tsScanned,
                                                        let timestampMillis = TimeInterval(tsString) {
                                                         
@@ -1253,7 +1266,7 @@ struct ScannerView: View {
                                                     } else {
                                                         orderDateScanned = ""
                                                     }
-
+                                                    
                                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {
@@ -1296,7 +1309,7 @@ struct ScannerView: View {
                                     
                                 case .failure(let error):
                                     invalidMessage = error.localizedDescription
-                                       
+                                    
                                     isInvalidTicket = true
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                     
@@ -1367,4 +1380,11 @@ func statsRow(title: String, value: Int) -> some View {
             .bold()
     }
     .padding()
+}
+
+extension UIApplication {
+    var topSafeAreaHeight: CGFloat {
+        let scene = connectedScenes.first as? UIWindowScene
+        return scene?.windows.first?.safeAreaInsets.top ?? 0
+    }
 }

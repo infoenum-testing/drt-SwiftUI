@@ -7,7 +7,6 @@
 import Foundation
 
 struct AppStrings: Codable {
-
     let stats: StatsStrings
     let settings: Settings
 	let dialogLogout: DialogLogout
@@ -24,6 +23,7 @@ struct AppStrings: Codable {
 	let switchMode: SwitchMode
 	let orderDetail: OrderDetail
 	let dialogGoOffline: DialogGoOffline
+    let attached: String
 	let copyright: String
 	let searchResults: SearchResults
 	let unsoldScanResults: UnsoldScanResults
@@ -40,6 +40,7 @@ struct AppStrings: Codable {
 		case goldenTicket = "golden-ticket"
 		case login = "login"
 		case dialogOpenBrowser = "dialog-open-browser"
+        case attached = "attached"
 		case menu = "menu"
 		case incorrectMode = "incorrect-mode"
 		case serviceHref = "service-href"

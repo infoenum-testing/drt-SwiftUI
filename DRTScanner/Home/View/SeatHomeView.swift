@@ -93,7 +93,7 @@ struct SeatHomeView: View {
     
     @State private var merchOrderName = ""
     @State private var merchVariantName = ""
-    
+    @State var scannerLineAnimation: Bool = true
     // ViewModel for lookup by order result
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     
@@ -163,7 +163,7 @@ struct SeatHomeView: View {
                             .background(Color.FFCE_62)
                             
                         }
-                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 880 : 700) : topSafeAreaPaddingHeader() + 135)
+                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 1800 : 700) : topSafeAreaPaddingHeader() + 135)
                     
                     }
                     ZStack {
@@ -178,7 +178,7 @@ struct SeatHomeView: View {
                         }
                         VStack {
                             // Scanner view for scanning tickets
-                            ScannerView(seat: $seatHomeViewModel.selectedSeat, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
+                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
                                 .frame(width: UIScreen.main.bounds.width)
                                 .frame(maxHeight: isFullScreen ? .infinity : nil)
                                 .padding(.top, scannerTopPadding(isFullScreen: isFullScreen))
@@ -290,14 +290,52 @@ struct SeatHomeView: View {
                                 }
                         }.padding(.top, UIDevice.isIpad ? -80 : 0)
                     }
+                    .overlay {
+                        VStack {
+                            if showLookupAlert {
+                                if let selectedLookupType = seatHomeViewModel.selectedLookupType {
+                                    LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
+                                        .clipped()
+                                        .padding(.bottom,calculatedBottomPadding())
+                                        .background(.white)
+                                        .transition(.move(edge: .trailing))
+                                        .animation(.easeInOut, value: showLookupAlert)
+                                        .onAppear{
+                                            scannerLineAnimation = false
+                                        }
+                                }
+                            } else if showLookupAlertByName {
+                                LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
+                                    .clipped()
+                                    .padding(.bottom,calculatedBottomPadding())
+                                    .background(.white)
+                                    .transition(.move(edge: .trailing))
+                                    .animation(.easeInOut, value: showLookupAlert)
+                                    .onAppear{
+                                        scannerLineAnimation = false
+                                    }
+                            } else if showLookupAlertBySeat {
+                                SeatLookupView(isPresented: $showLookupAlertBySeat)
+                                    .clipped()
+                                    .padding(.bottom,calculatedBottomPadding())
+                                    .background(.white)
+                                    .transition(.move(edge: .trailing))
+                                    .animation(.easeInOut, value: showLookupAlert)
+                                    .onAppear{
+                                        scannerLineAnimation = false
+                                    }
+                            } else {
+                                Rectangle()
+                                    .fill(.clear)
+                                    .onAppear{
+                                        scannerLineAnimation = true
+                                    }
+                            }
+                            Spacer()
+                        }
+                        
+                    }
                 }.frame(height: UIScreen.main.bounds.height)
-            }
-        }
-        .customSheetView(isPresented: $showLookupAlert) {
-            if let selectedLookupType = seatHomeViewModel.selectedLookupType {
-                LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
-                    .background(Color.clear)
-                    .padding(.top, calculatedTopPadding())
             }
         }
         .onChange(of: showLookupAlert) { newValue in
@@ -306,20 +344,11 @@ struct SeatHomeView: View {
                 scnanerReset.triggerReset()
             }
         }
-        .customSheetView(isPresented: $showLookupAlertByName) {
-            LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
-                .background(Color.clear)
-                .padding(.top, calculatedTopPadding())
-        }
         .onChange(of: showLookupAlertByName) { newValue in
             if newValue == false {
                 isScanningCell = true
                 scnanerReset.triggerReset()
             }
-        }
-        .customSheetView(isPresented: $showLookupAlertBySeat) {
-            SeatLookupView(isPresented: $showLookupAlertBySeat)
-                .padding(.top, calculatedTopPadding())
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             if newValue == false {
@@ -526,4 +555,12 @@ struct SeatHomeView_Previews: PreviewProvider {
 
 extension Notification.Name {
     static let resetCameraView = Notification.Name("resetCameraView")
+}
+
+struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
 }

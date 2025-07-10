@@ -46,7 +46,6 @@ struct GoOnlineView: View {
                             .animation(.easeInOut, value: progress)
                             .onAppear {
                                 startUpload() // Starts the upload process when view appears
-                               
                             }
                         
                         Text("\(Int(progress * 100))% Completed")
@@ -54,9 +53,7 @@ struct GoOnlineView: View {
                             .foregroundColor(.white)
                         
                     }
-                  
                 }
-                   
             } else if showSuccessMessage {
                 Text(StringConstants.SideMenuView.goOnlineSuccess)
                     .font(.verlagBoldAdaptive(size: 22))
@@ -86,28 +83,29 @@ struct GoOnlineView: View {
                         endPoint: .center
                     )
                 )
+                .padding(.top, -80)
         }
         .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }
     
-        private func startUploadWithoutApi() {
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-                if progress < 1.0 {
-                    progress += 0.2
-                } else {
-                    timer.invalidate()
-                    isUploading = false
-                    showSuccessMessage = true
-    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        isOfflineMode = false
-                        isPresented = false
-                    }
+    private func startUploadWithoutApi() {
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if progress < 1.0 {
+                progress += 0.2
+            } else {
+                timer.invalidate()
+                isUploading = false
+                showSuccessMessage = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    isOfflineMode = false
+                    isPresented = false
                 }
             }
         }
+    }
     
-     func startUpload() {
+    func startUpload() {
         DRTDatabaseManager.shared.fetchDataAndPostToServer { success, error in
             if success {
                 progress = 1.0
@@ -143,7 +141,7 @@ struct GoOnlineView: View {
 struct CustomAlertForError: View {
     @Binding var isPresented: Bool
     var message: String
-
+    
     var body: some View {
         VStack(alignment: .center) {
             HStack {
@@ -155,7 +153,7 @@ struct CustomAlertForError: View {
                     .padding(.top, 20)
                 Spacer()
             }
-
+            
             VStack {
                 Text(message)
                     .font(.verlagBookAdaptive(size: 18))

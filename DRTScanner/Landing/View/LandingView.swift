@@ -92,7 +92,7 @@ struct LandingView: View {
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.top, 20)
+                            .padding(.top, UIScreen.main.bounds.height * 0.032)
                             .transition(.opacity)
                         }
                         

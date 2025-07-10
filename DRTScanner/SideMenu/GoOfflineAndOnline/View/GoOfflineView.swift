@@ -146,7 +146,7 @@ struct GoOfflineView: View {
                         startPoint: .top,
                         endPoint: .center
                     )
-                ).padding(.top, -60)
+                )
         }
 //        .edgesIgnoringSafeArea(.bottom)
 //        .offset(y: getKeyboardOffset(for: keyboardHeight))

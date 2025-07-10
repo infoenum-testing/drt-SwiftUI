@@ -7,11 +7,11 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "176A0A34-1466-40E0-B768-1ED0FE239679"
-            shouldBeEnabled = "No"
+            uuid = "4B5AFA94-405B-4BEE-A96C-055EA7798CCE"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DRTScanner/DRTDatabase/CreateOrderView.swift"
+            filePath = "DRTScanner/ShowCode/View/ShowCodeView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "25"
