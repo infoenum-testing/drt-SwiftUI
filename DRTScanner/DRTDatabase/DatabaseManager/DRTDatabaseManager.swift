@@ -233,14 +233,23 @@ class DRTDatabaseManager {
         }
 
         // Parse scanned time string into Date
-        if let scannedString = seatAttributes["scanned"] as? String {
-               let formatter = DateFormatter()
-               formatter.dateFormat = "h:mm a"
-               formatter.locale = Locale(identifier: "en_US_POSIX")
-               if let scannedDate = formatter.date(from: scannedString) {
-                   seat.date_scanned = scannedDate
-               }
-           }
+        if let tsValue = seatAttributes["tsScanned"] {
+            let timestamp: TimeInterval?
+
+            if let tsString = tsValue as? String {
+                timestamp = TimeInterval(tsString)
+            } else if let tsDouble = tsValue as? Double {
+                timestamp = TimeInterval(tsDouble)
+            } else {
+                timestamp = nil
+            }
+
+            if let timestamp = timestamp {
+                let scannedDate = Date(timeIntervalSince1970: timestamp / 1000)
+                seat.date_scanned = scannedDate
+            }
+        }
+
         
         // Split secRowSeat into section, row, seat
         if let secRowSeat = seatAttributes["secRowSeat"] as? String {

@@ -13,7 +13,7 @@ import IQAPIClient
 import CoreData
 import AudioToolbox
 
-struct ScannerView: View {
+struct ScannerView: View, Equatable {
     @EnvironmentObject var stringManager: StringManager
     // The currently selected seat model (binding from parent)
     @Binding var seat: SeatModel?
@@ -171,6 +171,12 @@ struct ScannerView: View {
     
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
+    let controller: ScannerViewController
+    
+    static func == (lhs: ScannerView, rhs: ScannerView) -> Bool {
+        return lhs.controller == rhs.controller
+    }
+    
     /// Initializes the ScannerView with all required bindings and view models
     init(seat: Binding<SeatModel?>,
          scannerLineAnimation: Binding<Bool>,
@@ -192,6 +198,7 @@ struct ScannerView: View {
          isMerchPreScanned: Binding<Bool>,
          scannerViewModel: ScannerViewModel,
          lookupByOrderResultViewModel: LookupByOrderResultViewModel,
+         controller: ScannerViewController,
          showOfflineAlert: Binding<Bool>) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
@@ -215,6 +222,7 @@ struct ScannerView: View {
         self.lookupByOrderResultViewModel = lookupByOrderResultViewModel
         _showOfflineAlert = showOfflineAlert
         _invalidMessage = invalidMessage
+        self.controller = controller
     }
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
@@ -224,6 +232,8 @@ struct ScannerView: View {
                 // Camera scanner view with scan callback and controller setup
                 ZStack {
                     CameraScannerView(
+                        isScanning: $isScanningCell,
+                        controller: controller,
                         onScan: { scanned in
                             scannedCode = scanned
                             sendScanRequest(qr: scanned) // Handle scan result
@@ -234,8 +244,8 @@ struct ScannerView: View {
                                 scannerController = controller
                                 controller.isScanningBinding = $isScanningCell // Bind scanning state
                             }
-                        },
-                        isScanning: $isScanningCell  // Bind scanning state
+                        }
+                          // Bind scanning state
                     )
                 }
                 .padding(.bottom, -30)
@@ -566,6 +576,7 @@ struct ScannerView: View {
         .onChange(of: isMerchandise) { newValue in
             DispatchQueue.main.async {
                 isMerchandiseMode = newValue ?? false
+                lastScanTimes.removeAll()
             }
         }
         .onChange(of: isFullScreen) { _ in
@@ -899,7 +910,7 @@ struct ScannerView: View {
                         } else {
                             // ⚠️ Already fully scanned
                             if let scannedTime = product.date_scanned {
-                                let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedTime)
+                                let formattedDate = scannedTime.formatToTimeString()
                                 showToastMessage("This merchandise was already scanned at \(formattedDate).")
                             } else {
                                 showToastMessage("This merchandise has already been fully scanned.")
@@ -909,7 +920,7 @@ struct ScannerView: View {
                             merchOrderName = product.name ?? ""
                             merchVariantName = product.variantName ?? ""
                             if let scannedDate = product.date_scanned {
-                                let formattedDate = MerchandiseOrder.dateFormatter.string(from: scannedDate)
+                                let formattedDate = scannedDate.formatToTimeString()
                                 orderDateScanned = "\(formattedDate)"
                             }
                             
@@ -950,7 +961,7 @@ struct ScannerView: View {
                             isTicketValid = true
                             orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
-                            orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
+                            orderDateScanned = scannedTime.formatToTimeString()
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -1136,19 +1147,7 @@ struct ScannerView: View {
                                         
                                         merchOrderName = name
                                         merchVariantName = variantName
-                                        if let timestampMillis = TimeInterval(ts) {
-                                            let date = Date(timeIntervalSince1970: timestampMillis / 1000)
-                                            
-                                            let formatter = DateFormatter()
-                                            formatter.dateFormat = "h:mm a"
-                                            formatter.amSymbol = "AM"
-                                            formatter.pmSymbol = "PM"
-                                            formatter.timeZone = TimeZone.current
-                                            
-                                            orderDateScanned = formatter.string(from: date)
-                                        } else {
-                                            orderDateScanned = ""
-                                        }
+                                        orderDateScanned = ts.formatToDate()
                                         
                                         if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
@@ -1251,18 +1250,8 @@ struct ScannerView: View {
                                                     orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
                                                     
-                                                    if let tsString = scanResponse.tsScanned,
-                                                       let timestampMillis = TimeInterval(tsString) {
-                                                        
-                                                        let date = Date(timeIntervalSince1970: timestampMillis / 1000)
-                                                        
-                                                        let formatter = DateFormatter()
-                                                        formatter.dateFormat = "h:mm a"
-                                                        formatter.amSymbol = "AM"
-                                                        formatter.pmSymbol = "PM"
-                                                        formatter.timeZone = TimeZone.current
-                                                        
-                                                        orderDateScanned = formatter.string(from: date)
+                                                    if let tsString = scanResponse.tsScanned {
+                                                        orderDateScanned = tsString.formatToDate()
                                                     } else {
                                                         orderDateScanned = ""
                                                     }

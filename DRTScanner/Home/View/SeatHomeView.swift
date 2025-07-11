@@ -100,6 +100,8 @@ struct SeatHomeView: View {
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @EnvironmentObject var stringManager: StringManager
     
+    let controller = ScannerViewController()
+    
     // Computes the dynamic cell height based on device and mode
     private var dynamicCellHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
@@ -178,7 +180,7 @@ struct SeatHomeView: View {
                         }
                         VStack {
                             // Scanner view for scanning tickets
-                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, showOfflineAlert: $showOfflineAlert)
+                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, controller: controller, showOfflineAlert: $showOfflineAlert)
                                 .frame(width: UIScreen.main.bounds.width)
                                 .frame(maxHeight: isFullScreen ? .infinity : nil)
                                 .padding(.top, scannerTopPadding(isFullScreen: isFullScreen))

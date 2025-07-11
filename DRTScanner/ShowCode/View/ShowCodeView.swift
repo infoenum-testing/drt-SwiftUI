@@ -23,13 +23,14 @@ struct ShowCodeView: View {
                     // MARK: - QR Scanner View
                     if viewModel.isScannerVisible {
                         CameraScannerView(
+                            isScanning: .constant(true),
+                            controller: ScannerViewController(),
                             onScan: { scannedCode in
                                 // Handle QR scanned code
                                 viewModel.handleScannedCode(scannedCode, onCodeEntered: onCodeEntered) {
                                     showSheet = false
                                 }
-                            },
-                            isScanning: .constant(true)
+                            }
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .edgesIgnoringSafeArea(.all)

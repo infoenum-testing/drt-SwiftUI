@@ -7,10 +7,27 @@
 
 import SwiftUI
 
-struct CameraScannerView: UIViewControllerRepresentable {
+struct CameraScannerView: UIViewControllerRepresentable, Equatable {
     var onScan: (String) -> Void
     var onControllerCreated: ((ScannerViewController) -> Void)?
+    let controller: ScannerViewController
     @Binding var isScanning: Bool
+    
+    static func == (lhs: CameraScannerView, rhs: CameraScannerView) -> Bool {
+        return lhs.controller == rhs.controller
+    }
+    
+    init(
+        isScanning: Binding<Bool>,
+        controller: ScannerViewController,
+        onScan: @escaping (String) -> Void,
+        onControllerCreated: ((ScannerViewController) -> Void)? = nil
+    ) {
+        self._isScanning = isScanning
+        self.controller = controller
+        self.onScan = onScan
+        self.onControllerCreated = onControllerCreated
+    }
 
     func makeUIViewController(context: Context) -> ScannerViewController {
         let controller = ScannerViewController()
