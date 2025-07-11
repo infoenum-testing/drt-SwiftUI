@@ -327,13 +327,17 @@ class DRTDatabaseManager {
             product.orderId = 0
         }
     
-        if let timestamp = productAttributes["ts_scanned"] as? Int64 {
+        if let timestamp = productAttributes["tsScanned"] as? Int64 {
             product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
-        } else if let timestamp = productAttributes["ts_scanned"] as? Int {
+        } else if let timestamp = productAttributes["tsScanned"] as? Int {
             product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
-        } else if let timestamp = productAttributes["ts_scanned"] as? Double {
+        } else if let timestamp = productAttributes["tsScanned"] as? Double {
             product.date_scanned = Date(timeIntervalSince1970: timestamp / 1000)
-        } else if let timestampStr = productAttributes["ts_scanned"] as? String, let timestamp = Double(timestampStr) {
+        } else if let timestampStr = productAttributes["tsScanned"] as? String,
+                  let timestamp = Double(timestampStr) {
+            // Parse scanned time string into Date
+            let scannedDate = Date(timeIntervalSince1970: timestamp / 1000)
+            product.date_scanned = scannedDate
         } else if let timestampStr = productAttributes["scanned"] as? String {
             let formatter = DateFormatter()
             formatter.dateFormat = "hh:mm a"
