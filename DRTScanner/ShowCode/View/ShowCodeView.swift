@@ -10,7 +10,7 @@ import SwiftUI
 struct ShowCodeView: View {
     @Binding var showSheet: Bool // Controls visibility of the sheet
     var onCodeEntered: (String) -> Void // Callback when code is completed
-
+    @EnvironmentObject var stringManager: StringManager
     @StateObject private var viewModel = ShowCodeViewModel() // ViewModel for handling logic
     @Environment(\.dismiss) var dismiss // Dismiss environment for fallback
     @Environment(\.sizeData) var sizeData
@@ -55,24 +55,16 @@ struct ShowCodeView: View {
                         
                     } else {
                         // MARK: - Background Image for Code Entry UI
-                        Image(StringConstants.DRTImages.backgound)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                            .clipped()
-                            .edgesIgnoringSafeArea(.all)
-                            .padding(.top, -60)
+                        AppBackGroundView(width: geometry.size.width,height: geometry.size.height)
+                        
                         
                         // MARK: - Code Entry UI
                         VStack(spacing: 20) {
                             
                             // MARK: - Logo
                             HStack {
-                                Image(StringConstants.DRTImages.logo)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad)
-                            }.padding(.top, 20)
+                                AppLogoView(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad)
+                            }.padding(.top, UIScreen.main.bounds.height * 0.032)
                             
                             // MARK: - Code Display and Controls
                             HStack {
@@ -93,7 +85,7 @@ struct ShowCodeView: View {
                                 TextField(StringConstants.Common.showCode, text: $viewModel.showCode)
                                     .font(.verlagBoldAdaptive(size: 42))
                                     .multilineTextAlignment(.center)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.primaryText)
                                     .background(Color.clear)
                                     .disabled(true)
                                 
@@ -103,6 +95,7 @@ struct ShowCodeView: View {
                                 }) {
                                     Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
                                         .resizable()
+                                        .foregroundStyle(Color.primaryText)
                                         .frame(width: 40.adaptiveForIpad, height: 30.adaptiveForIpad)
                                 }
                             }
@@ -117,7 +110,7 @@ struct ShowCodeView: View {
                                 }) {
                                     Image(systemName: "camera.metering.matrix")
                                         .font(.verlagBookAdaptive(size: 25))
-                                        .foregroundColor(.customWhite)
+                                        .foregroundColor(Color.primaryText)
                                 }
                                 Spacer()
                             }
@@ -147,7 +140,7 @@ struct ShowCodeView: View {
                                                 Text(button)
                                                     .font(.verlagBoldAdaptive(size: 50))
                                                     .scaleEffect(button.range(of: #"^[A-Z]$"#, options: .regularExpression) != nil ? 0.9 : 1.1)
-                                                    .foregroundColor(button == "OK" ? .customWhite : .customGreen)
+                                                    .foregroundColor(button == "OK" ? Color.primaryText : Color.primaryBg)
                                             }
                                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                                             .onTapGesture {

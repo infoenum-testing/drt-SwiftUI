@@ -13,7 +13,7 @@ struct PreviousMerchandiseScanView: View {
     let message: String
     let isInFullScreen: Bool
     @EnvironmentObject var stringManager: StringManager
-
+    let backGround:Color
     var body: some View {
         VStack {
             VStack(spacing: 20) {
@@ -29,23 +29,23 @@ struct PreviousMerchandiseScanView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding([.top, .bottom], 5)
 
                 VStack(spacing: 8) {
                     Text(name)
                         .font(.verlagBlackAdaptive(size: 30))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                     if variantName != "" {
                         Text("Variant name: \(variantName)")
                             .font(.verlagBoldAdaptive(size: 26))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.primaryText)
                     }
                     let raw = stringManager.strings?.orderDetail.previouslyscanned ?? "PREVIOUSLY SCANNED AT %@"
                     Text(raw.replacingOccurrences(of: "%@", with: message))
                         .font(.verlagBoldAdaptive(size: 26))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                 }
 
                 if isInFullScreen {
@@ -60,22 +60,9 @@ struct PreviousMerchandiseScanView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.customOrange)
+        .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }
 }
 
-#Preview {
-    VStack {
-        Spacer()
-        PreviousMerchandiseScanView(
-            name: "Test Product",
-            variantName: "N/A",
-            message: "This item was already scanned.", isInFullScreen: true
-        )
-        .frame(height: UIScreen.main.bounds.height * 0.5)
-    }
-    .background(Color.black.opacity(0.4))
-    .ignoresSafeArea()
-}

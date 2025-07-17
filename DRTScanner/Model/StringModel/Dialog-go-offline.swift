@@ -27,5 +27,4 @@ struct DialogGoOffline: Codable {
 		case badInput = "bad-input"
 		case description = "description"
 	}
-
 }

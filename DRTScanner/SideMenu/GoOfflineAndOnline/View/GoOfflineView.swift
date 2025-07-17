@@ -41,7 +41,7 @@ struct GoOfflineView: View {
     
             Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
                 .font(.verlagBookAdaptive(size: 18))
-                .foregroundColor(Color.customWhite)
+                .foregroundColor(Color.primaryText)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
@@ -51,8 +51,8 @@ struct GoOfflineView: View {
                 TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
                     .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
                     .font(.verlagBook(size: 30))
-                    .background(Color.customWhite)
-                    .foregroundColor(Color.gray)
+                    .background(Color.neutralBg)
+                    .foregroundColor(Color.neutralText)
                     .frame(alignment: .center)
                     .multilineTextAlignment(.center)
                     .focused($isNameFieldFocused)
@@ -67,22 +67,22 @@ struct GoOfflineView: View {
             if isSyncing {
                 VStack(spacing: 8) {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
                         .scaleEffect(1.0)
 
                     Text(downloadLabel)
                         .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
 
                     ProgressView(value: progress, total: 1.0)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                        .background(Color.customWhite)
-                        .foregroundColor(.customWhite)
+                        .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
+                        .background(Color.neutralBg)
+                        .foregroundColor(Color.primaryText)
                         .padding(2)
 
                     Text("\(Int(progress * 100))% Completed")
                         .font(.verlagBoldAdaptive(size: 16))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                 }
             }
 
@@ -97,11 +97,11 @@ struct GoOfflineView: View {
                     }) {
                         Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
                             .font(.verlagBoldAdaptive(size: 30))
-                            .foregroundColor(isContinueDisabled ? .gray : Color.customWhite)
+                            .foregroundColor(isContinueDisabled ? Color.neutralText : Color.primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
-                    .background(Color.FFCE_62)
+                    .background(Color.secondaryBg)
                     .cornerRadius(12)
                     .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     .disabled(isContinueDisabled)
@@ -117,7 +117,7 @@ struct GoOfflineView: View {
                     }) {
                         Text(stringManager.strings?.dialogGoOffline.cancel ?? StringConstants.Common.cancel)
                             .font(.verlagBoldAdaptive(size: 30))
-                            .foregroundColor(Color.customWhite)
+                            .foregroundColor(Color.primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
@@ -132,28 +132,8 @@ struct GoOfflineView: View {
             maxHeight: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height / 1.5 : UIScreen.main.bounds.height / 1.8
         )
         .background {
-            Image(StringConstants.DRTImages.backgound)
-                .resizable()
-                .scaledToFill()
-                .frame(height: UIScreen.main.bounds.height * 0.65)
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .edgesIgnoringSafeArea(.top)
-                .padding(.top, -30)
-                .overlay(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                        startPoint: .top,
-                        endPoint: .center
-                    )
-                )
+            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.65,shadow: true)
         }
-//        .edgesIgnoringSafeArea(.bottom)
-//        .offset(y: getKeyboardOffset(for: keyboardHeight))
-//        .animation(.easeInOut(duration: 0.001), value: keyboardHeight)
-//        .onReceive(Publishers.keyboardHeight) { height in
-//            self.keyboardHeight = height
-//        }
     }
 
     func isValidName(_ name: String) -> Bool {
@@ -162,36 +142,6 @@ struct GoOfflineView: View {
         let range = NSRange(location: 0, length: name.utf16.count)
         return regex?.firstMatch(in: name, options: [], range: range) != nil
     }
-
-//    private func getKeyboardOffset(for height: CGFloat) -> CGFloat {
-//        let screenHeight = UIScreen.main.bounds.height
-//        if UIDevice.current.userInterfaceIdiom == .pad {
-//            return height / 3
-//        } else {
-//            switch screenHeight {
-//            case 667:
-//                return height / 2.5
-//            case 736:  // iPhone 6+/7+/8+
-//                return height / 3.0
-//            case 812:  // iPhone X, XS, 11 Pro, 13 Mini, 12 Mini
-//                return height / 3.0
-//            case 844:  // iPhone 12, 12 Pro, 13, 13 Pro, 14
-//                return height / 3.0
-//            case 852:  // iPhone 15, 15 Pro
-//                return height / 3.0
-//            case 896:  // iPhone XR, XS Max, 11, 11 Pro Max
-//                return height / 3.0
-//            case 926:  // iPhone 12 Pro Max, 13 Pro Max, 14 Plus
-//                return height / 3.0
-//            case 932:  // iPhone 14 Pro Max
-//                return height / 3.2
-//            case 932...1000: // Future taller phones
-//                return height / 3.0
-//            default:
-//                return height / 3.0 // Fallback for unknown screen heights
-//            }
-//        }
-//    }
 
     private func goOffline() {
         guard name.count >= 5 else { return }

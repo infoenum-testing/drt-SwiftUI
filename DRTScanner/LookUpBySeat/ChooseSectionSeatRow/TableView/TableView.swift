@@ -24,7 +24,7 @@ struct TableView: View {
             SeatSectionLookupCell(action: {
                 isSectionLookupPresented = true
             }, selectedSeat: selectedSection)
-            .listRowBackground(Color.white)
+            .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
             // When section changes, reset row and seat
             .onChange(of: selectedSection) { _ in
@@ -38,7 +38,7 @@ struct TableView: View {
             SeatRowLookupCell(action: {
                 isRowLookupPresented = true
             }, selectedSeat: selectedRow)
-            .listRowBackground(Color.white)
+            .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
             // Disable if no section is selected
             .disabled(selectedSection.isEmpty)
@@ -54,14 +54,13 @@ struct TableView: View {
             SeatLookupCell(action: {
                 isSeatLookupPresented = true
             }, selectedSeat: selectedSeat)
-            .listRowBackground(Color.white)
+            .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
             // Disable if no row is selected
             .disabled(selectedRow.isEmpty)
             .opacity(selectedRow.isEmpty ? 0.5 : 1.0)
         }.listStyle(.plain)
-        
             .padding(0)
-            .background(Color.customWhite)
+            .background(Color.primaryText)
     }
 }

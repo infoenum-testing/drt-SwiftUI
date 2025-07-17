@@ -33,7 +33,7 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
                 
                 self.content()
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 30)
+                    .padding(.top, 0)
                 //.background(Color.yellow)
                     .offset(y: 0)
                     .transition(.move(edge: .top))

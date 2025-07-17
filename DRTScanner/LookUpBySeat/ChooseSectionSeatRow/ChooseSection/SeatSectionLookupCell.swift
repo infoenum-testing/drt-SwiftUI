@@ -20,7 +20,7 @@ struct SeatSectionLookupCell: View {
                 .font(.verlagBookAdaptive(size: 27))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .foregroundColor(Color.customGreen)
+                .foregroundColor(Color.primaryBg)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
@@ -28,7 +28,7 @@ struct SeatSectionLookupCell: View {
             // Displays the selected section or a dash if empty
             Text(selectedSeat.isEmpty ? "-" : selectedSeat)
                 .font(.verlagBoldAdaptive(size: 40))
-                .foregroundColor(Color.FFCE_62)
+                .foregroundColor(Color.secondaryBg)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
@@ -46,7 +46,7 @@ struct SeatSectionLookupCell: View {
             .padding(.trailing, 25)
         }
         .padding([.top, .bottom], 10)
-        .background(Color.white)
+        .background(Color.primaryText)
         .frame(height: 100)
         // Triggers the action closure when the entire cell is tapped
         .onTapGesture {

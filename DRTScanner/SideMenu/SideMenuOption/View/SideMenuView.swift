@@ -39,7 +39,11 @@ struct SideMenuView: View {
                         // Close button
                         HStack {
                             Spacer()
-                            Button(action: { isPresented = false }) {
+                            Button(action: {
+                                withAnimation(.easeInOut) {
+                                    isPresented = false
+                                }
+                            }) {
                                 Image(StringConstants.DRTImages.crossImage)
                                     .resizable()
                                     .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
@@ -47,7 +51,7 @@ struct SideMenuView: View {
                                     .contentShape(Rectangle())
                                     .padding()
                             }
-                            .padding(.top, 30)
+                            .padding(.top, 38)
                         }
                         // Go Online/Offline option
                         if isOfflineMode {
@@ -129,7 +133,7 @@ struct SideMenuView: View {
                         
                     }
                     .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400))
-                    .background(Color.tealLight)
+                    .background(Color.neutralBg)
                     Spacer()
                 }.onAppear {
                     // Set initial merchandise switch state
@@ -165,7 +169,7 @@ struct SideMenuView: View {
                         // Confirmation message
                         Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? StringConstants.SideMenuView.merchandise : stringManager.strings?.switchMode.tickets ?? StringConstants.SideMenuView.ticket)")
                             .font(.verlagBoldAdaptive(size: 26))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.primaryText)
                             .multilineTextAlignment(.center)
                             .padding(.top, 20)
                         
@@ -182,18 +186,18 @@ struct SideMenuView: View {
                                 }) {
                                     Text("YES")
                                         .font(.verlagBoldAdaptive(size: 30))
-                                        .foregroundColor(Color.customWhite)
+                                        .foregroundColor(Color.primaryText)
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                 }
-                                .background(Color.FFCE_62)
-                                   .cornerRadius(12)
-                                   .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
+                                .background(Color.secondaryBg)
+                                .cornerRadius(12)
+                                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 Spacer()
                             }
                             
-                                .padding(.horizontal)
-                                .padding(.top)
+                            .padding(.horizontal)
+                            .padding(.top)
                             
                             // YES button
                             HStack {
@@ -205,7 +209,7 @@ struct SideMenuView: View {
                                 }) {
                                     Text("NO")
                                         .font(.verlagBoldAdaptive(size: 30))
-                                        .foregroundColor(Color.customWhite)
+                                        .foregroundColor(Color.primaryText)
                                         .padding()
                                         .frame(maxWidth: .infinity)
                                 }
@@ -217,23 +221,10 @@ struct SideMenuView: View {
                             isMerchandise = newValue
                         }
                     }
-                    .padding(.top, 70)
+                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 150 : topSafeAreaPaddingHeader() + 50)
                     .padding(.bottom)
                     .background {
-                        Image(StringConstants.DRTImages.backgound)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: UIScreen.main.bounds.height * 0.38)
-                            .frame(maxWidth: .infinity)
-                            .clipped()
-                            .edgesIgnoringSafeArea(.top)
-                            .overlay(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                                    startPoint: .top,
-                                    endPoint: .center
-                                )
-                            )
+                        AppBackGroundView(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.65,shadow:true)
                     }
                     .frame(width: geometry.size.width * 1)
                     .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)

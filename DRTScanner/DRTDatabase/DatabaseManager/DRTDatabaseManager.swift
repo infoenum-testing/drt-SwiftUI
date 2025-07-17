@@ -358,6 +358,9 @@ class DRTDatabaseManager {
         
         // Try to fetch existing skin or create a new one
         let skin = (try? context.fetch(fetchRequest).first) ?? Skin(context: context)
+        skin.color_Valid = skinModel.colorValid
+        skin.color_Invalid = skinModel.colorInvalid
+        skin.color_Previous = skinModel.colorPrevious
         skin.color_1_bg = skinModel.color1Bg
         skin.color_1_text = skinModel.color1Text
         skin.color_2_bg = skinModel.color2Bg

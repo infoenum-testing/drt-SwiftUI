@@ -13,6 +13,7 @@ struct PreviouslyScannedTicketView: View {
     let orderNumber: String
     let scannedTime: String
     let isInFullScreen: Bool
+    let backGround:Color
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
@@ -32,24 +33,24 @@ struct PreviouslyScannedTicketView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding([.top, .bottom], 5)
                 
                 Text(orderName.capitalized)
                     .font(.verlagBlackAdaptive(size: 30))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                 
                 if orderNumber != "0" {
                     Text("Order: \(orderNumber)")
                         .font(.verlagBoldAdaptive(size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                 }
                 
                 let raw = stringManager.strings?.orderDetail.previouslyscanned ?? "PREVIOUSLY SCANNED AT %@"
                 Text(raw.replacingOccurrences(of: "%@", with: scannedTime))
                     .font(.verlagBoldAdaptive(size: 26))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                 if isInFullScreen {
                     Spacer()
                 } else {
@@ -62,16 +63,16 @@ struct PreviouslyScannedTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.customOrange)
+        .background(backGround)
               .ignoresSafeArea(edges: .bottom)
               .transition(.opacity)
     }
 }
 
-// Preview
-struct PreviouslyScannedTicketView_Previews: PreviewProvider {
-    static var previews: some View {
-        PreviouslyScannedTicketView(orderName: "Order Name", orderNumber: "1234567", scannedTime: "02:16 PM", isInFullScreen: true)
-//            .frame(height: UIScreen.main.bounds.height * 0.5)
-    }
-}
+//// Preview
+//struct PreviouslyScannedTicketView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        PreviouslyScannedTicketView(orderName: "Order Name", orderNumber: "1234567", scannedTime: "02:16 PM", isInFullScreen: true)
+////            .frame(height: UIScreen.main.bounds.height * 0.5)
+//    }
+//}

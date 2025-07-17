@@ -43,7 +43,7 @@ struct MerchandiseOrderCell: View {
                             
                             if isLoadingSvgImage {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                                     .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                                     .transition(.opacity)
                             }
@@ -65,9 +65,9 @@ struct MerchandiseOrderCell: View {
                 // Display quantity
                 Text("\(merchandiseOrder.qty)")
                     .font(.verlagBookAdaptive(size: 20))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                    .background(merchandiseOrder.qty == merchandiseOrder.qtyScanned ? Color.FFCE_62 : Color.FFCE_62)
+                    .background(Color.secondaryBg)
                     .clipShape(Circle())
                     .padding(.top, -20)
                     .padding(.leading, 20)
@@ -77,11 +77,11 @@ struct MerchandiseOrderCell: View {
                 // Display merchandise name and variant
                 Text(merchandiseOrder.name)
                     .font(.verlagBoldAdaptive(size: 20))
-                    .foregroundColor(Color.customGreen)
+                    .foregroundColor(Color.primaryBg)
                 
                 Text(merchandiseOrder.variantName)
                     .font(.verlagBookAdaptive(size: 15))
-                    .foregroundColor(.black)
+                    .foregroundColor(Color.neutralText)
                 Spacer()
             }
             
@@ -97,7 +97,7 @@ struct MerchandiseOrderCell: View {
             }) {
                 if isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                 }
                 else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {

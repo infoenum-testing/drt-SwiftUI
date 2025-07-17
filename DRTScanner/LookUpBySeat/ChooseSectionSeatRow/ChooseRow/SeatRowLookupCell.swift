@@ -18,7 +18,7 @@ struct SeatRowLookupCell: View {
             // Displays the label for the row (e.g., "Row")
             Text(stringManager.strings?.seat.row ?? StringConstants.Common.row)
                 .font(.verlagBookAdaptive(size: 27))
-                .foregroundColor(Color.customGreen)
+                .foregroundColor(Color.primaryBg)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
@@ -26,7 +26,7 @@ struct SeatRowLookupCell: View {
             // Displays the selected Row or a dash if empty
             Text(selectedSeat.isEmpty ? "-" : selectedSeat)
                 .font(.verlagBoldAdaptive(size: 40))
-                .foregroundColor(Color.FFCE_62)
+                .foregroundColor(Color.secondaryBg)
                 .frame(maxWidth: .infinity, alignment: .center)
             
             Spacer()
@@ -42,7 +42,7 @@ struct SeatRowLookupCell: View {
             .padding(.trailing, 25)
         }
         .padding([.top, .bottom], 10)
-        .background(Color.white)
+        .background(Color.primaryText)
         .frame(height: 100)
         // Triggers the action closure when the entire cell is tapped
         .onTapGesture {

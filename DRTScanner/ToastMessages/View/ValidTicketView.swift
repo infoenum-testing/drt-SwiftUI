@@ -12,7 +12,7 @@ struct ValidTicketView: View {
     let orderNumber: String
     let isGoldenTicket: Bool
     let isInFullScreen: Bool
-    
+    let backGround: Color
     var body: some View {
         VStack {
             
@@ -29,16 +29,16 @@ struct ValidTicketView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
 
                 Text(orderName.capitalized)
                     .font(.verlagBlackAdaptive(size: 30))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
 
                 if orderNumber != "0" {
                     Text("Order: \(orderNumber)")
                         .font(.verlagBoldAdaptive(size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                 }
                 
                 if isInFullScreen {
@@ -54,7 +54,7 @@ struct ValidTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : Color.validCustomGreen)
+        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : backGround)
         .transition(.opacity)
     }
 }

@@ -23,6 +23,7 @@ struct ChooseSeatView: View {
                     isPresented = false
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
+                        .foregroundStyle(Color.neutralText)
                 }.padding()
                     .padding(.leading, 20)
                 .frame(height: 85, alignment: .center)
@@ -31,23 +32,23 @@ struct ChooseSeatView: View {
                 
                 if isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
                         .frame(width: 20, height: 20)
                 } else {
                     Text(stringManager.strings?.seat.seat ?? sectionsTitle)
                         .font(.verlagBlackAdaptive(size: 30))
-                        .foregroundColor(.white)
+                        .foregroundColor(.neutralText)
                         .padding(.trailing, 50)
                 }
                 
                 Spacer()
             }
-            .background(Color.FFCE_62)
+            .background(Color.neutralBg)
             HStack {
                 ChooseSeatSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
             }
         }.frame(maxHeight: .infinity)
-        .background(Color.white)
+        .background(Color.primaryText)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 isLoading = false

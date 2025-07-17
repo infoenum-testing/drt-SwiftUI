@@ -10,17 +10,12 @@ import SwiftUI
 import IQAPIClient
 import CoreData
 
-// ViewModel for handling landing screen logic
-import Foundation
-import SwiftUI
-import IQAPIClient
-import CoreData
-
 class LandingViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isValidCode: Bool = true
     @Published var enteredCode: String = ""
     @Published var showAlert: Bool = false
+    @Published var drtUser: DRTUser?
 
     @AppStorage("showCode") private var savedShowCode: String?
     @AppStorage("showId") private var savedShowId: String?
@@ -41,7 +36,12 @@ class LandingViewModel: ObservableObject {
         do {
             let result = try await getShowCodeDataAsync(code: code)
             print("Received result: \(result)")
-
+            if let skin = result.skin {
+                ColorManager.shared.updateSkin(to: skin)
+            }
+            DispatchQueue.main.async {
+                self.drtUser = result
+            }
             await MainActor.run {
                 self.isValidCode = true
                 self.savedShowCode = code
@@ -75,6 +75,7 @@ class LandingViewModel: ObservableObject {
             IQAPIClient.getShowCodeData(code: code) { result in
                 switch result {
                 case .success(let user):
+                    self.drtUser = user
                     continuation.resume(returning: user)
                 case .failure(let error):
                     continuation.resume(throwing: error)

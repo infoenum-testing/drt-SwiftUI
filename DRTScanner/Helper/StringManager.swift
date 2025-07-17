@@ -12,21 +12,62 @@ import IQAPIClient
 
 class StringManager: ObservableObject {
     static let shared = StringManager()
-
+    
+    @Published var allLangStrings: AppStringsClass?
     @Published var strings: AppStrings?
-
-    private init() {}
-
+    private init() {
+        if let strings = loadJSONFromFile(),let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
+            let decoder = JSONDecoder()
+            
+            do {
+                let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
+                self.allLangStrings = appStrings
+                let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
+               updateLang(for: langCode)
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        }
+    }
+    
     func loadStrings() {
         IQAPIClient.getStringLanguage { result in
             switch result {
             case .success(let strings):
+                print(strings)
                 DispatchQueue.main.async {
-                    self.strings = strings
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
+                        let decoder = JSONDecoder()
+                        
+                        do {
+                            let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
+                            self.allLangStrings = appStrings
+                            let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
+                            self.updateLang(for: langCode)
+                        } catch {
+                            print("Decoding error: \(error)")
+                        }
+                    }
+                    saveJSONToFile(json: strings)
                 }
+                
             case .failure(let error):
-                print("Failed to fetch strings:", error)
-            }
+                print("Failed to fetch strings:", error)            }
         }
+    }
+    
+    func updateLang(for code: String) {
+        var tamp = "en_US"
+        switch code {
+        case "English":
+            tamp = "en_US"
+        case "French":
+            tamp = "fr_CA"
+        case "Spanish":
+            tamp = "es_US"
+        default:
+            break
+        }
+        self.strings =  allLangStrings?[tamp]
     }
 }

@@ -23,18 +23,18 @@ struct LookupCellView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(result.buyerName ?? "")
                     .font(.verlagBlackAdaptive(size: 24))
-                    .foregroundColor(Color.customGreen)
+                    .foregroundColor(Color.primaryBg)
 
                 HStack(spacing: 12) {
                     Text("\(stringManager.strings?.searchResults.order ?? StringConstants.LandingView.orderLabel): \(String(result.orderId ?? 0))")
                     Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel) \(result.cc ?? "")")
                 }
                 .font(.verlagBoldAdaptive(size: 15))
-                .foregroundColor(Color.customGreen)
+                .foregroundColor(Color.primaryBg)
 
                 Text("\(stringManager.strings?.searchResults.phoneNumber ?? StringConstants.LandingView.phoneLabel) \(result.phone ?? "")")
                     .font(.verlagBoldAdaptive(size: 15))
-                    .foregroundColor(Color.customGreen)
+                    .foregroundColor(Color.primaryBg)
             }
 
             Spacer()
@@ -47,7 +47,7 @@ struct LookupCellView: View {
         }
         .padding([.leading, .top, .trailing])
         .padding(.bottom, 5)
-        .background(isTapped ? Color.black.opacity(0.1) : Color.white)
+        .background(isTapped ? Color.black.opacity(0.1) : Color.primaryText)
         .shadow(color: isTapped ? Color.black.opacity(0.05) : Color.clear, radius: 4, x: 0, y: 2)
         .animation(.easeInOut(duration: 0.2), value: isTapped)
         .onTapGesture {

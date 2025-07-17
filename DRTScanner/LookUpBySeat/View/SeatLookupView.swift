@@ -28,6 +28,7 @@ struct SeatLookupView: View {
                         }
                     } label: {
                         Image(StringConstants.DRTImages.leftSideArrow)
+                            .foregroundStyle(Color.neutralText)
                     }
                     .padding(.leading, 20)
 
@@ -36,30 +37,31 @@ struct SeatLookupView: View {
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 42))
-                        .foregroundColor(.customWhite)
+                        .foregroundColor(Color.neutralText)
                         .multilineTextAlignment(.center)
                         .padding(.leading, -50)
                         .disabled(true)
                 }
                 .frame(maxHeight: 90.adaptiveForIpad)
-                .background(Color.FFCE_62)
+                .background(Color.neutralBg)
 
                 // TableView for selecting section, row, and seat
-                TableView(
-                    isSeatLookupPresented: $isSeatLookupPresented,
-                    isSectionLookupPresented: $isSectionLookupPresented,
-                    isRowLookupPresented: $isRowLookupPresented,
-                    selectedSection: $viewModel.selectedSection,
-                    selectedRow: $viewModel.selectedRow,
-                    selectedSeat: $viewModel.selectedSeat
-                )
-                // Update seat data when selection changes
-                .onChange(of: viewModel.selectedSection) { _ in viewModel.onSeatDataChanged() }
-                .onChange(of: viewModel.selectedRow) { _ in viewModel.onSeatDataChanged() }
-                .onChange(of: viewModel.selectedSeat) { _ in viewModel.onSeatDataChanged() }
+        
+                    TableView(
+                        isSeatLookupPresented: $isSeatLookupPresented,
+                        isSectionLookupPresented: $isSectionLookupPresented,
+                        isRowLookupPresented: $isRowLookupPresented,
+                        selectedSection: $viewModel.selectedSection,
+                        selectedRow: $viewModel.selectedRow,
+                        selectedSeat: $viewModel.selectedSeat
+                    )
+                    // Update seat data when selection changes
+                    .onChange(of: viewModel.selectedSection) { _ in viewModel.onSeatDataChanged() }
+                    .onChange(of: viewModel.selectedRow) { _ in viewModel.onSeatDataChanged() }
+                    .onChange(of: viewModel.selectedSeat) { _ in viewModel.onSeatDataChanged() }
+                    
+                    Spacer()
 
-                Spacer()
-                
                 // Continue button to trigger seat lookup
                 Button {
                     viewModel.continueButtonTapped()
@@ -70,10 +72,10 @@ struct SeatLookupView: View {
                     } else {
                         Text(stringManager.strings?.seat.continueField ?? StringConstants.Common.continueText)
                             .font(.verlagBoldAdaptive(size: 36))
-                            .foregroundColor(.customWhite)
+                            .foregroundColor(Color.primaryText)
                             .padding(.top, 5.adaptiveForIpad)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.FFCE_62)
+                            .background(Color.secondaryBg)
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
@@ -82,9 +84,9 @@ struct SeatLookupView: View {
                 .opacity(viewModel.selectedSeat.isEmpty ? 0.6 : 1.0)
                 .frame(height: geometry.size.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
-                .background(Color.white)
+                .background(Color.primaryText)
                 .padding(.horizontal)
-            }.background(Color.white)
+            }.background(Color.primaryText)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         // Sheet for displaying lookup result

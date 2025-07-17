@@ -57,6 +57,7 @@ struct LookupResultCardOrPhoneView: View {
                         }
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
+                            .foregroundStyle(Color.neutralText)
                     }
                     .padding(.leading, 20)
 
@@ -65,17 +66,17 @@ struct LookupResultCardOrPhoneView: View {
                     // Show loading text & spinner
                     if isLoading {
                         Text("Loading...")
-                            .foregroundColor(Color.customWhite)
+                            .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
                     }
 
                     // Show result count or "No orders found"
                     if !isLoading {
                         Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(orders.count)")
-                            .foregroundColor(Color.customWhite)
+                            .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                     }
@@ -84,7 +85,7 @@ struct LookupResultCardOrPhoneView: View {
                 }
             }
             .padding([.top, .bottom], 20)
-            .background(Color.FFCE_62)
+            .background(Color.neutralBg)
             .frame(maxWidth: .infinity)
 
             // Orders List or Empty View
@@ -99,7 +100,7 @@ struct LookupResultCardOrPhoneView: View {
                                 oId = "\(orderId)"             // Store selected order ID
                                 navigateToOrderResult = true   // Trigger sheet
                             }
-                            .listRowBackground(Color.white)
+                            .listRowBackground(Color.primaryText)
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
                         }
@@ -110,7 +111,7 @@ struct LookupResultCardOrPhoneView: View {
             }
         }
         .frame(maxHeight: .infinity)
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .ignoresSafeArea()
 
         // MARK: - Task: Initial API call

@@ -16,12 +16,13 @@ struct ChooseSectionView: View {
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
-        VStack {
+        VStack(spacing:0) {
             HStack {
                 Button(action: {
                     isPresented = false
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
+                        .foregroundStyle(Color.neutralText)
                 }.padding()
                     .padding(.leading, 20)
                 .frame(height: 85, alignment: .center)
@@ -30,24 +31,24 @@ struct ChooseSectionView: View {
                 
                 if isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
                         .frame(width: 20, height: 20)
                 } else {
                     Text(stringManager.strings?.seat.section ?? sectionsTitle)
                         .font(.verlagBlackAdaptive(size: 30))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(.white)
+                        .foregroundColor(.neutralText)
                         .padding(.trailing, 50)
                 }
                 
                 Spacer()
             }
-            .background(Color.FFCE_62)
+            .background(Color.neutralBg)
             VStack {
                 ChooseSectionSubView(selectedSeat: $selectedSeat, isPresent: $isPresented)
             }
         }
-        .background(Color.white)
+        .background(Color.primaryText)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 isLoading = false

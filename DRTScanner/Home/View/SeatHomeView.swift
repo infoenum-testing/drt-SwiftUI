@@ -90,13 +90,14 @@ struct SeatHomeView: View {
     @State private var isLoading = false
     // ViewModel to trigger scanner reset
     @StateObject private var scnanerReset = ScannerViewModel()
-    
+    @State private var isLoadingSvgImage = false
     @State private var merchOrderName = ""
     @State private var merchVariantName = ""
     @State var scannerLineAnimation: Bool = true
     // ViewModel for lookup by order result
+    //    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
-    
+    @ObservedObject var landingView:LandingViewModel
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @EnvironmentObject var stringManager: StringManager
     
@@ -126,15 +127,14 @@ struct SeatHomeView: View {
                                 Text("")
                                     .frame(width: 25, height: 25)
                                 Spacer()
-                                Image(StringConstants.DRTImages.logo)
-                                    .resizable()
-                                    .frame(width: 120.adaptiveForIpad, height: 60.adaptiveForIpad, alignment: .center)
-                                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 40.adaptiveForIpad : 0)
+                                AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
                                     .padding(.leading, 10)
                                 Spacer()
                                 Button(action: {
                                     // Toggle side menu
-                                    isSideMenuPresented.toggle()
+                                    withAnimation(.easeInOut) {
+                                        isSideMenuPresented.toggle()
+                                    }
                                 }) {
                                     Image("side_menu")
                                         .resizable()
@@ -147,43 +147,36 @@ struct SeatHomeView: View {
                                 .padding(.trailing, 20)
                             }
                             .background {
-                                Image(StringConstants.DRTImages.backgound)
-                                    .resizable()
-                                    .scaledToFill()
+                                AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
                             }
                             // Bottom row: show name
                             HStack {
                                 Spacer()
                                 Text(savedShow)
                                     .font(.verlagBoldAdaptive(size: 20))
-                                    .foregroundColor(Color.white)
+                                    .foregroundColor(Color.primaryText)
                                     .padding(.leading, 5)
                                 Spacer()
                             }
                             .frame(width: UIScreen.main.bounds.width)
                             .padding(12)
-                            .background(Color.FFCE_62)
+                            .background(Color.secondaryBg)
                             
                         }
-                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 1800 : 700) : topSafeAreaPaddingHeader() + 135)
-                    
+                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 500 : 50) : topSafeAreaPaddingHeader())
+                        
                     }
                     ZStack {
                         // Shows background image unless in full screen
                         if !isFullScreen {
-                            Image(StringConstants.DRTImages.backgound)
-                                .resizable()
-                                .scaledToFill()
-                                .edgesIgnoringSafeArea(.all)
-                                .zIndex(-1)
-                                .animation(.easeInOut(duration: 0.4), value: isFullScreen)
+                            AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
                         }
+                        
                         VStack {
                             // Scanner view for scanning tickets
-                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, controller: controller, showOfflineAlert: $showOfflineAlert)
+                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, landingView:landingView,controller: controller, showOfflineAlert: $showOfflineAlert)
                                 .frame(width: UIScreen.main.bounds.width)
                                 .frame(maxHeight: isFullScreen ? .infinity : nil)
-                                .padding(.top, scannerTopPadding(isFullScreen: isFullScreen))
                                 .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
                             
                             // Scrollable area containing lookup options and ticket status views
@@ -224,7 +217,7 @@ struct SeatHomeView: View {
                                         // Lookup by credit card
                                         CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.creditCard ?? StringConstants.SeatHomeView.creditCard,
                                                        cellHeight: dynamicCellHeight,
-                                                       bottomLineColor: isMerchandise ? .customWhite : .gray, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
+                                                       bottomLineColor: isMerchandise ? Color.neutralBg : Color.primaryText, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                        showDivider: isMerchandise ? false : true
                                         ) {
                                             // Set lookup type and show alert for credit card
@@ -236,7 +229,7 @@ struct SeatHomeView: View {
                                         }
                                         // Lookup by seat (only if not in merchandise mode)
                                         if !isMerchandise {
-                                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.seat ?? StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: .customWhite,
+                                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.seat ?? StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: Color.neutralBg,
                                                            buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                            showDivider: false
                                             ) {
@@ -254,30 +247,29 @@ struct SeatHomeView: View {
                                     // Show previously scanned ticket view if ticket is valid and already scanned
                                     if isTicketValid {
                                         if isPreScanned {
-                                            PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: false)
-                                            
+                                            PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: false,backGround:Color.previous)
                                         } else {
                                             // Show valid ticket view
-                                            ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: false)
+                                            ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: false,backGround:Color.valid)
                                         }
                                     } else if isInvalidTicket {
                                         // Show invalid ticket view
-                                        InvalidTicketView(message: invalidMessage, isInFullScreen: false)
+                                        InvalidTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
                                     }
                                     //                            else if isMerchandise {
                                     // Show merchandise-related ticket status views
                                     if isMerchPreScanned {
-                                        PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: false)
+                                        PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: false,backGround:Color.previous)
                                     }
                                     if isMerchTicketValid {
-                                        MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: false)
+                                        MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: false,backGround:Color.valid)
                                     }
                                     if isInvalidMerchTicket {
-                                        InvalidMerchandiseTicketView(isInFullScreen: false)
+                                        InvalidMerchandiseTicketView(isInFullScreen: false,backGround:Color.invalid)
                                     }
                                     // Show invalid seat ticket view
                                     if isInvalidSeatTicket {
-                                        InvalidSeatTicketView(message: invalidMessage, isInFullScreen: false)
+                                        InvalidSeatTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
                                     }
                                     //                            }
                                 }
@@ -285,12 +277,12 @@ struct SeatHomeView: View {
                             // Set opacity and animation for the scroll view
                                 .opacity(!isFullScreen ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.4), value: isFullScreen)
-                                .background(Color.customWhite)
+                                .background(Color.neutralBg)
                                 .onChange(of: orderDateScanned) { newValue in
                                     print(newValue)
                                     print(newValue)
                                 }
-                        }.padding(.top, UIDevice.isIpad ? -80 : 0)
+                        }
                     }
                     .overlay {
                         VStack {
@@ -298,8 +290,7 @@ struct SeatHomeView: View {
                                 if let selectedLookupType = seatHomeViewModel.selectedLookupType {
                                     LookupByNumbersView(isPresented: $showLookupAlert, lookupType: selectedLookupType)
                                         .clipped()
-                                        .padding(.bottom,calculatedBottomPadding())
-                                        .background(.white)
+                                        .background(Color.primaryText)
                                         .transition(.move(edge: .trailing))
                                         .animation(.easeInOut, value: showLookupAlert)
                                         .onAppear{
@@ -309,8 +300,7 @@ struct SeatHomeView: View {
                             } else if showLookupAlertByName {
                                 LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
                                     .clipped()
-                                    .padding(.bottom,calculatedBottomPadding())
-                                    .background(.white)
+                                    .background(Color.primaryText)
                                     .transition(.move(edge: .trailing))
                                     .animation(.easeInOut, value: showLookupAlert)
                                     .onAppear{
@@ -319,8 +309,7 @@ struct SeatHomeView: View {
                             } else if showLookupAlertBySeat {
                                 SeatLookupView(isPresented: $showLookupAlertBySeat)
                                     .clipped()
-                                    .padding(.bottom,calculatedBottomPadding())
-                                    .background(.white)
+                                    .background(Color.primaryText)
                                     .transition(.move(edge: .trailing))
                                     .animation(.easeInOut, value: showLookupAlert)
                                     .onAppear{
@@ -333,13 +322,15 @@ struct SeatHomeView: View {
                                         scannerLineAnimation = true
                                     }
                             }
-                            Spacer()
                         }
+                        .frame(width:UIScreen.main.bounds.width)
                         
                     }
                 }.frame(height: UIScreen.main.bounds.height)
+                    .environmentObject(stringManager)
             }
         }
+        
         .onChange(of: showLookupAlert) { newValue in
             if newValue == false {
                 isScanningCell = true
@@ -401,7 +392,7 @@ struct SeatHomeView: View {
                         Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
                              StringConstants.LandingView.logoutConfirm)
                         .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
                         .minimumScaleFactor(0.5)
                         .lineLimit(isOfflineMode ? 10 : 1)
@@ -414,10 +405,10 @@ struct SeatHomeView: View {
                             HStack {
                                 Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
                                     .font(.verlagBoldAdaptive(size: 30))
-                                    .foregroundColor(Color.customWhite)
+                                    .foregroundColor(Color.primaryText)
                                     .padding()
                                     .frame(maxWidth: .infinity)
-                                    .background(Color.FFCE_62)
+                                    .background(Color.secondaryBg)
                                     .cornerRadius(12)
                                     .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                     .onTapGesture {
@@ -436,7 +427,7 @@ struct SeatHomeView: View {
                             HStack {
                                 Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
                                     .font(.verlagBoldAdaptive(size: 30))
-                                    .foregroundColor(Color.customWhite)
+                                    .foregroundColor(Color.primaryText)
                                     .padding()
                                     .frame(maxWidth: .infinity)
                                     .onTapGesture {
@@ -454,20 +445,7 @@ struct SeatHomeView: View {
                 
             }
             .background {
-                Image(StringConstants.DRTImages.backgound)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: UIScreen.main.bounds.height * 0.35)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-                    .edgesIgnoringSafeArea(.top)
-                    .overlay(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                            startPoint: .top,
-                            endPoint: .center
-                        )
-                    )
+                AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .customAlert(isPresented: $showOfflineAlert) {
@@ -477,7 +455,7 @@ struct SeatHomeView: View {
                     Text(StringConstants.Common.error)
                         .padding(.leading, 20)
                         .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
                     
@@ -498,13 +476,13 @@ struct SeatHomeView: View {
                 VStack {
                     Text(viewModel.errorMessage ?? "")
                         .font(.verlagBookAdaptive(size: 18))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
                         .padding()
                 }
             }
             .padding()
-            .background(Color.FFCE_62)
+            .background(Color.secondaryBg)
         }
         .customAlert(isPresented: $showOfflineSuccessAlert) {
             VStack(alignment: .center) {
@@ -512,7 +490,7 @@ struct SeatHomeView: View {
                     Spacer()
                     Text(StringConstants.Common.success)
                         .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .padding(.bottom, 10)
                         .padding(.top, 20)
                     
@@ -522,38 +500,20 @@ struct SeatHomeView: View {
                 VStack {
                     Text(StringConstants.SeatHomeView.successDbDownloadAlert)
                         .font(.verlagBookAdaptive(size: 18))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
                         .padding()
                 }
             }
             .padding()
             .background {
-                Image(StringConstants.DRTImages.backgound)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: UIScreen.main.bounds.height * 0.25)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-                    .edgesIgnoringSafeArea(.top)
-                    .overlay(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                            startPoint: .top,
-                            endPoint: .center
-                        )
-                    )
+                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25, shadow:true)
             }
         }
         .ignoresSafeArea()
     }
 }
 
-struct SeatHomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        SeatHomeView(showSeatView: .constant(true))
-    }
-}
 
 extension Notification.Name {
     static let resetCameraView = Notification.Name("resetCameraView")

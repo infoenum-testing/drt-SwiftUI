@@ -26,22 +26,22 @@ struct ChooseSectionSubView: View {
             List(seatLabels, id: \.self) { seat in
                 ChooseSectionCell(seatLabel: seat)
                     .frame(height: 80)
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                     .onTapGesture {
                         // When a seat is tapped, update selection and dismiss view
                         selectedSeat = seat
                         isPresent = false
                         selectedSection = seat
                     }
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                 
                 Divider()
                     .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
-            .background(Color.customWhite)
+            .background(Color.primaryText)
         }
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .onAppear {
             // Fetch sections from Core Data if offline, otherwise from API
             if isOfflineMode {

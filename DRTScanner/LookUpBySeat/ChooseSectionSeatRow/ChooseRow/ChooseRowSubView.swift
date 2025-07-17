@@ -25,21 +25,21 @@ struct ChooseRowSubView: View {
             List(rowSelect, id: \.self) { seat in
                 ChooseRowCell(row: seat)
                     .frame(height: 80)
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                     .onTapGesture {
                         // When a seat is tapped, update selectedSeat and selectedRow, and dismiss the view
                         selectedSeat = seat
                         selectedRow = seat
                         isPresent = false
                     }
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                 Divider()
                     .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
-            .background(Color.customWhite)
+            .background(Color.primaryText)
         }
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .onAppear {
             // On appear, fetch rows either from Core Data (offline) or API (online)
             if isOfflineMode {

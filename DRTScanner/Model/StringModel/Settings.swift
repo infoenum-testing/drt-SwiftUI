@@ -18,6 +18,7 @@ struct Settings: Codable {
 	let settings: String
 	let timer: String
 	let duplicate: String
+    let language: String
 
     private enum CodingKeys: String, CodingKey {
             case scanStats = "scan-stats"
@@ -28,5 +29,6 @@ struct Settings: Codable {
             case settings = "settings"
             case timer = "timer"
             case duplicate = "duplicate"
+            case language = "change-language"
         }
 }

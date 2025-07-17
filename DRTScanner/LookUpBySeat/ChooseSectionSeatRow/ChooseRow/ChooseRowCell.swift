@@ -14,12 +14,12 @@ struct ChooseRowCell: View {
         HStack {
             Text(row)
                 .font(.verlagBoldAdaptive(size: 32))
-                .foregroundColor(Color.FFCE_62)
+                .foregroundColor(Color.secondaryBg)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding()
         .listRowSeparator(.hidden)
-            .background(Color.customWhite)
+        .background(Color.primaryText)
     }
 }
 

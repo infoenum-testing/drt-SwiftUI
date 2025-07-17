@@ -32,7 +32,7 @@ struct TimePickerView: View {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     Text(viewModel.getTimeOptions(for: index)[idx])
                         .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                         .padding(.vertical, 10)
                         .padding(.horizontal, 10)
                         .tag(idx)
@@ -49,7 +49,7 @@ struct TimePickerView: View {
                 }) {
                     Text(StringConstants.Common.save)
                         .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(.customGreen)
+                        .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.clear)
@@ -60,14 +60,14 @@ struct TimePickerView: View {
                 }) {
                     Text(StringConstants.Common.cancel)
                         .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(.customGreen)
+                        .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.FDB_54_E)
+        .background(Color.previous)
         .padding()
     }
 }

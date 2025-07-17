@@ -86,13 +86,14 @@ struct LookupByNumbersView: View {
                 VStack {
                     VStack {
                         // Top bar with back button, input field, and delete button
-                        HStack(alignment: .center){
+                        HStack(alignment: .center) {
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     isPresented = false
                                 }
                             }) {
                                 Image(StringConstants.DRTImages.leftSideArrow)
+                                    .foregroundStyle(Color.neutralText)
                             }
                             Spacer()
                             
@@ -100,7 +101,7 @@ struct LookupByNumbersView: View {
                                 if !inputText.isEmpty {
                                     Text(placeholderText)
                                         .font(.verlagBookAdaptive(size: 10))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(Color.neutralText)
                                         .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
                                         .animation(.easeInOut, value: inputText.isEmpty)
                                 }
@@ -108,7 +109,7 @@ struct LookupByNumbersView: View {
                                 TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
                                     .font(.verlagBoldAdaptive(size: 40))
                                     .multilineTextAlignment(.center)
-                                    .foregroundColor(.customWhite)
+                                    .foregroundColor(Color.neutralText)
                                     .minimumScaleFactor(0.5)
                                     .lineLimit(1)
                                     .disabled(true)
@@ -122,11 +123,12 @@ struct LookupByNumbersView: View {
                                 }
                             }) {
                                 Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
+                                    .foregroundColor(Color.neutralText)
                             }
                         }
                         .padding(.horizontal, 20.adaptiveForIpad)
                         .padding([.top, .bottom], 20.adaptiveForIpad)
-                    }.background(Color.FFCE_62)
+                    }.background(Color.neutralBg)
                     // Keypad for entering numbers and OK
                     HStack {
                         VStack(spacing: 1) {
@@ -144,7 +146,7 @@ struct LookupByNumbersView: View {
                                             
                                             Text(button)
                                                 .font(.verlagBoldAdaptive(size: 50))
-                                                .foregroundColor(button == "OK" ? .customWhite : Color.customGreen)
+                                                .foregroundColor(button == "OK" ? .primaryText : Color.primaryBg)
                                                 .frame(maxWidth: .infinity)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -157,7 +159,7 @@ struct LookupByNumbersView: View {
                         }
                     }
                 }
-                .background(Color.FFCE_62)
+                .background(Color.neutralBg)
             }
             
             // Show result view if a lookup has been performed
@@ -197,7 +199,7 @@ struct LookupByNumbersView: View {
                         .onTapGesture { }
                     ProgressView()
                         .scaleEffect(1.5)
-                        .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .font(.title)
                         .padding()
                 }

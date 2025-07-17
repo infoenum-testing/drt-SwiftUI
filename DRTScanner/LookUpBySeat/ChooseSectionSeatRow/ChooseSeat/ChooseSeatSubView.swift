@@ -34,20 +34,20 @@ struct ChooseSeatSubView: View {
             List(seatSelect, id: \.self) { seat in
                 ChooseSeatCell(seatLabel: seat)
                     .frame(height: 80)
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                     .onTapGesture {
                         // When a seat is tapped, update the selected seat and dismiss the view
                         selectedSeat = seat
                         isPresent = false
                     }
-                    .listRowBackground(Color.white)
+                    .listRowBackground(Color.primaryText)
                 Divider()
                     .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
-            .background(Color.customWhite)
+            .background(Color.primaryText)
         }
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .onAppear {
             // Fetch seats when the view appears, using Core Data if offline mode is enabled
             if isOfflineMode {

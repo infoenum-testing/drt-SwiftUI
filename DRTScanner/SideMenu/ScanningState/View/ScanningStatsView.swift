@@ -27,9 +27,9 @@ struct ScanningStatsView: View {
                 Spacer()
                 Text(StringConstants.SideMenuView.scaningStatsTitle)
                     .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(.customWhite)
+                    .foregroundColor(Color.primaryText)
                     .padding(.leading, 10)
-                    .padding(.top, 60)
+                    .padding(.top, 50)
                 
                 Spacer()
                 Button(action: {
@@ -62,10 +62,9 @@ struct ScanningStatsView: View {
                     .padding(.top)
             }
         }
-        .padding(20)
-        .background(Color.FFCE_62)
+        .padding(15)
+        .background(Color.secondaryBg)
         .edgesIgnoringSafeArea(.all)
-        .padding(.top, -60)
         .onAppear {
             Task {
                 await viewModel.fetchStats()
@@ -78,11 +77,11 @@ struct ScanningStatsView: View {
         HStack {
             Text(title)
                 .font(.verlagBoldAdaptive(size: 20))
-                .foregroundColor(.customWhite)
+                .foregroundColor(Color.primaryText)
             Spacer()
             Text(value.map { "\($0)" } ?? "N/A")
                 .font(.verlagBoldAdaptive(size: 20))
-                .foregroundColor(.customWhite)
+                .foregroundColor(Color.primaryText)
         }
         .padding(.bottom)
     }

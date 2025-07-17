@@ -12,7 +12,7 @@ struct InvalidSeatTicketView: View {
     let message: String
     let isInFullScreen: Bool
     @EnvironmentObject var stringManager: StringManager
-    
+    let backGround: Color
     var body: some View {
         VStack {
             VStack {
@@ -29,14 +29,14 @@ struct InvalidSeatTicketView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding(.bottom)
                 
                 Text(stringManager.strings?.incorrectMode.merch ?? StringConstants.DRTToastMessages.inValidTicketVoucher)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                 
                 if isInFullScreen {
                     Spacer()
@@ -50,7 +50,7 @@ struct InvalidSeatTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.customRed)
+        .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

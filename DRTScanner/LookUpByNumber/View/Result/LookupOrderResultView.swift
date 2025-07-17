@@ -39,22 +39,23 @@ struct LookupOrderResultView: View {
                         }
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
+                            .foregroundStyle(Color.neutralText)
                     }.padding(.leading, 20)
                     
                     Spacer()
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? "Loading..." : "")
-                            .foregroundColor(Color.customWhite)
+                            .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .padding(.trailing, 5)
                         Spacer()
                     }
                     if !viewModel.isLoading {
                         Text(viewModel.buyerName == "No orders found" ? StringConstants.Common.noOrdersFound : viewModel.buyerName.uppercased())
-                            .foregroundColor(Color.customWhite)
+                            .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         Spacer()
@@ -62,26 +63,26 @@ struct LookupOrderResultView: View {
                 }
                 if !viewModel.isLoading {
                     if viewModel.buyerName != "No orders found" {
-                    HStack(alignment: .center) {
-                        Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order?.orderId ?? 0))")
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.customWhite)
-                        Text("\(stringManager.strings?.searchResults.cc ?? "CC")" + " \(order?.cc ?? "")")
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.customWhite)
+                        HStack(alignment: .center) {
+                            Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order?.orderId ?? 0))")
+                                .font(.verlagBoldAdaptive(size: 15))
+                                .foregroundColor(Color.neutralText)
+                            Text("\(stringManager.strings?.searchResults.cc ?? "CC")" + " \(order?.cc ?? "")")
+                                .font(.verlagBoldAdaptive(size: 15))
+                                .foregroundColor(Color.neutralText)
+                        }
                     }
                 }
-            }
-                }.padding([.bottom, .top])
-                    .background(Color.FFCE_62)
-                    .frame(maxWidth: .infinity)
+            }.padding([.bottom, .top])
+                .background(Color.neutralBg)
+                .frame(maxWidth: .infinity)
             VStack {
                 // Merchandise section (online/offline)
                 if let isMerchandise, isMerchandise {
                     if isOfflineMode {
                         if isLoadingMerch {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                                 .padding()
                             Spacer()
                         }
@@ -96,17 +97,17 @@ struct LookupOrderResultView: View {
                                 }
                             }
                             .listStyle(.plain)
-                                .padding(0)
+                            .padding(0)
                         } else {
                             Text("No merchandise found.")
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color.neutralText)
                             Spacer()
                         }
                     } else {
                         
                         if isLoadingMerch {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                                 .padding()
                             Spacer()
                         }
@@ -121,26 +122,26 @@ struct LookupOrderResultView: View {
                                 }
                             }
                             .listStyle(.plain)
-                                .padding(0)
+                            .padding(0)
                         }
                     }
                 } else {
                     // Seat section
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? "Loading..." : "")
-                            .foregroundColor(Color.customWhite)
+                            .foregroundColor(Color.primaryText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                                .padding(.trailing, 5)
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                            .padding(.trailing, 5)
                         Spacer()
-                        }
+                    }
                     if !viewModel.isLoading {
                         List {
                             ForEach(seats.indices, id: \.self) { index in
                                 SeatCell(seat: $seats[index], showAlert: $showAlert, lookupByOrderResultViewModel: viewModel)
-                                    .listRowBackground(Color.white)
+                                    .listRowBackground(Color.primaryText)
                             }
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
@@ -150,7 +151,7 @@ struct LookupOrderResultView: View {
                 }
             }
         }
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .task {
             // Fetch seats and merchandise when view appears
             isLoadingMerch = true
@@ -158,7 +159,7 @@ struct LookupOrderResultView: View {
             self.seats = viewModel.seatsModel ?? []
             self.merch = viewModel.merchModel ?? []
             self.merchOrders = merch.map { MerchandiseOrder(from: $0) }
-           
+            
             if let orderId = order?.orderId {
                 fetchProducts(orderId: orderId)
             }
@@ -175,16 +176,16 @@ struct LookupOrderResultView: View {
                                 showAlert = false
                             }
                         }
-
+                    
                     VStack(alignment: .center) {
                         HStack {
                             Spacer()
                             Text(StringConstants.Common.error)
                                 .padding(.leading, 20)
                                 .font(.verlagBoldAdaptive(size: 30))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.primaryText)
                                 .padding(.bottom, 10)
-
+                            
                             Spacer()
                             Button(action: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -198,11 +199,11 @@ struct LookupOrderResultView: View {
                                     .contentShape(Rectangle())
                             }.padding(.bottom, 10)
                         }
-
+                        
                         VStack {
                             Text(viewModel.errorMessage ?? "This")
                                 .font(.verlagBookAdaptive(size: 18))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.primaryText)
                                 .multilineTextAlignment(.center)
                                 .padding()
                         }.onChange(of: errorMessages) { _ in
@@ -212,14 +213,14 @@ struct LookupOrderResultView: View {
                     }
                     .padding(30)
                     .padding(.top, 30)
-                    .background(Color.FFCE_62)
+                    .background(Color.secondaryBg)
                     .frame(width: geometry.size.width * 1)
                     .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top)
                     
                 }
             }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? -90 : -60)
-
-            .edgesIgnoringSafeArea(.all)
+            
+                .edgesIgnoringSafeArea(.all)
         }
         .edgesIgnoringSafeArea(.all)
     }

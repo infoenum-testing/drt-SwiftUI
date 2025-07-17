@@ -15,7 +15,7 @@ struct CustomCellView: View {
     var title: String
     var subtitle: String
     var cellHeight: CGFloat
-    var bottomLineColor: Color = .gray
+    var bottomLineColor: Color = Color.primaryText
     var buttonImage: String
     var showDivider: Bool = true
     var buttonAction: () -> Void
@@ -30,18 +30,20 @@ struct CustomCellView: View {
                 HStack(alignment: .center) {
                     Image(imageName)
                         .resizable()
+                        .foregroundColor(Color.neutralText)
                         .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                     VStack(alignment: .leading, spacing: 6) {
                         Text(title)
                             .font(.verlagBookAdaptive(size: 15))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.neutralText)
                         Text(subtitle)
                             .font(.verlagBoldAdaptive(size: 18))
-                            .foregroundColor(Color.FFCE_62)
+                            .foregroundColor(Color.neutralText)
                     }
                     Spacer()
                     Image(buttonImage)
                         .resizable()
+                        .foregroundColor(Color.neutralText)
                         .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
                 }
                 .padding(.horizontal)
@@ -51,30 +53,36 @@ struct CustomCellView: View {
             if showDivider {
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     if !isMerchandise {
-                        Divider()
+                        Rectangle()
+                            .fill(Color.primaryText)
+                            .frame(maxWidth: .infinity)
                             .frame(height: 8.0)
-                            .foregroundColor(bottomLineColor)
+                           
                     } else {
-                        Divider()
+                        Rectangle()
+                            .fill(Color.primaryText)
+                            .frame(maxWidth: .infinity)
                             .frame(height: dividerHeight())
-                            .foregroundColor(bottomLineColor)
+                            
                     }
                 } else {
-                    Divider()
+                    Rectangle()
+                        .fill(Color.primaryText)
+                        .frame(maxWidth: .infinity)
                         .frame(height: dividerHeight())
-                        .foregroundColor(bottomLineColor)
+                       
                 }
             }
         }
         .padding(.horizontal, 0)
         .frame(width: UIScreen.main.bounds.width, height: cellHeight)
-        .background(Color.customWhite)
+        .background(Color.neutralBg)
     }
     private func dividerHeight() -> CGFloat {
            if UIDevice.current.userInterfaceIdiom == .pad {
-               return isMerchandise ? 0.5 : 0  // If not merchandise on iPad, use thicker divider
+               return isMerchandise ? 0.8 : 0  // If not merchandise on iPad, use thicker divider
            } else {
-               return 0.8 // Always 0.5 on iPhone
+               return 1.2 // Always 0.5 on iPhone
            }
        }
 }

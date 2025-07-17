@@ -27,7 +27,7 @@ struct DRTUser: Codable {
         case stats
         case valid
         case studioId = "studioId"
-        case skin
+        case skin = "skin"
         case isUserLoggedIn
     }
 }

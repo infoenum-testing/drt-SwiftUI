@@ -45,43 +45,43 @@ struct SeatCell: View {
                 HStack {
                     Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
                         .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.customGreen)
+                        .foregroundColor(Color.primaryBg)
                 }
                 HStack(alignment: .center) {
                     HStack(alignment: .bottom, spacing: 0) {
                         Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
                             .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                             .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
                         Text("\(seat.section)")
                             .font(.verlagBoldAdaptive(size: 20))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                     }
                     Spacer()
                     HStack(alignment: .bottom, spacing: 0) {
                         Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
                             .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                             .padding(.bottom, 1.adaptiveForIpad)
                         Text("\(seat.row)")
                             .font(.verlagBoldAdaptive(size: 20))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                     }
                     Spacer()
                     HStack(alignment: .bottom, spacing: 0) {
                         Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
                             .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                             .padding(.bottom, 1.adaptiveForIpad)
                         Text("\(seat.seat)")
                             .font(.verlagBoldAdaptive(size: 22))
-                            .foregroundColor(Color.customGreen)
+                            .foregroundColor(Color.primaryBg)
                     }
                     
                     Spacer()
                     if isLoading {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .scaleEffect(1.0)
                             .padding(10)
                     } else {
@@ -95,7 +95,7 @@ struct SeatCell: View {
                     }
                 }
             }
-            .background(Color.customWhite)
+            .background(Color.neutralBg)
             .padding([.leading, .top, .trailing])
             .padding(.bottom, 5)
             .onAppear {

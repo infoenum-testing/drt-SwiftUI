@@ -51,6 +51,7 @@ struct LookupByNameView: View {
                         }
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
+                            .foregroundStyle(Color.neutralText)
                             .padding(.horizontal, 20)
                     }
 
@@ -60,7 +61,7 @@ struct LookupByNameView: View {
                         if !inputText.isEmpty {
                             Text(placeholderText)
                                 .font(.verlagBookAdaptive(size: 10))
-                                .foregroundColor(.gray)
+                                .foregroundColor(Color.neutralText)
                                 .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
                                 .animation(.easeInOut, value: inputText.isEmpty)
                         }
@@ -74,7 +75,7 @@ struct LookupByNameView: View {
                         )
                         .font(.verlagBoldAdaptive(size: 34))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(Color.customWhite)
+                        .foregroundColor(Color.neutralText)
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                         .padding(.all, 10)
@@ -91,12 +92,13 @@ struct LookupByNameView: View {
                         }
                     }) {
                         Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
+                            .foregroundColor(Color.neutralText)
                             .padding(.horizontal, 20)
                     }
                 }
                 .padding(.horizontal, 2.adaptiveForIpad)
                 .padding([.top, .bottom], 12.adaptiveForIpad)
-                .background(Color.FFCE_62)
+                .background(Color.neutralBg)
 
                 Spacer()
 
@@ -110,12 +112,12 @@ struct LookupByNameView: View {
                     } else {
                         Text("Search")
                             .font(.verlagBoldAdaptive(size: 36))
-                            .foregroundColor(.customWhite)
+                            .foregroundColor(Color.primaryText)
 //                            .padding(.top, 5.adaptiveForIpad)
 //                            .font(.verlagBoldAdaptive(size: 30))
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.FFCE_62)
+                            .background(Color.secondaryBg)
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
@@ -124,11 +126,11 @@ struct LookupByNameView: View {
                 .opacity(inputText.isEmpty ? 0.6 : 1.0)
                 .frame(height: geometry.size.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
-                .background(Color.white)
+                .background(Color.primaryText)
                 .padding(.horizontal)
                 
             }
-            .background(Color.white)
+            .background(Color.primaryText)
             .customSheetView(isPresented: $showResultView) {
                 if let firstOrder = order {
                     LookupByNameResultView(

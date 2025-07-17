@@ -11,6 +11,7 @@ import SwiftUI
 struct InvalidMerchandiseTicketView: View {
     @EnvironmentObject var stringManager: StringManager
     let isInFullScreen: Bool
+    let backGround: Color
     var body: some View {
         VStack {
             VStack {
@@ -26,14 +27,14 @@ struct InvalidMerchandiseTicketView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding(.bottom)
                 
                 Text(stringManager.strings?.incorrectMode.tickets ?? StringConstants.DRTToastMessages.inValidMerchandiseVoucher)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                 
                 if isInFullScreen {
                     Spacer()
@@ -47,7 +48,7 @@ struct InvalidMerchandiseTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.customRed)
+        .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

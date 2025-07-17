@@ -1,45 +1,42 @@
 {
   "images" : [
     {
-      "filename" : "tickettile.png",
+      "filename" : "tile 1.svg",
+      "idiom" : "iphone"
+    },
+    {
+      "filename" : "tile.svg",
       "idiom" : "iphone",
-      "scale" : "1x"
+      "subtype" : "retina4"
+    },
+    {
+      "filename" : "tile 2.svg",
+      "idiom" : "ipad"
     },
     {
       "filename" : "tickettile 2.png",
       "idiom" : "iphone",
-      "scale" : "2x"
+      "scale" : "2x",
+      "unassigned" : true
     },
     {
       "filename" : "tickettile 3.png",
       "idiom" : "iphone",
-      "scale" : "3x"
-    },
-    {
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "subtype" : "retina4"
+      "scale" : "3x",
+      "unassigned" : true
     },
     {
       "filename" : "tickettile 4.png",
       "idiom" : "iphone",
       "scale" : "2x",
-      "subtype" : "retina4"
-    },
-    {
-      "idiom" : "iphone",
-      "scale" : "3x",
-      "subtype" : "retina4"
-    },
-    {
-      "filename" : "tickettile 1.png",
-      "idiom" : "ipad",
-      "scale" : "1x"
+      "subtype" : "retina4",
+      "unassigned" : true
     },
     {
       "filename" : "tickettile 5.png",
       "idiom" : "ipad",
-      "scale" : "2x"
+      "scale" : "2x",
+      "unassigned" : true
     }
   ],
   "info" : {

@@ -11,6 +11,7 @@ import SwiftUI
 struct InvalidTicketView: View {
     let message: String
     let isInFullScreen: Bool
+    let backGround:Color
     var body: some View {
         VStack {            
             VStack {
@@ -26,13 +27,13 @@ struct InvalidTicketView: View {
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding(.bottom)
                 
                 Text(message)
                     .font(.verlagBlackAdaptive(size: 30))
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                 if isInFullScreen {
                     Spacer()
                 } else {
@@ -45,7 +46,7 @@ struct InvalidTicketView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.customRed)
+        .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

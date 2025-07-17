@@ -32,6 +32,7 @@ struct LookupByNameResultView: View {
                             }
                         }) {
                             Image(StringConstants.DRTImages.leftSideArrow)
+                                .foregroundStyle(Color.neutralText)
                         }
                         .padding(.leading, 20)
                         
@@ -39,18 +40,18 @@ struct LookupByNameResultView: View {
                         // Loading indicator and text
                         if viewModel.isLoading {
                             Text(viewModel.isLoading ? "Loading..." : "")
-                                .foregroundColor(Color.customWhite)
+                                .foregroundColor(Color.neutralText)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
                             ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                                     .padding(.trailing, 5)
                             }
                         // Display total results or no orders found
                         if !viewModel.isLoading {
                             
                             Text(viewModel.orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(viewModel.orders.count)")
-                                .foregroundColor(Color.customWhite)
+                                .foregroundColor(Color.neutralText)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
                         }
@@ -58,7 +59,7 @@ struct LookupByNameResultView: View {
                     }
                 }
                 .padding([.bottom, .top])
-                .background(Color.FFCE_62)
+                .background(Color.neutralBg)
                 .frame(maxWidth: .infinity)
 
                 VStack {
@@ -73,7 +74,7 @@ struct LookupByNameResultView: View {
                                     selectedOrder = order
                                     oId = "\(orderId)"
                                     navigateToOrderResult = true
-                                }.listRowBackground(Color.white)
+                                }.listRowBackground(Color.primaryText)
                             }
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
@@ -84,7 +85,7 @@ struct LookupByNameResultView: View {
                 }
             }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.customWhite)
+        .background(Color.primaryText)
         .task {
             // Fetch orders when view appears
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)

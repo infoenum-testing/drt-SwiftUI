@@ -12,6 +12,7 @@ struct MerchandiseScanView: View {
     let variantName: String
     let name: String
     let isInFullScreen: Bool
+    let backGround:Color
     var body: some View {
         VStack {
             VStack {
@@ -26,7 +27,7 @@ struct MerchandiseScanView: View {
                 Image("circle_and_check_icon")
                     .resizable()
                     .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding(.top, -10.adaptiveForIpad)
 
                 VStack(spacing: 5) {
@@ -35,7 +36,7 @@ struct MerchandiseScanView: View {
                         Text("Variant Name : \(variantName)")
                     }
                 }
-                .foregroundColor(.white)
+                .foregroundColor(Color.primaryText)
                 .font(.verlagBoldAdaptive(size: 26))
                 if isInFullScreen {
                     Spacer()
@@ -49,7 +50,7 @@ struct MerchandiseScanView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(Color.validCustomGreen)
+        .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
     }

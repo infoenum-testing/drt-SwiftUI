@@ -28,7 +28,7 @@ struct SettingsView: View {
                         .font(.verlagBoldAdaptive(size: 24))
                         .padding(.leading, 10)
                         .padding(.top, 30)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.primaryText)
                     Spacer()
                     // Button to close the Settings view
                     Button(action: { isPresented = false }) {
@@ -39,7 +39,7 @@ struct SettingsView: View {
                             .padding(.top, 30)
                             .contentShape(Rectangle())
                     }
-                }.background(Color.FDB_54_E)
+                }.background(Color.previous)
                     .padding()
                 
                 // List of settings
@@ -49,11 +49,11 @@ struct SettingsView: View {
                 }
                 .listStyle(.plain)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.FDB_54_E)
+                .background(Color.previous)
             } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
                 .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
-                .background(Color.FDB_54_E)
+                .background(Color.previous)
                 .padding(.top, -30)
             // Overlay for time picker modal
             ZStack {
@@ -71,6 +71,7 @@ struct SettingsView: View {
                         }
                     }
             }
+            .padding(.top,-30)
             
         }
     }
@@ -81,7 +82,7 @@ struct SettingsView: View {
             HStack {
                 // Setting title
                 Text(setting.title)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .font(.verlagBoldAdaptive(size: 14))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -95,7 +96,7 @@ struct SettingsView: View {
                 } else {
                     Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
                         Text(setting.value ?? "")
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.primaryText)
                             .font(.verlagBoldAdaptive(size: 16))
                             .padding(8)
                     }
@@ -113,7 +114,8 @@ struct SettingsView: View {
             SettingItem(title: stringManager.strings?.settings.haptics ?? "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
             SettingItem(title: stringManager.strings?.settings.sleepTimer ?? "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
             SettingItem(title: stringManager.strings?.settings.timer ?? "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
-            SettingItem(title: stringManager.strings?.settings.duplicate ?? "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText)
+            SettingItem(title: stringManager.strings?.settings.duplicate ?? "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText),
+            SettingItem(title: stringManager.strings?.settings.language ?? "LANGUAGE", value: viewModel.selectedLangText)
         ]
         
         // Add scan stats toggle if not in Merchandise mode

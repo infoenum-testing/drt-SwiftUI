@@ -15,10 +15,10 @@ struct ChooseSectionCell: View {
             Spacer()
             Text(seatLabel)
                 .font(.verlagBoldAdaptive(size: 32))
-                .foregroundColor(Color.FFCE_62)
+                .foregroundColor(Color.secondaryBg)
             Spacer()
         }.listRowSeparator(.hidden)
-            .background(Color.customWhite)
+            .background(Color.primaryText)
     }
 }
 

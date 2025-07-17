@@ -24,24 +24,24 @@ struct GoOnlineView: View {
             if !showErrorMessage {
                 Text(StringConstants.SideMenuView.goOnline)
                     .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(.customWhite)
+                    .foregroundColor(Color.primaryText)
             }
             if isUploading {
                 Text(stringManager.strings?.dialogGoOnline.uploading ?? StringConstants.SideMenuView.goOnlineServer)
                     .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(.customWhite)
+                    .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.leading)
                     .padding()
                 if !showErrorMessage {
                     VStack {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
                             .scaleEffect(1.0)
                         
                         ProgressView(value: progress, total: 1.0)
-                            .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                            .background(Color.customWhite)
-                            .foregroundColor(.customWhite)
+                            .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
+                            .background(Color.neutralBg)
+                            .foregroundColor(.primaryText)
                             .padding()
                             .animation(.easeInOut, value: progress)
                             .onAppear {
@@ -50,14 +50,14 @@ struct GoOnlineView: View {
                         
                         Text("\(Int(progress * 100))% Completed")
                             .font(.verlagBoldAdaptive(size: 16))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.primaryText)
                         
                     }
                 }
             } else if showSuccessMessage {
                 Text(StringConstants.SideMenuView.goOnlineSuccess)
                     .font(.verlagBoldAdaptive(size: 22))
-                    .foregroundColor(.customWhite)
+                    .foregroundColor(Color.primaryText)
             }  else if showErrorMessage {
                 Text(StringConstants.SideMenuView.goOnlineFailed)
                     .font(.verlagBoldAdaptive(size: 18))
@@ -68,22 +68,7 @@ struct GoOnlineView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 3)
         .background {
-            Image(StringConstants.DRTImages.backgound)
-                .resizable()
-                .scaledToFill()
-                .frame(height: UIScreen.main.bounds.height * 0.35)
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .edgesIgnoringSafeArea(.top)
-                .padding(.top, -30)
-                .overlay(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                        startPoint: .top,
-                        endPoint: .center
-                    )
-                )
-                .padding(.top, -80)
+            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
         }
         .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }
@@ -148,7 +133,7 @@ struct CustomAlertForError: View {
                 Spacer()
                 Text(StringConstants.Common.error)
                     .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .padding(.bottom, 10)
                     .padding(.top, 20)
                 Spacer()
@@ -157,13 +142,13 @@ struct CustomAlertForError: View {
             VStack {
                 Text(message)
                     .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
                     .padding()
             }
         }
         .padding()
-        .background(Color.FFCE_62)
+        .background(Color.secondaryBg)
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 5)
         .opacity(isPresented ? 1 : 0)
     }

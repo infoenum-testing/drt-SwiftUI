@@ -154,6 +154,7 @@ struct ScannerView: View, Equatable {
     @StateObject private var keyboardObserver = KeyboardObserver()
     // ViewModel for order lookup results
     @ObservedObject var lookupByOrderResultViewModel: LookupByOrderResultViewModel
+    @ObservedObject var landingView:LandingViewModel
     // Controls visibility of the offline alert (binding from parent)
     @Binding var showOfflineAlert: Bool
     // Indicates if the input field is active
@@ -168,7 +169,7 @@ struct ScannerView: View, Equatable {
     @Binding var merchVariantName: String
     
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
-    
+//    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     let controller: ScannerViewController
@@ -198,6 +199,7 @@ struct ScannerView: View, Equatable {
          isMerchPreScanned: Binding<Bool>,
          scannerViewModel: ScannerViewModel,
          lookupByOrderResultViewModel: LookupByOrderResultViewModel,
+         landingView: LandingViewModel,
          controller: ScannerViewController,
          showOfflineAlert: Binding<Bool>) {
         _linePosition = State(initialValue: 0)
@@ -220,6 +222,7 @@ struct ScannerView: View, Equatable {
         _isMerchPreScanned = isMerchPreScanned
         self.scannerViewModel = scannerViewModel
         self.lookupByOrderResultViewModel = lookupByOrderResultViewModel
+        self.landingView = landingView
         _showOfflineAlert = showOfflineAlert
         _invalidMessage = invalidMessage
         self.controller = controller
@@ -259,7 +262,7 @@ struct ScannerView: View, Equatable {
                     }
                 }
                 if !isCameraAuthorized {
-                    Color.black
+                    Color.neutralText
                         .frame(height: isFullScreen ? nil : scanViewHeight + 30.adaptiveForIpad)
                         .frame(maxWidth: .infinity)
                         .opacity(1)
@@ -271,25 +274,25 @@ struct ScannerView: View, Equatable {
                         Spacer()
                         if isTicketValid {
                             if isPreScanned {
-                                PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true)
+                                PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true,backGround:Color.previous)
                             } else {
-                                ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true)
+                                ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true,backGround:Color.valid)
                             }
                         } else if isInvalidTicket {
-                            InvalidTicketView(message: invalidMessage, isInFullScreen: true)
+                            InvalidTicketView(message: invalidMessage, isInFullScreen: true, backGround:Color.invalid)
                         } /*else if isMerchandiseMode {*/
                         if isMerchPreScanned {
-                            PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true)
+                            PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true, backGround: Color.previous)
                         }
                         if isMerchTicketValid {
-                            MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true)
+                            MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true, backGround: Color.valid)
                         }
                         if isInvalidMerchTicket {
-                            InvalidMerchandiseTicketView(isInFullScreen: true)
+                            InvalidMerchandiseTicketView(isInFullScreen: true,backGround:Color.invalid)
                         }
                         
                         if isInvalidSeatTicket {
-                            InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true)
+                            InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true,backGround:Color.invalid)
                         }
                         //                        }
                         Spacer()
@@ -376,7 +379,7 @@ struct ScannerView: View, Equatable {
                                         .minimumScaleFactor(0.5)
                                         .lineLimit(1)
                                         .padding(.bottom, -30)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color.primaryText)
                                         .opacity(isVisibleText ? 1 : 0)
                                         .animation(.easeInOut(duration: 0.3), value: isVisibleText)
                                     
@@ -423,7 +426,7 @@ struct ScannerView: View, Equatable {
                                 print("Manual input: \(newValue)")
                             }
                         
-                        Color.FFCE_62
+                        Color.secondaryBg
                             .opacity(1)
                             .frame(height: scanViewHeight + 30.adaptiveForIpad)
                             .frame(height: 50.adaptiveForIpad)
@@ -432,7 +435,7 @@ struct ScannerView: View, Equatable {
                                 VStack(spacing: 12) {
                                     Text(stringManager.strings?.attached ?? "Using Attached Scanner")
                                         .font(.verlagBookAdaptive(size: 25))
-                                        .foregroundColor(.customWhite)
+                                        .foregroundColor(Color.primaryText)
                                         .padding(.top, -40)
                                     Image("scan__cirle_icon")
                                         .resizable()
@@ -458,14 +461,14 @@ struct ScannerView: View, Equatable {
                 
                 // Overlay for pause scan UI
                 if isStopScanVisible && !isFullScreen && !isCustomColorVisible {
-                    Color.FFCE_62
+                    Color.secondaryBg
                         .opacity(1)
                         .frame(height: scanViewHeight + 30.adaptiveForIpad)
                         .frame(height: 50.adaptiveForIpad)
                         .overlay(
                             Text("Pause, click to resume")
                                 .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.primaryText)
                                 .onTapGesture {
                                     resetScanner()
                                 }

@@ -31,6 +31,7 @@ class SettingsViewModel: ObservableObject {
     @Published var deviceSleepTimeoutText: String = "00:00 mins"
     @Published var pauseScanTimeoutText: String = "0 sec"
     @Published var duplicateScanSuppressionText: String = "0 sec"
+    @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
     
     // MARK: - Predefined Time Option Strings
     
@@ -38,6 +39,7 @@ class SettingsViewModel: ObservableObject {
     let deviceSleepOptions = (0...10).map { "\($0):00 mins" }
     let pauseScanOptions = (0...29).map { "\($0) sec" }
     let duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) sec" }
+    let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "en_US", StringManager.shared.allLangStrings?.frCA.lang ?? "fr_CA",StringManager.shared.allLangStrings?.esUS.lang ?? "es_US"]
     
     init() {
         updateTextValues()
@@ -49,6 +51,7 @@ class SettingsViewModel: ObservableObject {
         case 2: return deviceSleepOptions
         case 3: return pauseScanOptions
         case 4: return duplicateScanOptions
+        case 5: return languages
         default: return []
         }
     }
@@ -62,6 +65,10 @@ class SettingsViewModel: ObservableObject {
             pauseScanTimeout = timeIndex
         case 4:
             duplicateScanSuppression = timeIndex * 5 // Set duplicate scan suppression (in 5 seconds)
+        case 5:
+            UserDefaults.standard.set(languages[timeIndex],forKey: "selectedLang")
+            selectedLangText = languages[timeIndex]
+            StringManager.shared.updateLang(for: languages[timeIndex])
         default: break
         }
         // Update the displayed text values based on saved settings
