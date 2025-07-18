@@ -137,7 +137,7 @@ func topSafeAreaPaddingHeader() -> CGFloat {
 
     let topInset = window?.safeAreaInsets.top ?? 0
     if screenHeight <= 667 {
-            return 5
+            return 15
     }
 
     return topInset

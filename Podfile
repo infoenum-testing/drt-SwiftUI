@@ -9,5 +9,6 @@ target 'DRTScanner' do
 
 pod 'IQAPIClient'
 pod 'KeychainSwift', '~> 20.0'
+pod 'Alamofire'
 
 end

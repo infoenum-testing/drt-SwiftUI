@@ -17,28 +17,28 @@ struct GoOfflineView: View {
     @State private var name = ""
     @State private var isSyncing = false
     @State private var downloadLabel: String = ""
-
+    
     @Binding var isPresented: Bool
     @Binding var showOfflineAlert: Bool
     @Binding var showOfflineSuccessAlert: Bool
-
+    
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
-
+    
     @FocusState private var isNameFieldFocused: Bool
     @State private var keyboardHeight: CGFloat = 0
-
+    
     @ObservedObject var viewModel: LookupByOrderResultViewModel
     @EnvironmentObject var stringManager: StringManager
-
+    
     var isContinueDisabled: Bool {
         name.count < 5 || isSyncing || !isValidName(name)
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-    
+            Spacer()
             Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
                 .font(.verlagBookAdaptive(size: 18))
                 .foregroundColor(Color.primaryText)
@@ -46,11 +46,11 @@ struct GoOfflineView: View {
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
-
+            
             if !isSyncing {
                 TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
                     .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
-                    .font(.verlagBook(size: 30))
+                    .font(.verlagBookAdaptive(size: 30))
                     .background(Color.neutralBg)
                     .foregroundColor(Color.neutralText)
                     .frame(alignment: .center)
@@ -63,29 +63,29 @@ struct GoOfflineView: View {
                     }
                     .padding(.horizontal)
             }
-
+            
             if isSyncing {
                 VStack(spacing: 8) {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .scaleEffect(1.0)
-
+                    
                     Text(downloadLabel)
                         .font(.verlagBoldAdaptive(size: 18))
                         .foregroundColor(Color.primaryText)
-
+                    
                     ProgressView(value: progress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
                         .background(Color.neutralBg)
                         .foregroundColor(Color.primaryText)
                         .padding(2)
-
+                    
                     Text("\(Int(progress * 100))% Completed")
                         .font(.verlagBoldAdaptive(size: 16))
                         .foregroundColor(Color.primaryText)
                 }
             }
-
+            
             if !isSyncing {
                 HStack {
                     Spacer()
@@ -97,7 +97,7 @@ struct GoOfflineView: View {
                     }) {
                         Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
                             .font(.verlagBoldAdaptive(size: 30))
-                            .foregroundColor(isContinueDisabled ? Color.neutralText : Color.primaryText)
+                            .foregroundColor(isContinueDisabled ? Color.neutralBg : Color.primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
@@ -126,29 +126,27 @@ struct GoOfflineView: View {
                     .disabled(isSyncing)
                 }
             }
+            Spacer()
         }
-        .frame(
-            maxWidth: .infinity,
-            maxHeight: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.height / 1.5 : UIScreen.main.bounds.height / 1.8
-        )
+        .frame(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6)
         .background {
-            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.65,shadow: true)
+            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6,shadow: true)
         }
     }
-
+    
     func isValidName(_ name: String) -> Bool {
         let pattern = "^[A-Za-z]+([ '-][A-Za-z]+)*$"
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: name.utf16.count)
         return regex?.firstMatch(in: name, options: [], range: range) != nil
     }
-
+    
     private func goOffline() {
         guard name.count >= 5 else { return }
         isSyncing = true
         progress = 0.0
         downloadLabel = stringManager.strings?.dialogGoOffline.preparing ?? "Preparing Download"
-
+        
         IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {
             case .success(let response):
@@ -223,18 +221,17 @@ struct GoOfflineView: View {
     }
 }
 
-
 // Publisher extension to observe keyboard height changes
 extension Publishers {
     static var keyboardHeight: AnyPublisher<CGFloat, Never> {
         let willShow = NotificationCenter.default
             .publisher(for: UIResponder.keyboardWillShowNotification)
             .map { ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0 }
-
+        
         let willHide = NotificationCenter.default
             .publisher(for: UIResponder.keyboardWillHideNotification)
             .map { _ in CGFloat(0) }
-
+        
         return MergeMany(willShow, willHide)
             .eraseToAnyPublisher()
     }

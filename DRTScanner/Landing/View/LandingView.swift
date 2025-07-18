@@ -57,7 +57,7 @@ struct LandingView: View {
                         Spacer()
                         
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .foregroundColor(Color.primaryText)
                             .scaleEffect(1.5)
                             .padding(.bottom)
@@ -88,7 +88,7 @@ struct LandingView: View {
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.top, UIScreen.main.bounds.height * 0.032)
+                            .padding(.top, UIScreen.main.bounds.height * 0.038)
                             .transition(.opacity)
                         }
                         
@@ -200,6 +200,7 @@ struct LandingView: View {
                     // Logout confirmation alert
                     .customAlert(isPresented: $showLogoutAlert) {
                         VStack {
+                            Spacer()
                             Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
                                  StringConstants.LandingView.logoutConfirm)
                             .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
@@ -253,11 +254,12 @@ struct LandingView: View {
                                     }
                                 }
                             }
-                            .frame(maxWidth: .infinity)
+                            Spacer()
                         }
                         .padding()
+                        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4)
                         .background {
-                            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
+                            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow: true)
                         }
                     }
                     // Show code entry sheet
@@ -300,7 +302,7 @@ struct LandingView: View {
                                                 .padding(.trailing, 20)
                                         }
                                     }
-                                    .padding(.top,50)
+                                    .padding(.top,20)
                                     Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? StringConstants.LandingView.invalidShowCode)
                                         .font(.verlagBookAdaptive(size: 18))
                                         .padding(.bottom)
@@ -308,7 +310,6 @@ struct LandingView: View {
                                 }
                                 .padding()
                                 .background(Color.secondaryBg)
-                                .padding(.top ,-50)
                             }
                         }
                 }
@@ -323,20 +324,6 @@ struct LandingView: View {
                 }
             }
             .ignoresSafeArea(.keyboard)
-            .onChange(of: sizeData.isPortrait) { newValue in
-                //                viewModel.isLoading = true
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                //                    viewModel.isLoading = false
-                //                }
-            }
-            .onAppear {
-                if !showCode.isEmpty {
-                    Task {
-                        await viewModel.validateCode(showCode, context: context)
-                    }
-                }
-                
-            }
         }
         .scrollDisabled(true)
         .ignoresSafeArea(edges: .top)

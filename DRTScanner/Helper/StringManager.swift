@@ -22,8 +22,8 @@ class StringManager: ObservableObject {
             do {
                 let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
                 self.allLangStrings = appStrings
-                let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
-               updateLang(for: langCode)
+                let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
+                updateLang(for: langCode)
             } catch {
                 print("Decoding error: \(error)")
             }
@@ -42,7 +42,7 @@ class StringManager: ObservableObject {
                         do {
                             let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
                             self.allLangStrings = appStrings
-                            let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
+                            let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
                             self.updateLang(for: langCode)
                         } catch {
                             print("Decoding error: \(error)")
@@ -52,22 +52,24 @@ class StringManager: ObservableObject {
                 }
                 
             case .failure(let error):
-                print("Failed to fetch strings:", error)            }
+                print("Failed to fetch strings:", error)
+            }
         }
     }
     
     func updateLang(for code: String) {
         var tamp = "en_US"
         switch code {
-        case "English":
+        case allLangStrings?.enUS.lang ?? "English":
             tamp = "en_US"
-        case "French":
+        case allLangStrings?.frCA.lang ?? "French":
             tamp = "fr_CA"
-        case "Spanish":
+        case allLangStrings?.esUS.lang ?? "Spanish":
             tamp = "es_US"
         default:
             break
         }
         self.strings =  allLangStrings?[tamp]
     }
+    
 }

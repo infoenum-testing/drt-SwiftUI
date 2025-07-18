@@ -66,12 +66,11 @@ struct SideMenuView: View {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
-                                // isPresented = false
                             }
                         }
                         // Scanning Stats option (only if not in merchandise mode)
                         if !isMerchandise {
-                            SideMenuOption(title: StringConstants.SideMenuView.scaningStats) {
+                            SideMenuOption(title: stringManager.strings?.menu.scanningStats ?? StringConstants.SideMenuView.scaningStats) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showScanningStatsView = true
                                 }
@@ -86,14 +85,14 @@ struct SideMenuView: View {
                         }
                         // Merchandise/Ticket switch option
                         if isMerchandise {
-                            SideMenuOption(title: StringConstants.SideMenuView.scanTicket) {
+                            SideMenuOption(title: stringManager.strings?.menu.scanTickets ?? StringConstants.SideMenuView.scanTicket) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
                                 }
                             }
                         } else {
-                            SideMenuOption(title: StringConstants.SideMenuView.scanMerchandise) {
+                            SideMenuOption(title: stringManager.strings?.menu.scanMerch ?? StringConstants.SideMenuView.scanMerchandise) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
@@ -101,7 +100,7 @@ struct SideMenuView: View {
                             }
                         }
                         // Logout option
-                        SideMenuOption(title: StringConstants.SideMenuView.logout) {
+                        SideMenuOption(title: stringManager.strings?.menu.logOut ?? StringConstants.SideMenuView.logout) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
@@ -124,10 +123,10 @@ struct SideMenuView: View {
                             Alert(
                                 title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
                                 message: Text(""),
-                                primaryButton: .default(Text( "OPEN")) {
+                                primaryButton: .default(Text( stringManager.strings?.dialogOpenBrowser.continueField ?? "OPEN")) {
                                     openDRTWebsite()
                                 },
-                                secondaryButton: .cancel(Text("CANCEL"))
+                                secondaryButton: .cancel(Text(stringManager.strings?.dialogOpenBrowser.cancel ?? "CANCEL"))
                             )
                         }
                         
@@ -155,86 +154,76 @@ struct SideMenuView: View {
         }
         // Confirmation alert for switching merchandise/ticket mode
         .customAlert(isPresented: $showConfirmationAlert) {
-            GeometryReader { geometry in
-                ZStack(alignment: .top) {
-                    Color.black.opacity(0.0)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showConfirmationAlert = false
-                            }
+            ZStack(alignment: .top) {
+                Color.black.opacity(0.0)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showConfirmationAlert = false
                         }
+                    }
+                VStack(alignment: .center) {
+                    Spacer()
+                    Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? StringConstants.SideMenuView.merchandise : stringManager.strings?.switchMode.tickets ?? StringConstants.SideMenuView.ticket)")
+                        .font(.verlagBoldAdaptive(size: 26))
+                        .foregroundColor(Color.primaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom)
                     
-                    VStack(alignment: .center) {
-                        // Confirmation message
-                        Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? StringConstants.SideMenuView.merchandise : stringManager.strings?.switchMode.tickets ?? StringConstants.SideMenuView.ticket)")
-                            .font(.verlagBoldAdaptive(size: 26))
-                            .foregroundColor(Color.primaryText)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, 20)
-                        
-                        VStack {
-                            // NO button
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                        isMerchandise = isSwitchingToMerchandise ?? false
-                                        showConfirmationAlert = false
-                                        isPresented = false
-                                    }
-                                }) {
-                                    Text("YES")
-                                        .font(.verlagBoldAdaptive(size: 30))
-                                        .foregroundColor(Color.primaryText)
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
+                    VStack {
+                        // NO button
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isMerchandise = isSwitchingToMerchandise ?? false
+                                    showConfirmationAlert = false
+                                    isPresented = false
                                 }
-                                .background(Color.secondaryBg)
-                                .cornerRadius(12)
-                                .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                                Spacer()
+                            }) {
+                                Text("YES")
+                                    .font(.verlagBoldAdaptive(size: 30))
+                                    .foregroundColor(Color.primaryText)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
                             }
-                            
-                            .padding(.horizontal)
-                            .padding(.top)
-                            
-                            // YES button
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showConfirmationAlert = false
-                                    }
-                                }) {
-                                    Text("NO")
-                                        .font(.verlagBoldAdaptive(size: 30))
-                                        .foregroundColor(Color.primaryText)
-                                        .padding()
-                                        .frame(maxWidth: .infinity)
-                                }
-                                Spacer()
-                            }.background(Color.clear)
-                                .padding(.horizontal)
-                            
-                        }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
-                            isMerchandise = newValue
+                            .background(Color.secondaryBg)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
+                            Spacer()
                         }
+                        
+                        .padding(.horizontal)
+                        .padding(.top)
+                        
+                        // YES button
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showConfirmationAlert = false
+                                }
+                            }) {
+                                Text("NO")
+                                    .font(.verlagBoldAdaptive(size: 30))
+                                    .foregroundColor(Color.primaryText)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                            }
+                            Spacer()
+                        }.background(Color.clear)
+                            .padding(.horizontal)
+                        
+                    }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
+                        isMerchandise = newValue
                     }
-                    .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 150 : topSafeAreaPaddingHeader() + 50)
-                    .padding(.bottom)
-                    .background {
-                        AppBackGroundView(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.65,shadow:true)
-                    }
-                    .frame(width: geometry.size.width * 1)
-                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top + 100)
-                }.onChange(of: isSwitchingToMerchandise) { _ in
-                    print(isSwitchingToMerchandise ?? false,"")
+                    Spacer()
                 }
-                
+                .frame(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4)
+                .background {
+                    AppBackGroundView(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow:true)
+                }
             }
-            .padding(.top, 0)
-            .edgesIgnoringSafeArea(.all)
         }
     }
     

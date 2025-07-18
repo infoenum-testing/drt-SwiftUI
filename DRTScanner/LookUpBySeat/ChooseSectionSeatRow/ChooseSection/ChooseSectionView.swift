@@ -31,7 +31,7 @@ struct ChooseSectionView: View {
                 
                 if isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .frame(width: 20, height: 20)
                 } else {
                     Text(stringManager.strings?.seat.section ?? sectionsTitle)

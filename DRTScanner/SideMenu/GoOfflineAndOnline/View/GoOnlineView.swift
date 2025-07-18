@@ -21,6 +21,7 @@ struct GoOnlineView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            Spacer()
             if !showErrorMessage {
                 Text(StringConstants.SideMenuView.goOnline)
                     .font(.verlagBoldAdaptive(size: 30))
@@ -35,7 +36,7 @@ struct GoOnlineView: View {
                 if !showErrorMessage {
                     VStack {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .scaleEffect(1.0)
                         
                         ProgressView(value: progress, total: 1.0)
@@ -55,7 +56,7 @@ struct GoOnlineView: View {
                     }
                 }
             } else if showSuccessMessage {
-                Text(StringConstants.SideMenuView.goOnlineSuccess)
+                Text(stringManager.strings?.offline.uploaded ?? StringConstants.SideMenuView.goOnlineSuccess)
                     .font(.verlagBoldAdaptive(size: 22))
                     .foregroundColor(Color.primaryText)
             }  else if showErrorMessage {
@@ -64,9 +65,10 @@ struct GoOnlineView: View {
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
             }
+            Spacer()
         }
         .padding()
-        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 3)
+        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35)
         .background {
             AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
         }

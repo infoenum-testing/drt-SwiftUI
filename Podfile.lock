@@ -5,6 +5,7 @@ PODS:
   - KeychainSwift (20.0.0)
 
 DEPENDENCIES:
+  - Alamofire
   - IQAPIClient
   - KeychainSwift (~> 20.0)
 
@@ -19,6 +20,6 @@ SPEC CHECKSUMS:
   IQAPIClient: 68ff59a1d89f70f677c80d96c9ba06cf6933a932
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
 
-PODFILE CHECKSUM: 08d7553339f460dcaef616fba8eae001856654cd
+PODFILE CHECKSUM: 058d052f8bb4360d7ddeb500b3c65358e96c41b6
 
 COCOAPODS: 1.16.2

@@ -163,8 +163,7 @@ struct SeatHomeView: View {
                             .background(Color.secondaryBg)
                             
                         }
-                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 500 : 50) : topSafeAreaPaddingHeader())
-                        
+                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : topSafeAreaPaddingHeader() - 10)
                     }
                     ZStack {
                         // Shows background image unless in full screen
@@ -184,7 +183,7 @@ struct SeatHomeView: View {
                                 // Show lookup options only if no ticket state is currently active
                                 if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket && !isMerchPreScanned {
                                     // List of lookup methods (order number, name, phone, credit card, seat)
-                                    VStack(spacing: 1) {
+                                    VStack(spacing: 0) {
                                         // Lookup by order number
                                         CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.orderNumber ?? StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                             // Set lookup type and show alert for order number
@@ -274,7 +273,6 @@ struct SeatHomeView: View {
                                     //                            }
                                 }
                             }.scrollDisabled(true)
-                            // Set opacity and animation for the scroll view
                                 .opacity(!isFullScreen ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                                 .background(Color.neutralBg)
@@ -324,10 +322,11 @@ struct SeatHomeView: View {
                             }
                         }
                         .frame(width:UIScreen.main.bounds.width)
-                        
+                        .padding(.bottom ,UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : 0)
                     }
-                }.frame(height: UIScreen.main.bounds.height)
-                    .environmentObject(stringManager)
+                }
+                .frame(height: UIScreen.main.bounds.height)
+                .environmentObject(stringManager)
             }
         }
         
@@ -388,6 +387,7 @@ struct SeatHomeView: View {
         .customAlert(isPresented: $showAlert) {
             ZStack {
                 VStack(alignment: .center) {
+                    Spacer()
                     VStack {
                         Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
                              StringConstants.LandingView.logoutConfirm)
@@ -438,14 +438,13 @@ struct SeatHomeView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity)
+                    Spacer()
                 }
                 .padding()
-                .padding(.top)
-                
             }
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4)
             .background {
-                AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
+                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4,shadow: true)
             }
         }
         .customAlert(isPresented: $showOfflineAlert) {
@@ -486,9 +485,10 @@ struct SeatHomeView: View {
         }
         .customAlert(isPresented: $showOfflineSuccessAlert) {
             VStack(alignment: .center) {
+                Spacer()
                 HStack {
                     Spacer()
-                    Text(StringConstants.Common.success)
+                    Text(stringManager.strings?.offline.success ?? StringConstants.Common.success)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(Color.primaryText)
                         .padding(.bottom, 10)
@@ -498,14 +498,16 @@ struct SeatHomeView: View {
                 }
                 
                 VStack {
-                    Text(StringConstants.SeatHomeView.successDbDownloadAlert)
+                    Text(stringManager.strings?.offline.download ?? StringConstants.SeatHomeView.successDbDownloadAlert)
                         .font(.verlagBookAdaptive(size: 18))
                         .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
                         .padding()
                 }
+                Spacer()
             }
             .padding()
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25)
             .background {
                 AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25, shadow:true)
             }
@@ -514,15 +516,3 @@ struct SeatHomeView: View {
     }
 }
 
-
-extension Notification.Name {
-    static let resetCameraView = Notification.Name("resetCameraView")
-}
-
-struct HeightPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}

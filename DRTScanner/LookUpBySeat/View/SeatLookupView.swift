@@ -33,7 +33,7 @@ struct SeatLookupView: View {
                     .padding(.leading, 20)
 
                     // Display selected seat (disabled text field)
-                    TextField("", text: $viewModel.seatText, prompt: Text(StringConstants.SeatHomeView.selectSeat)
+                    TextField("", text: $viewModel.seatText, prompt: Text(stringManager.strings?.seat.lookUpSeat ?? StringConstants.SeatHomeView.selectSeat)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.black.opacity(0.2)))
                         .font(.verlagBoldAdaptive(size: 42))
@@ -68,6 +68,7 @@ struct SeatLookupView: View {
                 } label: {
                     if viewModel.isLoading {
                         ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
                         Text(stringManager.strings?.seat.continueField ?? StringConstants.Common.continueText)

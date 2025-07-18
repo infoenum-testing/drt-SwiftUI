@@ -41,21 +41,39 @@ enum LangCode: String {
     case frCA = "fr_CA"
     case esUS = "es_US"
     
-    static func current() -> LangCode {
-            let locale = Locale.current
-            guard
-                let lang = locale.languageCode,   // "en"
-                let region = locale.regionCode    // "US"
-        else { return .enUS }
-            
-        return LangCode(rawValue: "\(lang)_\(region)") ?? .enUS
-        }
+    static func current() -> String {
+        let locale = Locale.current
+
+        // Fallback if allLangStrings is nil
+//        guard let allString = StringManager.shared.allLangStrings else {
+            return "English"
+//        }
+
+//        // Safely unwrap locale components
+//        let lang = locale.language.languageCode?.identifier ?? "en"
+//        let region = locale.region?.identifier ?? "US"
+//        let code = LangCode(rawValue: "\(lang)_\(region)")?.rawValue ?? LangCode.enUS.rawValue
+//
+//        switch code {
+//        case "fr_CA":
+//            return allString.frCA.lang
+//        case "es_US":
+//            return allString.esUS.lang
+//        case "en_US":
+//            fallthrough
+//        default:
+//            return allString.enUS.lang
+//        }
+    }
+
+    
 }
 
 struct AppStrings: Codable {
     let lang: String
     let stats: StatsStrings
     let settings: Settings
+    let offline:OfflineStrings
     let dialogLogout: DialogLogout
     let mission: String
     let seat: SeatStrings
@@ -85,6 +103,7 @@ struct AppStrings: Codable {
         case lang = "lang"
         case stats = "stats"
         case settings =  "settings"
+        case offline = "offline"
         case dialogLogout = "dialog-logout"
         case mission = "mission"
         case seat = "seat"

@@ -31,7 +31,7 @@ class SettingsViewModel: ObservableObject {
     @Published var deviceSleepTimeoutText: String = "00:00 mins"
     @Published var pauseScanTimeoutText: String = "0 sec"
     @Published var duplicateScanSuppressionText: String = "0 sec"
-    @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current().rawValue
+    @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
     
     // MARK: - Predefined Time Option Strings
     

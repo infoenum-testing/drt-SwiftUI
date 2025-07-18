@@ -12,6 +12,7 @@ import CoreData
 struct ScanningStatsView: View {
     @Binding var isPresented: Bool
     @Environment(\.managedObjectContext) private var viewContext
+    @EnvironmentObject var stringManager: StringManager
     @StateObject private var viewModel: ScanningStatsViewModel
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
@@ -29,7 +30,6 @@ struct ScanningStatsView: View {
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.leading, 10)
-                    .padding(.top, 50)
                 
                 Spacer()
                 Button(action: {
@@ -42,18 +42,19 @@ struct ScanningStatsView: View {
                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                         .background(Color.clear)
                         .contentShape(Rectangle())
-                        .padding(.top, 60)
                         .padding(.bottom)
                 }
             }
-
+            
+            .padding(.top,38)
             if viewModel.isLoading {
                 ProgressView("")
                     .padding(.top)
             } else if let stats = viewModel.stats {
-                statsRow(title: "Total Seats:", value: stats.totalSeats)
-                statsRow(title: "Total Scannable Seats:", value: stats.seatsScannable)
-                statsRow(title: "Total Scanned Seats:", value: stats.seatsScannedTotal)
+                let statsString = stringManager.strings?.stats
+                statsRow(title: statsString?.totalSeats ?? "Total Seats:", value: stats.totalSeats)
+                statsRow(title: statsString?.totalScannableSeats ?? "Total Scannable Seats:", value: stats.seatsScannable)
+                statsRow(title: statsString?.totalScannedSeats ?? "Total Scanned Seats:", value: stats.seatsScannedTotal)
                 statsRow(title: "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
             } else if let error = viewModel.errorMessage {
                 Text(error)
@@ -71,7 +72,7 @@ struct ScanningStatsView: View {
             }
         }
     }
-
+    
     @ViewBuilder
     private func statsRow(title: String, value: Int?) -> some View {
         HStack {

@@ -9,42 +9,42 @@ import SwiftUI
 
 /// View for displaying lookup results either by Credit Card or Phone Number.
 struct LookupResultCardOrPhoneView: View {
-
+    
     // MARK: - App Storage
     @AppStorage("showCode") private var savedShowCode: String?
-
+    
     // MARK: - Input Parameters
     let inputText: String                         // User-entered query (credit card or phone number)
     var dismissAction: () -> Void                 // Action to dismiss this view (back button)
-
+    
     // MARK: - View Models
     @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject private var phoneViewModel = LookupByPhoneResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext) // Currently unused
-
+    
     // MARK: - State
     @State private var isSheetPresented: Bool = false            // Controls presentation of bottom sheet (not used directly here)
     @State private var oId: String?                              // Selected order ID (used when navigating to order detail)
     @State private var selectedOrder: OrdersNewApi?              // Holds the selected order model
     @State private var navigateToOrderResult = false             // Controls custom sheet navigation
     @EnvironmentObject var stringManager: StringManager
-
+    
     // MARK: - Input Error & Type
     let errorMessage: String?                                    // Not used inside this view currently
     let lookupType: LookupType                                   // Determines if lookup is by phone number or credit card
-
+    
     // MARK: - Computed Properties
-
+    
     /// Computed property to return the right list of orders based on lookup type
     var orders: [OrdersNewApi] {
         lookupType == .phoneNumber ? phoneViewModel.orders : creditCardViewModel.orders
     }
-
+    
     /// Computed property to return loading state based on lookup type
     var isLoading: Bool {
         lookupType == .phoneNumber ? phoneViewModel.isLoading : creditCardViewModel.isLoading
     }
-
+    
     // MARK: - View
     var body: some View {
         VStack {
@@ -60,9 +60,9 @@ struct LookupResultCardOrPhoneView: View {
                             .foregroundStyle(Color.neutralText)
                     }
                     .padding(.leading, 20)
-
+                    
                     Spacer()
-
+                    
                     // Show loading text & spinner
                     if isLoading {
                         Text("Loading...")
@@ -70,24 +70,24 @@ struct LookupResultCardOrPhoneView: View {
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryText))
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                     }
-
+                    
                     // Show result count or "No orders found"
                     if !isLoading {
-                        Text(orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(orders.count)")
+                        Text(orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(orders.count)")
                             .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                     }
-
+                    
                     Spacer()
                 }
             }
             .padding([.top, .bottom], 20)
             .background(Color.neutralBg)
             .frame(maxWidth: .infinity)
-
+            
             // Orders List or Empty View
             VStack {
                 if orders.isEmpty {
@@ -113,7 +113,7 @@ struct LookupResultCardOrPhoneView: View {
         .frame(maxHeight: .infinity)
         .background(Color.primaryText)
         .ignoresSafeArea()
-
+        
         // MARK: - Task: Initial API call
         .task {
             if lookupType == .phoneNumber {
@@ -122,7 +122,7 @@ struct LookupResultCardOrPhoneView: View {
                 await creditCardViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             }
         }
-
+        
         // MARK: - Sheet View for Order Detail
         .customSheetView(isPresented: $navigateToOrderResult) {
             if let selectedOrder = selectedOrder {
@@ -135,7 +135,7 @@ struct LookupResultCardOrPhoneView: View {
             }
         }
         .padding(.top, 0)
-
+        
         // Optional: Debug print for sheet presentation
         .onChange(of: navigateToOrderResult) { newValue in
             print(newValue)

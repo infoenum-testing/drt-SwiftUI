@@ -57,14 +57,11 @@ struct ShowCodeView: View {
                         // MARK: - Background Image for Code Entry UI
                         AppBackGroundView(width: geometry.size.width,height: geometry.size.height)
                         
-                        
                         // MARK: - Code Entry UI
                         VStack(spacing: 20) {
                             
                             // MARK: - Logo
-                            HStack {
-                                AppLogoView(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad)
-                            }.padding(.top, UIScreen.main.bounds.height * 0.032)
+                                AppLogoView(width: 180.adaptiveForIpad, height: 100.adaptiveForIpad)
                             
                             // MARK: - Code Display and Controls
                             HStack {
@@ -156,10 +153,9 @@ struct ShowCodeView: View {
                                 }
                             }
                             .frame(maxHeight: .infinity)
-                            
                         }
                         // MARK: - Safe Area Padding Adjustment
-                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : geometry.safeAreaInsets.top - 10)
+                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader())
                         .frame(width: geometry.size.width, height: geometry.size.height)
                     }
                 }

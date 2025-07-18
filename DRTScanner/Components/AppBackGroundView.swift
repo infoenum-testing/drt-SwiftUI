@@ -16,7 +16,7 @@ struct AppBackGroundView: View {
     @EnvironmentObject var stringManager: StringManager
     @State private var Loading:Bool = true
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             if let backImage = stringManager.strings?.backImageSvg {
                 if let url = URL(string: backImage) {
                     SVGWebView(url: url, isLoading: $Loading)
@@ -33,6 +33,7 @@ struct AppBackGroundView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .clipped()
+                                    .padding(.top ,-5)
                                     .frame(width:  width,
                                            height: height)
                                     .frame(maxWidth:  maxWidth,
@@ -46,7 +47,6 @@ struct AppBackGroundView: View {
                                     startPoint: .top,
                                     endPoint: .center
                                 )
-                                .padding(.top,-(UIScreen.main.bounds.height * 0.035))
                             }
                         }
                         .transition(.opacity)
@@ -57,7 +57,10 @@ struct AppBackGroundView: View {
                     .resizable()
                     .scaledToFill()
                     .clipped()
+                    .padding(.top ,-5)
                     .frame(width: width, height: height)
+                    .frame(maxWidth:  maxWidth,
+                           maxHeight: maxHeight)
                     .overlay {
                         if shadow {
                             LinearGradient(
@@ -65,7 +68,6 @@ struct AppBackGroundView: View {
                                 startPoint: .top,
                                 endPoint: .center
                             )
-                            .padding(.top,-(UIScreen.main.bounds.height * 0.035))
                         }
                     }
             }

@@ -12,12 +12,14 @@ struct SeatStrings: Codable {
 	let row: String
 	let section: String
 	let continueField: String
+    let lookUpSeat: String
 
 	private enum CodingKeys: String, CodingKey {
 		case seat = "seat"
 		case row = "row"
 		case section = "section"
 		case continueField = "continue"
+        case lookUpSeat = "look-up-seat"
 	}
 
 }

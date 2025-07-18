@@ -13,18 +13,18 @@ struct AboutView: View {
     @State private var showWebsiteAlert = false
     static let urlString = "www.Drttix.com"
     @EnvironmentObject var stringManager: StringManager
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             // Background image
-            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.65,shadow: true)
+            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.5,shadow: true)
             
             // Main content
             VStack(spacing: 20) {
-                Spacer().frame(height: 60) // Leave space for the close button
+                Spacer()// Leave space for the close button
                 
-                AppLogoView(width: 200.adaptiveForIpad, height: 60.adaptiveForIpad)
-
+                AppLogoView(width:  120.adaptiveForIpad, height: 65.adaptiveForIpad)
+                
                 VStack(spacing: 16) {
                     Text(stringManager.strings?.mission ?? StringConstants.SideMenuView.aboutDescriptionText)
                         .font(.verlagBoldAdaptive(size: 16))
@@ -32,30 +32,30 @@ struct AboutView: View {
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal)
-
+                    
                     Text(stringManager.strings?.serviceHref ?? AboutView.urlString)
-                    .foregroundColor(Color.primaryText)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.secondaryBg)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                    .onTapGesture {
-                        showWebsiteAlert = true
-                    }
-                    .alert(isPresented: $showWebsiteAlert) {
-                        Alert(
-                            title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
-                            message: Text(""),
-                            primaryButton: .default(Text("OPEN")) { openWebsite() },
-                            secondaryButton: .cancel(Text("CANCEL"))
-                        )
-                    }
-
+                        .foregroundColor(Color.primaryText)
+                        .font(.verlagBoldAdaptive(size: 30))
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.secondaryBg)
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
+                        .onTapGesture {
+                            showWebsiteAlert = true
+                        }
+                        .alert(isPresented: $showWebsiteAlert) {
+                            Alert(
+                                title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
+                                message: Text(""),
+                                primaryButton: .default(Text("OPEN")) { openWebsite() },
+                                secondaryButton: .cancel(Text("CANCEL"))
+                            )
+                        }
+                    
                     Text(stringManager.strings?.copyright
                         .replacingOccurrences(of: ". All", with: ".\n All")
-                          ?? StringConstants.LandingView.copyRight
+                         ?? StringConstants.LandingView.copyRight
                     )
                     .font(.verlagBookAdaptive(size: 14))
                     .foregroundColor(Color.primaryText)
@@ -63,9 +63,9 @@ struct AboutView: View {
                     .frame(height: 40.adaptiveForIpad)
                 }
                 .padding(.horizontal)
-                .padding(.bottom)
+                Spacer()
             }
-
+            
             // Close Button (X)
             HStack {
                 Spacer()
@@ -82,9 +82,9 @@ struct AboutView: View {
             }
             .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 500 : 50) : topSafeAreaPaddingHeader())
         }
-        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 1.7)
+        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.5)
     }
-
+    
     func openWebsite() {
         let urlString = stringManager.strings?.serviceHref ?? "https://www.drttix.com"
         if let url = URL(string: urlString) {

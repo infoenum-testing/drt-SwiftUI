@@ -52,7 +52,7 @@ struct LookupByNumbersView: View {
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"],
-        ["-", "0", "OK"]
+        ["-", "0", StringManager.shared.strings?.home.ok ?? "OK"]
     ]
     
     // Placeholder text based on lookup type
@@ -136,7 +136,7 @@ struct LookupByNumbersView: View {
                                 HStack(spacing: 0) {
                                     ForEach(row, id: \.self) { button in
                                         ZStack {
-                                            if button == "OK" {
+                                            if button == StringManager.shared.strings?.home.ok ?? "OK" {
                                                 Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_unclicked_btn")
                                                     .resizable()
                                             } else {
@@ -146,7 +146,7 @@ struct LookupByNumbersView: View {
                                             
                                             Text(button)
                                                 .font(.verlagBoldAdaptive(size: 50))
-                                                .foregroundColor(button == "OK" ? .primaryText : Color.primaryBg)
+                                                .foregroundColor(button == StringManager.shared.strings?.home.ok ?? "OK" ? .primaryText : Color.primaryBg)
                                                 .frame(maxWidth: .infinity)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)

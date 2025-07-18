@@ -7,7 +7,7 @@
 import Foundation
 
 struct HomeStrings: Codable {
-
+    let ok: String
 	let phoneNumber: String
 	let orderNumber: String
 	let seat: String
@@ -17,6 +17,7 @@ struct HomeStrings: Codable {
 	let creditCard: String
 
 	private enum CodingKeys: String, CodingKey {
+        case ok =  "ok"
 		case phoneNumber = "phone-number"
 		case orderNumber = "order-number"
 		case seat = "seat"

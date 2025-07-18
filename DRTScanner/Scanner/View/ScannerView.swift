@@ -169,7 +169,7 @@ struct ScannerView: View, Equatable {
     @Binding var merchVariantName: String
     
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
-//    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
+    //    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     let controller: ScannerViewController
@@ -248,7 +248,7 @@ struct ScannerView: View, Equatable {
                                 controller.isScanningBinding = $isScanningCell // Bind scanning state
                             }
                         }
-                          // Bind scanning state
+                        // Bind scanning state
                     )
                 }
                 .padding(.bottom, -30)
@@ -1016,7 +1016,7 @@ struct ScannerView: View, Equatable {
                         if let scannedTime = seatEntity.date_scanned {
                             isPreScanned = true
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Blocked Ticket"
+                            orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? ""
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -1032,7 +1032,7 @@ struct ScannerView: View, Equatable {
                             seatEntity.date_scanned = Date()
                             try viewContext.save()
                             isTicketValid = true
-                            orderName = seatEntity.order?.buyerName ?? "Blocked Ticket"
+                            orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -1045,7 +1045,7 @@ struct ScannerView: View, Equatable {
                         }
                     } else {
                         isInvalidTicket = true
-                        invalidMessage = "Invalid Barcode"
+                        invalidMessage =  stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
                         playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -1055,7 +1055,7 @@ struct ScannerView: View, Equatable {
                     }
                 } catch {
                     isInvalidTicket = true
-                    invalidMessage = "Invalid Barcode"
+                    invalidMessage = stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation {
@@ -1094,7 +1094,7 @@ struct ScannerView: View, Equatable {
                                     }
                                 } else {
                                     isTicketValid = true
-                                    orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? "Blocked Ticket"
+                                    orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                     isGoldenTicket = (responseDict["is_golden_ticket"] == nil)

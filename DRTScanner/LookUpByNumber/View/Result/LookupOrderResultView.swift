@@ -54,7 +54,7 @@ struct LookupOrderResultView: View {
                         Spacer()
                     }
                     if !viewModel.isLoading {
-                        Text(viewModel.buyerName == "No orders found" ? StringConstants.Common.noOrdersFound : viewModel.buyerName.uppercased())
+                        Text(viewModel.buyerName == "No orders found" ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : viewModel.buyerName.uppercased())
                             .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)

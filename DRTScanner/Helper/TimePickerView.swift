@@ -12,20 +12,40 @@ struct TimePickerView: View {
     var index: Int
     var viewModel: SettingsViewModel
     @State private var selectedValue: Int
-
+    
     init(selectedIndex: Binding<IdentifiableIndex?>, index: Int, viewModel: SettingsViewModel) {
         self._selectedIndex = selectedIndex
         self.index = index
         self.viewModel = viewModel
-
+        
+        let initialValue: Int
         switch index {
-        case 2: _selectedValue = State(initialValue: viewModel.deviceSleepTimeout)
-        case 3: _selectedValue = State(initialValue: viewModel.pauseScanTimeout)
-        case 4: _selectedValue = State(initialValue: viewModel.duplicateScanSuppression / 5)
-        default: _selectedValue = State(initialValue: 0)
+        case 2:
+            initialValue = viewModel.deviceSleepTimeout
+        case 3:
+            initialValue = viewModel.pauseScanTimeout
+        case 4:
+            initialValue = viewModel.duplicateScanSuppression / 5
+        case 5:
+            initialValue = {
+                switch viewModel.selectedLangText {
+                case StringManager.shared.allLangStrings?.enUS.lang ?? "English":
+                    return 0
+                case StringManager.shared.allLangStrings?.frCA.lang ?? "French":
+                    return 1
+                case StringManager.shared.allLangStrings?.esUS.lang ?? "Spanish":
+                    return 2
+                default:
+                    return 0
+                }
+            }()
+        default:
+            initialValue = 0
         }
+        
+        self._selectedValue = State(initialValue: initialValue)
     }
-
+    
     var body: some View {
         VStack {
             Picker(StringConstants.Common.selectTime, selection: $selectedValue) {
@@ -47,7 +67,7 @@ struct TimePickerView: View {
                     viewModel.saveTime(selectedValue, for: index)
                     selectedIndex = nil
                 }) {
-                    Text(StringConstants.Common.save)
+                    Text(StringManager.shared.strings?.settings.save ?? StringConstants.Common.save)
                         .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)
@@ -58,7 +78,7 @@ struct TimePickerView: View {
                 Button(action: {
                     selectedIndex = nil
                 }) {
-                    Text(StringConstants.Common.cancel)
+                    Text(StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
                         .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)

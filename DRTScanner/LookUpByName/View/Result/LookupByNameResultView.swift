@@ -50,7 +50,7 @@ struct LookupByNameResultView: View {
                         // Display total results or no orders found
                         if !viewModel.isLoading {
                             
-                            Text(viewModel.orders.isEmpty ? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(viewModel.orders.count)")
+                            Text(viewModel.orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? "TOTAL RESULTS:") + " \(viewModel.orders.count)")
                                 .foregroundColor(Color.neutralText)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)

@@ -21,14 +21,13 @@ struct SeatCell: View {
     @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
     @EnvironmentObject var stringManager: StringManager
     
-    
     // MARK: - Init
     init(seat: Binding<SeatModel>, showAlert: Binding<Bool>, lookupByOrderResultViewModel: LookupByOrderResultViewModel) {
         self._seat = seat
         self._showAlert = showAlert
         self.lookupByOrderResultViewModel = lookupByOrderResultViewModel
         self._isScanned = State(initialValue: seat.wrappedValue.scannedTime != nil)
-
+        
         if let scannedDate = seat.wrappedValue.scannedTime {
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm"
@@ -43,7 +42,7 @@ struct SeatCell: View {
         VStack {
             VStack(alignment: .leading) {
                 HStack {
-                    Text(isScanned ? String(format: StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
+                    Text(isScanned ? String(format: stringManager.strings?.orderDetail.previouslyscanned ?? StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
                         .font(.verlagBoldAdaptive(size: 18))
                         .foregroundColor(Color.primaryBg)
                 }
@@ -95,7 +94,7 @@ struct SeatCell: View {
                     }
                 }
             }
-            .background(Color.neutralBg)
+            .background(Color.primaryText)
             .padding([.leading, .top, .trailing])
             .padding(.bottom, 5)
             .onAppear {
@@ -108,9 +107,9 @@ struct SeatCell: View {
     /// Updates seat as scanned, saving locally or sending to API depending on mode
     private func updateSeatWithScannedQrCode() {
         guard !isScanned else { return }
-
+        
         isLoading = true
-
+        
         if isOffline {
             
             // Offline: simulate scan delay and save locally
@@ -119,7 +118,7 @@ struct SeatCell: View {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "HH:mm"
                 scannedTime = formatter.string(from: currentDate)
-
+                
                 seat.scannedTime = currentDate
                 isScanned = true
                 isLoading = false
@@ -134,7 +133,7 @@ struct SeatCell: View {
                 isLoading = false
                 return
             }
-
+            
             IQAPIClient.scanTicket(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -149,16 +148,16 @@ struct SeatCell: View {
                             let formatter = DateFormatter()
                             formatter.dateFormat = "HH:mm"
                             scannedTime = formatter.string(from: currentDate)
-
+                            
                             seat.scannedTime = currentDate
                             isScanned = true
-//                            incrementDeviceScanCount()
+                            //                            incrementDeviceScanCount()
                         }
-
+                        
                     case .failure(let error):
                         print("Error scanning ticket: \(error.localizedDescription)")
                     }
-
+                    
                     isLoading = false
                 }
             }
@@ -201,12 +200,12 @@ struct SeatCell: View {
             }
         }
     }
- 
+    
     func incrementDeviceScanCount() {
         deviceScanCount += 1
         // The @AppStorage property wrapper will automatically persist the updated value
     }
-
+    
     /// Load scanned status from Core Data in offline mode
     private func loadScannedStatusOffline(for seat: SeatModel) {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
@@ -231,7 +230,7 @@ struct SeatCell: View {
             scanFetchRequest.predicate = NSPredicate(format: "qrCode == %@", seat.seat)
             
             if let fetchedScan = try viewContext.fetch(scanFetchRequest).first {
-
+                
                 if let scanTimestamp = fetchedScan.timeStamp {
                     let formatter = DateFormatter()
                     formatter.dateFormat = "HH:mm"

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import WebKit
+import Alamofire
 
 struct SVGWebView: UIViewRepresentable {
     let url: URL
@@ -44,19 +45,32 @@ struct SVGWebView: UIViewRepresentable {
             DispatchQueue.main.async { [weak self] in
                 self?.parent.isLoading = true
             }
-            URLSession.shared.dataTask(with: url) { data, _, _ in
-                guard let data, let svg = String(data: data, encoding: .utf8) else { return }
-                let html = """
-                <html><head><meta name="viewport" content="width=device-width,\
-                height=device-height,initial-scale=1.0"><style>body{margin:0;\
-                display:flex;align-items:center;justify-content:center;\
-                background:transparent;}svg{width:100%;height:100%;}</style>\
-                </head><body>\(svg)</body></html>
-                """
-                DispatchQueue.main.async {
-                    webView.loadHTMLString(html, baseURL: nil)
+            
+            var request = URLRequest(url: url)
+            request.cachePolicy = .returnCacheDataElseLoad  // Use cache if available
+            
+            AF.request(request)
+                .validate()
+                .responseString { response in
+                    switch response.result {
+                    case .success(let svg):
+                        let html = """
+                        <html><head><meta name="viewport" content="width=device-width,\
+                        height=device-height,initial-scale=1.0"><style>body{margin:0;\
+                        display:flex;align-items:center;justify-content:center;\
+                        background:transparent;}svg{width:100%;height:100%;}</style>\
+                        </head><body>\(svg)</body></html>
+                        """
+                        DispatchQueue.main.async {
+                            webView.loadHTMLString(html, baseURL: nil)
+                        }
+                    case .failure(let error):
+                        print("Failed to load SVG: \(error.localizedDescription)")
+                        DispatchQueue.main.async {
+                            self.parent.isLoading = false
+                        }
+                    }
                 }
-            }.resume()
         }
         
         // Stop the spinner when the page finishes

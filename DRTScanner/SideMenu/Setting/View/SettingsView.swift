@@ -24,7 +24,7 @@ struct SettingsView: View {
                 HStack {
                     Spacer()
                     // Title for the Settings screen
-                    Text(StringConstants.SideMenuView.settingSmall)
+                    Text(stringManager.strings?.settings.settings  ?? StringConstants.SideMenuView.settingSmall)
                         .font(.verlagBoldAdaptive(size: 24))
                         .padding(.leading, 10)
                         .padding(.top, 30)
@@ -67,7 +67,8 @@ struct SettingsView: View {
                     )) {
                         if let index = selectedTimerIndex {
                             // Time picker for editing timer settings
-                            TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel).padding(.leading, UIScreen.main.bounds.width * 0.1 )
+                            TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel)
+                                .padding(.leading, UIScreen.main.bounds.width * 0.1)
                         }
                     }
             }
