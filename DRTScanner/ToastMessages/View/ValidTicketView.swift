@@ -30,11 +30,11 @@ struct ValidTicketView: View {
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(Color.primaryText)
-
+                
                 Text(orderName.capitalized)
                     .font(.verlagBlackAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
-
+                
                 if orderNumber != "0" {
                     Text("Order: \(orderNumber)")
                         .font(.verlagBoldAdaptive(size: 26))
@@ -50,9 +50,9 @@ struct ValidTicketView: View {
                     .frame(height: 110)
                 }
             }
-          
+            
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: UIScreen.main.bounds.width)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
         .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : backGround)
         .transition(.opacity)

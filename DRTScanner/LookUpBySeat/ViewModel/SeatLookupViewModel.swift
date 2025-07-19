@@ -102,6 +102,7 @@ class SeatLookupViewModel: ObservableObject {
                         }
                         self.showResultView = true
                     case .failure(let error):
+                        
                         self.errorMessage = "Failed to fetch seat details: \(error.localizedDescription)"
                     }
                 }

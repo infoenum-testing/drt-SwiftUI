@@ -35,7 +35,6 @@ extension Color {
 }
 
 extension Color {
-
     // Convenience alias so we don’t repeat the lookup.
     private static var palette: SkinModel { ColorManager.shared.skin ?? SkinModel(
         colorValid:       "4F8C3B",

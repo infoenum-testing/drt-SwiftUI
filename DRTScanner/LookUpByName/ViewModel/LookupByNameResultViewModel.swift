@@ -68,7 +68,7 @@ class LookupByNameResultViewModel: ObservableObject {
 
             DispatchQueue.main.async {
                 if fetchedOrders.isEmpty {
-                    self.errorMessage = "Order not found"
+                    self.errorMessage = StringManager.shared.strings?.searchResults.phoneNumber ?? StringConstants.Common.ordersNotFound
                 } else {
                     self.orders = fetchedOrders
                     print("online", self.orders.count)

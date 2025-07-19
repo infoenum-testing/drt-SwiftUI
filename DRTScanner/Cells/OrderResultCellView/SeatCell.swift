@@ -140,7 +140,7 @@ struct SeatCell: View {
                     case .success(let jsonResponse):
                         if let valid = jsonResponse["valid"] as? Bool, !valid {
                             // Scan was rejected
-                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? "Unknown error"
+                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error
                             showAlert = true
                         } else {
                             // Scan accepted

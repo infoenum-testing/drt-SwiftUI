@@ -211,6 +211,11 @@ struct GoOfflineView: View {
                 DispatchQueue.main.async {
                     isSyncing = false
                     isPresented = false
+                    if NetworkMonitor.shared.isNetworkAvailable() {
+                        viewModel.errorMessage = error.localizedDescription
+                    } else {
+                        viewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                    }
                     viewModel.errorMessage = error.localizedDescription
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showOfflineAlert = true

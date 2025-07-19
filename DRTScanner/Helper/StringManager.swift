@@ -67,7 +67,7 @@ class StringManager: ObservableObject {
         case allLangStrings?.esUS.lang ?? "Spanish":
             tamp = "es_US"
         default:
-            break
+            tamp = "en_US"
         }
         self.strings =  allLangStrings?[tamp]
     }

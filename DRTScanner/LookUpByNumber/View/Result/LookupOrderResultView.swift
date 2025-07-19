@@ -67,7 +67,7 @@ struct LookupOrderResultView: View {
                             Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order?.orderId ?? 0))")
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.neutralText)
-                            Text("\(stringManager.strings?.searchResults.cc ?? "CC")" + " \(order?.cc ?? "")")
+                            Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order?.cc ?? "")")
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.neutralText)
                         }
@@ -180,7 +180,7 @@ struct LookupOrderResultView: View {
                     VStack(alignment: .center) {
                         HStack {
                             Spacer()
-                            Text(StringConstants.Common.error)
+                            Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
                                 .padding(.leading, 20)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(Color.primaryText)

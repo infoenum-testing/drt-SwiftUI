@@ -127,7 +127,7 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(StringConstants.LandingView.merchandise)
+                                    Text(stringManager.strings?.switchMode.merchandise ?? StringConstants.LandingView.merchandise)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .frame(maxWidth: .infinity)
                                         .padding()
@@ -148,7 +148,7 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(StringConstants.LandingView.seat)
+                                    Text(stringManager.strings?.switchMode.seat ?? StringConstants.LandingView.seat)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .frame(maxWidth: .infinity)
                                         .padding()
@@ -281,7 +281,7 @@ struct LandingView: View {
                                 VStack(alignment: .center) {
                                     HStack {
                                         Spacer()
-                                        Text(StringConstants.Common.error)
+                                        Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
                                             .padding(.leading, 30)
                                             .font(.verlagBoldAdaptive(size: 30))
                                             .foregroundColor(Color.primaryText)

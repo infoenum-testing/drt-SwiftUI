@@ -91,8 +91,8 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: StringConstants.Common.cancel, style: .cancel))
-        alert.addAction(UIAlertAction(title: StringConstants.SideMenuView.settingSmall, style: .default) { _ in
+        alert.addAction(UIAlertAction(title: StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: StringManager.shared.strings?.settings.settings ?? StringConstants.SideMenuView.settingSmall, style: .default) { _ in
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }

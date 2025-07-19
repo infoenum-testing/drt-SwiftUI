@@ -65,9 +65,12 @@ class LookupByCreditCardResultViewModel: ObservableObject {
             
         } catch {
             DispatchQueue.main.async {
-                self.errorMessage = error.localizedDescription
+                if NetworkMonitor.shared.isNetworkAvailable() {
+                    self.errorMessage = error.localizedDescription
+                } else {
+                    self.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                }
                 self.isLoading = false
-                //      self.fetchCCFromCoreData(ccNumber: q)
             }
         }
     }

@@ -98,8 +98,11 @@ struct AppStrings: Codable {
     let backImagePng: String
     let appLogoSvg: String
     let appLogoPng: String
+    let scanner: String
+    
     
     private enum CodingKeys: String, CodingKey {
+        case scanner = "scanner"
         case lang = "lang"
         case stats = "stats"
         case settings =  "settings"

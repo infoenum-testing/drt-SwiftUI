@@ -79,8 +79,8 @@ struct ShowCodeView: View {
                                 Spacer()
                                 
                                 // Disabled TextField Showing Current Code
-                                TextField(StringConstants.Common.showCode, text: $viewModel.showCode)
-                                    .font(.verlagBoldAdaptive(size: 42))
+                                TextField(stringManager.strings?.login.showCode ?? StringConstants.Common.showCode, text: $viewModel.showCode)
+                                    .font(.verlagBoldAdaptive(size: 40))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(Color.primaryText)
                                     .background(Color.clear)

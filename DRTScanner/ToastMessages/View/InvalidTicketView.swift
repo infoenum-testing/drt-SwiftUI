@@ -32,6 +32,7 @@ struct InvalidTicketView: View {
                 
                 Text(message)
                     .font(.verlagBlackAdaptive(size: 30))
+                    .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .foregroundColor(Color.primaryText)
                 if isInFullScreen {
@@ -44,7 +45,7 @@ struct InvalidTicketView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: UIScreen.main.bounds.width)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)

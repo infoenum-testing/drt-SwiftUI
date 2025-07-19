@@ -113,7 +113,11 @@ class LookupByOrderResultViewModel: ObservableObject {
               
           } catch {
               DispatchQueue.main.async {
-                  self.errorMessage = error.localizedDescription
+                  if NetworkMonitor.shared.isNetworkAvailable() {
+                      self.errorMessage = error.localizedDescription
+                  } else {
+                      self.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                  }
                   self.isLoading = false
               }
           }
@@ -169,7 +173,7 @@ class LookupByOrderResultViewModel: ObservableObject {
                     )]
                 } else {
 
-                    self.buyerName = "No orders found"
+                    self.buyerName = StringManager.shared.strings?.searchResults.resultNotFound ?? "No orders found."
                     self.errorMessage = "No order found in Core Data for order number \(orderNumber)"
                 }
                 self.isLoading = false
@@ -177,7 +181,7 @@ class LookupByOrderResultViewModel: ObservableObject {
         } catch {
             DispatchQueue.main.async {
                 self.errorMessage = "Error fetching from Core Data: \(error.localizedDescription)"
-                self.buyerName = "No orders found"
+                self.buyerName =  StringManager.shared.strings?.searchResults.resultNotFound ?? "No orders found."
                 self.isLoading = false
             }
         }

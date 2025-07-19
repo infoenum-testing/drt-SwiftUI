@@ -14,7 +14,9 @@ struct SVGWebView: UIViewRepresentable {
     let url: URL
     @Binding var isLoading: Bool
     
-    func makeCoordinator() -> Coordinator { Coordinator(self) }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
     
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
@@ -22,13 +24,12 @@ struct SVGWebView: UIViewRepresentable {
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.navigationDelegate = context.coordinator
-        context.coordinator.loadSVG(into: webView, from: url)   // initial load
         webView.isUserInteractionEnabled = false
+        context.coordinator.loadSVG(into: webView, from: url)
         return webView
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        // Reload **only** if the caller supplies a new URL
         if url != context.coordinator.currentURL {
             context.coordinator.loadSVG(into: uiView, from: url)
         }
@@ -37,9 +38,11 @@ struct SVGWebView: UIViewRepresentable {
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: SVGWebView
         var currentURL: URL?
-        init(_ parent: SVGWebView) { self.parent = parent }
         
-        // Centralised loader
+        init(_ parent: SVGWebView) {
+            self.parent = parent
+        }
+        
         func loadSVG(into webView: WKWebView, from url: URL) {
             currentURL = url
             DispatchQueue.main.async { [weak self] in
@@ -47,34 +50,48 @@ struct SVGWebView: UIViewRepresentable {
             }
             
             var request = URLRequest(url: url)
-            request.cachePolicy = .returnCacheDataElseLoad  // Use cache if available
+            request.cachePolicy = .returnCacheDataElseLoad
             
             AF.request(request)
                 .validate()
-                .responseString { response in
+                .responseString { [weak self] response in
                     switch response.result {
                     case .success(let svg):
+                        let trimmed = svg.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if trimmed.isEmpty {
+                            print("⚠️ Empty SVG content — keep loading active")
+                            return
+                        }
+                        
                         let html = """
-                        <html><head><meta name="viewport" content="width=device-width,\
-                        height=device-height,initial-scale=1.0"><style>body{margin:0;\
-                        display:flex;align-items:center;justify-content:center;\
-                        background:transparent;}svg{width:100%;height:100%;}</style>\
-                        </head><body>\(svg)</body></html>
+                        <html>
+                        <head>
+                        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+                        <style>
+                        body { margin:0; display:flex; align-items:center; justify-content:center; background:transparent; }
+                        svg { width:100%; height:100%; }
+                        </style>
+                        </head>
+                        <body>\(svg)</body>
+                        </html>
                         """
+                        
                         DispatchQueue.main.async {
                             webView.loadHTMLString(html, baseURL: nil)
+                            // Don't stop loading here
                         }
+                        
                     case .failure(let error):
-                        print("Failed to load SVG: \(error.localizedDescription)")
-                        DispatchQueue.main.async {
-                            self.parent.isLoading = false
-                        }
+                        print("❌ Failed to load SVG: \(error.localizedDescription)")
+                        // Don't stop loading here either
+                        break
                     }
                 }
         }
         
-        // Stop the spinner when the page finishes
+        // ✅ Only stop loading if WebView confirms it finished
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            print("✅ WKWebView finished rendering SVG")
             parent.isLoading = false
         }
     }

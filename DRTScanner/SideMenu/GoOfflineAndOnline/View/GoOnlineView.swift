@@ -23,7 +23,7 @@ struct GoOnlineView: View {
         VStack(spacing: 20) {
             Spacer()
             if !showErrorMessage {
-                Text(StringConstants.SideMenuView.goOnline)
+                Text(stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
             }
@@ -133,7 +133,7 @@ struct CustomAlertForError: View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text(StringConstants.Common.error)
+                Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom, 10)

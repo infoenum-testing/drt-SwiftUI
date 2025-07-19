@@ -59,11 +59,11 @@ struct LookupByNumbersView: View {
     var placeholderText: String {
         switch lookupType {
         case .orderNumber:
-            return stringManager.strings?.home.orderNumber ?? "ORDER NUMBER"
+            return stringManager.strings?.home.orderNumber ?? StringConstants.SeatHomeView.orderNumber
         case .phoneNumber:
-            return stringManager.strings?.home.phoneNumber ?? "PHONE NUMBER"
+            return stringManager.strings?.home.phoneNumber ?? StringConstants.SeatHomeView.phoneNumber
         case .creditCard:
-            return stringManager.strings?.home.creditCard ?? "CREDIT CARD"
+            return stringManager.strings?.home.creditCard ?? StringConstants.SeatHomeView.creditCard
         }
     }
     

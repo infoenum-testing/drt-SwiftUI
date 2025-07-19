@@ -163,6 +163,7 @@
 		E997FD322E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E997FC922E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld */; };
 		E997FD332E29486F00D9EC06 /* Color+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FC4B2E29486F00D9EC06 /* Color+Extensions.swift */; };
 		E997FD342E29486F00D9EC06 /* View+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FBCD2E29486F00D9EC06 /* View+Extensions.swift */; };
+		E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */; };
 		E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */; };
 		E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D054702E2A6E48005C7565 /* OfflineStrings.swift */; };
 /* End PBXBuildFile section */
@@ -328,6 +329,7 @@
 		E997FC932E29486F00D9EC06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E997FC952E29486F00D9EC06 /* DRT_Scanner.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DRT_Scanner.xcdatamodel; sourceTree = "<group>"; };
 		E997FC962E29486F00D9EC06 /* DRT_Scanner 1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DRT_Scanner 1.1.xcdatamodel"; sourceTree = "<group>"; };
+		E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notificaiton+Extension.swift"; sourceTree = "<group>"; };
 		E9D054702E2A6E48005C7565 /* OfflineStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStrings.swift; sourceTree = "<group>"; };
 		F2610C12E2B50955901D64A6 /* Pods-DRTScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.release.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -523,6 +525,7 @@
 		E997FBDA2E29486F00D9EC06 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */,
 				E997FBD02E29486F00D9EC06 /* Sound */,
 				E997FBD12E29486F00D9EC06 /* ColorManger.swift */,
 				E997FBD22E29486F00D9EC06 /* JsonFileManger.swift */,
@@ -1437,6 +1440,7 @@
 				E997FCE72E29486F00D9EC06 /* SeatLookupViewModel.swift in Sources */,
 				E997FCE82E29486F00D9EC06 /* DRTScannerApp.swift in Sources */,
 				E997FCE92E29486F00D9EC06 /* Merchandise.swift in Sources */,
+				E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */,
 				E997FCEA2E29486F00D9EC06 /* MerchandiseOrder.swift in Sources */,
 				E997FCEB2E29486F00D9EC06 /* QrMerchandise.swift in Sources */,
 				E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */,

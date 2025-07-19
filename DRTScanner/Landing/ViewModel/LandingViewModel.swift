@@ -61,7 +61,11 @@ class LandingViewModel: ObservableObject {
                 self.isValidCode = false
                 self.showAlert = true
                 self.isUserLoggedIn = false
-                self.lookupByOrderResultViewModel.errorMessage = error.localizedDescription
+                if NetworkMonitor.shared.isNetworkAvailable() {
+                    self.lookupByOrderResultViewModel.errorMessage = error.localizedDescription
+                } else {
+                    self.lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                }
             }
         }
 

@@ -451,7 +451,7 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text(StringConstants.Common.error)
+                    Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
                         .padding(.leading, 20)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(Color.primaryText)

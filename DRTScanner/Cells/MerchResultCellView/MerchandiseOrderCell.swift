@@ -165,7 +165,11 @@ struct MerchandiseOrderCell: View {
                         isScanned = merchandiseOrder.qty ==  merchandiseOrder.qtyScanned
                         
                     case .failure(let error):
-                        lookupByOrderResultViewModel.errorMessage = error.localizedDescription
+                        if NetworkMonitor.shared.isNetworkAvailable() {
+                            lookupByOrderResultViewModel.errorMessage = error.localizedDescription
+                        } else {
+                            lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                        }
                         showAlert = true
                     }
                 }

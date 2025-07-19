@@ -58,7 +58,7 @@ struct PreviousMerchandiseScanView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: UIScreen.main.bounds.width)
         .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)

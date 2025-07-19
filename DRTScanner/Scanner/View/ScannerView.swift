@@ -466,7 +466,7 @@ struct ScannerView: View, Equatable {
                         .frame(height: scanViewHeight + 30.adaptiveForIpad)
                         .frame(height: 50.adaptiveForIpad)
                         .overlay(
-                            Text("Pause, click to resume")
+                            Text(stringManager.strings?.scanner ?? "Pause, click to resume")
                                 .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.primaryText)
                                 .onTapGesture {
@@ -1112,7 +1112,12 @@ struct ScannerView: View, Equatable {
                                 }
                             }
                         case .failure(let error):
-                            invalidMessage = error.localizedDescription
+                            if NetworkMonitor.shared.isNetworkAvailable() {
+                                invalidMessage = error.localizedDescription
+                            } else {
+                                invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                            }
+                            
                             isInvalidTicket = true
                             playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                             
@@ -1189,7 +1194,12 @@ struct ScannerView: View, Equatable {
                                 case .failure(let error):
                                     // ❗ Show error if API call failed entirely
                                     isInvalidTicket = true
-                                    invalidMessage = error.localizedDescription
+                                    if NetworkMonitor.shared.isNetworkAvailable() {
+                                        invalidMessage = error.localizedDescription
+                                    } else {
+                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                                    }
+                                    
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -1300,8 +1310,11 @@ struct ScannerView: View, Equatable {
                                     }
                                     
                                 case .failure(let error):
-                                    invalidMessage = error.localizedDescription
-                                    
+                                    if NetworkMonitor.shared.isNetworkAvailable() {
+                                        invalidMessage = error.localizedDescription
+                                    } else {
+                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                                    }
                                     isInvalidTicket = true
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
                                     

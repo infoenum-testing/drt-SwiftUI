@@ -11,7 +11,6 @@ struct StringConstants {
         static let showCode = "ENTER SHOW CODE"
         static let copyRight = "Copyright(c) 2013-2025. DRT Performance Tix.\nAll Rights Reserved"
         static let invalidShowCode = "Invalid show code."
-        static let validShowCode = "Do you want to scan merchandise or seat?"
         static let merchandise = "MERCHANDISE"
         static let seat = "SEAT"
         static let seatSection = "Seat"
@@ -36,66 +35,27 @@ struct StringConstants {
         static let section = "Section"
         static let confirm = "Confirm"
         static let logout = "Logout"
-        static let Email = "Email"
         static let continueText = "CONTINUE"
-        static let Password = "Password"
-        static let submit = "Submit"
-        static let enterEmailAddress = "Enter email address"
-        static let SignUp = "Sign up"
-        static let enterPassword = "Enter Password"
-        static let skip = "Skip"
-        static let accessTokenExpiresAt = "access_token_expires_at"
-        static let refreshTokenExpiresAt = "refresh_token_expires_at"
-        static let userName = "userName"
+        static let search = "Search"
+        
         static let refreshToken = "refreshToken"
-        static let oneTimeOtp = "One-time code"
-        static let logIn = "Log in"
-        static let forgotPassword = "Forgot password?"
-        static let guest = "Guest"
+        
         static let save = "Save"
-        static let noOrderFound = "NO ORDER FOUND"
         static let error = "Error"
         static let ok = "OK"
         static let yes = "Yes"
         static let no = "No"
-        static let emailCannotEmpty = "Email cannot be empty"
-        static let invalidEmail = "Invalid email address"
         static let success = "Success"
-        static let nameCannotEmpty = "Name cannot be empty"
-        static let invalidName = "Invalid Name"
-        static let done = "Done"
-        static let alert = "ALERT"
         static let cancel = "Cancel"
         static let continueTextAlert = "Continue"
-        static let music = "music"
-        static let DontCry = "Don't cry"
-        static let someTimeLittle = "some time a little.."
-        static let noOrdersAvailable = "No orders available."
         static let noOrdersFound = "No orders found."
         
-        static let unknown = "Unknown"
-        static let oID = "OID :"
-        static let cc = "CC :"
-        static let phone = "Phone :"
-        static let deleteOrder = "Delete Order"
-        static let editOrder = "Edit Order"
-        static let addOrder = "Add Order"
-        static let orderDetails = "Order Details"
-        static let buyerName = "Buyer Name"
-        static let createOrder = "Create Order"
-        static let editOrderDetails = "Edit Order Details"
-        static let unknownDevice = "UnknownDevice"
+        
         static let Order = "ORDER"
-        static let loadingSeatInformation = "Loading seat information..."
-        static let totalResults = "Total Results:"
-        static let loadingOrderInformation = "Loading Order information..."
-        static let phoneNumber = "PHONE NUMBER"
-        static let scannedQrCode = "Scanned QR Code:"
+        static let totalResults = "TOTAL RESULTS:"
         static let ordersNotFound = "Orders not found."
         static let showCode = "Show Code"
         static let selectTime = "Select Time"
-        static let seats = "seats"
-        static let merch = "merch"
     }
     
     struct httpMethod {
@@ -104,10 +64,6 @@ struct StringConstants {
     
     
     struct Attributes {
-        static let oid = "oid"
-        static let buyerName = "buyer_name"
-        static let cc = "cc"
-        static let phone = "phone"
         static let barcode = "barcode"
         static let row = "row"
         static let seat = "seat"
@@ -186,16 +142,14 @@ struct StringConstants {
         static let creditCard = "CREDIT CARD"
         static let seatIcon = "seat_icon"
         static let seat = "SEAT"
-        static let danceRecitalTicketing = "Dance Recital Ticketing"
-        static let danceNationals = "2016 DANCE NATIONALS"
-        static let areYouSureYouWantToLogout = "Are you sure you want to logout?"
+        
         static let successDbDownloadAlert = "Database download successfully"
         static let selectSeat = "Select Seat"
     }
     
     struct SideMenuView {
         static let goOffline = "GO OFFLINE"
-        static let goOfflineViewText = "Go offline"
+        
         static let goOfflineViewDiscription = "By going offline, the database will be downloaded to this device, and nobody else will be able to scan tickets for this show until I go back online. When I return online, the scanned tickets will be uploaded back to the server.\n\nBy signing my name, I understand and agree to the above:"
         static let goOnline = "GO ONLINE"
         static let goOnlineServer = "Uploading database"
@@ -217,7 +171,6 @@ struct StringConstants {
         static let openDrtWebsiteMessage = "Do you want to visit the DRT website?"
         static let drtWebsiteURL = "http://www.dancerecitalticketing.com"
         static let copyRightTitle = "Copyright(c) 2013-2025. DRT Performance Tix."
-        static let copyRightTitle2 = "All Rights Reserved"
         static let aboutDescriptionText = "Our purpose and mission is to provide small bussinesses with the advantages to grow and prosper through innovative solution and lifelong relationships."
     }
     
@@ -231,12 +184,6 @@ struct StringConstants {
         
     }
     
-    struct Offline {
-            static let title = "Going Offline"
-            static let description = "Are you sure you want to go offline? The database will be downloaded to this device, and nobody else will be able to scan tickets until you go back online."
-            static let continueText = "CONTINUE"
-            static let cancelText = "CANCEL"
-        }
     
     struct DRTFont {
         static let verlagBold = "Verlag-Bold"
@@ -247,7 +194,5 @@ struct StringConstants {
     struct DRTToastMessages {
         static let inValidMerchandiseVoucher = "You are currently in merchandise scanning mode."
         static let inValidTicketVoucher = "You are currently in seat scanning mode."
-        static let inValidShow = "INVALID SHOW"
-        static let preScanned = "Previously Scanned"
     }
 }

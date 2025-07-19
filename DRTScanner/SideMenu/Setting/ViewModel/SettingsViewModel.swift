@@ -39,7 +39,7 @@ class SettingsViewModel: ObservableObject {
     let deviceSleepOptions = (0...10).map { "\($0):00 mins" }
     let pauseScanOptions = (0...29).map { "\($0) sec" }
     let duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) sec" }
-    let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "en_US", StringManager.shared.allLangStrings?.frCA.lang ?? "fr_CA",StringManager.shared.allLangStrings?.esUS.lang ?? "es_US"]
+    let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "English", StringManager.shared.allLangStrings?.frCA.lang ?? "French",StringManager.shared.allLangStrings?.esUS.lang ?? "Spanish"]
     
     init() {
         updateTextValues()

@@ -11,8 +11,12 @@ struct SwitchMode: Codable {
     let merch: String
     let tickets: String
     let question: String
+    let seat: String
+    let merchandise: String
     
     private enum CodingKeys: String, CodingKey {
+        case seat
+        case merchandise
         case merch = "merch"
         case tickets = "tickets"
         case question = "question"
