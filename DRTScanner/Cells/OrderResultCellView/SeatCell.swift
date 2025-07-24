@@ -140,7 +140,7 @@ struct SeatCell: View {
                     case .success(let jsonResponse):
                         if let valid = jsonResponse["valid"] as? Bool, !valid {
                             // Scan was rejected
-                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error
+                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error
                             showAlert = true
                         } else {
                             // Scan accepted
@@ -151,7 +151,7 @@ struct SeatCell: View {
                             
                             seat.scannedTime = currentDate
                             isScanned = true
-                            //                            incrementDeviceScanCount()
+                            //  incrementDeviceScanCount()
                         }
                         
                     case .failure(let error):

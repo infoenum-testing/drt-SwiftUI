@@ -23,10 +23,11 @@ struct ScanningStatsView: View {
     }
     
     var body: some View {
+        let statsString = stringManager.strings?.stats
         VStack(spacing: 5) {
             HStack {
                 Spacer()
-                Text(StringConstants.SideMenuView.scaningStatsTitle)
+                Text(statsString?.scanningStats ?? StringConstants.SideMenuView.scaningStatsTitle)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.leading, 10)
@@ -51,11 +52,10 @@ struct ScanningStatsView: View {
                 ProgressView("")
                     .padding(.top)
             } else if let stats = viewModel.stats {
-                let statsString = stringManager.strings?.stats
                 statsRow(title: statsString?.totalSeats ?? "Total Seats:", value: stats.totalSeats)
                 statsRow(title: statsString?.totalScannableSeats ?? "Total Scannable Seats:", value: stats.seatsScannable)
                 statsRow(title: statsString?.totalScannedSeats ?? "Total Scanned Seats:", value: stats.seatsScannedTotal)
-                statsRow(title: "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
+                statsRow(title: statsString?.ticketsScannedByDevice ?? "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
             } else if let error = viewModel.errorMessage {
                 Text(error)
                     .font(.verlagBookAdaptive(size: 16))

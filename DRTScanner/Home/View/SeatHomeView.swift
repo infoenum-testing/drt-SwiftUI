@@ -94,8 +94,6 @@ struct SeatHomeView: View {
     @State private var merchOrderName = ""
     @State private var merchVariantName = ""
     @State var scannerLineAnimation: Bool = true
-    // ViewModel for lookup by order result
-    //    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @ObservedObject var landingView:LandingViewModel
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
@@ -121,34 +119,39 @@ struct SeatHomeView: View {
             } else {
                 VStack(spacing: 0) {
                     if !isFullScreen {
-                        VStack {
+                        
+                        VStack(spacing:0) {
                             // Top row: empty space, logo, and side menu button
-                            HStack {
-                                Text("")
-                                    .frame(width: 25, height: 25)
-                                Spacer()
-                                AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
-                                    .padding(.leading, 10)
-                                Spacer()
-                                Button(action: {
-                                    // Toggle side menu
-                                    withAnimation(.easeInOut) {
-                                        isSideMenuPresented.toggle()
+                            ZStack {
+                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                                HStack {
+                                    Text("")
+                                        .frame(width: 25, height: 25)
+                                    Spacer()
+                                    AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
+                                        .padding(.leading, 10)
+                                    Spacer()
+                                    Button(action: {
+                                        // Toggle side menu
+                                        withAnimation(.easeInOut) {
+                                            isSideMenuPresented.toggle()
+                                        }
+                                    }) {
+                                        Image("side_menu")
+                                            .resizable()
+                                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                            .background(Color.clear)
+                                            .contentShape(Rectangle())
+                                            .padding(.top, UIDevice.isIpad ? 80 : 0)
+                                        
                                     }
-                                }) {
-                                    Image("side_menu")
-                                        .resizable()
-                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                        .background(Color.clear)
-                                        .contentShape(Rectangle())
-                                        .padding(.top, UIDevice.isIpad ? 80 : 0)
-                                    
+                                    .padding(.trailing, 20)
                                 }
-                                .padding(.trailing, 20)
+                                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : topSafeAreaPaddingHeader() - 10)
                             }
-                            .background {
-                                AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
-                            }
+                            .clipped()
+                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                            .padding(.top,-10)
                             // Bottom row: show name
                             HStack {
                                 Spacer()
@@ -158,19 +161,15 @@ struct SeatHomeView: View {
                                     .padding(.leading, 5)
                                 Spacer()
                             }
-                            .frame(width: UIScreen.main.bounds.width)
+                            
                             .padding(12)
                             .background(Color.secondaryBg)
                             
                         }
-                        .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : topSafeAreaPaddingHeader() - 10)
+                        
                     }
                     ZStack {
                         // Shows background image unless in full screen
-                        if !isFullScreen {
-                            AppBackGroundView(maxWidth: .infinity, maxHeight: .infinity)
-                        }
-                        
                         VStack {
                             // Scanner view for scanning tickets
                             ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, landingView:landingView,controller: controller, showOfflineAlert: $showOfflineAlert)
@@ -281,6 +280,7 @@ struct SeatHomeView: View {
                                     print(newValue)
                                 }
                         }
+                        .background(.black)
                     }
                     .overlay {
                         VStack {
@@ -451,7 +451,7 @@ struct SeatHomeView: View {
             VStack(alignment: .center) {
                 HStack {
                     Spacer()
-                    Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
+                    Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
                         .padding(.leading, 20)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(Color.primaryText)
@@ -480,7 +480,8 @@ struct SeatHomeView: View {
                         .padding()
                 }
             }
-            .padding()
+            .padding([.horizontal,.bottom])
+            .padding(.top,topSafeAreaPaddingHeader() - 10)
             .background(Color.secondaryBg)
         }
         .customAlert(isPresented: $showOfflineSuccessAlert) {
@@ -512,7 +513,44 @@ struct SeatHomeView: View {
                 AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25, shadow:true)
             }
         }
+        .customAlert(isPresented: $stringManager.isShowAlert) {
+            // Custom alert for error messages
+            VStack(alignment: .center) {
+                HStack {
+                    Text("")
+                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                    Spacer()
+                    
+                    Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
+                        .font(.verlagBoldAdaptive(size: 30))
+                        .foregroundColor(Color.primaryText)
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            stringManager.isShowAlert = false
+                        }
+                    }) {
+                        Image(StringConstants.DRTImages.crossImage)
+                            .resizable()
+                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
+                    }
+                }
+                
+                Text(stringManager.message)
+                    .font(.verlagBookAdaptive(size: 18))
+                    .foregroundColor(Color.primaryText)
+                    .multilineTextAlignment(.center)
+                    .padding(.top,5)
+                
+            }
+            .padding([.horizontal,.bottom])
+            .padding(.top,topSafeAreaPaddingHeader())
+            .background(Color.secondaryBg)
+            
+        }
         .ignoresSafeArea()
     }
 }
-

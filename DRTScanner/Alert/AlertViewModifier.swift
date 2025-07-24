@@ -19,7 +19,6 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
                 .blur(radius: isPresented ? 0 : 0)
                 .animation(.easeInOut(duration: 0.3), value: isPresented)
             
-            
             if isPresented {
                 Color.black.opacity(0.8)
                     .edgesIgnoringSafeArea(.all)

@@ -164,6 +164,8 @@
 		E997FD332E29486F00D9EC06 /* Color+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FC4B2E29486F00D9EC06 /* Color+Extensions.swift */; };
 		E997FD342E29486F00D9EC06 /* View+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FBCD2E29486F00D9EC06 /* View+Extensions.swift */; };
 		E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */; };
+		E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */; };
+		E9AA78E72E30F80500233D98 /* ErrorDescriptionMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */; };
 		E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */; };
 		E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D054702E2A6E48005C7565 /* OfflineStrings.swift */; };
 /* End PBXBuildFile section */
@@ -330,6 +332,8 @@
 		E997FC952E29486F00D9EC06 /* DRT_Scanner.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DRT_Scanner.xcdatamodel; sourceTree = "<group>"; };
 		E997FC962E29486F00D9EC06 /* DRT_Scanner 1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DRT_Scanner 1.1.xcdatamodel"; sourceTree = "<group>"; };
 		E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessages.swift; sourceTree = "<group>"; };
+		E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorDescriptionMessages.swift; sourceTree = "<group>"; };
 		E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notificaiton+Extension.swift"; sourceTree = "<group>"; };
 		E9D054702E2A6E48005C7565 /* OfflineStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStrings.swift; sourceTree = "<group>"; };
 		F2610C12E2B50955901D64A6 /* Pods-DRTScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.release.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -854,6 +858,8 @@
 		E997FC3F2E29486F00D9EC06 /* StringModel */ = {
 			isa = PBXGroup;
 			children = (
+				E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */,
+				E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */,
 				E9D054702E2A6E48005C7565 /* OfflineStrings.swift */,
 				E997FC2D2E29486F00D9EC06 /* AppStrings.swift */,
 				E997FC2E2E29486F00D9EC06 /* Dialog-go-offline.swift */,
@@ -1425,6 +1431,7 @@
 				E997FCD82E29486F00D9EC06 /* LookupByPhoneResultViewModel.swift in Sources */,
 				E997FCD92E29486F00D9EC06 /* ChooseRowCell.swift in Sources */,
 				E997FCDA2E29486F00D9EC06 /* ChooseRowSubView.swift in Sources */,
+				E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */,
 				E997FCDB2E29486F00D9EC06 /* ChooseRowView.swift in Sources */,
 				E997FCDC2E29486F00D9EC06 /* SeatRowLookupCell.swift in Sources */,
 				E997FCDD2E29486F00D9EC06 /* ChooseSeatCell.swift in Sources */,
@@ -1463,6 +1470,7 @@
 				E997FCFC2E29486F00D9EC06 /* Dialog-go-offline.swift in Sources */,
 				E997FCFD2E29486F00D9EC06 /* Dialog-go-online.swift in Sources */,
 				E997FCFE2E29486F00D9EC06 /* Dialog-logout.swift in Sources */,
+				E9AA78E72E30F80500233D98 /* ErrorDescriptionMessages.swift in Sources */,
 				E997FCFF2E29486F00D9EC06 /* Dialog-open-browser.swift in Sources */,
 				E997FD002E29486F00D9EC06 /* Golden-ticket.swift in Sources */,
 				E997FD012E29486F00D9EC06 /* HomeStrings.swift in Sources */,

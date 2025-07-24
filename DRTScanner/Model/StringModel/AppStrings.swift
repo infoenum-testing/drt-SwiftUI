@@ -88,6 +88,8 @@ struct AppStrings: Codable {
     let switchMode: SwitchMode
     let orderDetail: OrderDetail
     let dialogGoOffline: DialogGoOffline
+    let errorMassage: ErrorMessages
+    let errorDescriptionMessages: ErrorDescriptionMessages
     let attached: String
     let copyright: String
     let searchResults: SearchResults
@@ -131,5 +133,8 @@ struct AppStrings: Codable {
         case backImagePng = "background-href-png"
         case appLogoSvg =  "logo-href-svg"
         case appLogoPng =  "logo-href-png"
+        case errorMassage =  "error"
+        case errorDescriptionMessages = "error-description"
+        
     }
 }

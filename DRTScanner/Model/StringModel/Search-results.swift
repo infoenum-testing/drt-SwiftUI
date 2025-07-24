@@ -14,6 +14,9 @@ struct SearchResults: Codable {
     let phoneNumber: String
     let resultNotFound: String
     let totalResults: String
+    let search: String
+    let loading: String
+    let nomerchandiseFound: String
     
     private enum CodingKeys: String, CodingKey {
         case cc
@@ -22,6 +25,9 @@ struct SearchResults: Codable {
         case phoneNumber = "phone-number"
         case resultNotFound = "result-not-found"
         case totalResults = "total-results"
+        case nomerchandiseFound = "nomerchandiseFound"
+        case search = "search"
+        case loading = "loading"
     }
     
 }

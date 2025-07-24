@@ -23,67 +23,68 @@ struct LookupByNameResultView: View {
     
     var body: some View {
         VStack {
-                VStack {
-                    HStack(alignment: .center) {
-                        // Back button to dismiss the view
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                dismissAction()
-                            }
-                        }) {
-                            Image(StringConstants.DRTImages.leftSideArrow)
-                                .foregroundStyle(Color.neutralText)
+            VStack {
+                HStack(alignment: .center) {
+                    // Back button to dismiss the view
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            dismissAction()
                         }
-                        .padding(.leading, 20)
-                        
-                        Spacer()
-                        // Loading indicator and text
-                        if viewModel.isLoading {
-                            Text(viewModel.isLoading ? "Loading..." : "")
-                                .foregroundColor(Color.neutralText)
-                                .font(.verlagBlackAdaptive(size: 25))
-                                .padding(.trailing, 20)
-                            ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                    .padding(.trailing, 5)
-                            }
-                        // Display total results or no orders found
-                        if !viewModel.isLoading {
-                            
-                            Text(viewModel.orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(viewModel.orders.count)")
-                                .foregroundColor(Color.neutralText)
-                                .font(.verlagBlackAdaptive(size: 25))
-                                .padding(.trailing, 20)
-                        }
-                        Spacer()
+                    }) {
+                        Image(StringConstants.DRTImages.leftSideArrow)
+                            .foregroundStyle(Color.neutralText)
                     }
+                    .padding(.leading, 20)
+                    
+                    Spacer()
+                    // Loading indicator and text
+                    if viewModel.isLoading {
+//                        let loading = stringManager.s
+                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
+                            .foregroundColor(Color.neutralText)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                            .padding(.trailing, 5)
+                    }
+                    // Display total results or no orders found
+                    if !viewModel.isLoading {
+                        
+                        Text(viewModel.orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(viewModel.orders.count)")
+                            .foregroundColor(Color.neutralText)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                    }
+                    Spacer()
                 }
-                .padding([.bottom, .top])
-                .background(Color.neutralBg)
-                .frame(maxWidth: .infinity)
-
-                VStack {
-                    // If no orders, show spacer; else, show list of orders
-                    if viewModel.orders.isEmpty {
-                        Spacer()
-                    } else {
-                        List {
+            }
+            .padding([.bottom, .top])
+            .background(Color.neutralBg)
+            .frame(maxWidth: .infinity)
+            
+            VStack {
+                // If no orders, show spacer; else, show list of orders
+                if viewModel.orders.isEmpty {
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
                             ForEach(viewModel.orders, id: \.orderId) { order in
                                 // Each order cell, tap to select and navigate
                                 LookupCellView(result: order) { orderId in
                                     selectedOrder = order
                                     oId = "\(orderId)"
                                     navigateToOrderResult = true
-                                }.listRowBackground(Color.primaryText)
+                                    
+                                }.background(Color.primaryText)
                             }
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
                         }
-                        .listStyle(.plain)
-                        .padding(0)
                     }
+                    .padding(0)
                 }
             }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.primaryText)
         .task {

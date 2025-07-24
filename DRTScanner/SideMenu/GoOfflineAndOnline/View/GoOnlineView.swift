@@ -60,7 +60,7 @@ struct GoOnlineView: View {
                     .font(.verlagBoldAdaptive(size: 22))
                     .foregroundColor(Color.primaryText)
             }  else if showErrorMessage {
-                Text(StringConstants.SideMenuView.goOnlineFailed)
+                Text(stringManager.strings?.dialogGoOffline.goOnlineFailed ?? StringConstants.SideMenuView.goOnlineFailed)
                     .font(.verlagBoldAdaptive(size: 18))
                     .foregroundColor(.red)
                     .multilineTextAlignment(.center)
@@ -133,7 +133,7 @@ struct CustomAlertForError: View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
+                Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom, 10)

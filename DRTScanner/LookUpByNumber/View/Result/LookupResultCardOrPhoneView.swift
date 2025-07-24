@@ -65,7 +65,7 @@ struct LookupResultCardOrPhoneView: View {
                     
                     // Show loading text & spinner
                     if isLoading {
-                        Text("Loading...")
+                        Text(stringManager.strings?.searchResults.loading ?? "Loading...")
                             .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
@@ -93,19 +93,18 @@ struct LookupResultCardOrPhoneView: View {
                 if orders.isEmpty {
                     Spacer() // Empty space if no orders found
                 } else {
-                    List {
-                        ForEach(orders, id: \.orderId) { seat in
-                            LookupCellView(result: seat) { orderId in
-                                selectedOrder = seat
-                                oId = "\(orderId)"             // Store selected order ID
-                                navigateToOrderResult = true   // Trigger sheet
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(orders, id: \.orderId) { seat in
+                                LookupCellView(result: seat) { orderId in
+                                    selectedOrder = seat
+                                    oId = "\(orderId)"             // Store selected order ID
+                                    navigateToOrderResult = true   // Trigger sheet
+                                }
+                                .background(Color.primaryText)
                             }
-                            .listRowBackground(Color.primaryText)
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
                         }
                     }
-                    .listStyle(.plain)
                     .padding(0)
                 }
             }
@@ -135,6 +134,7 @@ struct LookupResultCardOrPhoneView: View {
             }
         }
         .padding(.top, 0)
+        
         
         // Optional: Debug print for sheet presentation
         .onChange(of: navigateToOrderResult) { newValue in

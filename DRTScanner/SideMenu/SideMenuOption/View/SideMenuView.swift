@@ -28,6 +28,8 @@ struct SideMenuView: View {
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
+        let menuStrings = stringManager.strings?.menu
+        let menuStringsConstant =  StringConstants.SideMenuView.self
         GeometryReader { geometry in
             ZStack(alignment: .trailing) {
                 // Dimmed background
@@ -55,14 +57,14 @@ struct SideMenuView: View {
                         }
                         // Go Online/Offline option
                         if isOfflineMode {
-                            SideMenuOption(title: stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline) {
+                            SideMenuOption(title: menuStrings?.goOnline ?? menuStringsConstant.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOnlineView = true
                                 }
                             }
                             
                         } else {
-                            SideMenuOption(title: stringManager.strings?.menu.goOffline ?? StringConstants.SideMenuView.goOffline) {
+                            SideMenuOption(title: menuStrings?.goOffline ?? menuStringsConstant.goOffline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
@@ -70,7 +72,7 @@ struct SideMenuView: View {
                         }
                         // Scanning Stats option (only if not in merchandise mode)
                         if !isMerchandise {
-                            SideMenuOption(title: stringManager.strings?.menu.scanningStats ?? StringConstants.SideMenuView.scaningStats) {
+                            SideMenuOption(title: menuStrings?.scanningStats ?? menuStringsConstant.scaningStats) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showScanningStatsView = true
                                 }
@@ -78,21 +80,21 @@ struct SideMenuView: View {
                             }
                         }
                         // Settings option
-                        SideMenuOption(title: StringConstants.SideMenuView.setting) {
+                        SideMenuOption(title: menuStrings?.settings ?? menuStringsConstant.setting) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showSettingsView = true
                             }
                         }
                         // Merchandise/Ticket switch option
                         if isMerchandise {
-                            SideMenuOption(title: stringManager.strings?.menu.scanTickets ?? StringConstants.SideMenuView.scanTicket) {
+                            SideMenuOption(title: menuStrings?.scanTickets ?? menuStringsConstant.scanTicket) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
                                 }
                             }
                         } else {
-                            SideMenuOption(title: stringManager.strings?.menu.scanMerch ?? StringConstants.SideMenuView.scanMerchandise) {
+                            SideMenuOption(title: menuStrings?.scanMerch ?? menuStringsConstant.scanMerchandise) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
@@ -100,20 +102,20 @@ struct SideMenuView: View {
                             }
                         }
                         // Logout option
-                        SideMenuOption(title: stringManager.strings?.menu.logOut ?? StringConstants.SideMenuView.logout) {
+                        SideMenuOption(title: menuStrings?.logOut ?? menuStringsConstant.logout) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
                         }
                         // About option
-                        SideMenuOption(title: stringManager.strings?.menu.about ?? StringConstants.SideMenuView.about) {
+                        SideMenuOption(title: menuStrings?.about ?? menuStringsConstant.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
                             //   isPresented = false
                         }
                         // DRT Website option
-                        SideMenuOption(title: stringManager.strings?.menu.website ?? StringConstants.SideMenuView.drtWebsite) {
+                        SideMenuOption(title: menuStrings?.website ?? menuStringsConstant.drtWebsite) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }
@@ -121,7 +123,7 @@ struct SideMenuView: View {
                         // Alert for opening website
                         .alert(isPresented: $showWebsiteAlert) {
                             Alert(
-                                title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
+                                title: Text(stringManager.strings?.dialogOpenBrowser.description ?? menuStringsConstant.openDrtWebsiteMessage),
                                 message: Text(""),
                                 primaryButton: .default(Text( stringManager.strings?.dialogOpenBrowser.continueField ?? "OPEN")) {
                                     openDRTWebsite()
@@ -164,7 +166,7 @@ struct SideMenuView: View {
                     }
                 VStack(alignment: .center) {
                     Spacer()
-                    Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? StringConstants.SideMenuView.merchandise : stringManager.strings?.switchMode.tickets ?? StringConstants.SideMenuView.ticket)")
+                    Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? menuStringsConstant.merchandise : stringManager.strings?.switchMode.tickets ?? menuStringsConstant.ticket)")
                         .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
@@ -181,7 +183,7 @@ struct SideMenuView: View {
                                     isPresented = false
                                 }
                             }) {
-                                Text("YES")
+                                Text(stringManager.strings?.switchMode.yes ?? "YES")
                                     .font(.verlagBoldAdaptive(size: 30))
                                     .foregroundColor(Color.primaryText)
                                     .padding()
@@ -204,7 +206,7 @@ struct SideMenuView: View {
                                     showConfirmationAlert = false
                                 }
                             }) {
-                                Text("NO")
+                                Text(stringManager.strings?.switchMode.no ?? "NO")
                                     .font(.verlagBoldAdaptive(size: 30))
                                     .foregroundColor(Color.primaryText)
                                     .padding()

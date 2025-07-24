@@ -63,28 +63,25 @@ struct SVGWebView: UIViewRepresentable {
                             return
                         }
                         
-                        let html = """
-                        <html>
-                        <head>
-                        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-                        <style>
-                        body { margin:0; display:flex; align-items:center; justify-content:center; background:transparent; }
-                        svg { width:100%; height:100%; }
-                        </style>
-                        </head>
-                        <body>\(svg)</body>
-                        </html>
-                        """
+                        let html = self?.buildHTML(from: trimmed)
+                        
+                        // ✅ Save HTML to disk
+                        self?.saveHTMLToDisk(html ?? "", for: url)
                         
                         DispatchQueue.main.async {
-                            webView.loadHTMLString(html, baseURL: nil)
-                            // Don't stop loading here
+                            webView.loadHTMLString(html ?? "", baseURL: nil)
                         }
                         
                     case .failure(let error):
-                        print("❌ Failed to load SVG: \(error.localizedDescription)")
-                        // Don't stop loading here either
-                        break
+                        print("❌ Failed to load from network: \(error.localizedDescription)")
+                        if let savedHTML = self?.loadHTMLFromDisk(for: url) {
+                            print("📦 Loaded SVG from file cache")
+                            DispatchQueue.main.async {
+                                webView.loadHTMLString(savedHTML, baseURL: nil)
+                            }
+                        } else {
+                            print("❌ No saved file found for offline use")
+                        }
                     }
                 }
         }
@@ -93,6 +90,55 @@ struct SVGWebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             print("✅ WKWebView finished rendering SVG")
             parent.isLoading = false
+        }
+        
+        func buildHTML(from svg: String) -> String {
+            return """
+                    <html>
+                    <head>
+                    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+                    <style>
+                    body { margin:0; display:flex; align-items:center; justify-content:center; background:transparent; }
+                    svg { width:100%; height:100%; }
+                    </style>
+                    </head>
+                    <body>\(svg)</body>
+                    </html>
+                    """
+        }
+        
+        private func htmlFilePath(for url: URL) -> URL? {
+            let fileName = url.lastPathComponent + ".html"
+            if   let documents = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+                return documents.appendingPathComponent(fileName) }
+            else {
+                return nil
+            }
+        }
+        
+        private func saveHTMLToDisk(_ html: String, for url: URL) {
+            if  let fileURL = htmlFilePath(for: url) {
+                do {
+                    try html.write(to: fileURL, atomically: true, encoding: .utf8)
+                    print("✅ HTML saved to disk at: \(fileURL.lastPathComponent)")
+                } catch {
+                    print("❌ Failed to save HTML: \(error)")
+                }
+            }
+        }
+        
+        private func loadHTMLFromDisk(for url: URL) -> String? {
+            if  let fileURL = htmlFilePath(for: url)  {
+                do {
+                    let html = try String(contentsOf: fileURL, encoding: .utf8)
+                    return html
+                } catch {
+                    print("❌ Failed to read HTML from disk: \(error)")
+                    return nil
+                }
+            } else {
+                return nil
+            }
         }
     }
 }

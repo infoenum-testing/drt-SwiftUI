@@ -17,6 +17,7 @@ struct MenuStrings: Codable {
     let scanningStats: String
     let stopScanning: String
     let website: String
+    let settings: String?
     
     private enum CodingKeys: String, CodingKey {
         case about
@@ -29,5 +30,6 @@ struct MenuStrings: Codable {
         case scanningStats = "scanning-stats"
         case stopScanning = "stop-scanning"
         case website
+        case settings = "settings"
     }
 }

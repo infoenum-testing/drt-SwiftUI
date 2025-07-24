@@ -111,7 +111,7 @@ struct LookupByNameView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        Text(StringConstants.Common.search)
+                        Text(stringManager.strings?.searchResults.search ?? StringConstants.Common.search)
                             .font(.verlagBoldAdaptive(size: 36))
                             .foregroundColor(Color.primaryText)
                             .padding()

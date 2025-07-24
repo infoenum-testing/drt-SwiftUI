@@ -29,7 +29,6 @@ struct LandingView: View {
     // Animation state variables
     @State private var animateLogo = false
     @State private var animateButtons = false
-    @State private var isLoadingSvgImage = false
     // Initializer to check if user is logged in based on showCode
     init() {
         if showCode.isEmpty {
@@ -40,7 +39,7 @@ struct LandingView: View {
     var body: some View {
         ScrollView {
             ZStack {
-                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 10)
                 
                 if viewModel.isLoading {
                     VStack {
@@ -63,7 +62,6 @@ struct LandingView: View {
                             .padding(.bottom)
                     }
                 } else {
-                    
                     VStack {
                         if viewModel.isValidCode && isUserLoggedIn {
                             HStack {
@@ -102,8 +100,6 @@ struct LandingView: View {
                                 .onAppear {
                                     animateLogo = true
                                 }
-                            
-                            
                         }
                         Spacer()
                         
@@ -281,7 +277,7 @@ struct LandingView: View {
                                 VStack(alignment: .center) {
                                     HStack {
                                         Spacer()
-                                        Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
+                                        Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
                                             .padding(.leading, 30)
                                             .font(.verlagBoldAdaptive(size: 30))
                                             .foregroundColor(Color.primaryText)
@@ -303,7 +299,7 @@ struct LandingView: View {
                                         }
                                     }
                                     .padding(.top,20)
-                                    Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? StringConstants.LandingView.invalidShowCode)
+                                    Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? stringManager.strings?.errorMassage.invalidShowCode ?? StringConstants.LandingView.invalidShowCode)
                                         .font(.verlagBookAdaptive(size: 18))
                                         .padding(.bottom)
                                         .foregroundColor(Color.primaryText)

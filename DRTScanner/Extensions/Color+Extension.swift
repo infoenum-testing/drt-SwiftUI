@@ -23,7 +23,7 @@ extension Color {
         default:
             (a, r, g, b) = (255, 0, 0, 0)
         }
-
+        
         self.init(
             .sRGB,
             red: Double(r) / 255,
@@ -49,7 +49,7 @@ extension Color {
         color2Text:       "FFFFFF",
         logoHref:         ""
     )}
-  
+    
     static var valid:            Color { Color(hex: palette.colorValid) }
     static var invalid:          Color { Color(hex: palette.colorInvalid) }
     static var previous:         Color { Color(hex: palette.colorPrevious) }

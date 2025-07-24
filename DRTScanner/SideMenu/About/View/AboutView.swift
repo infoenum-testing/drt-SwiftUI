@@ -48,8 +48,8 @@ struct AboutView: View {
                             Alert(
                                 title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
                                 message: Text(""),
-                                primaryButton: .default(Text("OPEN")) { openWebsite() },
-                                secondaryButton: .cancel(Text("CANCEL"))
+                                primaryButton: .default(Text(stringManager.strings?.dialogOpenBrowser.continueField ?? "OPEN")) { openWebsite() },
+                                secondaryButton: .cancel(Text(stringManager.strings?.dialogOpenBrowser.cancel ?? "CANCEL"))
                             )
                         }
                     

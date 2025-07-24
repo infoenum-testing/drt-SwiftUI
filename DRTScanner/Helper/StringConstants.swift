@@ -56,6 +56,7 @@ struct StringConstants {
         static let ordersNotFound = "Orders not found."
         static let showCode = "Show Code"
         static let selectTime = "Select Time"
+        static let noInternetError = "The internet connection appears to be offline."
     }
     
     struct httpMethod {
@@ -180,7 +181,7 @@ struct StringConstants {
         static let tokenHasExpired = "Token has expired"
         static let clientError = "Client Error"
         static let invalidCredential = "Invalid credentials provided."
-        static let emailNotVerified = "User email address does not veirfied. Please verify email address through the OTP to continue access to the app."
+      
         
     }
     

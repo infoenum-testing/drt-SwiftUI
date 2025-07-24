@@ -131,7 +131,7 @@ struct ScannerView: View, Equatable {
     // Indicates if the flash is on
     @State private var isFlashOn = false
     // Size of the drag area for flash control
-    let dragAreaSize: CGSize = CGSize(width: 80.adaptiveForIpad, height: 80.adaptiveForIpad)
+    let dragAreaSize: CGSize = CGSize(width: 90.adaptiveForIpad, height: 90.adaptiveForIpad)
     // Indicates if the scanner cell is scanning (binding from parent)
     @Binding var isScanningCell: Bool
     // ViewModel for scanner logic
@@ -434,6 +434,7 @@ struct ScannerView: View, Equatable {
                             .overlay(
                                 VStack(spacing: 12) {
                                     Text(stringManager.strings?.attached ?? "Using Attached Scanner")
+                                        .lineLimit(0)
                                         .font(.verlagBookAdaptive(size: 25))
                                         .foregroundColor(Color.primaryText)
                                         .padding(.top, -40)
@@ -537,19 +538,6 @@ struct ScannerView: View, Equatable {
             withAnimation {
                 isVisibleText = true
             }
-            //                isTicketValid = true
-            //                isPreScanned = true
-            //                isInvalidTicket = true
-            //                invalidMessage = "Invalid barcode"
-            //                isMerchTicketValid = true
-            //                isMerchPreScanned = true
-            //                merchOrderName = "T-Shirt Variants"
-            //                merchVariantName = "Medium"
-            //                orderName = "OrderName"
-            //                orderNumber = "123456"
-            //               orderDateScanned = "@02:15 AM"
-            //                isInvalidMerchTicket = true
-            //                isInvalidSeatTicket = true
         }
         .onDisappear {
             stopLineAnimation() // Stop scan line animation
@@ -1115,7 +1103,7 @@ struct ScannerView: View, Equatable {
                             if NetworkMonitor.shared.isNetworkAvailable() {
                                 invalidMessage = error.localizedDescription
                             } else {
-                                invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                                invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                             }
                             
                             isInvalidTicket = true
@@ -1197,7 +1185,7 @@ struct ScannerView: View, Equatable {
                                     if NetworkMonitor.shared.isNetworkAvailable() {
                                         invalidMessage = error.localizedDescription
                                     } else {
-                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -1313,7 +1301,7 @@ struct ScannerView: View, Equatable {
                                     if NetworkMonitor.shared.isNetworkAvailable() {
                                         invalidMessage = error.localizedDescription
                                     } else {
-                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                                        invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     isInvalidTicket = true
                                     playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
@@ -1371,7 +1359,6 @@ struct ScannerView: View, Equatable {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
         }
     }
-    
 }
 
 @ViewBuilder

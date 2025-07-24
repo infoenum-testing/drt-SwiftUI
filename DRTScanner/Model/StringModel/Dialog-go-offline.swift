@@ -16,6 +16,8 @@ struct DialogGoOffline: Codable {
 	let continueField: String
 	let badInput: String
 	let description: String
+    let goOnlineFailed: String
+    
 
 	private enum CodingKeys: String, CodingKey {
 		case cancel = "cancel"
@@ -26,5 +28,6 @@ struct DialogGoOffline: Codable {
 		case continueField = "continue"
 		case badInput = "bad-input"
 		case description = "description"
+        case goOnlineFailed = "goOnlineFailed"
 	}
 }

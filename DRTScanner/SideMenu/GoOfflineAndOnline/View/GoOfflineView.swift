@@ -101,6 +101,7 @@ struct GoOfflineView: View {
                             .padding()
                             .frame(maxWidth: .infinity)
                     }
+                    .opacity(isContinueDisabled ? 0.6 : 1.0)
                     .background(Color.secondaryBg)
                     .cornerRadius(12)
                     .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
@@ -214,9 +215,8 @@ struct GoOfflineView: View {
                     if NetworkMonitor.shared.isNetworkAvailable() {
                         viewModel.errorMessage = error.localizedDescription
                     } else {
-                        viewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                        viewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                     }
-                    viewModel.errorMessage = error.localizedDescription
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showOfflineAlert = true
                     }

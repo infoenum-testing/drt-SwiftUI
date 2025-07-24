@@ -21,7 +21,6 @@ struct LookupOrderResultView: View {
     @AppStorage("isMerchandise") private var isMerchandise: Bool? // Flag to indicate merchandise mode
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false // Flag for offline mode
     @State private var isLoadingMerch = true // Loading state for merchandise
-    @State private var showAlert = false // State to show/hide error alert
     @State  var errorMessages: String? = nil // Error message for alert
     let errorMessage: String? // Error message passed in
     var order: OrdersNewApi? // Order object
@@ -44,7 +43,7 @@ struct LookupOrderResultView: View {
                     
                     Spacer()
                     if viewModel.isLoading {
-                        Text(viewModel.isLoading ? "Loading..." : "")
+                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
                             .foregroundStyle(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
@@ -92,14 +91,14 @@ struct LookupOrderResultView: View {
                                     MerchandiseOrderCell(
                                         merchandiseOrder: order,
                                         lookupByOrderResultViewModel: viewModel,
-                                        showAlert: $showAlert
+                                        showAlert: $stringManager.isShowAlert
                                     )
                                 }
                             }
                             .listStyle(.plain)
                             .padding(0)
                         } else {
-                            Text("No merchandise found.")
+                            Text(stringManager.strings?.searchResults.nomerchandiseFound ?? "No merchandise found.")
                                 .foregroundColor(Color.neutralText)
                             Spacer()
                         }
@@ -117,7 +116,7 @@ struct LookupOrderResultView: View {
                                     MerchandiseOrderCell(
                                         merchandiseOrder: order,
                                         lookupByOrderResultViewModel: viewModel,
-                                        showAlert: $showAlert
+                                        showAlert: $stringManager.isShowAlert
                                     )
                                 }
                             }
@@ -128,7 +127,7 @@ struct LookupOrderResultView: View {
                 } else {
                     // Seat section
                     if viewModel.isLoading {
-                        Text(viewModel.isLoading ? "Loading..." : "")
+                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
                             .foregroundColor(Color.primaryText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
@@ -138,15 +137,15 @@ struct LookupOrderResultView: View {
                         Spacer()
                     }
                     if !viewModel.isLoading {
-                        List {
-                            ForEach(seats.indices, id: \.self) { index in
-                                SeatCell(seat: $seats[index], showAlert: $showAlert, lookupByOrderResultViewModel: viewModel)
-                                    .listRowBackground(Color.primaryText)
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(seats.indices, id: \.self) { index in
+                                    SeatCell(seat: $seats[index], showAlert: $stringManager.isShowAlert, lookupByOrderResultViewModel: viewModel)
+                                        .background(Color.primaryText)
+                                }
                             }
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                        }.listStyle(.plain)
-                            .padding(0)
+                        }
+                        .padding(0)
                     }
                 }
             }
@@ -165,63 +164,9 @@ struct LookupOrderResultView: View {
             }
             isLoadingMerch = false
         }
-        .customAlert(isPresented: $showAlert) {
-            // Custom alert for error messages
-            GeometryReader { geometry in
-                ZStack(alignment: .top) {
-                    Color.black.opacity(0)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = false
-                            }
-                        }
-                    
-                    VStack(alignment: .center) {
-                        HStack {
-                            Spacer()
-                            Text(StringManager.shared.strings?.noInternet.title ?? StringConstants.Common.error)
-                                .padding(.leading, 20)
-                                .font(.verlagBoldAdaptive(size: 30))
-                                .foregroundColor(Color.primaryText)
-                                .padding(.bottom, 10)
-                            
-                            Spacer()
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showAlert = false
-                                }
-                            }) {
-                                Image(StringConstants.DRTImages.crossImage)
-                                    .resizable()
-                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                    .background(Color.clear)
-                                    .contentShape(Rectangle())
-                            }.padding(.bottom, 10)
-                        }
-                        
-                        VStack {
-                            Text(viewModel.errorMessage ?? "This")
-                                .font(.verlagBookAdaptive(size: 18))
-                                .foregroundColor(Color.primaryText)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                        }.onChange(of: errorMessages) { _ in
-                            print(errorMessages, "new")
-                            
-                        }
-                    }
-                    .padding(30)
-                    .padding(.top, 30)
-                    .background(Color.secondaryBg)
-                    .frame(width: geometry.size.width * 1)
-                    .position(x: geometry.size.width / 2, y: geometry.safeAreaInsets.top)
-                    
-                }
-            }.padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? -90 : -60)
-            
-                .edgesIgnoringSafeArea(.all)
-        }
+        .onChange(of: viewModel.errorMessage, perform: { newValue in
+            stringManager.message = newValue ?? "This"
+        })
         .edgesIgnoringSafeArea(.all)
     }
     

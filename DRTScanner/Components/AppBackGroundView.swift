@@ -33,7 +33,6 @@ struct AppBackGroundView: View {
                                     .resizable()
                                     .scaledToFill()
                                     .clipped()
-                                    .padding(.top ,-5)
                                     .frame(width:  width,
                                            height: height)
                                     .frame(maxWidth:  maxWidth,
@@ -57,7 +56,6 @@ struct AppBackGroundView: View {
                     .resizable()
                     .scaledToFill()
                     .clipped()
-                    .padding(.top ,-5)
                     .frame(width: width, height: height)
                     .frame(maxWidth:  maxWidth,
                            maxHeight: maxHeight)
@@ -79,4 +77,5 @@ struct AppBackGroundView: View {
                maxHeight: maxHeight)
     }
 }
+
 

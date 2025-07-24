@@ -40,7 +40,7 @@ struct MerchandiseOrderCell: View {
                                         isLoadingSvgImage = false
                                     }
                                 }
-                            
+                        
                             if isLoadingSvgImage {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
@@ -140,11 +140,11 @@ struct MerchandiseOrderCell: View {
                 isLoading = false
                 return
             }
-
+            
             IQAPIClient.scanProductQrCode(code: savedShowCode ?? "", qr: qrCode) { result in
                 DispatchQueue.main.async {
                     isLoading = false
-
+                    
                     switch result {
                     case .success(let jsonResponse):
                         let valid = jsonResponse["valid"] as? Bool ?? false
@@ -152,7 +152,7 @@ struct MerchandiseOrderCell: View {
                         let scannedAt = jsonResponse["tsScanned"] as? String
                         let newQty = jsonResponse["qty"] as? Int ?? merchandiseOrder.qty
                         let newQtyScanned = jsonResponse["qtyScanned"] as? Int ?? merchandiseOrder.qtyScanned
-
+                        
                         if !valid {
                             lookupByOrderResultViewModel.errorMessage = message
                             showAlert = true
@@ -168,7 +168,7 @@ struct MerchandiseOrderCell: View {
                         if NetworkMonitor.shared.isNetworkAvailable() {
                             lookupByOrderResultViewModel.errorMessage = error.localizedDescription
                         } else {
-                            lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? "The internet connection appears to be offline."
+                            lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                         }
                         showAlert = true
                     }
@@ -193,7 +193,7 @@ struct MerchandiseOrderCell: View {
         }
         
         if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
-//            merchandiseOrder.qtyScanned += 1
+            //            merchandiseOrder.qtyScanned += 1
         }
         
         isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned
@@ -235,9 +235,9 @@ struct MerchandiseOrderCell: View {
                 product.qtyScanned = product.qty
             }
             
-//            if product.qtyScanned == product.qty {
-                product.date_scanned = Date()
-//            }
+            //            if product.qtyScanned == product.qty {
+            product.date_scanned = Date()
+            //            }
             
             try context.save()
             

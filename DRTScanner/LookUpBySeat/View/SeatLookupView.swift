@@ -29,39 +29,43 @@ struct SeatLookupView: View {
                     } label: {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
+                            .frame(width: 10.adaptiveForIpad,height: 10.adaptiveForIpad)
                     }
-                    .padding(.leading, 20)
-
+                    Spacer()
+                    
                     // Display selected seat (disabled text field)
                     TextField("", text: $viewModel.seatText, prompt: Text(stringManager.strings?.seat.lookUpSeat ?? StringConstants.SeatHomeView.selectSeat)
                         .font(.verlagBoldAdaptive(size: 30))
                         .foregroundColor(.black.opacity(0.2)))
-                        .font(.verlagBoldAdaptive(size: 42))
-                        .foregroundColor(Color.neutralText)
-                        .multilineTextAlignment(.center)
-                        .padding(.leading, -50)
-                        .disabled(true)
+                    .font(.verlagBoldAdaptive(size: 42))
+                    .foregroundColor(Color.neutralText)
+                    .multilineTextAlignment(.center)
+                    .disabled(true)
+                    Spacer()
+                    Text("")
+                        .frame(width: 10.adaptiveForIpad,height: 10.adaptiveForIpad)
                 }
+                .padding(.horizontal,15.adaptiveForIpad)
                 .frame(maxHeight: 90.adaptiveForIpad)
                 .background(Color.neutralBg)
-
+                
                 // TableView for selecting section, row, and seat
-        
-                    TableView(
-                        isSeatLookupPresented: $isSeatLookupPresented,
-                        isSectionLookupPresented: $isSectionLookupPresented,
-                        isRowLookupPresented: $isRowLookupPresented,
-                        selectedSection: $viewModel.selectedSection,
-                        selectedRow: $viewModel.selectedRow,
-                        selectedSeat: $viewModel.selectedSeat
-                    )
-                    // Update seat data when selection changes
-                    .onChange(of: viewModel.selectedSection) { _ in viewModel.onSeatDataChanged() }
-                    .onChange(of: viewModel.selectedRow) { _ in viewModel.onSeatDataChanged() }
-                    .onChange(of: viewModel.selectedSeat) { _ in viewModel.onSeatDataChanged() }
-                    
-                    Spacer()
-
+                
+                TableView(
+                    isSeatLookupPresented: $isSeatLookupPresented,
+                    isSectionLookupPresented: $isSectionLookupPresented,
+                    isRowLookupPresented: $isRowLookupPresented,
+                    selectedSection: $viewModel.selectedSection,
+                    selectedRow: $viewModel.selectedRow,
+                    selectedSeat: $viewModel.selectedSeat
+                )
+                // Update seat data when selection changes
+                .onChange(of: viewModel.selectedSection) { _ in viewModel.onSeatDataChanged() }
+                .onChange(of: viewModel.selectedRow) { _ in viewModel.onSeatDataChanged() }
+                .onChange(of: viewModel.selectedSeat) { _ in viewModel.onSeatDataChanged() }
+                
+                Spacer()
+                
                 // Continue button to trigger seat lookup
                 Button {
                     viewModel.continueButtonTapped()
@@ -88,7 +92,7 @@ struct SeatLookupView: View {
                 .background(Color.primaryText)
                 .padding(.horizontal)
             }.background(Color.primaryText)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         // Sheet for displaying lookup result
         .customSheetView(isPresented: $viewModel.showResultView) {

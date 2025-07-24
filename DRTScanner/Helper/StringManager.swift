@@ -12,9 +12,14 @@ import IQAPIClient
 
 class StringManager: ObservableObject {
     static let shared = StringManager()
+    @Published var strings: AppStrings?
     
     @Published var allLangStrings: AppStringsClass?
-    @Published var strings: AppStrings?
+    
+    @Published var isShowAlert: Bool = false
+    @Published var title: String = ""
+    @Published var message: String = ""
+    
     private init() {
         if let strings = loadJSONFromFile(),let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
             let decoder = JSONDecoder()
@@ -71,5 +76,4 @@ class StringManager: ObservableObject {
         }
         self.strings =  allLangStrings?[tamp]
     }
-    
 }
