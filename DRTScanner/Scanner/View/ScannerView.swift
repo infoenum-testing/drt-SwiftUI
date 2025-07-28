@@ -546,17 +546,21 @@ struct ScannerView: View, Equatable {
             isMerchandiseMode = isMerchandise ?? false
         }
         .onChange(of: keyboardObserver.isKeyboardVisible) { isVisible in
-            if isVisible {
-                stopLineAnimation()
-            } else {
-                startLineAnimation()
+            if pauseScanTimeout == 0 {
+                if isVisible {
+                    stopLineAnimation()
+                } else {
+                    resetScanner()
+                }
             }
         }
         .onChange(of: scannerLineAnimation) { isVisible in
-            if !isVisible {
-                stopLineAnimation()
-            } else {
-                startLineAnimation()
+            if pauseScanTimeout == 0 {
+                if !isVisible {
+                    stopLineAnimation()
+                } else {
+                    resetScanner()
+                }
             }
         }
         .onChange(of: isOffline) { newValue in
@@ -820,7 +824,7 @@ struct ScannerView: View, Equatable {
         } else {
             isInvalidTicket = true
             invalidMessage = "Invalid QR Code"
-            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {
                     isInvalidTicket = false
@@ -891,7 +895,7 @@ struct ScannerView: View, Equatable {
                             merchVariantName = product.variantName ?? ""
                             
                             isMerchTicketValid = true
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -916,7 +920,7 @@ struct ScannerView: View, Equatable {
                             }
                             
                             isMerchPreScanned = true
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -927,7 +931,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         // ❌ No matching product found
                         isInvalidMerchTicket = true
-                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -953,7 +957,7 @@ struct ScannerView: View, Equatable {
                             orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             orderDateScanned = scannedTime.formatToTimeString()
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isPreScanned = false
@@ -969,7 +973,7 @@ struct ScannerView: View, Equatable {
                             isTicketValid = true
                             orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isTicketValid = false
@@ -982,7 +986,7 @@ struct ScannerView: View, Equatable {
                         // Invalid offline seat QR
                         isInvalidTicket = true
                         invalidMessage = "Invalid Barcode"
-                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidTicket = false
@@ -1007,7 +1011,7 @@ struct ScannerView: View, Equatable {
                             orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? ""
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isPreScanned = false
@@ -1022,7 +1026,7 @@ struct ScannerView: View, Equatable {
                             isTicketValid = true
                             orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isTicketValid = false
@@ -1034,7 +1038,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         isInvalidTicket = true
                         invalidMessage =  stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
-                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidTicket = false
@@ -1044,7 +1048,7 @@ struct ScannerView: View, Equatable {
                 } catch {
                     isInvalidTicket = true
                     invalidMessage = stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
-                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation {
                             isInvalidTicket = false
@@ -1070,7 +1074,7 @@ struct ScannerView: View, Equatable {
                                         orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                         orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                         
-                                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                        playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                             withAnimation {
                                                 isPreScanned = false
@@ -1086,7 +1090,7 @@ struct ScannerView: View, Equatable {
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                     isGoldenTicket = (responseDict["is_golden_ticket"] == nil)
-                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                    playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
                                             isTicketValid = false
@@ -1107,7 +1111,7 @@ struct ScannerView: View, Equatable {
                             }
                             
                             isInvalidTicket = true
-                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -1148,7 +1152,7 @@ struct ScannerView: View, Equatable {
                                         if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
                                                 isMerchPreScanned = true
-                                                playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                                 
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                     withAnimation {
@@ -1157,7 +1161,7 @@ struct ScannerView: View, Equatable {
                                                 }
                                             } else {
                                                 isMerchTicketValid = true
-                                                playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                                 
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                     withAnimation {
@@ -1169,7 +1173,7 @@ struct ScannerView: View, Equatable {
                                             // ❗ Show error message if valid is false
                                             isInvalidTicket = true
                                             invalidMessage = message
-                                            playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                             
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 withAnimation {
@@ -1188,7 +1192,7 @@ struct ScannerView: View, Equatable {
                                         invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     
-                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
@@ -1201,7 +1205,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         // Offline or wrong scan type
                         isInvalidMerchTicket = true
-                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -1231,7 +1235,7 @@ struct ScannerView: View, Equatable {
                                                     orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
                                                     isGoldenTicket = scanResponse.isGoldenTicket ?? false
-                                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                    playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {
                                                             isTicketValid = false
@@ -1257,7 +1261,7 @@ struct ScannerView: View, Equatable {
                                                         orderDateScanned = ""
                                                     }
                                                     
-                                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                    playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {
                                                             isPreScanned = false
@@ -1268,14 +1272,14 @@ struct ScannerView: View, Equatable {
                                                     
                                                 } else {
                                                     if let message = scanResponse.message, !message.isEmpty {
-                                                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                        //                                                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                                             lookupByOrderResultViewModel.errorMessage = message
                                                             showOfflineAlert = true
                                                         }
                                                     } else {
                                                         isInvalidTicket = true
-                                                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                             withAnimation { isInvalidTicket = false }
                                                         }
@@ -1304,7 +1308,7 @@ struct ScannerView: View, Equatable {
                                         invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     isInvalidTicket = true
-                                    playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation { isInvalidTicket = false }
@@ -1316,7 +1320,7 @@ struct ScannerView: View, Equatable {
                         
                     } else {
                         isInvalidSeatTicket = true
-                        playScanFeedback(beep: shouldPlayBeepSound, haptic: shouldPlayHapticNew)
+                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidSeatTicket = false
@@ -1341,9 +1345,21 @@ struct ScannerView: View, Equatable {
     }
     
     /// Plays feedback for a scan event, such as a beep sound and/or haptic feedback, depending on the provided flags.
-    private func playScanFeedback(beep: Bool, haptic: Bool) {
-        if beep {
-            if let soundURL = Bundle.main.url(forResource: "beep", withExtension: "mp3") {
+    private func playScanFeedback(scannerResult: ScannerResult, haptic: Bool) {
+        if scannerResult == .valid {
+            if let soundURL = Bundle.main.url(forResource: "scan", withExtension: "wav") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
+                } catch {
+                    print("Error playing beep.mp3: \(error.localizedDescription)")
+                }
+            } else {
+                print("beep.mp3 not found in bundle")
+            }
+        } else if scannerResult == .invalid || scannerResult == .previouslyScanned {
+            if let soundURL = Bundle.main.url(forResource: "fail", withExtension: "wav") {
                 do {
                     audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
                     audioPlayer?.prepareToPlay()
@@ -1355,6 +1371,19 @@ struct ScannerView: View, Equatable {
                 print("beep.mp3 not found in bundle")
             }
         }
+        //        if beep {
+        //            if let soundURL = Bundle.main.url(forResource: "beep", withExtension: "mp3") {
+        //                do {
+        //                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+        //                    audioPlayer?.prepareToPlay()
+        //                    audioPlayer?.play()
+        //                } catch {
+        //                    print("Error playing beep.mp3: \(error.localizedDescription)")
+        //                }
+        //            } else {
+        //                print("beep.mp3 not found in bundle")
+        //            }
+        //        }
         if haptic {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
         }
@@ -1379,4 +1408,10 @@ extension UIApplication {
         let scene = connectedScenes.first as? UIWindowScene
         return scene?.windows.first?.safeAreaInsets.top ?? 0
     }
+}
+
+enum ScannerResult {
+    case invalid
+    case valid
+    case previouslyScanned
 }

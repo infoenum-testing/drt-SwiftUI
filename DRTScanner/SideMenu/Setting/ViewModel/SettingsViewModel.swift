@@ -37,7 +37,7 @@ class SettingsViewModel: ObservableObject {
     
     // Predefined time options for each setting
     let deviceSleepOptions = (0...10).map { "\($0):00 mins" }
-    let pauseScanOptions = (0...29).map { "\($0) sec" }
+    let pauseScanOptions = [ "0 sec","10 sec","20 sec","30 sec"]
     let duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) sec" }
     let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "ENGLISH", StringManager.shared.allLangStrings?.frCA.lang ?? "FRANÇAIS",StringManager.shared.allLangStrings?.esUS.lang ?? "ESPAÑOL"]
     

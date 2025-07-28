@@ -35,3 +35,35 @@ struct SkinModel: Codable {
         case logoHref = "logoHref"
     }
 }
+
+extension SkinModel {
+    init?(skin: Skin) {
+        guard
+            let valid = skin.color_Valid,
+            let neutralText = skin.color_neutral_text,
+            let neutralBg = skin.color_neutral_bg,
+            let oneText = skin.color_1_text,
+            let oneBg = skin.color_1_bg,
+            let twoText = skin.color_2_text,
+            let twoBg = skin.color_2_bg,
+            let invalid = skin.color_Invalid,
+            let prev = skin.color_Previous,
+            let bgHref = skin.background_href,
+            let logo = skin.logo_href
+        else {
+            return nil
+        }
+
+        self.colorValid = valid
+        self.colorNeutralText = neutralText
+        self.colorNeutralBg = neutralBg
+        self.color1Text = oneText
+        self.color1Bg = oneBg
+        self.color2Text = twoText
+        self.color2Bg = twoBg
+        self.colorInvalid = invalid
+        self.colorPrevious = prev
+        self.backgroundHref = bgHref
+        self.logoHref = logo
+    }
+}

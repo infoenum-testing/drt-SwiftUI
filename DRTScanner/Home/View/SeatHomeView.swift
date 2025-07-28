@@ -105,7 +105,7 @@ struct SeatHomeView: View {
     private var dynamicCellHeight: CGFloat {
         let screenHeight = UIScreen.main.bounds.height
         if UIDevice.current.userInterfaceIdiom == .pad {
-            return isMerchandise ? screenHeight * 0.11 : screenHeight * (UIDevice.isLandscape ? 0.08 : 0.09)
+            return isMerchandise ? screenHeight * (UIDevice.isLandscape ? 0.18 : 0.11) : screenHeight * (UIDevice.isLandscape ? 0.15 : 0.09)
         } else {
             return isMerchandise ? screenHeight * 0.11 : screenHeight * 0.09
         }
@@ -147,10 +147,10 @@ struct SeatHomeView: View {
                                     }
                                     .padding(.trailing, 20)
                                 }
-                                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : topSafeAreaPaddingHeader() - 10)
+                                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader() - 10)
                             }
                             .clipped()
-                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
                             .padding(.top,-10)
                             // Bottom row: show name
                             HStack {
@@ -271,7 +271,7 @@ struct SeatHomeView: View {
                                     }
                                     //                            }
                                 }
-                            }.scrollDisabled(true)
+                            }.scrollDisabled(UIDevice.current.userInterfaceIdiom == .pad && UIDevice.isLandscape ? false : true)
                                 .opacity(!isFullScreen ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                                 .background(Color.neutralBg)
@@ -322,7 +322,6 @@ struct SeatHomeView: View {
                             }
                         }
                         .frame(width:UIScreen.main.bounds.width)
-                        .padding(.bottom ,UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height/2 : 0) : 0)
                     }
                 }
                 .frame(height: UIScreen.main.bounds.height)

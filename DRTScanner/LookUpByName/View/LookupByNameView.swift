@@ -52,8 +52,9 @@ struct LookupByNameView: View {
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
-                            .padding(.horizontal, 20)
+                            .padding(10.adaptiveForIpad)
                     }
+                    .padding(.leading, 10)
 
                     Spacer()
 

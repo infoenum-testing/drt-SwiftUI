@@ -33,6 +33,7 @@ struct LookupByNameResultView: View {
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
+                            .padding(10.adaptiveForIpad)
                     }
                     .padding(.leading, 20)
                     
@@ -80,6 +81,7 @@ struct LookupByNameResultView: View {
                                 }.background(Color.primaryText)
                             }
                         }
+                        .padding(.bottom)
                     }
                     .padding(0)
                 }

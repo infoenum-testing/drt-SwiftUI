@@ -29,7 +29,7 @@ struct SeatLookupView: View {
                     } label: {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
-                            .frame(width: 10.adaptiveForIpad,height: 10.adaptiveForIpad)
+                            .padding(10.adaptiveForIpad)
                     }
                     Spacer()
                     

@@ -53,19 +53,10 @@ struct CustomCellView: View {
             if showDivider {
                 
                 if UIDevice.current.userInterfaceIdiom == .pad {
-                    if !isMerchandise {
-                        Rectangle()
-                            .fill(Color.primaryText)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 8.0)
-                        
-                    } else {
-                        Rectangle()
-                            .fill(Color.primaryText)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: dividerHeight())
-                        
-                    }
+                    Rectangle()
+                        .fill(Color.primaryText)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 2)
                 } else {
                     Rectangle()
                         .fill(Color.primaryText)

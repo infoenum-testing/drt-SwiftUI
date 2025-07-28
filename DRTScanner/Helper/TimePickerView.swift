@@ -50,12 +50,14 @@ struct TimePickerView: View {
         VStack {
             Picker(StringConstants.Common.selectTime, selection: $selectedValue) {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
-                    Text(viewModel.getTimeOptions(for: index)[idx])
-                        .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(Color.primaryText)
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 10)
-                        .tag(idx)
+                    VStack {
+                        Text(viewModel.getTimeOptions(for: index)[idx])
+                            .font(.verlagBoldAdaptive(size: 20))
+                            .foregroundColor(Color.primaryText)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 10)
+                            .tag(idx)
+                    }
                 }
             }
             .pickerStyle(InlinePickerStyle())

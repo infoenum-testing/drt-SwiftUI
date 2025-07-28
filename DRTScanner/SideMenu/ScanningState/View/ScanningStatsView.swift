@@ -24,7 +24,7 @@ struct ScanningStatsView: View {
     
     var body: some View {
         let statsString = stringManager.strings?.stats
-        VStack(spacing: 5) {
+        VStack(spacing: 15) {
             HStack {
                 Spacer()
                 Text(statsString?.scanningStats ?? StringConstants.SideMenuView.scaningStatsTitle)
@@ -46,22 +46,26 @@ struct ScanningStatsView: View {
                         .padding(.bottom)
                 }
             }
-            
             .padding(.top,38)
-            if viewModel.isLoading {
-                ProgressView("")
-                    .padding(.top)
-            } else if let stats = viewModel.stats {
-                statsRow(title: statsString?.totalSeats ?? "Total Seats:", value: stats.totalSeats)
-                statsRow(title: statsString?.totalScannableSeats ?? "Total Scannable Seats:", value: stats.seatsScannable)
-                statsRow(title: statsString?.totalScannedSeats ?? "Total Scanned Seats:", value: stats.seatsScannedTotal)
-                statsRow(title: statsString?.ticketsScannedByDevice ?? "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
-            } else if let error = viewModel.errorMessage {
-                Text(error)
-                    .font(.verlagBookAdaptive(size: 16))
-                    .foregroundColor(.red)
-                    .padding(.top)
+            VStack {
+                Spacer()
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(Color.neutralText)
+                } else if let stats = viewModel.stats {
+                    statsRow(title: statsString?.totalSeats ?? "Total Seats:", value: stats.totalSeats)
+                    statsRow(title: statsString?.totalScannableSeats ?? "Total Scannable Seats:", value: stats.seatsScannable)
+                    statsRow(title: statsString?.totalScannedSeats ?? "Total Scanned Seats:", value: stats.seatsScannedTotal)
+                    statsRow(title: statsString?.ticketsScannedByDevice ?? "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
+                } else if let error = viewModel.errorMessage {
+                    Text(error)
+                        .font(.verlagBookAdaptive(size: 16))
+                        .foregroundColor(.red)
+                        .padding(.top)
+                }
+                Spacer()
             }
+            .frame(height: UIScreen.main.bounds.height * 0.22)
         }
         .padding(15)
         .background(Color.secondaryBg)

@@ -76,7 +76,7 @@ struct SettingsView: View {
             
         }
     }
-
+    
     // Section containing all setting items
     private var settingsSection: some View {
         ForEach(Array(settingItems.enumerated()), id: \.element.title) { index, setting in
@@ -86,9 +86,9 @@ struct SettingsView: View {
                     .foregroundColor(Color.primaryText)
                     .font(.verlagBoldAdaptive(size: 14))
                     .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 Spacer()
-
+                
                 // Toggle for boolean settings, button for timer settings
                 if let toggleBinding = setting.toggleBinding {
                     Toggle("", isOn: toggleBinding)
@@ -107,7 +107,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, minHeight: 50.adaptiveForIpad)
         }
     }
-
+    
     // Array of all setting items to display
     private var settingItems: [SettingItem] {
         var items: [SettingItem] = [
@@ -123,11 +123,8 @@ struct SettingsView: View {
         if !isMerchandise {
             items.append(SettingItem(title: stringManager.strings?.settings.scanStats ?? "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats))
         }
-
-        // Add auto enable flash timeout toggle
-        items.append(SettingItem(title: stringManager.strings?.settings.flashTimeout ?? "AUTO ENABLE FLASH TIMEOUT", toggleBinding: $viewModel.autoEnableFlashTimeout))
         
         return items
     }
-
+    
 }

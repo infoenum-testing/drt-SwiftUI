@@ -39,7 +39,8 @@ struct LookupOrderResultView: View {
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
-                    }.padding(.leading, 20)
+                            .padding(10.adaptiveForIpad)
+                    }.padding(.leading, 10)
                     
                     Spacer()
                     if viewModel.isLoading {
@@ -86,16 +87,18 @@ struct LookupOrderResultView: View {
                             Spacer()
                         }
                         else if !products.isEmpty {
-                            List {
-                                ForEach(productOrders) { order in
-                                    MerchandiseOrderCell(
-                                        merchandiseOrder: order,
-                                        lookupByOrderResultViewModel: viewModel,
-                                        showAlert: $stringManager.isShowAlert
-                                    )
+                            ScrollView {
+                                LazyVStack {
+                                    ForEach(productOrders) { order in
+                                        MerchandiseOrderCell(
+                                            merchandiseOrder: order,
+                                            lookupByOrderResultViewModel: viewModel,
+                                            showAlert: $stringManager.isShowAlert
+                                        )
+                                    }
                                 }
+                                .padding(.bottom)
                             }
-                            .listStyle(.plain)
                             .padding(0)
                         } else {
                             Text(stringManager.strings?.searchResults.nomerchandiseFound ?? "No merchandise found.")
@@ -111,17 +114,19 @@ struct LookupOrderResultView: View {
                             Spacer()
                         }
                         else {
-                            List {
-                                ForEach(merchOrders) { order in
-                                    MerchandiseOrderCell(
-                                        merchandiseOrder: order,
-                                        lookupByOrderResultViewModel: viewModel,
-                                        showAlert: $stringManager.isShowAlert
-                                    )
+                            ScrollView {
+                                LazyVStack {
+                                    ForEach(merchOrders) { order in
+                                        MerchandiseOrderCell(
+                                            merchandiseOrder: order,
+                                            lookupByOrderResultViewModel: viewModel,
+                                            showAlert: $stringManager.isShowAlert
+                                        )
+                                    }
                                 }
+                                .padding(.bottom)
+                                .padding(.horizontal)
                             }
-                            .listStyle(.plain)
-                            .padding(0)
                         }
                     }
                 } else {
@@ -144,8 +149,10 @@ struct LookupOrderResultView: View {
                                         .background(Color.primaryText)
                                 }
                             }
+                            .padding(.bottom)
+                            .padding(.horizontal)
                         }
-                        .padding(0)
+                       
                     }
                 }
             }

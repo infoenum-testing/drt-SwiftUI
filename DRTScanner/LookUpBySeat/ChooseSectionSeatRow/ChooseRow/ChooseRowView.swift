@@ -24,8 +24,9 @@ struct ChooseRowView: View {
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
                         .foregroundStyle(Color.neutralText)
+                        .padding(10.adaptiveForIpad)
                 }.padding()
-                    .padding(.leading, 20)
+                    .padding(.leading, 10.adaptiveForIpad)
                     .frame(height: 85.adaptiveForIpad, alignment: .center)
                 
                 Spacer()

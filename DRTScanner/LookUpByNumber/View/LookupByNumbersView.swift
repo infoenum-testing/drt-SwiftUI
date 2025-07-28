@@ -94,9 +94,12 @@ struct LookupByNumbersView: View {
                             }) {
                                 Image(StringConstants.DRTImages.leftSideArrow)
                                     .foregroundStyle(Color.neutralText)
+                                    .padding(10.adaptiveForIpad)
                             }
-                            Spacer()
+                            .padding(.leading, 10.adaptiveForIpad)
                             
+                            Spacer()
+                              
                             ZStack(alignment: .center) {
                                 if !inputText.isEmpty {
                                     Text(placeholderText)
@@ -125,8 +128,8 @@ struct LookupByNumbersView: View {
                                 Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
                                     .foregroundColor(Color.neutralText)
                             }
+                            .padding(.trailing, 10.adaptiveForIpad)
                         }
-                        .padding(.horizontal, 20.adaptiveForIpad)
                         .padding([.top, .bottom], 20.adaptiveForIpad)
                     }.background(Color.neutralBg)
                     // Keypad for entering numbers and OK

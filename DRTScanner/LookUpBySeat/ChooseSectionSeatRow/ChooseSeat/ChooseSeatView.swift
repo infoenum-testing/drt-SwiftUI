@@ -24,8 +24,9 @@ struct ChooseSeatView: View {
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
                         .foregroundStyle(Color.neutralText)
-                }.padding()
-                    .padding(.leading, 20)
+                        .padding(10.adaptiveForIpad)
+                }
+                    .padding(.leading, 10.adaptiveForIpad)
                 .frame(height: 85, alignment: .center)
                 
                 Spacer()

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
+		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
+		E992D1642E379EA3004F249D /* scan.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1632E379EA3004F249D /* scan.wav */; };
 		E997FC972E29486F00D9EC06 /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E997FBCF2E29486F00D9EC06 /* beep.mp3 */; };
 		E997FC982E29486F00D9EC06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E997FC492E29486F00D9EC06 /* Preview Assets.xcassets */; };
 		E997FC992E29486F00D9EC06 /* Aileron-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E997FC4D2E29486F00D9EC06 /* Aileron-Regular.otf */; };
@@ -174,6 +176,8 @@
 		98E3FC742D539E9300DB8EF6 /* DRTScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRTScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFCA3F50E14FFB8DB1A2F950 /* Pods-DRTScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.debug.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DRTScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E992D1612E379E9C004F249D /* fail.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fail.wav; sourceTree = "<group>"; };
+		E992D1632E379EA3004F249D /* scan.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scan.wav; sourceTree = "<group>"; };
 		E997FBA12E29486F00D9EC06 /* AlertViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifier.swift; sourceTree = "<group>"; };
 		E997FBA22E29486F00D9EC06 /* AlertViewModifierGoOfflineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifierGoOfflineView.swift; sourceTree = "<group>"; };
 		E997FBA42E29486F00D9EC06 /* CustomCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellView.swift; sourceTree = "<group>"; };
@@ -521,6 +525,8 @@
 		E997FBD02E29486F00D9EC06 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				E992D1632E379EA3004F249D /* scan.wav */,
+				E992D1612E379E9C004F249D /* fail.wav */,
 				E997FBCF2E29486F00D9EC06 /* beep.mp3 */,
 			);
 			path = Sound;
@@ -1316,6 +1322,8 @@
 				E997FC992E29486F00D9EC06 /* Aileron-Regular.otf in Resources */,
 				E997FC9A2E29486F00D9EC06 /* Avenir-Book.ttf in Resources */,
 				E997FC9B2E29486F00D9EC06 /* Avenir-Light.ttf in Resources */,
+				E992D1642E379EA3004F249D /* scan.wav in Resources */,
+				E992D1622E379E9C004F249D /* fail.wav in Resources */,
 				E997FD332E29486F00D9EC06 /* Color+Extensions.swift in Resources */,
 				E997FD342E29486F00D9EC06 /* View+Extensions.swift in Resources */,
 				E997FC9C2E29486F00D9EC06 /* Verlag-Black.otf in Resources */,

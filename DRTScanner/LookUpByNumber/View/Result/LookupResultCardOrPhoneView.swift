@@ -58,8 +58,9 @@ struct LookupResultCardOrPhoneView: View {
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
                             .foregroundStyle(Color.neutralText)
+                            .padding(10.adaptiveForIpad)
                     }
-                    .padding(.leading, 20)
+                    .padding(.leading, 10)
                     
                     Spacer()
                     
