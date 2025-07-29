@@ -123,12 +123,12 @@ struct SeatHomeView: View {
                         VStack(spacing:0) {
                             // Top row: empty space, logo, and side menu button
                             ZStack {
-                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
                                 HStack {
                                     Text("")
                                         .frame(width: 25, height: 25)
                                     Spacer()
-                                    AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
+                                    AppLogoView(width:UIDevice.isIpad && UIDevice.isLandscape ? 100.adaptiveForIpad : 120.adaptiveForIpad, height: UIDevice.isIpad && UIDevice.isLandscape ? 55.adaptiveForIpad : 65.adaptiveForIpad)
                                         .padding(.leading, 10)
                                     Spacer()
                                     Button(action: {
@@ -142,7 +142,7 @@ struct SeatHomeView: View {
                                             .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                             .background(Color.clear)
                                             .contentShape(Rectangle())
-                                            .padding(.top, UIDevice.isIpad ? 80 : 0)
+                                            .padding(.top, UIDevice.isIpad ? UIDevice.isLandscape ? 40 : 80 : 0)
                                         
                                     }
                                     .padding(.trailing, 20)
@@ -150,7 +150,7 @@ struct SeatHomeView: View {
                                 .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader() - 10)
                             }
                             .clipped()
-                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 90.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
                             .padding(.top,-10)
                             // Bottom row: show name
                             HStack {

@@ -13,11 +13,12 @@ struct AboutView: View {
     @State private var showWebsiteAlert = false
     static let urlString = "www.Drttix.com"
     @EnvironmentObject var stringManager: StringManager
+    let height = UIDevice.current.userInterfaceIdiom == .pad ? UIDevice.isLandscape ? 0.6 : 0.5 : 0.5
     
     var body: some View {
         ZStack(alignment: .top) {
             // Background image
-            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.5,shadow: true)
+            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * height,shadow: true)
             
             // Main content
             VStack(spacing: 20) {
@@ -62,7 +63,7 @@ struct AboutView: View {
                     .multilineTextAlignment(.center)
                     .frame(height: 40.adaptiveForIpad)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal,15.adaptiveForIpad)
                 Spacer()
             }
             
@@ -80,9 +81,9 @@ struct AboutView: View {
                         .padding()
                 }
             }
-            .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 500 : 50) : topSafeAreaPaddingHeader())
+            .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 50 : topSafeAreaPaddingHeader())
         }
-        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.5)
+        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * height)
     }
     
     func openWebsite() {

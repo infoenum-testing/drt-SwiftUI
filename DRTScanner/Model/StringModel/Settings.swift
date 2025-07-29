@@ -16,6 +16,9 @@ struct Settings: Codable {
     let flashTimeout: String
     let sound: String
     let settings: String
+    let off: String
+    let mins: String
+    let sec: String
     let save: String
     let timer: String
     let duplicate: String
@@ -32,5 +35,8 @@ struct Settings: Codable {
         case timer = "timer"
         case duplicate = "duplicate"
         case language = "change-language"
+        case off = "off"
+        case mins = "mins"
+        case sec = "sec"
     }
 }

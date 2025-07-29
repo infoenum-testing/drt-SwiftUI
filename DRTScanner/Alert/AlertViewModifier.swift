@@ -25,7 +25,7 @@ struct AlertViewModifier<AlertContent: View>: ViewModifier {
                     .transition(.opacity)
                     .allowsHitTesting(true)
                     .onTapGesture {
-                        withAnimation {
+                        withAnimation(.easeInOut) {
                             isPresented = false
                         }
                     }

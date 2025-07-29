@@ -24,21 +24,22 @@ class SettingsViewModel: ObservableObject {
     // MARK: - Time Options Arrays
     
     // Arrays for time options displayed in the UI
-    let secArray = (0...59).map { "\($0) secs" }
-    let minArray = (0...10).map { "\($0) mins" }
+    let mins = StringManager.shared.strings?.settings.mins ?? "mins"
+    let sec = StringManager.shared.strings?.settings.sec ?? "sec"
+    let off = StringManager.shared.strings?.settings.off ?? "OFF"
     
     // Published variables for text formatting of time options (displayed to the user)
-    @Published var deviceSleepTimeoutText: String = "00:00 mins"
-    @Published var pauseScanTimeoutText: String = "0 sec"
-    @Published var duplicateScanSuppressionText: String = "0 sec"
+    @Published var deviceSleepTimeoutText: String = "00:00 \(StringManager.shared.strings?.settings.mins ?? "mins")"
+    @Published var pauseScanTimeoutText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
+    @Published var duplicateScanSuppressionText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
     @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
     
     // MARK: - Predefined Time Option Strings
     
     // Predefined time options for each setting
-    let deviceSleepOptions = (0...10).map { "\($0):00 mins" }
-    let pauseScanOptions = [ "0 sec","10 sec","20 sec","30 sec"]
-    let duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) sec" }
+    lazy var deviceSleepOptions = (0...10).map { "\($0):00 \(mins)" }
+    lazy var pauseScanOptions = ["0", "10", "20", "30"].map { "\($0) \(sec)" }
+    lazy var  duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) \(sec)" }
     let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "ENGLISH", StringManager.shared.allLangStrings?.frCA.lang ?? "FRANÇAIS",StringManager.shared.allLangStrings?.esUS.lang ?? "ESPAÑOL"]
     
     init() {
@@ -62,13 +63,14 @@ class SettingsViewModel: ObservableObject {
         case 2:
             deviceSleepTimeout = timeIndex
         case 3:
-            pauseScanTimeout = timeIndex
+            pauseScanTimeout = timeIndex * 10
         case 4:
             duplicateScanSuppression = timeIndex * 5 // Set duplicate scan suppression (in 5 seconds)
         case 5:
             UserDefaults.standard.set(languages[timeIndex],forKey: "selectedLang")
             selectedLangText = languages[timeIndex]
             StringManager.shared.updateLang(for: languages[timeIndex])
+            reloadStrings()
         default: break
         }
         // Update the displayed text values based on saved settings
@@ -77,11 +79,26 @@ class SettingsViewModel: ObservableObject {
     
     /// Updates the text values that display time-related settings to the user.
     private func updateTextValues() {
-        deviceSleepTimeoutText = deviceSleepTimeout == 0 ? "Off" : "\(deviceSleepTimeout):00 mins"
-        pauseScanTimeoutText = pauseScanTimeout == 0 ? "Off" : "\(pauseScanTimeout) sec"
-        duplicateScanSuppressionText = duplicateScanSuppression == 0 ? "Off" : "\(duplicateScanSuppression) sec"
+        let mins = StringManager.shared.strings?.settings.mins ?? "mins"
+        let sec = StringManager.shared.strings?.settings.sec ?? "sec"
+        let off = StringManager.shared.strings?.settings.off ?? "OFF"
+        deviceSleepTimeoutText = deviceSleepTimeout == 0 ? off : "\(deviceSleepTimeout):00 \(mins)"
+        pauseScanTimeoutText = pauseScanTimeout == 0 ? off : "\(pauseScanTimeout) \(sec)"
+        duplicateScanSuppressionText = duplicateScanSuppression == 0 ? off : "\(duplicateScanSuppression) \(sec)"
         
         // Notify listeners that the object will change (for updates in the view)
         objectWillChange.send()
+    }
+    
+    private func reloadStrings() {
+        let mins = StringManager.shared.strings?.settings.mins ?? "mins"
+        let sec = StringManager.shared.strings?.settings.sec ?? "sec"
+        
+        pauseScanTimeoutText = "0 \(sec)"
+        duplicateScanSuppressionText =  "0 \(sec)"
+        deviceSleepOptions = (0...10).map { "\($0):00 \(mins)" }
+        pauseScanOptions = ["0", "10", "20", "30"].map { "\($0) \(sec)" }
+        duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) \(sec)" }
+        
     }
 }

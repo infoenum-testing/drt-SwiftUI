@@ -168,6 +168,7 @@
 		E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */; };
 		E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */; };
 		E9AA78E72E30F80500233D98 /* ErrorDescriptionMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */; };
+		E9B9B65F2E38F634003C5BDD /* ScannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */; };
 		E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */; };
 		E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D054702E2A6E48005C7565 /* OfflineStrings.swift */; };
 /* End PBXBuildFile section */
@@ -338,6 +339,7 @@
 		E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessages.swift; sourceTree = "<group>"; };
 		E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorDescriptionMessages.swift; sourceTree = "<group>"; };
+		E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerHelper.swift; sourceTree = "<group>"; };
 		E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notificaiton+Extension.swift"; sourceTree = "<group>"; };
 		E9D054702E2A6E48005C7565 /* OfflineStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStrings.swift; sourceTree = "<group>"; };
 		F2610C12E2B50955901D64A6 /* Pods-DRTScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.release.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -1013,6 +1015,7 @@
 			isa = PBXGroup;
 			children = (
 				E997FC5F2E29486F00D9EC06 /* ExternalBarcodeInputField.swift */,
+				E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */,
 			);
 			path = ExternalBarcode;
 			sourceTree = "<group>";
@@ -1430,6 +1433,7 @@
 				E997FCCF2E29486F00D9EC06 /* LandingViewModel.swift in Sources */,
 				E997FCD02E29486F00D9EC06 /* LookupByNameResultView.swift in Sources */,
 				E997FCD12E29486F00D9EC06 /* LookupByNameView.swift in Sources */,
+				E9B9B65F2E38F634003C5BDD /* ScannerHelper.swift in Sources */,
 				E997FCD22E29486F00D9EC06 /* LookupByNameResultViewModel.swift in Sources */,
 				E997FCD32E29486F00D9EC06 /* LookupOrderResultView.swift in Sources */,
 				E997FCD42E29486F00D9EC06 /* LookupResultCardOrPhoneView.swift in Sources */,

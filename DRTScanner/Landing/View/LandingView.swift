@@ -93,7 +93,7 @@ struct LandingView: View {
                         Spacer()
                         // Always show logo (with animation)
                         if viewModel.isLoading || !viewModel.isLoading {
-                            AppLogoView(width: 300.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 100.adaptiveForIpad)
+                            AppLogoView(width: sizeData.isPortrait ? 300.adaptiveForIpad : 180.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 130.adaptiveForIpad)
                                 .scaleEffect(animateLogo ? 1 : 0.8)
                                 .opacity(animateLogo ? 1 : 0)
                                 .animation(.easeOut(duration: 0.7), value: animateLogo)

@@ -14,6 +14,7 @@ class ScannerViewModel: ObservableObject {
     
     @Published var shouldResetScanner = false
     
+    private var audioPlayer: AVAudioPlayer?
     func triggerReset() {
         shouldResetScanner.toggle()
     }
@@ -37,6 +38,42 @@ class ScannerViewModel: ObservableObject {
 
         if didLock {
             device.unlockForConfiguration()
+        }
+    }
+    
+    /// Plays feedback for a scan event, such as a beep sound and/or haptic feedback, depending on the provided flags.
+     func playScanFeedback(scannerResult: ScannerResult, haptic: Bool) {
+         let shouldPlayBeep = UserDefaults.standard.bool(forKey: "kShouldPlayBeep")
+         if !shouldPlayBeep {
+             return
+         }
+        if scannerResult == .valid {
+            if let soundURL = Bundle.main.url(forResource: "scan", withExtension: "wav") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
+                } catch {
+                    print("Error playing beep.mp3: \(error.localizedDescription)")
+                }
+            } else {
+                print("beep.mp3 not found in bundle")
+            }
+        } else if scannerResult == .invalid || scannerResult == .previouslyScanned {
+            if let soundURL = Bundle.main.url(forResource: "fail", withExtension: "wav") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
+                } catch {
+                    print("Error playing beep.mp3: \(error.localizedDescription)")
+                }
+            } else {
+                print("beep.mp3 not found in bundle")
+            }
+        }
+        if haptic {
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
         }
     }
 }

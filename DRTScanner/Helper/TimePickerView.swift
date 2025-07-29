@@ -23,7 +23,7 @@ struct TimePickerView: View {
         case 2:
             initialValue = viewModel.deviceSleepTimeout
         case 3:
-            initialValue = viewModel.pauseScanTimeout
+            initialValue = viewModel.pauseScanTimeout/10
         case 4:
             initialValue = viewModel.duplicateScanSuppression / 5
         case 5:
@@ -52,7 +52,7 @@ struct TimePickerView: View {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     VStack {
                         Text(viewModel.getTimeOptions(for: index)[idx])
-                            .font(.verlagBoldAdaptive(size: 20))
+                            .font(.pickerBoldText(size: 20))
                             .foregroundColor(Color.primaryText)
                             .padding(.vertical, 10)
                             .padding(.horizontal, 10)
@@ -60,7 +60,8 @@ struct TimePickerView: View {
                     }
                 }
             }
-            .pickerStyle(InlinePickerStyle())
+            .pickerStyle(.wheel)
+            .scaleEffect( UIDevice.isIpad ? 1.5 : 1)
             .frame(height: 150.adaptiveForIpad)
             .clipped()
             

@@ -11,7 +11,7 @@ struct SettingItem: Hashable {
     var title: String
     var toggleBinding: Binding<Bool>? = nil
     var value: String? = nil
-
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(title)
     }

@@ -61,7 +61,9 @@ struct ShowCodeView: View {
                         VStack(spacing: 20) {
                             
                             // MARK: - Logo
-                                AppLogoView(width: 180.adaptiveForIpad, height: 100.adaptiveForIpad)
+                            let width = UIDevice.isIpad && UIDevice.isLandscape ? UIScreen.main.bounds.height * 0.18 : 170.adaptiveForIpad
+                            let height = UIDevice.isIpad && UIDevice.isLandscape ? UIScreen.main.bounds.height * 0.1 : 100.adaptiveForIpad
+                            AppLogoView(width: width, height: height)
                             
                             // MARK: - Code Display and Controls
                             HStack {

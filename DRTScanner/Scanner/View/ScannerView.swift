@@ -29,7 +29,7 @@ struct ScannerView: View, Equatable {
     // Reference to the device's flashlight
     @State private var flashLight: AVCaptureDevice?
     // Height of the scan view area
-    @State private var scanViewHeight: CGFloat = UIScreen.main.bounds.height / 3
+    @State private var scanViewHeight: CGFloat =  UIDevice.isIpad && UIDevice.isLandscape ? UIScreen.main.bounds.height / 2.3 :  UIScreen.main.bounds.height / 3
     // Position of the animated scan line
     @State private var linePosition: CGFloat
     // Speed of the scan line animation
@@ -58,8 +58,6 @@ struct ScannerView: View, Equatable {
     @AppStorage("isMerchandise") private var isMerchandise: Bool?
     // Controls visibility of scan stats
     @AppStorage("kShowScanStats") private var showScanStats: Bool?
-    // Indicates if beep sound should play on scan
-    @AppStorage("kShouldPlayBeep") private var shouldPlayBeep: Bool?
     // Timeout for pausing scan
     @AppStorage("kPauseScanTimeout") var pauseScanTimeout: Int = 0
     // Indicates if haptic feedback should play on scan
@@ -84,8 +82,7 @@ struct ScannerView: View, Equatable {
     @State private var flashAutoOnTimer: Timer?
     // Core Data context
     @Environment(\.managedObjectContext) private var viewContext
-    // Indicates if beep sound should play (runtime)
-    @State private var shouldPlayBeepSound = false
+
     // Indicates if offline mode is enabled (runtime)
     @State private var isOfflineMode = false
     // Indicates if merchandise mode is enabled (runtime)
@@ -131,7 +128,7 @@ struct ScannerView: View, Equatable {
     // Indicates if the flash is on
     @State private var isFlashOn = false
     // Size of the drag area for flash control
-    let dragAreaSize: CGSize = CGSize(width: 90.adaptiveForIpad, height: 90.adaptiveForIpad)
+    let dragAreaSize: CGSize = CGSize(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
     // Indicates if the scanner cell is scanning (binding from parent)
     @Binding var isScanningCell: Bool
     // ViewModel for scanner logic
@@ -162,7 +159,6 @@ struct ScannerView: View, Equatable {
     // Stores the scanned code from external input
     @State private var scannedExternalCode: String = ""
     // Audio player for beep sound
-    @State private var audioPlayer: AVAudioPlayer?
     
     @Binding var merchOrderName: String
     
@@ -311,13 +307,13 @@ struct ScannerView: View, Equatable {
                         HStack {
                             if isCameraAuthorized {
                                 // Flashlight toggle icon and gesture
+                                
                                 Image(isFlashOn ? "FlashOff" : "FlashOn")
                                     .resizable()
-                                    .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                                    .padding(.trailing, UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -20 : -50) : -10)
+                                    .scaledToFit()
+                                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                             }
                         }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
-                        //                                .padding(.top, isFullScreen ? 10 : 10)
                             .gesture(
                                 DragGesture(minimumDistance: 0)
                                     .onChanged { value in
@@ -347,6 +343,7 @@ struct ScannerView: View, Equatable {
                                     }
                             )
                     }
+                    .padding(.top, isFullScreen ? 20 : 0)
                     
                     Spacer()
                     
@@ -354,20 +351,20 @@ struct ScannerView: View, Equatable {
                     HStack {
                         if !isFullScreen {
                             // Button to activate external scanner input
-                            Image("Scan_icon")
-                                .resizable()
-                            // .scaleEffect(x: -1, y: 1)
-                                .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                                .background(Color.clear)
-                                .padding([.leading, .top])
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    DispatchQueue.main.async {
-                                        externalScannerAction()
-                                        isCustomColorVisible = true
-                                        isInputActive = true
-                                    }
+                            Button {
+                                DispatchQueue.main.async {
+                                    externalScannerAction()
+                                    isCustomColorVisible = true
+                                    isInputActive = true
                                 }
+                            } label: {
+                                Image("Scan_icon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                                    .padding()
+                                    .background(Color.clear)
+                            }
                         }
                         if !isMerchandiseMode {
                             if showScanStats ?? false {
@@ -393,22 +390,23 @@ struct ScannerView: View, Equatable {
                         }
                         
                         // Full screen toggle button
-                        Image(isFullScreen ? "video_Default_screen_icon" : "video_full_screen_icon")
-                            .resizable()
-                            .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                            .background(Color.clear)
-                            .padding([.top, .trailing])
-                            .contentShape(Rectangle())
-                            .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-                            .onTapGesture {
-                                withAnimation {
-                                    resetScanner()
-                                    isFullScreen.toggle()
-                                }
+                        Button {
+                            withAnimation {
+                                resetScanner()
+                                isFullScreen.toggle()
                             }
+                        } label: {
+                            Image(isFullScreen ? "video_Default_screen_icon" : "video_full_screen_icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                                .background(Color.clear)
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                                .padding()
+                        }
                     }.allowsHitTesting(true)
                         .frame(maxWidth: .infinity)
-                        .padding(.bottom, isFullScreen ? 20 : 10)
+                        .padding(.bottom, isFullScreen ? 20 : 0)
                 }.frame(maxHeight: isFullScreen ? .infinity : scanViewHeight, alignment: .bottom)
                 
                 // Overlay for external barcode input
@@ -533,7 +531,7 @@ struct ScannerView: View, Equatable {
             isOfflineMode = isOffline
             isMerchandiseMode = isMerchandise ?? false
             shouldPlayHapticNew = shouldPlayHaptic ?? false
-            shouldPlayBeepSound = shouldPlayBeep ?? false
+
             duplicateScanSuppressionNew = duplicateScanSuppression
             withAnimation {
                 isVisibleText = true
@@ -546,21 +544,17 @@ struct ScannerView: View, Equatable {
             isMerchandiseMode = isMerchandise ?? false
         }
         .onChange(of: keyboardObserver.isKeyboardVisible) { isVisible in
-            if pauseScanTimeout == 0 {
-                if isVisible {
-                    stopLineAnimation()
-                } else {
-                    resetScanner()
-                }
+            if isVisible {
+                stopLineAnimation()
+            } else {
+                startLineAnimation()
             }
         }
         .onChange(of: scannerLineAnimation) { isVisible in
-            if pauseScanTimeout == 0 {
-                if !isVisible {
-                    stopLineAnimation()
-                } else {
-                    resetScanner()
-                }
+            if !isVisible {
+                stopLineAnimation()
+            } else {
+                startLineAnimation()
             }
         }
         .onChange(of: isOffline) { newValue in
@@ -578,11 +572,7 @@ struct ScannerView: View, Equatable {
             stopLineAnimation()
             startLineAnimation()
         }
-        .onChange(of: shouldPlayBeep) { newValue in
-            DispatchQueue.main.async {
-                shouldPlayBeepSound = newValue ?? false
-            }
-        }
+
         .onChange(of: shouldPlayHaptic) { newValue in
             DispatchQueue.main.async {
                 shouldPlayHapticNew = newValue ?? false
@@ -824,7 +814,7 @@ struct ScannerView: View, Equatable {
         } else {
             isInvalidTicket = true
             invalidMessage = "Invalid QR Code"
-            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+            scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {
                     isInvalidTicket = false
@@ -895,7 +885,7 @@ struct ScannerView: View, Equatable {
                             merchVariantName = product.variantName ?? ""
                             
                             isMerchTicketValid = true
-                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -920,7 +910,7 @@ struct ScannerView: View, Equatable {
                             }
                             
                             isMerchPreScanned = true
-                            playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -931,7 +921,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         // ❌ No matching product found
                         isInvalidMerchTicket = true
-                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -957,7 +947,7 @@ struct ScannerView: View, Equatable {
                             orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
                             orderDateScanned = scannedTime.formatToTimeString()
-                            playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isPreScanned = false
@@ -973,7 +963,7 @@ struct ScannerView: View, Equatable {
                             isTicketValid = true
                             orderName = seatEntity.order?.buyerName ?? "Blocked Seat"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
-                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isTicketValid = false
@@ -986,7 +976,7 @@ struct ScannerView: View, Equatable {
                         // Invalid offline seat QR
                         isInvalidTicket = true
                         invalidMessage = "Invalid Barcode"
-                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidTicket = false
@@ -1011,7 +1001,7 @@ struct ScannerView: View, Equatable {
                             orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? ""
                             orderDateScanned = scannedTime.formatted(date: .omitted, time: .shortened)
-                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isPreScanned = false
@@ -1026,7 +1016,7 @@ struct ScannerView: View, Equatable {
                             isTicketValid = true
                             orderName = seatEntity.order?.buyerName ?? StringManager.shared.strings?.offline.blockedTicket ?? "Blocked Ticket"
                             orderNumber = seatEntity.orderId.map(String.init) ?? "N/A"
-                            playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
                                     isTicketValid = false
@@ -1038,7 +1028,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         isInvalidTicket = true
                         invalidMessage =  stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
-                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidTicket = false
@@ -1048,7 +1038,7 @@ struct ScannerView: View, Equatable {
                 } catch {
                     isInvalidTicket = true
                     invalidMessage = stringManager.strings?.offline.invalidBarcode ?? "Invalid Barcode"
-                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                    scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation {
                             isInvalidTicket = false
@@ -1074,7 +1064,7 @@ struct ScannerView: View, Equatable {
                                         orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                         orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                         
-                                        playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
+                                        scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                             withAnimation {
                                                 isPreScanned = false
@@ -1090,7 +1080,7 @@ struct ScannerView: View, Equatable {
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
                                     isGoldenTicket = (responseDict["is_golden_ticket"] == nil)
-                                    playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                                    scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
                                             isTicketValid = false
@@ -1111,7 +1101,7 @@ struct ScannerView: View, Equatable {
                             }
                             
                             isInvalidTicket = true
-                            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                            scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 withAnimation {
@@ -1152,7 +1142,7 @@ struct ScannerView: View, Equatable {
                                         if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
                                                 isMerchPreScanned = true
-                                                playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
+                                                scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                                 
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                     withAnimation {
@@ -1161,7 +1151,7 @@ struct ScannerView: View, Equatable {
                                                 }
                                             } else {
                                                 isMerchTicketValid = true
-                                                playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                                                scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                                 
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                     withAnimation {
@@ -1173,7 +1163,7 @@ struct ScannerView: View, Equatable {
                                             // ❗ Show error message if valid is false
                                             isInvalidTicket = true
                                             invalidMessage = message
-                                            playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                                            scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                             
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 withAnimation {
@@ -1192,7 +1182,7 @@ struct ScannerView: View, Equatable {
                                         invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     
-                                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                                    scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation {
@@ -1205,7 +1195,7 @@ struct ScannerView: View, Equatable {
                     } else {
                         // Offline or wrong scan type
                         isInvalidMerchTicket = true
-                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
@@ -1235,7 +1225,7 @@ struct ScannerView: View, Equatable {
                                                     orderName = scanResponse.buyerName ?? ""
                                                     orderNumber = String(scanResponse.oid ?? 0)
                                                     isGoldenTicket = scanResponse.isGoldenTicket ?? false
-                                                    playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
+                                                    scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {
                                                             isTicketValid = false
@@ -1261,7 +1251,7 @@ struct ScannerView: View, Equatable {
                                                         orderDateScanned = ""
                                                     }
                                                     
-                                                    playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
+                                                    scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                         withAnimation {
                                                             isPreScanned = false
@@ -1279,7 +1269,7 @@ struct ScannerView: View, Equatable {
                                                         }
                                                     } else {
                                                         isInvalidTicket = true
-                                                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                                                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                             withAnimation { isInvalidTicket = false }
                                                         }
@@ -1308,7 +1298,7 @@ struct ScannerView: View, Equatable {
                                         invalidMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
                                     }
                                     isInvalidTicket = true
-                                    playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                                    scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation { isInvalidTicket = false }
@@ -1320,7 +1310,7 @@ struct ScannerView: View, Equatable {
                         
                     } else {
                         isInvalidSeatTicket = true
-                        playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
+                        scannerViewModel.playScanFeedback(scannerResult: .invalid, haptic: shouldPlayHapticNew)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {
                                 isInvalidSeatTicket = false
@@ -1343,75 +1333,5 @@ struct ScannerView: View, Equatable {
             }
         }
     }
-    
-    /// Plays feedback for a scan event, such as a beep sound and/or haptic feedback, depending on the provided flags.
-    private func playScanFeedback(scannerResult: ScannerResult, haptic: Bool) {
-        if scannerResult == .valid {
-            if let soundURL = Bundle.main.url(forResource: "scan", withExtension: "wav") {
-                do {
-                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-                    audioPlayer?.prepareToPlay()
-                    audioPlayer?.play()
-                } catch {
-                    print("Error playing beep.mp3: \(error.localizedDescription)")
-                }
-            } else {
-                print("beep.mp3 not found in bundle")
-            }
-        } else if scannerResult == .invalid || scannerResult == .previouslyScanned {
-            if let soundURL = Bundle.main.url(forResource: "fail", withExtension: "wav") {
-                do {
-                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-                    audioPlayer?.prepareToPlay()
-                    audioPlayer?.play()
-                } catch {
-                    print("Error playing beep.mp3: \(error.localizedDescription)")
-                }
-            } else {
-                print("beep.mp3 not found in bundle")
-            }
-        }
-        //        if beep {
-        //            if let soundURL = Bundle.main.url(forResource: "beep", withExtension: "mp3") {
-        //                do {
-        //                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-        //                    audioPlayer?.prepareToPlay()
-        //                    audioPlayer?.play()
-        //                } catch {
-        //                    print("Error playing beep.mp3: \(error.localizedDescription)")
-        //                }
-        //            } else {
-        //                print("beep.mp3 not found in bundle")
-        //            }
-        //        }
-        if haptic {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
-        }
-    }
 }
 
-@ViewBuilder
-func statsRow(title: String, value: Int) -> some View {
-    HStack {
-        Text(title)
-            .font(.headline)
-        Spacer()
-        Text("\(value)")
-            .font(.title3)
-            .bold()
-    }
-    .padding()
-}
-
-extension UIApplication {
-    var topSafeAreaHeight: CGFloat {
-        let scene = connectedScenes.first as? UIWindowScene
-        return scene?.windows.first?.safeAreaInsets.top ?? 0
-    }
-}
-
-enum ScannerResult {
-    case invalid
-    case valid
-    case previouslyScanned
-}

@@ -33,11 +33,16 @@ extension Font {
         return .verlagBold(size: finalSize)
     }
     
+    static func pickerBoldText(size: CGFloat) -> Font {
+        let finalSize = pickerText(for: size)
+        return .verlagBold(size: finalSize)
+    }
+    
     static func verlagBlackAdaptive(size: CGFloat) -> Font {
         let finalSize = adaptiveFontSize(for: size)
         return .verlagBlack(size: finalSize)
     }
-
+    
     private static func adaptiveFontSize(for baseSize: CGFloat) -> CGFloat {
         if UIDevice.isIpad {
             return UIDevice.isLandscape ? baseSize * 1.5 : baseSize * 2
@@ -45,6 +50,15 @@ extension Font {
             return baseSize
         }
     }
+    
+    private static func pickerText(for baseSize: CGFloat) -> CGFloat {
+        if UIDevice.isIpad {
+            return  baseSize * 1.5
+        } else {
+            return baseSize
+        }
+    }
+    
 }
 
 extension UIDevice {
@@ -53,14 +67,14 @@ extension UIDevice {
     }
     
     static var isLandscape: Bool {
-           return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
-       }
+        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
+    }
 }
 
 extension BinaryInteger {
     var adaptiveForIpad: CGFloat {
         let value = CGFloat(self)
-        return UIDevice.isIpad ? value * (UIDevice.isLandscape ? 2 : 2) : value
+        return UIDevice.isIpad ? value * 2 : value
     }
 }
 
@@ -72,8 +86,8 @@ extension CGFloat {
 
 func topPaddingForDevice() -> CGFloat {
     let nativeHeight = UIScreen.main.nativeBounds.height
-
-
+    
+    
     switch nativeHeight {
     case 2732:
         // iPad Pro 12.9" (3rd, 4th, 5th, 6th gen), iPad Pro 13" M4
@@ -94,9 +108,9 @@ func scannerTopPadding(isFullScreen: Bool) -> CGFloat {
     guard UIDevice.current.userInterfaceIdiom == .pad, !isFullScreen else {
         return 0
     }
-
+    
     let nativeHeight = UIScreen.main.nativeBounds.height
-
+    
     switch nativeHeight {
     case 2732:
         // iPad Pro 12.9" or 13" M4
@@ -120,9 +134,9 @@ func topSafeAreaPadding() -> CGFloat {
         .compactMap { $0 as? UIWindowScene }
         .flatMap { $0.windows }
         .first { $0.isKeyWindow }
-
+    
     let topInset = window?.safeAreaInsets.top ?? 0
-  
+    
     return topInset
 }
 
@@ -134,12 +148,12 @@ func topSafeAreaPaddingHeader() -> CGFloat {
         .compactMap { $0 as? UIWindowScene }
         .flatMap { $0.windows }
         .first { $0.isKeyWindow }
-
+    
     let topInset = window?.safeAreaInsets.top ?? 0
     if screenHeight <= 667 {
-            return 15
+        return 15
     }
-
+    
     return topInset
 }
 
@@ -148,7 +162,7 @@ func calculatedTopPadding() -> CGFloat {
     let device = UIDevice.current.userInterfaceIdiom
     let screenHeight = UIScreen.main.bounds.height
     let safeTop = topSafeAreaPadding()
-
+    
     if device == .pad {
         return safeTop + (UIDevice.isLandscape ? 120 : 180)
     } else if screenHeight <= 667 {
@@ -164,7 +178,7 @@ func calculatedBottomPadding() -> CGFloat {
     let device = UIDevice.current.userInterfaceIdiom
     let screenHeight = UIScreen.main.bounds.height
     let safeTop = topSafeAreaPadding()
-
+    
     if device == .pad {
         return safeTop + (UIDevice.isLandscape ? screenHeight * 2.2 : screenHeight * 0.75)
     } else if screenHeight <= 667 {
