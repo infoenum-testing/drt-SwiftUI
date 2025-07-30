@@ -89,7 +89,13 @@ struct SVGWebView: UIViewRepresentable {
         // ✅ Only stop loading if WebView confirms it finished
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             print("✅ WKWebView finished rendering SVG")
-            parent.isLoading = false
+            if NetworkMonitor.shared.isNetworkAvailable() {
+                parent.isLoading = false
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+                    self.parent.isLoading = false
+                })
+            }
         }
         
         func buildHTML(from svg: String) -> String {

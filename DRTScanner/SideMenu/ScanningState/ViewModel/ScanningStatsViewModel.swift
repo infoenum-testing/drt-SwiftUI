@@ -112,6 +112,9 @@ class ScanningStatsViewModel: ObservableObject {
             IQAPIClient.getShowCodeData(code: savedShowCode ?? "") { result in
                 switch result {
                 case .success(let response):
+                    if let skin = response.skin {
+                        ColorManager.shared.updateSkin(to: skin)
+                    }
                     continuation.resume(returning: response.stats ?? StatsModel())
                 case .failure(let error):
                     continuation.resume(throwing: error)

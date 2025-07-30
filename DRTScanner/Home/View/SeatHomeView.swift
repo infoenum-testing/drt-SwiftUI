@@ -548,7 +548,6 @@ struct SeatHomeView: View {
             .padding([.horizontal,.bottom])
             .padding(.top,topSafeAreaPaddingHeader())
             .background(Color.secondaryBg)
-            
         }
         .ignoresSafeArea()
     }

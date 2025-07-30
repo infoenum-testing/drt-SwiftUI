@@ -68,6 +68,8 @@ struct AppBackGroundView: View {
                             )
                         }
                     }
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.3), value: Loading)
             }
         }
         .clipped()

@@ -59,7 +59,7 @@ struct LandingView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .foregroundColor(Color.primaryText)
                             .scaleEffect(1.5)
-                            .padding(.bottom)
+                            .padding(.bottom,UIScreen.main.bounds.height * 0.08)
                     }
                 } else {
                     VStack {

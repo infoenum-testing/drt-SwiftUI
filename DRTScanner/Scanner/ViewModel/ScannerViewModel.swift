@@ -43,6 +43,10 @@ class ScannerViewModel: ObservableObject {
     
     /// Plays feedback for a scan event, such as a beep sound and/or haptic feedback, depending on the provided flags.
      func playScanFeedback(scannerResult: ScannerResult, haptic: Bool) {
+         if haptic {
+             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
+         }
+         
          let shouldPlayBeep = UserDefaults.standard.bool(forKey: "kShouldPlayBeep")
          if !shouldPlayBeep {
              return
@@ -72,8 +76,6 @@ class ScannerViewModel: ObservableObject {
                 print("beep.mp3 not found in bundle")
             }
         }
-        if haptic {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
-        }
+        
     }
 }
