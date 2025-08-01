@@ -35,12 +35,14 @@ struct SettingsView: View {
                         Image(StringConstants.DRTImages.crossImage)
                             .resizable()
                             .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                            .padding()
                             .background(Color.clear)
-                            .padding(.top, 30)
                             .contentShape(Rectangle())
                     }
-                }.background(Color.previous)
-                    .padding()
+                    .padding(.top, 20)
+                }.background(Color.secondaryBg)
+                    .padding(.vertical)
+                    .padding(.leading)
                 
                 // List of settings
                 List {
@@ -49,11 +51,11 @@ struct SettingsView: View {
                 }
                 .listStyle(.plain)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.previous)
+                .background(Color.secondaryBg)
             } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
                 .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
-                .background(Color.previous)
+                .background(Color.secondaryBg)
                 .padding(.top, -30)
             // Overlay for time picker modal
             ZStack {
@@ -126,5 +128,4 @@ struct SettingsView: View {
         
         return items
     }
-    
 }

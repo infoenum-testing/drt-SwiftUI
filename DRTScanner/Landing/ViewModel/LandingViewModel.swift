@@ -35,6 +35,7 @@ class LandingViewModel: ObservableObject {
         }
     }
     
+    
     func validateCode(_ code: String, context: NSManagedObjectContext) async {
         await MainActor.run {
             self.isLoading = true

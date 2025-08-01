@@ -113,13 +113,46 @@ class ScanningStatsViewModel: ObservableObject {
                 switch result {
                 case .success(let response):
                     if let skin = response.skin {
-                        ColorManager.shared.updateSkin(to: skin)
+                        DispatchQueue.main.async{
+                            self.updateSkinInCoreData(with: skin)
+                            ColorManager.shared.updateSkin(to: skin)
+                        }
                     }
                     continuation.resume(returning: response.stats ?? StatsModel())
                 case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+    
+    func updateSkinInCoreData(with updatedModel: SkinModel) {
+        let context = PersistenceController.shared.container.viewContext
+        let fetchRequest: NSFetchRequest<Skin> = Skin.fetchRequest()
+        
+        do {
+            if let existingSkin = try context.fetch(fetchRequest).first {
+                // Update properties
+                existingSkin.color_Valid = updatedModel.colorValid
+                existingSkin.color_neutral_text = updatedModel.colorNeutralText
+                existingSkin.color_neutral_bg = updatedModel.colorNeutralBg
+                existingSkin.color_1_text = updatedModel.color1Text
+                existingSkin.color_1_bg = updatedModel.color1Bg
+                existingSkin.color_2_text = updatedModel.color2Text
+                existingSkin.color_2_bg = updatedModel.color2Bg
+                existingSkin.color_Invalid = updatedModel.colorInvalid
+                existingSkin.color_Previous = updatedModel.colorPrevious
+                existingSkin.background_href = updatedModel.backgroundHref
+                existingSkin.logo_href = updatedModel.logoHref
+                
+                // Save changes
+                try context.save()
+                print("✅ Skin updated successfully")
+            } else {
+                print("⚠️ No existing Skin found to update")
+            }
+        } catch {
+            print("❌ Failed to update Skin: \(error)")
         }
     }
     

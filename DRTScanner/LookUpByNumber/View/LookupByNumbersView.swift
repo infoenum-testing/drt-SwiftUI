@@ -99,7 +99,7 @@ struct LookupByNumbersView: View {
                             .padding(.leading, 10.adaptiveForIpad)
                             
                             Spacer()
-                              
+                            
                             ZStack(alignment: .center) {
                                 if !inputText.isEmpty {
                                     Text(placeholderText)
@@ -250,7 +250,21 @@ struct LookupByNumbersView: View {
             }
         } else {
             clickedButton = button
-            inputText.append(button)
+            
+            switch lookupType {
+            case .creditCard:
+                if inputText.count < 4  {
+                    inputText.append(button)
+                }
+            case .phoneNumber:
+                if inputText.count < 10  {
+                    inputText.append(button)
+                }
+            case .orderNumber:
+                if inputText.count < 7  {
+                    inputText.append(button)
+                }
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 clickedButton = nil
             }

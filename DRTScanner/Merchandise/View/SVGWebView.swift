@@ -31,6 +31,15 @@ struct SVGWebView: UIViewRepresentable {
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
         if url != context.coordinator.currentURL {
+            print("SVG Loading url changed")
+            context.coordinator.loadSVG(into: uiView, from: url)
+        }
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            print("SVG reload background -> forground")
             context.coordinator.loadSVG(into: uiView, from: url)
         }
     }
@@ -89,13 +98,7 @@ struct SVGWebView: UIViewRepresentable {
         // ✅ Only stop loading if WebView confirms it finished
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             print("✅ WKWebView finished rendering SVG")
-            if NetworkMonitor.shared.isNetworkAvailable() {
-                parent.isLoading = false
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
-                    self.parent.isLoading = false
-                })
-            }
+            parent.isLoading = false
         }
         
         func buildHTML(from svg: String) -> String {

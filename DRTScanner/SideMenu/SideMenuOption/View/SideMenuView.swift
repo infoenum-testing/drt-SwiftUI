@@ -157,13 +157,7 @@ struct SideMenuView: View {
         // Confirmation alert for switching merchandise/ticket mode
         .customAlert(isPresented: $showConfirmationAlert) {
             ZStack(alignment: .top) {
-                Color.black.opacity(0.0)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showConfirmationAlert = false
-                        }
-                    }
+                AppBackGroundView(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow:true)
                 VStack(alignment: .center) {
                     Spacer()
                     Text("\(isSwitchingToMerchandise ?? !isMerchandise ? stringManager.strings?.switchMode.merch ?? menuStringsConstant.merchandise : stringManager.strings?.switchMode.tickets ?? menuStringsConstant.ticket)")
@@ -221,11 +215,8 @@ struct SideMenuView: View {
                     }
                     Spacer()
                 }
-                .frame(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4)
-                .background {
-                    AppBackGroundView(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow:true)
-                }
             }
+            .frame(width:UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4)
         }
     }
     

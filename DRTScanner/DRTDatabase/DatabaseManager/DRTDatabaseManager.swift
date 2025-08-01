@@ -22,7 +22,7 @@ class DRTDatabaseManager {
     init(context: NSManagedObjectContext) {
         self.managedObjectContext = context
     }
-
+    
     // MARK: - Sync Method
     
     /// Syncs server data with local Core Data storage.
@@ -30,16 +30,16 @@ class DRTDatabaseManager {
     /// - Inserts show, orders, seats, and products
     /// - Links orders to seats/products
     /// - Tracks progress and calls completion on main thread
-
+    
     func syncServerData(serverDict: [String: Any], progressBlock: ((Float) -> Void)?, completionBlock: ((Bool, Error?) -> Void)?) {
         DispatchQueue.global(qos: .background).async {
             guard let context = self.managedObjectContext else {
                 DispatchQueue.main.async { completionBlock?(false, NSError(domain: "CoreData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Managed Object Context is nil"])) }
                 return
             }
-
+            
             self.deleteAllRecords()
-
+            
             // Insert or update the Show entity
             guard let show = self.insertUpdateShowRecord(showAttributes: serverDict, context: context) else {
                 DispatchQueue.main.async { completionBlock?(false, NSError(domain: "CoreData", code: -2, userInfo: [NSLocalizedDescriptionKey: "Failed to insert show"])) }
@@ -49,13 +49,13 @@ class DRTDatabaseManager {
             let orders = serverDict["orders"] as? [[String: Any]] ?? []
             let seats = serverDict["seats"] as? [[String: Any]] ?? []
             let products = serverDict["products"] as? [[String: Any]] ?? []
-
+            
             let totalRecords = Float(orders.count + seats.count + products.count)
             var processedRecords: Float = 0
             
             // Temporary dictionary for looking up Orders by ID
             var orderDict: [Int64: Order] = [:]
-           
+            
             // Insert/update orders
             for orderData in orders {
                 context.performAndWait {
@@ -75,7 +75,7 @@ class DRTDatabaseManager {
                 }
                 usleep(50000) // 0.05 seconds delay
             }
-    
+            
             for seatDict in seats {
                 context.performAndWait {
                     if let seat = self.insertSeatRecord(seatAttributes: seatDict, context: context) {
@@ -103,7 +103,7 @@ class DRTDatabaseManager {
                 processedRecords += 1
                 DispatchQueue.main.async { progressBlock?(processedRecords / totalRecords) }
             }
-    
+            
             for productDict in products {
                 context.performAndWait {
                     if let product = self.insertProductRecord(productAttributes: productDict, context: context) {
@@ -131,7 +131,7 @@ class DRTDatabaseManager {
                 }
                 usleep(50000) // 0.05 seconds delay
             }
-
+            
             do {
                 try context.save()
                 DispatchQueue.main.async { completionBlock?(true, nil) }
@@ -140,7 +140,7 @@ class DRTDatabaseManager {
             }
         }
     }
-
+    
     // MARK: - Record Deletion
     
     /// Deletes all records from key entities
@@ -161,7 +161,7 @@ class DRTDatabaseManager {
     func deleteSkin() {
         deleteAllTableRecords(forEntity: Skin.self)
     }
-
+    
     /// Generic deletion method for any entity type
     private func deleteAllTableRecords<T: NSManagedObject>(forEntity entity: T.Type) {
         guard let context = managedObjectContext else { return }
@@ -174,7 +174,7 @@ class DRTDatabaseManager {
             print("Failed to delete \(entity): \(error.localizedDescription)")
         }
     }
-
+    
     // MARK: - Record Insert/Update
     
     /// Inserts or updates a Show record
@@ -231,11 +231,11 @@ class DRTDatabaseManager {
         } else {
             seat.handicapped = NSNumber(value: false)
         }
-
+        
         // Parse scanned time string into Date
         if let tsValue = seatAttributes["tsScanned"] {
             let timestamp: TimeInterval?
-
+            
             if let tsString = tsValue as? String {
                 timestamp = TimeInterval(tsString)
             } else if let tsDouble = tsValue as? Double {
@@ -243,13 +243,13 @@ class DRTDatabaseManager {
             } else {
                 timestamp = nil
             }
-
+            
             if let timestamp = timestamp {
                 let scannedDate = Date(timeIntervalSince1970: timestamp / 1000)
                 seat.date_scanned = scannedDate
             }
         }
-
+        
         
         // Split secRowSeat into section, row, seat
         if let secRowSeat = seatAttributes["secRowSeat"] as? String {
@@ -276,17 +276,17 @@ class DRTDatabaseManager {
     /// Inserts a new Product record
     private func insertProductRecord(productAttributes: [String: Any], context: NSManagedObjectContext) -> Product? {
         let product = Product(context: context)
-    
+        
         product.name = productAttributes["name"] as? String
-    
+        
         if let variant = productAttributes["variantName"], !(variant is NSNull) {
             product.variantName = variant as? String
         } else {
             product.variantName = nil
         }
-    
+        
         product.qrCode = productAttributes["qrCode"] as? String
-    
+        
         // Set quantity
         if let qty = productAttributes["qty"] as? Int64 {
             product.qty = qty
@@ -297,7 +297,7 @@ class DRTDatabaseManager {
         } else {
             product.qty = 0
         }
-    
+        
         // Set scanned quantity
         var qtyScanned: Int64 = 0
         if let val = productAttributes["qtyScanned"] as? Int64 {
@@ -307,13 +307,13 @@ class DRTDatabaseManager {
         } else if let val = productAttributes["qtyScanned"] as? String, let parsed = Int64(val) {
             qtyScanned = parsed
         }
-    
+        
         if !product.isFault && !product.isDeleted {
             product.qtyScanned = qtyScanned
         }
-    
+        
         product.iconSrc = productAttributes["iconSrc"] as? String
-    
+        
         // Set order ID for linking
         if let orderId = productAttributes["orderId"] as? Int64 {
             product.orderId = orderId
@@ -326,7 +326,7 @@ class DRTDatabaseManager {
         } else {
             product.orderId = 0
         }
-    
+        
         if let timestamp = productAttributes["tsScanned"] as? Int64 {
             product.date_scanned = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
         } else if let timestamp = productAttributes["tsScanned"] as? Int {
@@ -348,7 +348,7 @@ class DRTDatabaseManager {
         } else  {
             product.date_scanned = nil
         }
-    
+        
         return product
     }
     
@@ -369,7 +369,7 @@ class DRTDatabaseManager {
         skin.color_neutral_text = skinModel.colorNeutralText
         skin.logo_href = skinModel.logoHref
         skin.background_href = skinModel.backgroundHref
-
+        
         do {
             try context.save()
             print("✅ Skin saved.")
@@ -377,7 +377,7 @@ class DRTDatabaseManager {
             print("❌ Failed to save skin: \(error.localizedDescription)")
         }
     }
-
+    
     // Fetches offline-scanned data from Core Data and posts it to the server
     func fetchDataAndPostToServer(completionBlock: @escaping (Bool, Error?) -> Void) {
         DispatchQueue.global(qos: .background).async {
@@ -421,7 +421,7 @@ class DRTDatabaseManager {
                     case .success(let response):
                         print(response)
                         // Optionally clear data after successful upload
-//                        self.deleteAllRecords()
+                        //                        self.deleteAllRecords()
                         completionBlock(true, nil)
                     case .failure(let error):
                         print(error)
@@ -431,7 +431,7 @@ class DRTDatabaseManager {
             }
         }
     }
-
+    
     // Fetches scanned seat QR codes from Core Data, formatted as "<qrCode>-<timestamp>"
     private func fetchSeatsQr(context: NSManagedObjectContext) -> [String] {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
@@ -461,7 +461,7 @@ class DRTDatabaseManager {
             return []
         }
     }
-
+    
     // Fetches detailed seat data from Core Data for upload
     private func fetchSeats(context: NSManagedObjectContext) -> [[String: Any]] {
         let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
@@ -487,7 +487,7 @@ class DRTDatabaseManager {
     }
     
     // Fetches detailed product data from Core Data for upload
-     func fetchProducts(context: NSManagedObjectContext) -> [[String: Any]] {
+    func fetchProducts(context: NSManagedObjectContext) -> [[String: Any]] {
         let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
         
         do {
@@ -497,7 +497,7 @@ class DRTDatabaseManager {
                 return [
                     "name": product.name ?? "",
                     "variantName": product.variantName ?? "",
-                    "qrCode": product.qrCode ?? "", 
+                    "qrCode": product.qrCode ?? "",
                     "qty": product.qty,
                     "qty_scanned": product.qtyScanned,
                     "locally_scanned": product.locally_scanned,
@@ -511,46 +511,46 @@ class DRTDatabaseManager {
             return []
         }
     }
-
+    
     // Extracts formatted barcode-timestamp strings from seat data
     private func extractSeatBarcodes(from seats: [[String: Any]]) -> [String] {
         var extractedBarcodes: [String] = []
-
-            for seat in seats {
-                guard let barcode = seat["barcode"] as? String, !barcode.isEmpty,
-                      let dateScanned = seat["date_Scanned"] as? Date,
-                      let quantityCount = seat["locally_scanned"] as? Int64, quantityCount > 0 else { continue }
-
-                let timestamp = Int(dateScanned.timeIntervalSince1970)
-                let formattedBarcode = "\(barcode)-\(timestamp)"
-
-                for _ in 0..<quantityCount {
-                    extractedBarcodes.append(formattedBarcode)
-                }
+        
+        for seat in seats {
+            guard let barcode = seat["barcode"] as? String, !barcode.isEmpty,
+                  let dateScanned = seat["date_Scanned"] as? Date,
+                  let quantityCount = seat["locally_scanned"] as? Int64, quantityCount > 0 else { continue }
+            
+            let timestamp = Int(dateScanned.timeIntervalSince1970)
+            let formattedBarcode = "\(barcode)-\(timestamp)"
+            
+            for _ in 0..<quantityCount {
+                extractedBarcodes.append(formattedBarcode)
             }
-            return extractedBarcodes
+        }
+        return extractedBarcodes
     }
     
     // Extracts formatted QRCode-timestamp strings from product data
     private func extractProductQRCodes(from products: [[String: Any]]) -> [String] {
         var extractedQRCodes: [String] = []
-
+        
         for product in products {
             guard let qrCode = product["qrCode"] as? String, !qrCode.isEmpty,
                   let dateScanned = product["date_Scanned"] as? Date,
                   let quantityCount = product["locally_scanned"] as? Int64 else { continue }
-
+            
             let timestamp = Int(dateScanned.timeIntervalSince1970)
             let fullString = "\(qrCode)-\(timestamp)"
-
+            
             for _ in 0..<quantityCount {
                 extractedQRCodes.append(fullString)
             }
         }
-
+        
         return extractedQRCodes
     }
-
+    
     // Fetches the db_code value from the stored Show object in Core Data
     private func fetchDbCodeFromCoreData() -> String? {
         let fetchRequest: NSFetchRequest<Show> = Show.fetchRequest()

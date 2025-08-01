@@ -20,59 +20,65 @@ struct GoOnlineView: View {
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            if !showErrorMessage {
-                Text(stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(Color.primaryText)
-            }
-            if isUploading {
-                Text(stringManager.strings?.dialogGoOnline.uploading ?? StringConstants.SideMenuView.goOnlineServer)
-                    .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(Color.primaryText)
-                    .multilineTextAlignment(.leading)
-                    .padding()
-                if !showErrorMessage {
-                    VStack {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                            .scaleEffect(1.0)
-                        
-                        ProgressView(value: progress, total: 1.0)
-                            .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
-                            .background(Color.neutralBg)
-                            .foregroundColor(.primaryText)
-                            .padding()
-                            .animation(.easeInOut, value: progress)
-                            .onAppear {
-                                startUpload() // Starts the upload process when view appears
-                            }
-                        
-                        Text("\(Int(progress * 100))% Completed")
-                            .font(.verlagBoldAdaptive(size: 16))
+        if !showErrorMessage {
+            ZStack {
+                AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
+                VStack(spacing: 20) {
+                    Spacer()
+                    if !showErrorMessage {
+                        Text(stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline)
+                            .font(.verlagBoldAdaptive(size: 30))
                             .foregroundColor(Color.primaryText)
-                        
                     }
+                    if isUploading {
+                        Text(stringManager.strings?.dialogGoOnline.uploading ?? StringConstants.SideMenuView.goOnlineServer)
+                            .font(.verlagBookAdaptive(size: 18))
+                            .foregroundColor(Color.primaryText)
+                            .multilineTextAlignment(.leading)
+                            .padding()
+                        if !showErrorMessage {
+                            VStack {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                                    .scaleEffect(1.0)
+                                
+                                ProgressView(value: progress, total: 1.0)
+                                    .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
+                                    .background(Color.neutralBg)
+                                    .foregroundColor(.primaryText)
+                                    .padding()
+                                    .animation(.easeInOut, value: progress)
+                                    .onAppear {
+                                        startUpload() // Starts the upload process when view appears
+                                    }
+                                
+                                Text("\(Int(progress * 100))% Completed")
+                                    .font(.verlagBoldAdaptive(size: 16))
+                                    .foregroundColor(Color.primaryText)
+                                
+                            }
+                        }
+                    } else if showSuccessMessage {
+                        Text(stringManager.strings?.offline.uploaded ?? StringConstants.SideMenuView.goOnlineSuccess)
+                            .font(.verlagBoldAdaptive(size: 22))
+                            .foregroundColor(Color.primaryText)
+                    }  else if showErrorMessage {
+                        Text(stringManager.strings?.dialogGoOffline.goOnlineFailed ?? StringConstants.SideMenuView.goOnlineFailed)
+                            .font(.verlagBoldAdaptive(size: 18))
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
+                    }
+                    Spacer()
                 }
-            } else if showSuccessMessage {
-                Text(stringManager.strings?.offline.uploaded ?? StringConstants.SideMenuView.goOnlineSuccess)
-                    .font(.verlagBoldAdaptive(size: 22))
-                    .foregroundColor(Color.primaryText)
-            }  else if showErrorMessage {
-                Text(stringManager.strings?.dialogGoOffline.goOnlineFailed ?? StringConstants.SideMenuView.goOnlineFailed)
-                    .font(.verlagBoldAdaptive(size: 18))
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
             }
-            Spacer()
+            .padding()
+            .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35)
+        } else {
+            VStack {
+                CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage)
+                Spacer()
+            }
         }
-        .padding()
-        .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35)
-        .background {
-            AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
-        }
-        .overlay(CustomAlertForError(isPresented: $showErrorMessage, message: errorMessage), alignment: .center)
     }
     
     private func startUploadWithoutApi() {
@@ -136,13 +142,14 @@ struct CustomAlertForError: View {
                 Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
-                    .padding(.bottom, 10)
-                    .padding(.top, 20)
+                    .padding(.bottom, 5)
+                    .padding(.top, topSafeAreaPadding())
                 Spacer()
             }
             
             VStack {
-                Text(message)
+                let finalMessage = NetworkMonitor.shared.isNetworkAvailable() ? message : StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
+                Text(finalMessage)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
@@ -150,8 +157,8 @@ struct CustomAlertForError: View {
             }
         }
         .padding()
-        .background(Color.secondaryBg)
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height / 5)
+        .background(Color.secondaryBg)
         .opacity(isPresented ? 1 : 0)
     }
 }

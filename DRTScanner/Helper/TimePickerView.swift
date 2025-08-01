@@ -90,7 +90,7 @@ struct TimePickerView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.previous)
+        .background(Color.secondaryBg)
         .padding()
     }
 }

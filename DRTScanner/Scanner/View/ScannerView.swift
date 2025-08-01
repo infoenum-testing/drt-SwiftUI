@@ -82,7 +82,7 @@ struct ScannerView: View, Equatable {
     @State private var flashAutoOnTimer: Timer?
     // Core Data context
     @Environment(\.managedObjectContext) private var viewContext
-
+    
     // Indicates if offline mode is enabled (runtime)
     @State private var isOfflineMode = false
     // Indicates if merchandise mode is enabled (runtime)
@@ -128,7 +128,7 @@ struct ScannerView: View, Equatable {
     // Indicates if the flash is on
     @State private var isFlashOn = false
     // Size of the drag area for flash control
-    let dragAreaSize: CGSize = CGSize(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+    let dragAreaSize: CGSize = CGSize(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
     // Indicates if the scanner cell is scanning (binding from parent)
     @Binding var isScanningCell: Bool
     // ViewModel for scanner logic
@@ -247,9 +247,27 @@ struct ScannerView: View, Equatable {
                         // Bind scanning state
                     )
                 }
-                .padding(.bottom, -30)
+                .padding(.bottom,-30)
                 .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
                 .frame(maxWidth: .infinity)
+                .overlay {
+                    // Animated scan line overlay
+                    VStack {
+                        if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
+                            if isCameraAuthorized {
+                                Rectangle()
+                                    .frame(height: 1.5)
+                                    .foregroundColor(.red)
+                                    .shadow(color: .black, radius: 1.5)
+                                    .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / (isFullScreen ? 2 : UIDevice.current.userInterfaceIdiom == .pad ? 2.1 : 2.2)))
+                                    .onAppear {
+                                        startLineAnimation()
+                                    }
+                                    .padding(.bottom, 20)
+                            }
+                        }
+                    }
+                }
                 .onChange(of: isScanning) { newValue in // Start or stop scanning based on state
                     if newValue {
                         scannerController?.startScanning()
@@ -257,6 +275,13 @@ struct ScannerView: View, Equatable {
                         scannerController?.stopScanning()
                     }
                 }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    isCameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+                    if isCameraAuthorized {
+                        startLineAnimation()
+                    }
+                }
+                
                 if !isCameraAuthorized {
                     Color.neutralText
                         .frame(height: isFullScreen ? nil : scanViewHeight + 30.adaptiveForIpad)
@@ -305,15 +330,20 @@ struct ScannerView: View, Equatable {
                     HStack {
                         Spacer()
                         HStack {
-                            if isCameraAuthorized {
-                                // Flashlight toggle icon and gesture
-                                
-                                Image(isFlashOn ? "FlashOff" : "FlashOn")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                            Spacer()
+                            VStack {
+                                if isCameraAuthorized {
+                                    // Flashlight toggle icon and gesture
+                                    Image(isFlashOn ? "FlashOff" : "FlashOn")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                                        .padding(5)
+                                }
+                                Spacer()
                             }
                         }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
+                            .background(.black.opacity(0.000001))
                             .gesture(
                                 DragGesture(minimumDistance: 0)
                                     .onChanged { value in
@@ -363,28 +393,24 @@ struct ScannerView: View, Equatable {
                                     .scaledToFit()
                                     .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                                     .padding()
-                                    .background(Color.clear)
                             }
+                        } else {
+                            Text("")
                         }
-                        if !isMerchandiseMode {
-                            if showScanStats ?? false {
-                                if let stats = viewModel.stats {
-                                    Spacer()
-                                    // Display scan statistics
-                                    Text("\(stringManager.strings?.stats.scanned ?? "Scanned by Device"): \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0)     \(stringManager.strings?.stats.scannable ?? "Scannable Overall"): \(stats.seatsScannable ?? 0)")
-                                        .font(.verlagBookAdaptive(size: 16))
-                                        .minimumScaleFactor(0.5)
-                                        .lineLimit(1)
-                                        .padding(.bottom, -30)
-                                        .foregroundColor(Color.primaryText)
-                                        .opacity(isVisibleText ? 1 : 0)
-                                        .animation(.easeInOut(duration: 0.3), value: isVisibleText)
-                                    
-                                    Spacer()
-                                }
-                            } else {
-                                Spacer()
-                            }
+                        if let stats = viewModel.stats, showScanStats ?? false, !isMerchandiseMode {
+                            Spacer()
+                            // Display scan statistics
+                            Text("\(stringManager.strings?.stats.scanned ?? "Scanned by Device"): \(isOffline ? deviceScanCount : stats.seatsScannedByDevice ?? 0)     \(stringManager.strings?.stats.scannable ?? "Scannable Overall"): \(stats.seatsScannable ?? 0)")
+                                .font(.verlagBookAdaptive(size: 16))
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                                .padding(.bottom, -30)
+                                .foregroundColor(Color.primaryText)
+                                .opacity(isVisibleText ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.3), value: isVisibleText)
+                            
+                            Spacer()
+                            
                         } else {
                             Spacer()
                         }
@@ -442,6 +468,7 @@ struct ScannerView: View, Equatable {
                                         .scaledToFit()
                                         .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                                         .onTapGesture {
+                                            stopLineAnimation()
                                             resetScanner()
                                         }
                                     Spacer()
@@ -476,30 +503,6 @@ struct ScannerView: View, Equatable {
                         }
                         .padding(.bottom, -30)
                 }
-                
-                // Animated scan line overlay
-                Group {
-                    if !isCustomColorVisible && !isAnyOverlayDisplayed && !isStopScanVisible {
-                        if isCameraAuthorized {
-                            Rectangle()
-                                .frame(height: 1.5)
-                                .foregroundColor(.red)
-                                .shadow(color: .black, radius: 1.5)
-                                .offset(y: linePosition - ((isFullScreen ? UIScreen.main.bounds.height : scanViewHeight.adaptiveForIpadScan) / (isFullScreen ? 2 : UIDevice.current.userInterfaceIdiom == .pad ? 2.1 : 2.2)))
-                                .onAppear {
-                                    startLineAnimation()
-                                }
-                                .padding(.bottom, 20)
-                        }
-                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-                    isCameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
-                    if isCameraAuthorized {
-                        startLineAnimation()
-                    }
-                }
-                
             }.onAppear {
                 Task {
                     await viewModel.fetchStats() // Fetch scan stats on appear
@@ -531,7 +534,7 @@ struct ScannerView: View, Equatable {
             isOfflineMode = isOffline
             isMerchandiseMode = isMerchandise ?? false
             shouldPlayHapticNew = shouldPlayHaptic ?? false
-
+            
             duplicateScanSuppressionNew = duplicateScanSuppression
             withAnimation {
                 isVisibleText = true
@@ -547,14 +550,14 @@ struct ScannerView: View, Equatable {
             if isVisible {
                 stopLineAnimation()
             } else {
-                startLineAnimation()
+                resetScanner()
             }
         }
         .onChange(of: scannerLineAnimation) { isVisible in
             if !isVisible {
                 stopLineAnimation()
             } else {
-                startLineAnimation()
+                resetScanner()
             }
         }
         .onChange(of: isOffline) { newValue in
@@ -572,7 +575,7 @@ struct ScannerView: View, Equatable {
             stopLineAnimation()
             startLineAnimation()
         }
-
+        
         .onChange(of: shouldPlayHaptic) { newValue in
             DispatchQueue.main.async {
                 shouldPlayHapticNew = newValue ?? false
@@ -683,8 +686,9 @@ struct ScannerView: View, Equatable {
         isScanning = true
         isScannerActive = true
         isScanningCell = true
-        linePosition = 0
-        
+        if isFullScreen {
+            linePosition = 0
+        }
         startLineAnimation()
         startInactivityTimer()
         startFlashInactivityTimer()
@@ -764,7 +768,6 @@ struct ScannerView: View, Equatable {
     
     // Handles the action for using an external barcode scanner
     func externalScannerAction() {
-        
         isUtilizingExternalBarcode = true
         isExternalInputFocused = true
         stopScanner()
@@ -1334,4 +1337,3 @@ struct ScannerView: View, Equatable {
         }
     }
 }
-

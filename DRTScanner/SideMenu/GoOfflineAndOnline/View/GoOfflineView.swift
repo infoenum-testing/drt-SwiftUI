@@ -37,102 +37,102 @@ struct GoOfflineView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Spacer()
-            Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
-                .font(.verlagBookAdaptive(size: 18))
-                .foregroundColor(Color.primaryText)
-                .multilineTextAlignment(.center)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
-            
-            if !isSyncing {
-                TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
-                    .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
-                    .font(.verlagBookAdaptive(size: 30))
-                    .background(Color.neutralBg)
-                    .foregroundColor(Color.neutralText)
-                    .frame(alignment: .center)
+        ZStack {
+            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6,shadow: true)
+            VStack(alignment: .leading, spacing: 10) {
+                Spacer()
+                Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
+                    .font(.verlagBookAdaptive(size: 18))
+                    .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
-                    .focused($isNameFieldFocused)
-                    .submitLabel(.done)
-                    .cornerRadius(12)
-                    .onSubmit {
-                        isNameFieldFocused = false
-                    }
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
-            }
-            
-            if isSyncing {
-                VStack(spacing: 8) {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .scaleEffect(1.0)
-                    
-                    Text(downloadLabel)
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.primaryText)
-                    
-                    ProgressView(value: progress, total: 1.0)
-                        .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
+                
+                if !isSyncing {
+                    TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
+                        .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
+                        .font(.verlagBookAdaptive(size: 30))
                         .background(Color.neutralBg)
-                        .foregroundColor(Color.primaryText)
-                        .padding(2)
-                    
-                    Text("\(Int(progress * 100))% Completed")
-                        .font(.verlagBoldAdaptive(size: 16))
-                        .foregroundColor(Color.primaryText)
+                        .foregroundColor(Color.neutralText)
+                        .frame(alignment: .center)
+                        .multilineTextAlignment(.center)
+                        .focused($isNameFieldFocused)
+                        .submitLabel(.done)
+                        .cornerRadius(12)
+                        .onSubmit {
+                            isNameFieldFocused = false
+                        }
+                        .padding(.horizontal)
                 }
-            }
-            
-            if !isSyncing {
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        isNameFieldFocused = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            goOffline()
-                        }
-                    }) {
-                        Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
-                            .font(.verlagBoldAdaptive(size: 30))
-                            .foregroundColor(isContinueDisabled ? Color.neutralBg : Color.primaryText)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                    }
-                    .opacity(isContinueDisabled ? 0.6 : 1.0)
-                    .background(Color.secondaryBg)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                    .disabled(isContinueDisabled)
-                    Spacer()
-                }.padding(.top)
-                    .padding(.horizontal)
-                HStack {
-                    Button(action: {
-                        isNameFieldFocused = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            isPresented = false
-                        }
-                    }) {
-                        Text(stringManager.strings?.dialogGoOffline.cancel ?? StringConstants.Common.cancel)
-                            .font(.verlagBoldAdaptive(size: 30))
+                
+                if isSyncing {
+                    VStack(spacing: 8) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                            .scaleEffect(1.0)
+                        
+                        Text(downloadLabel)
+                            .font(.verlagBoldAdaptive(size: 18))
                             .foregroundColor(Color.primaryText)
-                            .padding()
-                            .frame(maxWidth: .infinity)
+                        
+                        ProgressView(value: progress, total: 1.0)
+                            .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
+                            .background(Color.neutralBg)
+                            .foregroundColor(Color.primaryText)
+                            .padding(2)
+                        
+                        Text("\(Int(progress * 100))% Completed")
+                            .font(.verlagBoldAdaptive(size: 16))
+                            .foregroundColor(Color.primaryText)
                     }
-                    .background(Color.clear)
-                    .padding(.horizontal)
-                    .disabled(isSyncing)
                 }
+                
+                if !isSyncing {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            isNameFieldFocused = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                goOffline()
+                            }
+                        }) {
+                            Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
+                                .font(.verlagBoldAdaptive(size: 30))
+                                .foregroundColor(isContinueDisabled ? Color.neutralBg : Color.primaryText)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                        }
+                        .opacity(isContinueDisabled ? 0.6 : 1.0)
+                        .background(Color.secondaryBg)
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
+                        .disabled(isContinueDisabled)
+                        Spacer()
+                    }.padding(.top)
+                        .padding(.horizontal)
+                    HStack {
+                        Button(action: {
+                            isNameFieldFocused = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                isPresented = false
+                            }
+                        }) {
+                            Text(stringManager.strings?.dialogGoOffline.cancel ?? StringConstants.Common.cancel)
+                                .font(.verlagBoldAdaptive(size: 30))
+                                .foregroundColor(Color.primaryText)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                        }
+                        .background(Color.clear)
+                        .padding(.horizontal)
+                        .disabled(isSyncing)
+                    }
+                }
+                Spacer()
             }
-            Spacer()
         }
         .frame(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6)
-        .background {
-            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6,shadow: true)
-        }
     }
     
     func isValidName(_ name: String) -> Bool {

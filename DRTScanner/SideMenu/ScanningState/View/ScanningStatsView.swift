@@ -65,6 +65,7 @@ struct ScanningStatsView: View {
                 }
                 Spacer()
             }
+            .clipped()
             .frame(height: UIScreen.main.bounds.height * 0.22)
         }
         .padding(15)

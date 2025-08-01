@@ -168,6 +168,10 @@
 		E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */; };
 		E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */; };
 		E9AA78E72E30F80500233D98 /* ErrorDescriptionMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */; };
+		E9AEBFC22E3CEF07009B1AFB /* LogoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC12E3CEF07009B1AFB /* LogoutView.swift */; };
+		E9AEBFC52E3CF007009B1AFB /* CustomAlertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */; };
+		E9AEBFC72E3CF3E5009B1AFB /* ShowOfflineAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC62E3CF3E5009B1AFB /* ShowOfflineAlertView.swift */; };
+		E9AEBFC92E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC82E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift */; };
 		E9B9B65F2E38F634003C5BDD /* ScannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */; };
 		E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */; };
 		E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D054702E2A6E48005C7565 /* OfflineStrings.swift */; };
@@ -339,6 +343,10 @@
 		E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessages.swift; sourceTree = "<group>"; };
 		E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorDescriptionMessages.swift; sourceTree = "<group>"; };
+		E9AEBFC12E3CEF07009B1AFB /* LogoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutView.swift; sourceTree = "<group>"; };
+		E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertMessage.swift; sourceTree = "<group>"; };
+		E9AEBFC62E3CF3E5009B1AFB /* ShowOfflineAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowOfflineAlertView.swift; sourceTree = "<group>"; };
+		E9AEBFC82E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowOfflineSuccesAlertView.swift; sourceTree = "<group>"; };
 		E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerHelper.swift; sourceTree = "<group>"; };
 		E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notificaiton+Extension.swift"; sourceTree = "<group>"; };
 		E9D054702E2A6E48005C7565 /* OfflineStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStrings.swift; sourceTree = "<group>"; };
@@ -555,6 +563,7 @@
 		E997FBDC2E29486F00D9EC06 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				E9AEBFC32E3CEFFA009B1AFB /* Components */,
 				E997FBDB2E29486F00D9EC06 /* SeatHomeView.swift */,
 			);
 			path = View;
@@ -1194,6 +1203,7 @@
 		E997FC872E29486F00D9EC06 /* SideMenu */ = {
 			isa = PBXGroup;
 			children = (
+				E9AEBFC02E3CECEB009B1AFB /* Logout */,
 				E997FC6D2E29486F00D9EC06 /* About */,
 				E997FC712E29486F00D9EC06 /* GoOfflineAndOnline */,
 				E997FC752E29486F00D9EC06 /* Helper */,
@@ -1257,6 +1267,24 @@
 				E997FC932E29486F00D9EC06 /* Info.plist */,
 			);
 			path = DRTScanner;
+			sourceTree = "<group>";
+		};
+		E9AEBFC02E3CECEB009B1AFB /* Logout */ = {
+			isa = PBXGroup;
+			children = (
+				E9AEBFC12E3CEF07009B1AFB /* LogoutView.swift */,
+			);
+			path = Logout;
+			sourceTree = "<group>";
+		};
+		E9AEBFC32E3CEFFA009B1AFB /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				E9AEBFC82E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift */,
+				E9AEBFC62E3CF3E5009B1AFB /* ShowOfflineAlertView.swift */,
+				E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1431,6 +1459,7 @@
 				E997FCCD2E29486F00D9EC06 /* SeatHomeViewModel.swift in Sources */,
 				E997FCCE2E29486F00D9EC06 /* LandingView.swift in Sources */,
 				E997FCCF2E29486F00D9EC06 /* LandingViewModel.swift in Sources */,
+				E9AEBFC52E3CF007009B1AFB /* CustomAlertMessage.swift in Sources */,
 				E997FCD02E29486F00D9EC06 /* LookupByNameResultView.swift in Sources */,
 				E997FCD12E29486F00D9EC06 /* LookupByNameView.swift in Sources */,
 				E9B9B65F2E38F634003C5BDD /* ScannerHelper.swift in Sources */,
@@ -1468,6 +1497,7 @@
 				E997FCEE2E29486F00D9EC06 /* OfflineDataModel.swift in Sources */,
 				E997FCEF2E29486F00D9EC06 /* OrdersOfflineModel.swift in Sources */,
 				E997FCF02E29486F00D9EC06 /* OrderDetailModel.swift in Sources */,
+				E9AEBFC22E3CEF07009B1AFB /* LogoutView.swift in Sources */,
 				E997FCF12E29486F00D9EC06 /* OrderModel.swift in Sources */,
 				E997FCF22E29486F00D9EC06 /* RefreshTokenResponse.swift in Sources */,
 				E997FCF32E29486F00D9EC06 /* ScanResponse.swift in Sources */,
@@ -1476,6 +1506,7 @@
 				E997FCF62E29486F00D9EC06 /* SeatModel.swift in Sources */,
 				E997FCF72E29486F00D9EC06 /* SectionModel.swift in Sources */,
 				E997FCF82E29486F00D9EC06 /* DRTUser.swift in Sources */,
+				E9AEBFC72E3CF3E5009B1AFB /* ShowOfflineAlertView.swift in Sources */,
 				E997FCF92E29486F00D9EC06 /* SkinModel.swift in Sources */,
 				E997FCFA2E29486F00D9EC06 /* StatsModel.swift in Sources */,
 				E997FCFB2E29486F00D9EC06 /* AppStrings.swift in Sources */,
@@ -1510,6 +1541,7 @@
 				E997FD182E29486F00D9EC06 /* ExternalBarcodeInputField.swift in Sources */,
 				E997FD192E29486F00D9EC06 /* ScannerView.swift in Sources */,
 				E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */,
+				E9AEBFC92E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift in Sources */,
 				E997FD1A2E29486F00D9EC06 /* ScannerViewModel.swift in Sources */,
 				E997FD1B2E29486F00D9EC06 /* ShowCodeView.swift in Sources */,
 				E997FD1C2E29486F00D9EC06 /* ShowCodeViewModel.swift in Sources */,

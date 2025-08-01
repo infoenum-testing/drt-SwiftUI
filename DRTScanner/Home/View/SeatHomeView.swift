@@ -11,14 +11,6 @@ import SwiftUI
 struct SeatHomeView: View {
     // Used to dismiss the current view
     @Environment(\.presentationMode) var presentationMode
-    // Indicates if the app is in offline mode
-    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
-    // Indicates if the user is logged in
-    @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
-    // Stores the show code
-    @AppStorage("showCode") private var savedShowCode: String?
-    // Stores the show ID
-    @AppStorage("showId") private var savedShowId: String?
     // Stores the show name
     @AppStorage("show") private var savedShow: String = ""
     // Controls the side menu presentation
@@ -127,6 +119,7 @@ struct SeatHomeView: View {
                                 HStack {
                                     Text("")
                                         .frame(width: 25, height: 25)
+                                        .padding()
                                     Spacer()
                                     AppLogoView(width:UIDevice.isIpad && UIDevice.isLandscape ? 100.adaptiveForIpad : 120.adaptiveForIpad, height: UIDevice.isIpad && UIDevice.isLandscape ? 55.adaptiveForIpad : 65.adaptiveForIpad)
                                         .padding(.leading, 10)
@@ -142,10 +135,9 @@ struct SeatHomeView: View {
                                             .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                             .background(Color.clear)
                                             .contentShape(Rectangle())
-                                            .padding(.top, UIDevice.isIpad ? UIDevice.isLandscape ? 40 : 80 : 0)
-                                        
+                                            .padding()
                                     }
-                                    .padding(.trailing, 20)
+                                    .padding(.top, UIDevice.isIpad ? UIDevice.isLandscape ? 40 : 80 : 0)
                                 }
                                 .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader() - 10)
                             }
@@ -384,171 +376,19 @@ struct SeatHomeView: View {
             }
         })
         .customAlert(isPresented: $showAlert) {
-            ZStack {
-                VStack(alignment: .center) {
-                    Spacer()
-                    VStack {
-                        Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
-                             StringConstants.LandingView.logoutConfirm)
-                        .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
-                        .foregroundColor(Color.primaryText)
-                        .multilineTextAlignment(.center)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(isOfflineMode ? 10 : 1)
-                        .padding(.top, 20)
-                        .padding(.bottom)
-                    }
-                    
-                    VStack {
-                        if !isOfflineMode {
-                            HStack {
-                                Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
-                                    .font(.verlagBoldAdaptive(size: 30))
-                                    .foregroundColor(Color.primaryText)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.secondaryBg)
-                                    .cornerRadius(12)
-                                    .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                                    .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            DeviceManager.shared.deleteDeviceName()
-                                            isUserLoggedIn = false
-                                            savedShowCode = nil
-                                            savedShowId = nil
-                                            showAlert = false
-                                            showSeatView = false
-                                            deviceScanCount = 0
-                                            DRTDatabaseManager.shared.deleteSkin()
-                                        }
-                                    }
-                            }
-                            HStack {
-                                Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
-                                    .font(.verlagBoldAdaptive(size: 30))
-                                    .foregroundColor(Color.primaryText)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            showAlert = false
-                                        }
-                                    }
-                            }
-                        }
-                    }
-                    Spacer()
-                }
-                .padding()
-            }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4)
-            .background {
-                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.4,shadow: true)
-            }
+            LogoutView(showAlert: $showAlert, showSeatView: $showSeatView)
         }
         .customAlert(isPresented: $showOfflineAlert) {
-            VStack(alignment: .center) {
-                HStack {
-                    Spacer()
-                    Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
-                        .padding(.leading, 20)
-                        .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(Color.primaryText)
-                        .padding(.bottom, 10)
-                        .padding(.top, 20)
-                    
-                    Spacer()
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            showOfflineAlert = false
-                        }
-                    }) {
-                        Image(StringConstants.DRTImages.crossImage)
-                            .resizable()
-                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                            .background(Color.clear)
-                            .contentShape(Rectangle())
-                    }
-                }
-                
-                VStack {
-                    Text(viewModel.errorMessage ?? "")
-                        .font(.verlagBookAdaptive(size: 18))
-                        .foregroundColor(Color.primaryText)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                }
-            }
-            .padding([.horizontal,.bottom])
-            .padding(.top,topSafeAreaPaddingHeader() - 10)
-            .background(Color.secondaryBg)
+            ShowOfflineAlertView(viewModel: viewModel, showOfflineAlert: $showOfflineAlert)
         }
         .customAlert(isPresented: $showOfflineSuccessAlert) {
-            VStack(alignment: .center) {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Text(stringManager.strings?.offline.success ?? StringConstants.Common.success)
-                        .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(Color.primaryText)
-                        .padding(.bottom, 10)
-                        .padding(.top, 20)
-                    
-                    Spacer()
-                }
-                
-                VStack {
-                    Text(stringManager.strings?.offline.download ?? StringConstants.SeatHomeView.successDbDownloadAlert)
-                        .font(.verlagBookAdaptive(size: 18))
-                        .foregroundColor(Color.primaryText)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                }
-                Spacer()
-            }
-            .padding()
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25)
-            .background {
-                AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.25, shadow:true)
-            }
+            ShowOfflineSuccesAlertView()
         }
         .customAlert(isPresented: $stringManager.isShowAlert) {
-            // Custom alert for error messages
-            VStack(alignment: .center) {
-                HStack {
-                    Text("")
-                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                    Spacer()
-                    
-                    Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
-                        .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(Color.primaryText)
-                    Spacer()
-                    
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            stringManager.isShowAlert = false
-                        }
-                    }) {
-                        Image(StringConstants.DRTImages.crossImage)
-                            .resizable()
-                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                            .background(Color.clear)
-                            .contentShape(Rectangle())
-                    }
-                }
-                
-                Text(stringManager.message)
-                    .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(Color.primaryText)
-                    .multilineTextAlignment(.center)
-                    .padding(.top,5)
-                
-            }
-            .padding([.horizontal,.bottom])
-            .padding(.top,topSafeAreaPaddingHeader())
-            .background(Color.secondaryBg)
+            CustomAlertMessage()
         }
         .ignoresSafeArea()
     }
 }
+
+

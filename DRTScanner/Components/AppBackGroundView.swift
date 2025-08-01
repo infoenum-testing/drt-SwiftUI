@@ -50,6 +50,16 @@ struct AppBackGroundView: View {
                         }
                         .transition(.opacity)
                         .animation(.easeInOut(duration: 0.3), value: Loading)
+                        .background {
+                            Image(StringConstants.DRTImages.backgound)
+                                .resizable()
+                                .scaledToFill()
+                                .clipped()
+                                .frame(width:  width,
+                                       height: height)
+                                .frame(maxWidth:  maxWidth,
+                                       maxHeight: maxHeight)
+                        }
                 }
             } else {
                 Image(StringConstants.DRTImages.backgound)

@@ -47,24 +47,35 @@ struct ShowCodeView: View {
                                     Image(StringConstants.DRTImages.crossImage)
                                         .resizable()
                                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                        .padding()
+                                        .padding(10)
                                 }
                             }
+                            .padding(.top,topSafeAreaPadding())
+                            .padding(.trailing,15)
                             Spacer()
                         }
                         
                     } else {
                         // MARK: - Background Image for Code Entry UI
+                        let opacity = 0.00000001
                         AppBackGroundView(width: geometry.size.width,height: geometry.size.height)
+                            .disabled(true)
+                            .overlay {
+                                Color.black.opacity(opacity)
+                            }
+                        
+                        
                         
                         // MARK: - Code Entry UI
                         VStack(spacing: 20) {
-                            
                             // MARK: - Logo
                             let width = UIDevice.isIpad && UIDevice.isLandscape ? UIScreen.main.bounds.height * 0.18 : 170.adaptiveForIpad
                             let height = UIDevice.isIpad && UIDevice.isLandscape ? UIScreen.main.bounds.height * 0.1 : 100.adaptiveForIpad
                             AppLogoView(width: width, height: height)
-                            
+                                .disabled(true)
+                                .overlay {
+                                    Color.black.opacity(opacity)
+                                }
                             // MARK: - Code Display and Controls
                             HStack {
                                 // Close Button
@@ -76,6 +87,7 @@ struct ShowCodeView: View {
                                     Image(StringConstants.DRTImages.crossImage)
                                         .resizable()
                                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                        .padding(5)
                                 }
                                 
                                 Spacer()
@@ -96,10 +108,12 @@ struct ShowCodeView: View {
                                         .resizable()
                                         .foregroundStyle(Color.primaryText)
                                         .frame(width: 40.adaptiveForIpad, height: 30.adaptiveForIpad)
+                                        .padding(.horizontal,5)
+                                        .padding(.vertical,8)
                                 }
                             }
-                            .padding(.horizontal, 20)
-                            
+                            .padding(.horizontal, 15.adaptiveForIpad)
+                            .background(Color.black.opacity(opacity))
                             // MARK: - QR Camera Button
                             HStack {
                                 Button(action: {
