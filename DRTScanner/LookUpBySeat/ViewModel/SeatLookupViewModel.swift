@@ -26,7 +26,7 @@ class SeatLookupViewModel: ObservableObject {
     
     private var viewContext: NSManagedObjectContext
     private var lookupByOrderViewModel: LookupByOrderResultViewModel
-
+    
     // Initializes the SeatLookupViewModel with a Core Data context
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.viewContext = context
@@ -37,12 +37,12 @@ class SeatLookupViewModel: ObservableObject {
     var seatDisplayText: String {
         [selectedSection, selectedRow, selectedSeat].filter { !$0.isEmpty }.joined(separator: " - ")
     }
-
+    
     // Updates the seatText whenever section, row, or seat changes
     func onSeatDataChanged() {
         seatText = seatDisplayText
     }
-
+    
     // Handles the logic when the Continue button is tapped
     // Fetches order details either from Core Data (offline) or API (online)
     func continueButtonTapped() {
@@ -50,9 +50,9 @@ class SeatLookupViewModel: ObservableObject {
             errorMessage = "Please select a section, row, and seat before continuing."
             return
         }
-
+        
         isLoading = true
-
+        
         if isOfflineMode {
             // Fetch order details from Core Data in offline mode
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -72,7 +72,7 @@ class SeatLookupViewModel: ObservableObject {
                     self.errorMessage = nil
                 } else {
                     self.order = nil
-                    self.errorMessage = "No orders found"
+                    self.errorMessage = StringConstants.Common.noOrdersFound
                 }
                 self.showResultView = true
                 self.isLoading = false
@@ -109,12 +109,12 @@ class SeatLookupViewModel: ObservableObject {
             }
         }
     }
-
+    
     // Fetches order details from Core Data for the selected seat
     private func fetchOrderDetailFromCoreData() -> Order? {
         let request: NSFetchRequest<Seat> = Seat.fetchRequest()
         request.predicate = NSPredicate(format: "section == %@ AND row == %@ AND seat == %@", selectedSection, selectedRow, selectedSeat)
-
+        
         do {
             let results = try viewContext.fetch(request)
             if let seat = results.first {

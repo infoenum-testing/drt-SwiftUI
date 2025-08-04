@@ -34,13 +34,12 @@ struct LookupResultCardOrPhoneView: View {
     let lookupType: LookupType                                   // Determines if lookup is by phone number or credit card
     
     // MARK: - Computed Properties
-    
-    /// Computed property to return the right list of orders based on lookup type
+    // Computed property to return the right list of orders based on lookup type
     var orders: [OrdersNewApi] {
         lookupType == .phoneNumber ? phoneViewModel.orders : creditCardViewModel.orders
     }
     
-    /// Computed property to return loading state based on lookup type
+    // Computed property to return loading state based on lookup type
     var isLoading: Bool {
         lookupType == .phoneNumber ? phoneViewModel.isLoading : creditCardViewModel.isLoading
     }

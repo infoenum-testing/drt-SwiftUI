@@ -40,8 +40,7 @@ struct LookupByNameResultView: View {
                     Spacer()
                     // Loading indicator and text
                     if viewModel.isLoading {
-//                        let loading = stringManager.s
-                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
+                        Text(stringManager.strings?.searchResults.loading ?? "Loading...")
                             .foregroundColor(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
@@ -51,7 +50,6 @@ struct LookupByNameResultView: View {
                     }
                     // Display total results or no orders found
                     if !viewModel.isLoading {
-                        
                         Text(viewModel.orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(viewModel.orders.count)")
                             .foregroundColor(Color.neutralText)
                             .font(.verlagBlackAdaptive(size: 25))
@@ -100,8 +98,5 @@ struct LookupByNameResultView: View {
                 LookupOrderResultView(inputText: oId ?? "", dismissAction: { navigateToOrderResult = false }, errorMessage: nil, order: selectedOrder)
             }
         }.padding(.top, 0)
-        .onChange(of: navigateToOrderResult) { newValue in
-            print(newValue)
-        }
     }
 }

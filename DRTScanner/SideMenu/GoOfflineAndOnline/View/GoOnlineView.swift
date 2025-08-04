@@ -23,7 +23,7 @@ struct GoOnlineView: View {
         if !showErrorMessage {
             ZStack {
                 AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.35,shadow: true)
-                VStack(spacing: 20) {
+                VStack(spacing: 15) {
                     Spacer()
                     if !showErrorMessage {
                         Text(stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline)
@@ -153,7 +153,7 @@ struct CustomAlertForError: View {
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
-                    .padding()
+                    .padding(.horizontal)
             }
         }
         .padding()

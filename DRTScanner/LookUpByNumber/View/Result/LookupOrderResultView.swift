@@ -12,11 +12,13 @@ import CoreData
 struct LookupOrderResultView: View {
     let inputText: String // The input order number or code
     var dismissAction: () -> Void // Action to dismiss this view
+    
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext) // ViewModel for fetching order data
     @State private var seats: [SeatModel] = [] // List of seat models for the order
     @State private var merch: [Merchandise] = [] // List of merchandise for the order
     @State private var merchOrders: [MerchandiseOrder] = []
     @State private var productOrders: [MerchandiseOrder] = []
+    
     @AppStorage("showCode") private var savedShowCode: String? // Saved show code from user defaults
     @AppStorage("isMerchandise") private var isMerchandise: Bool? // Flag to indicate merchandise mode
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false // Flag for offline mode
@@ -54,20 +56,27 @@ struct LookupOrderResultView: View {
                         Spacer()
                     }
                     if !viewModel.isLoading {
-                        Text(viewModel.buyerName == "No orders found" ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : viewModel.buyerName.uppercased())
-                            .foregroundStyle(Color.neutralText)
-                            .font(.verlagBlackAdaptive(size: 25))
-                            .padding(.trailing, 20)
+                        if let buyerName = viewModel.buyerName {
+                            Text(buyerName.uppercased())
+                                .foregroundStyle(Color.neutralText)
+                                .font(.verlagBlackAdaptive(size: 25))
+                                .padding(.trailing, 20)
+                        } else {
+                            Text(stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound )
+                                .foregroundStyle(Color.neutralText)
+                                .font(.verlagBlackAdaptive(size: 25))
+                                .padding(.trailing, 20)
+                        }
                         Spacer()
                     }
                 }
                 if !viewModel.isLoading {
-                    if viewModel.buyerName != "No orders found" {
+                    if let _ = viewModel.buyerName , let order {
                         HStack(alignment: .center) {
-                            Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order?.orderId ?? 0))")
+                            Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order.orderId ?? 0))")
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.neutralText)
-                            Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order?.cc ?? "")")
+                            Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order.cc ?? "")")
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.neutralText)
                         }
@@ -152,7 +161,7 @@ struct LookupOrderResultView: View {
                             .padding(.bottom)
                             .padding(.horizontal)
                         }
-                       
+                        
                     }
                 }
             }
