@@ -113,9 +113,11 @@ class ScanningStatsViewModel: ObservableObject {
                 switch result {
                 case .success(let response):
                     if let skin = response.skin {
-                        DispatchQueue.main.async{
-                            self.updateSkinInCoreData(with: skin)
-                            ColorManager.shared.updateSkin(to: skin)
+                        DispatchQueue.main.async {
+                            if !self.lastSkinUpdate() {
+                                self.updateSkinInCoreData(with: skin)
+                                ColorManager.shared.updateSkin(to: skin)
+                            }
                         }
                     }
                     continuation.resume(returning: response.stats ?? StatsModel())
@@ -124,6 +126,15 @@ class ScanningStatsViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    private func lastSkinUpdate() -> Bool {
+        let now = Date()
+        if let lastCall = UserDefaults.standard.object(forKey: "lastSkinUpdate") as? Date {
+            let hoursSinceLastCall = now.timeIntervalSince(lastCall) / 3600
+            return hoursSinceLastCall >= 24
+        }
+        return true // No previous call, so allow
     }
     
     func updateSkinInCoreData(with updatedModel: SkinModel) {
@@ -148,6 +159,7 @@ class ScanningStatsViewModel: ObservableObject {
                 // Save changes
                 try context.save()
                 print("✅ Skin updated successfully")
+                UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
             } else {
                 print("⚠️ No existing Skin found to update")
             }

@@ -6,70 +6,7 @@
 //
 import Foundation
 
-struct AppStringsClass: Codable {
-    
-    let enUS: AppStrings
-    let frCA: AppStrings
-    let esUS: AppStrings
-    
-    enum CodingKeys: String, CodingKey {
-        case enUS = "en_US"
-        case frCA = "fr_CA"
-        case esUS = "es_US"
-    }
-}
-
-extension AppStringsClass {
-    /// Fetch by exact language code
-    subscript(_ code: LangCode) -> AppStrings {
-        switch code {
-        case .enUS: return enUS
-        case .frCA: return frCA
-        case .esUS: return esUS
-        }
-    }
-    
-    /// Overload that also accepts the raw string ("en_US") and returns nil if unknown
-    subscript(_ raw: String) -> AppStrings? {
-        LangCode(rawValue: raw).map { self[$0] }
-    }
-}
-
-/// Languages you know about
-enum LangCode: String {
-    case enUS = "en_US"
-    case frCA = "fr_CA"
-    case esUS = "es_US"
-    
-    static func current() -> String {
-        let locale = Locale.current
-
-        // Fallback if allLangStrings is nil
-//        guard let allString = StringManager.shared.allLangStrings else {
-            return "English"
-//        }
-
-//        // Safely unwrap locale components
-//        let lang = locale.language.languageCode?.identifier ?? "en"
-//        let region = locale.region?.identifier ?? "US"
-//        let code = LangCode(rawValue: "\(lang)_\(region)")?.rawValue ?? LangCode.enUS.rawValue
-//
-//        switch code {
-//        case "fr_CA":
-//            return allString.frCA.lang
-//        case "es_US":
-//            return allString.esUS.lang
-//        case "en_US":
-//            fallthrough
-//        default:
-//            return allString.enUS.lang
-//        }
-    }
-
-    
-}
-
-struct AppStrings: Codable {
+struct SelectedLangStrings: Codable {
     let lang: String
     let stats: StatsStrings
     let settings: Settings

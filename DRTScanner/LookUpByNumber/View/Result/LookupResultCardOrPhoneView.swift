@@ -80,7 +80,6 @@ struct LookupResultCardOrPhoneView: View {
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
                     }
-                    
                     Spacer()
                 }
             }
@@ -134,8 +133,6 @@ struct LookupResultCardOrPhoneView: View {
             }
         }
         .padding(.top, 0)
-        
-        
         // Optional: Debug print for sheet presentation
         .onChange(of: navigateToOrderResult) { newValue in
             print(newValue)

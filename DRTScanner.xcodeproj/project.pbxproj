@@ -10,6 +10,8 @@
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
 		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
 		E992D1642E379EA3004F249D /* scan.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1632E379EA3004F249D /* scan.wav */; };
+		E99385302E41E63700EFD485 /* LangCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E993852F2E41E63700EFD485 /* LangCode.swift */; };
+		E99385322E41E68700EFD485 /* AppStringsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99385312E41E68700EFD485 /* AppStringsModel.swift */; };
 		E997FC972E29486F00D9EC06 /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E997FBCF2E29486F00D9EC06 /* beep.mp3 */; };
 		E997FC982E29486F00D9EC06 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E997FC492E29486F00D9EC06 /* Preview Assets.xcassets */; };
 		E997FC992E29486F00D9EC06 /* Aileron-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E997FC4D2E29486F00D9EC06 /* Aileron-Regular.otf */; };
@@ -108,7 +110,7 @@
 		E997FCF82E29486F00D9EC06 /* DRTUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC272E29486F00D9EC06 /* DRTUser.swift */; };
 		E997FCF92E29486F00D9EC06 /* SkinModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC292E29486F00D9EC06 /* SkinModel.swift */; };
 		E997FCFA2E29486F00D9EC06 /* StatsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC2B2E29486F00D9EC06 /* StatsModel.swift */; };
-		E997FCFB2E29486F00D9EC06 /* AppStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC2D2E29486F00D9EC06 /* AppStrings.swift */; };
+		E997FCFB2E29486F00D9EC06 /* SelectedLangStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC2D2E29486F00D9EC06 /* SelectedLangStrings.swift */; };
 		E997FCFC2E29486F00D9EC06 /* Dialog-go-offline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC2E2E29486F00D9EC06 /* Dialog-go-offline.swift */; };
 		E997FCFD2E29486F00D9EC06 /* Dialog-go-online.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC2F2E29486F00D9EC06 /* Dialog-go-online.swift */; };
 		E997FCFE2E29486F00D9EC06 /* Dialog-logout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC302E29486F00D9EC06 /* Dialog-logout.swift */; };
@@ -183,6 +185,8 @@
 		E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DRTScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E992D1612E379E9C004F249D /* fail.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fail.wav; sourceTree = "<group>"; };
 		E992D1632E379EA3004F249D /* scan.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scan.wav; sourceTree = "<group>"; };
+		E993852F2E41E63700EFD485 /* LangCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LangCode.swift; sourceTree = "<group>"; };
+		E99385312E41E68700EFD485 /* AppStringsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStringsModel.swift; sourceTree = "<group>"; };
 		E997FBA12E29486F00D9EC06 /* AlertViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifier.swift; sourceTree = "<group>"; };
 		E997FBA22E29486F00D9EC06 /* AlertViewModifierGoOfflineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifierGoOfflineView.swift; sourceTree = "<group>"; };
 		E997FBA42E29486F00D9EC06 /* CustomCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellView.swift; sourceTree = "<group>"; };
@@ -273,7 +277,7 @@
 		E997FC272E29486F00D9EC06 /* DRTUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DRTUser.swift; sourceTree = "<group>"; };
 		E997FC292E29486F00D9EC06 /* SkinModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinModel.swift; sourceTree = "<group>"; };
 		E997FC2B2E29486F00D9EC06 /* StatsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsModel.swift; sourceTree = "<group>"; };
-		E997FC2D2E29486F00D9EC06 /* AppStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStrings.swift; sourceTree = "<group>"; };
+		E997FC2D2E29486F00D9EC06 /* SelectedLangStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedLangStrings.swift; sourceTree = "<group>"; };
 		E997FC2E2E29486F00D9EC06 /* Dialog-go-offline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dialog-go-offline.swift"; sourceTree = "<group>"; };
 		E997FC2F2E29486F00D9EC06 /* Dialog-go-online.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dialog-go-online.swift"; sourceTree = "<group>"; };
 		E997FC302E29486F00D9EC06 /* Dialog-logout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dialog-logout.swift"; sourceTree = "<group>"; };
@@ -545,6 +549,7 @@
 		E997FBDA2E29486F00D9EC06 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				E993852F2E41E63700EFD485 /* LangCode.swift */,
 				E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */,
 				E997FBD02E29486F00D9EC06 /* Sound */,
 				E997FBD12E29486F00D9EC06 /* ColorManger.swift */,
@@ -875,10 +880,11 @@
 		E997FC3F2E29486F00D9EC06 /* StringModel */ = {
 			isa = PBXGroup;
 			children = (
+				E99385312E41E68700EFD485 /* AppStringsModel.swift */,
 				E9AA78E62E30F80500233D98 /* ErrorDescriptionMessages.swift */,
 				E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */,
 				E9D054702E2A6E48005C7565 /* OfflineStrings.swift */,
-				E997FC2D2E29486F00D9EC06 /* AppStrings.swift */,
+				E997FC2D2E29486F00D9EC06 /* SelectedLangStrings.swift */,
 				E997FC2E2E29486F00D9EC06 /* Dialog-go-offline.swift */,
 				E997FC2F2E29486F00D9EC06 /* Dialog-go-online.swift */,
 				E997FC302E29486F00D9EC06 /* Dialog-logout.swift */,
@@ -1446,6 +1452,7 @@
 				E997FCBF2E29486F00D9EC06 /* Color+Extension.swift in Sources */,
 				E997FCC02E29486F00D9EC06 /* Date+Extension.swift in Sources */,
 				E997FCC12E29486F00D9EC06 /* String+Extension.swift in Sources */,
+				E99385302E41E63700EFD485 /* LangCode.swift in Sources */,
 				E997FCC32E29486F00D9EC06 /* ColorManger.swift in Sources */,
 				E997FCC42E29486F00D9EC06 /* JsonFileManger.swift in Sources */,
 				E997FCC52E29486F00D9EC06 /* KeyboardObserver.swift in Sources */,
@@ -1509,7 +1516,7 @@
 				E9AEBFC72E3CF3E5009B1AFB /* ShowOfflineAlertView.swift in Sources */,
 				E997FCF92E29486F00D9EC06 /* SkinModel.swift in Sources */,
 				E997FCFA2E29486F00D9EC06 /* StatsModel.swift in Sources */,
-				E997FCFB2E29486F00D9EC06 /* AppStrings.swift in Sources */,
+				E997FCFB2E29486F00D9EC06 /* SelectedLangStrings.swift in Sources */,
 				E997FCFC2E29486F00D9EC06 /* Dialog-go-offline.swift in Sources */,
 				E997FCFD2E29486F00D9EC06 /* Dialog-go-online.swift in Sources */,
 				E997FCFE2E29486F00D9EC06 /* Dialog-logout.swift in Sources */,
@@ -1541,6 +1548,7 @@
 				E997FD182E29486F00D9EC06 /* ExternalBarcodeInputField.swift in Sources */,
 				E997FD192E29486F00D9EC06 /* ScannerView.swift in Sources */,
 				E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */,
+				E99385322E41E68700EFD485 /* AppStringsModel.swift in Sources */,
 				E9AEBFC92E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift in Sources */,
 				E997FD1A2E29486F00D9EC06 /* ScannerViewModel.swift in Sources */,
 				E997FD1B2E29486F00D9EC06 /* ShowCodeView.swift in Sources */,

@@ -15,7 +15,9 @@ extension IQAPIClient {
     @discardableResult
     static func getStringLanguage(completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let path = APIPath.stringLang.rawValue
-        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: nil, completionHandler: completionHandler)
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["lang" : lanCode]
+        return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
     /// Retrieves show-related data using a specific code.
@@ -23,7 +25,8 @@ extension IQAPIClient {
     static func getShowCodeData(code: String , completionHandler: @Sendable @escaping (_ result: Swift.Result<DRTUser, Error>) -> Void) -> DataRequest? {
         let path = APIPath.showCode.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "devicename" : deviceName,"lang": lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
    
@@ -32,7 +35,8 @@ extension IQAPIClient {
     static func getLookUpByOrder(code: String , orderNumber: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[OrdersNewApi], Error>) -> Void) -> DataRequest? {
         let path = APIPath.lookUpByOrder.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "q" : orderNumber, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "q" : orderNumber, "devicename" : deviceName,"lang": lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -41,7 +45,8 @@ extension IQAPIClient {
     static func getLookUpByCreditCard(code: String , ccNumber: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[OrdersNewApi], Error>) -> Void) -> DataRequest? {
         let path = APIPath.lookUpByCreditCard.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "q" : ccNumber, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "q" : ccNumber, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -50,7 +55,8 @@ extension IQAPIClient {
     static func getLookUpByPhone(code: String , phoneNumber: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[OrdersNewApi], Error>) -> Void) -> DataRequest? {
         let path = APIPath.lookUpByPhone.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "q" : phoneNumber, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "q" : phoneNumber, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -59,7 +65,8 @@ extension IQAPIClient {
     static func getLookUpByName(code: String , orderName: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[OrdersNewApi], Error>) -> Void) -> DataRequest? {
         let path = APIPath.lookUpByname.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "q" : orderName, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "q" : orderName, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -67,7 +74,8 @@ extension IQAPIClient {
     @discardableResult
     static func getOrderDetail(code: String, sid: String, oId: Int, type: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrdersNewApi, Error>) -> Void) -> DataRequest? {
         let path = APIPath.orderDetail.rawValue
-        let param: [String: Any] = ["c" : code, "sid" : sid, "oid" : oId, "type" : type]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "sid" : sid, "oid" : oId, "type" : type, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -76,7 +84,8 @@ extension IQAPIClient {
     static func getSection(code: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[[String: Any]], Error>) -> Void) -> DataRequest? {
         let path = APIPath.section.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "ds" : "sections", "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "ds" : "sections", "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -85,7 +94,8 @@ extension IQAPIClient {
     static func getRow(code: String, section: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[[String: Any]], Error>) -> Void) -> DataRequest? {
         let path = APIPath.section.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "ds" : "rows", "s" : section, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "ds" : "rows", "s" : section, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -94,7 +104,8 @@ extension IQAPIClient {
     static func getSeats(code: String, section: String, row: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<[[String: Any]], Error>) -> Void) -> DataRequest? {
         let path = APIPath.section.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "ds" : "seats", "s" : section, "r" : row, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "ds" : "seats", "s" : section, "r" : row, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -103,7 +114,8 @@ extension IQAPIClient {
     static func getSeatsResults(code: String, section: String, row: String, seat: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<OrderDetailModel, Error>) -> Void) -> DataRequest? {
         let path = APIPath.seat.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "section": section, "row" : row, "seat" : seat, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "section": section, "row" : row, "seat" : seat, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -112,7 +124,8 @@ extension IQAPIClient {
     static func scanTicket(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/ticket?c=\(code)&devicename=\(deviceName)"
-        let param: [String: Any] = ["seat" : qr]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["seat" : qr, "lang" : lanCode]
         
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }
@@ -122,8 +135,8 @@ extension IQAPIClient {
     static func scanTicketQrCode(code: String, type: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/ticket?c=\(code)&devicename=\(deviceName)"
-        
-        let param: [String: Any] = [type: qr]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = [type: qr, "lang" : lanCode]
         
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }
@@ -133,9 +146,8 @@ extension IQAPIClient {
     static func scanProductQrCode(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/merch/?c=\(code)&devicename=\(deviceName)"
-        
-        let param: [String: Any] = ["merch": qr]
-        
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["merch": qr, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }
     
@@ -144,7 +156,8 @@ extension IQAPIClient {
     static func scanTicketBarcode(code: String, barcode: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<Any, Error>) -> Void) -> DataRequest? {
         let path = APIPath.ticket.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "bc": barcode, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "bc": barcode, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
 
@@ -153,7 +166,8 @@ extension IQAPIClient {
     static func getAllDataOffline(code: String, username: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<Any, Error>) -> Void) -> DataRequest? {
         let path = APIPath.selectAllDataOffine.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
-        let param: [String: Any] = ["c" : code, "username": username, "devicename" : deviceName]
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["c" : code, "username": username, "devicename" : deviceName, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(path: path, method: .get, parameters: param, completionHandler: completionHandler)
     }
     
@@ -168,9 +182,8 @@ extension IQAPIClient {
             completionHandler(.failure(NSError(domain: "Invalid Data", code: 400, userInfo: [NSLocalizedDescriptionKey: "Missing or invalid db_code/data"])))
             return nil
         }
-        
-        let param: [String: Any] = ["dbCode": dbCode, "data": requestData]
-
+        let lanCode = StringManager.shared.returnLangCode()
+        let param: [String: Any] = ["dbCode": dbCode, "data": requestData, "lang" : lanCode]
         return IQAPIClient.default.sendRequest(url: path, method: .post, parameters: param, encoding: JSONEncoding.default, completionHandler: completionHandler)
     }
 }

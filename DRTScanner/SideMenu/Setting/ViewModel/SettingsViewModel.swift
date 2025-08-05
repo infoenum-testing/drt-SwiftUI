@@ -32,10 +32,9 @@ class SettingsViewModel: ObservableObject {
     @Published var deviceSleepTimeoutText: String = "00:00 \(StringManager.shared.strings?.settings.mins ?? "mins")"
     @Published var pauseScanTimeoutText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
     @Published var duplicateScanSuppressionText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
-    @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
+    @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? StringManager.shared.currentLang()
     
     // MARK: - Predefined Time Option Strings
-    
     // Predefined time options for each setting
     lazy var deviceSleepOptions = (0...10).map { "\($0):00 \(mins)" }
     lazy var pauseScanOptions = ["0", "10", "20", "30"].map { "\($0) \(sec)" }

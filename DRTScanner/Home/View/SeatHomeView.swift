@@ -390,5 +390,3 @@ struct SeatHomeView: View {
         .ignoresSafeArea()
     }
 }
-
-

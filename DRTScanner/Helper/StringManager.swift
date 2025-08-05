@@ -11,31 +11,27 @@ import Combine
 import IQAPIClient
 
 class StringManager: ObservableObject {
-    static let shared = StringManager()
-    @Published var strings: AppStrings?
+    private let lastStringAPICallKey = "LastStringAPICallTimestamp"
     
-    @Published var allLangStrings: AppStringsClass?
+    static let shared = StringManager()
+    @Published var strings: SelectedLangStrings?
+    
+    @Published var allLangStrings: AppStringsModel?
     
     @Published var isShowAlert: Bool = false
     @Published var title: String = ""
     @Published var message: String = ""
     
     private init() {
-        if let strings = loadJSONFromFile(),let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
-            let decoder = JSONDecoder()
-            
-            do {
-                let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
-                self.allLangStrings = appStrings
-                let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
-                updateLang(for: langCode)
-            } catch {
-                print("Decoding error: \(error)")
-            }
-        }
+        loadStringFromLocal()
     }
     
     func loadStrings() {
+        if !shouldMakeAPICall() {
+            loadStringFromLocal()
+            return
+        }
+        
         IQAPIClient.getStringLanguage { result in
             switch result {
             case .success(let strings):
@@ -45,10 +41,13 @@ class StringManager: ObservableObject {
                         let decoder = JSONDecoder()
                         
                         do {
-                            let appStrings = try decoder.decode(AppStringsClass.self, from: jsonData)
+                            let appStrings = try decoder.decode(AppStringsModel.self, from: jsonData)
                             self.allLangStrings = appStrings
-                            let langCode = UserDefaults.standard.string(forKey: "selectedLang") ?? LangCode.current()
-                            self.updateLang(for: langCode)
+                            if let langCode = UserDefaults.standard.string(forKey: "selectedLang") {
+                                self.updateLang(for: langCode)
+                            } else {
+                                self.updateLangBasedOnCode()
+                            }
                         } catch {
                             print("Decoding error: \(error)")
                         }
@@ -62,18 +61,82 @@ class StringManager: ObservableObject {
         }
     }
     
+    func loadStringFromLocal() {
+        if let strings = loadJSONFromFile(),let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
+            let decoder = JSONDecoder()
+            
+            do {
+                let appStrings = try decoder.decode(AppStringsModel.self, from: jsonData)
+                self.allLangStrings = appStrings
+                if let langCode = UserDefaults.standard.string(forKey: "selectedLang") {
+                    self.updateLang(for: langCode)
+                } else {
+                    self.updateLangBasedOnCode()
+                }
+            } catch {
+                print("Decoding error: \(error)")
+            }
+        }
+    }
+    
+    private func shouldMakeAPICall() -> Bool {
+        let now = Date()
+        if let lastCall = UserDefaults.standard.object(forKey: lastStringAPICallKey) as? Date {
+               let hoursSinceLastCall = now.timeIntervalSince(lastCall) / 3600
+               return hoursSinceLastCall >= 24
+           }
+           return true // No previous call, so allow
+       }
+    
     func updateLang(for code: String) {
         var tamp = "en_US"
         switch code {
-        case allLangStrings?.enUS.lang ?? "English":
+        case allLangStrings?.enUS.lang ?? "ENGLISH":
             tamp = "en_US"
-        case allLangStrings?.frCA.lang ?? "French":
+        case allLangStrings?.frCA.lang ?? "FRANÇAIS":
             tamp = "fr_CA"
-        case allLangStrings?.esUS.lang ?? "Spanish":
+        case allLangStrings?.esUS.lang ?? "ESPAÑOL":
             tamp = "es_US"
         default:
             tamp = "en_US"
         }
         self.strings =  allLangStrings?[tamp]
+    }
+    
+    func updateLangBasedOnCode() {
+        let code = LangCode.currentLangCode()
+        if let selctedLang = allLangStrings?[code] {
+            self.strings =  selctedLang
+        } else {
+            self.strings =  allLangStrings?["en_US"]
+        }
+    }
+    
+    func returnLangCode()-> String {
+        let  code = strings?.lang ?? "en_US"
+        switch code {
+        case allLangStrings?.enUS.lang ?? "ENGLISH":
+            return "en_US"
+        case allLangStrings?.frCA.lang ?? "FRANÇAIS":
+            return "fr_CA"
+        case allLangStrings?.esUS.lang ?? "ESPAÑOL":
+            return "es_US"
+        default:
+            return "en_US"
+        }
+    }
+    
+    func currentLang()-> String {
+        let  code = strings?.lang ?? "en_US"
+        switch code {
+        case "en_US" :
+            return allLangStrings?.enUS.lang ?? "ENGLISH"
+        case "fr_CA" :
+            return  allLangStrings?.frCA.lang ?? "FRANÇAIS"
+        case "es_US" :
+            return  allLangStrings?.esUS.lang ?? "ESPAÑOL"
+        default:
+            return allLangStrings?.enUS.lang ?? "ENGLISH"
+        }
     }
 }
