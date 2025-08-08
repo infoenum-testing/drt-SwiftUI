@@ -40,7 +40,7 @@ struct MerchandiseOrderCell: View {
                                         isLoadingSvgImage = false
                                     }
                                 }
-                        
+                            
                             if isLoadingSvgImage {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
@@ -246,9 +246,7 @@ struct MerchandiseOrderCell: View {
             if let dateScanned = product.date_scanned {
                 merchandiseOrder.date_Scanned = MerchandiseOrder.dateFormatter.string(from: dateScanned)
             }
-            
             isScanned = product.qty == product.qtyScanned
-            
         } catch {
             print("Failed to save scanned status: \(error)")
         }

@@ -237,8 +237,7 @@ struct ScannerView: View, Equatable {
                             scannedCode = scanned
                             sendScanRequest(qr: scanned) // Handle scan result
                             resetInactivityTimer()  // Reset inactivity timer on scan
-                        },
-                        onControllerCreated: { controller in
+                        }, onControllerCreated: { controller in
                             DispatchQueue.main.async {
                                 scannerController = controller
                                 controller.isScanningBinding = $isScanningCell // Bind scanning state
@@ -301,7 +300,7 @@ struct ScannerView: View, Equatable {
                             }
                         } else if isInvalidTicket {
                             InvalidTicketView(message: invalidMessage, isInFullScreen: true, backGround:Color.invalid)
-                        } /*else if isMerchandiseMode {*/
+                        }
                         if isMerchPreScanned {
                             PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true, backGround: Color.previous)
                         }
@@ -512,8 +511,11 @@ struct ScannerView: View, Equatable {
                 if newValue {
                     resetCameraView()  // Reset camera view if requested
                 }
-                Task {
-                    await viewModel.fetchStats()
+                // if scan states is true then call the api
+                if UserDefaults.standard.bool(forKey: "kShowScanStats") {
+                    Task {
+                        await viewModel.fetchStats()
+                    }
                 }
             }
         } // Listen for camera reset notifications
@@ -1207,9 +1209,7 @@ struct ScannerView: View, Equatable {
                         }
                         isScanning = false
                     }
-                }
-                
-                else {
+                } else {
                     // Online seat QR scan
                     if scanType == "seat" {
                         IQAPIClient.scanTicketQrCode(code: savedShowCode ?? "", type: scanType, qr: qrCodes) { result in
@@ -1242,7 +1242,7 @@ struct ScannerView: View, Equatable {
                                                     }
                                                     lastScanTimes[cleanedQR] = now
                                                     suppressedOnce.remove(cleanedQR)
-                                                } else if scanResponse.message == "Previously Scanned" {
+                                                } else if scanResponse.message?.lowercased() == "previously scanned".lowercased() {
                                                     isPreScanned = true
                                                     isTicketValid = true
                                                     orderName = scanResponse.buyerName ?? ""

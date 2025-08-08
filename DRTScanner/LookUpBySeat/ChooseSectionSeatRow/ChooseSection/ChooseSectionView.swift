@@ -22,6 +22,8 @@ struct ChooseSectionView: View {
                     isPresented = false
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
+                        .resizable()
+                        .frame(width: 20, height: 30, alignment: .center)
                         .foregroundStyle(Color.neutralText)
                         .padding(10.adaptiveForIpad)
                 }

@@ -95,7 +95,12 @@ struct SettingsView: View {
                 if let toggleBinding = setting.toggleBinding {
                     Toggle("", isOn: toggleBinding)
                         .labelsHidden()
-                        .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.2 : 0.7)
+                        .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.5 : 1.0)
+                        .padding(10)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            toggleBinding.wrappedValue.toggle()
+                        }
                 } else {
                     Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
                         Text(setting.value ?? "")

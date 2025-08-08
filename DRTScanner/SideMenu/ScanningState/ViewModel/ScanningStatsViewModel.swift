@@ -114,11 +114,10 @@ class ScanningStatsViewModel: ObservableObject {
                 case .success(let response):
                     if let skin = response.skin {
                         DispatchQueue.main.async {
-                            if !self.lastSkinUpdate() {
-                                self.updateSkinInCoreData(with: skin)
-                                ColorManager.shared.updateSkin(to: skin)
-                            }
+                            self.updateSkinInCoreData(with: skin)
+                            ColorManager.shared.updateSkin(to: skin)
                         }
+                        UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
                     }
                     continuation.resume(returning: response.stats ?? StatsModel())
                 case .failure(let error):
@@ -127,45 +126,10 @@ class ScanningStatsViewModel: ObservableObject {
             }
         }
     }
-    
-    private func lastSkinUpdate() -> Bool {
-        let now = Date()
-        if let lastCall = UserDefaults.standard.object(forKey: "lastSkinUpdate") as? Date {
-            let hoursSinceLastCall = now.timeIntervalSince(lastCall) / 3600
-            return hoursSinceLastCall >= 24
-        }
-        return true // No previous call, so allow
-    }
-    
+        
     func updateSkinInCoreData(with updatedModel: SkinModel) {
         let context = PersistenceController.shared.container.viewContext
-        let fetchRequest: NSFetchRequest<Skin> = Skin.fetchRequest()
-        
-        do {
-            if let existingSkin = try context.fetch(fetchRequest).first {
-                // Update properties
-                existingSkin.color_Valid = updatedModel.colorValid
-                existingSkin.color_neutral_text = updatedModel.colorNeutralText
-                existingSkin.color_neutral_bg = updatedModel.colorNeutralBg
-                existingSkin.color_1_text = updatedModel.color1Text
-                existingSkin.color_1_bg = updatedModel.color1Bg
-                existingSkin.color_2_text = updatedModel.color2Text
-                existingSkin.color_2_bg = updatedModel.color2Bg
-                existingSkin.color_Invalid = updatedModel.colorInvalid
-                existingSkin.color_Previous = updatedModel.colorPrevious
-                existingSkin.background_href = updatedModel.backgroundHref
-                existingSkin.logo_href = updatedModel.logoHref
-                
-                // Save changes
-                try context.save()
-                print("✅ Skin updated successfully")
-                UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
-            } else {
-                print("⚠️ No existing Skin found to update")
-            }
-        } catch {
-            print("❌ Failed to update Skin: \(error)")
-        }
+        DRTDatabaseManager.shared.insertOrUpdateSkin(skinModel: updatedModel, context: context)
     }
     
     private func fetchTotalSeats() -> Int {

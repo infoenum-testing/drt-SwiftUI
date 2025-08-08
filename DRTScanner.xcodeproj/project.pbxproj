@@ -174,7 +174,9 @@
 		E9AEBFC52E3CF007009B1AFB /* CustomAlertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */; };
 		E9AEBFC72E3CF3E5009B1AFB /* ShowOfflineAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC62E3CF3E5009B1AFB /* ShowOfflineAlertView.swift */; };
 		E9AEBFC92E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AEBFC82E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift */; };
+		E9B3CE322E44EAE400743995 /* language.json in Resources */ = {isa = PBXBuildFile; fileRef = E9B3CE312E44EAE400743995 /* language.json */; };
 		E9B9B65F2E38F634003C5BDD /* ScannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */; };
+		E9C2EB432E4486C100C3468C /* CustomsText.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C2EB422E4486C100C3468C /* CustomsText.swift */; };
 		E9D0546F2E2A41D9005C7565 /* Notificaiton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */; };
 		E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9D054702E2A6E48005C7565 /* OfflineStrings.swift */; };
 /* End PBXBuildFile section */
@@ -351,7 +353,9 @@
 		E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertMessage.swift; sourceTree = "<group>"; };
 		E9AEBFC62E3CF3E5009B1AFB /* ShowOfflineAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowOfflineAlertView.swift; sourceTree = "<group>"; };
 		E9AEBFC82E3CF471009B1AFB /* ShowOfflineSuccesAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowOfflineSuccesAlertView.swift; sourceTree = "<group>"; };
+		E9B3CE312E44EAE400743995 /* language.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = language.json; sourceTree = "<group>"; };
 		E9B9B65E2E38F634003C5BDD /* ScannerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerHelper.swift; sourceTree = "<group>"; };
+		E9C2EB422E4486C100C3468C /* CustomsText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomsText.swift; sourceTree = "<group>"; };
 		E9D0546E2E2A41D9005C7565 /* Notificaiton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notificaiton+Extension.swift"; sourceTree = "<group>"; };
 		E9D054702E2A6E48005C7565 /* OfflineStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineStrings.swift; sourceTree = "<group>"; };
 		F2610C12E2B50955901D64A6 /* Pods-DRTScanner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.release.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.release.xcconfig"; sourceTree = "<group>"; };
@@ -993,6 +997,7 @@
 		E997FC582E29486F00D9EC06 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E9B3CE312E44EAE400743995 /* language.json */,
 				E997FC4C2E29486F00D9EC06 /* Color */,
 				E997FC552E29486F00D9EC06 /* Fonts */,
 				E997FC572E29486F00D9EC06 /* Images */,
@@ -1246,6 +1251,7 @@
 		E997FC942E29486F00D9EC06 /* DRTScanner */ = {
 			isa = PBXGroup;
 			children = (
+				E9C2EB3F2E44869000C3468C /* HelperView */,
 				E997FBA32E29486F00D9EC06 /* Alert */,
 				E997FBAC2E29486F00D9EC06 /* Cells */,
 				E997FBAF2E29486F00D9EC06 /* Components */,
@@ -1291,6 +1297,14 @@
 				E9AEBFC42E3CF007009B1AFB /* CustomAlertMessage.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		E9C2EB3F2E44869000C3468C /* HelperView */ = {
+			isa = PBXGroup;
+			children = (
+				E9C2EB422E4486C100C3468C /* CustomsText.swift */,
+			);
+			path = HelperView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1355,6 +1369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E997FC972E29486F00D9EC06 /* beep.mp3 in Resources */,
+				E9B3CE322E44EAE400743995 /* language.json in Resources */,
 				E997FC982E29486F00D9EC06 /* Preview Assets.xcassets in Resources */,
 				E997FC992E29486F00D9EC06 /* Aileron-Regular.otf in Resources */,
 				E997FC9A2E29486F00D9EC06 /* Avenir-Book.ttf in Resources */,
@@ -1478,6 +1493,7 @@
 				E997FCD72E29486F00D9EC06 /* LookupByOrderResultViewModel.swift in Sources */,
 				E997FCD82E29486F00D9EC06 /* LookupByPhoneResultViewModel.swift in Sources */,
 				E997FCD92E29486F00D9EC06 /* ChooseRowCell.swift in Sources */,
+				E9C2EB432E4486C100C3468C /* CustomsText.swift in Sources */,
 				E997FCDA2E29486F00D9EC06 /* ChooseRowSubView.swift in Sources */,
 				E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */,
 				E997FCDB2E29486F00D9EC06 /* ChooseRowView.swift in Sources */,

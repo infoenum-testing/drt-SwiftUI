@@ -66,6 +66,19 @@ struct TimePickerView: View {
             .clipped()
             
             HStack {
+          
+                Button(action: {
+                    selectedIndex = nil
+                }) {
+                    Text(StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
+                        .font(.verlagBoldAdaptive(size: 22))
+                        .foregroundColor(Color.primaryBg)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
+                
+                Spacer()
+
                 Button(action: {
                     viewModel.saveTime(selectedValue, for: index)
                     selectedIndex = nil
@@ -77,20 +90,11 @@ struct TimePickerView: View {
                         .padding()
                         .background(Color.clear)
                 }
-                Spacer()
-                Button(action: {
-                    selectedIndex = nil
-                }) {
-                    Text(StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
-                        .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(Color.primaryBg)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
             }
         }
         .frame(maxWidth: .infinity)
         .background(Color.secondaryBg)
+        .cornerRadius(10)
         .padding()
     }
 }

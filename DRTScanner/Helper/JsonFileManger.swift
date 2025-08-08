@@ -36,3 +36,16 @@ func loadJSONFromFile(fileName: String = "AppStringData") -> [String: Any]? {
         return nil
     }
 }
+
+func isAnyLanguageFileSaved(prefix: String = "AppStringData") -> Bool {
+    let fileManager = FileManager.default
+    guard let documentURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return false }
+    
+    do {
+        let files = try fileManager.contentsOfDirectory(atPath: documentURL.path)
+        return files.contains(where: { $0.hasPrefix(prefix) })
+    } catch {
+        print("❌ Failed to list files in directory: \(error)")
+        return false
+    }
+}

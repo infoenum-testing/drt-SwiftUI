@@ -7,7 +7,7 @@
 import Foundation
 
 struct SelectedLangStrings: Codable {
-    let lang: String
+    var lang: String
     let stats: StatsStrings
     let settings: Settings
     let offline:OfflineStrings

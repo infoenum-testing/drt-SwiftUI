@@ -31,6 +31,8 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     private var flashAutoOffTimer: Timer?
     private var isFlashOn = false
     private var lastScanTime: Date = .distantPast
+    private var scanningWatchdogTimer: Timer?
+
 
     // Called after the controller's view is loaded into memory
     override func viewDidLoad() {
@@ -52,12 +54,36 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             hasCheckedPermissions = true
             checkCameraPermission()
         }
+
+        startWatchdogTimer()
     }
 
     // Cleans up observers when the controller is deallocated
     deinit {
+        scanningWatchdogTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
         print("🗑️ ScannerViewController deinitialized")
+    }
+
+    private func startWatchdogTimer() {
+        scanningWatchdogTimer?.invalidate() // Stop existing timer if any
+
+        scanningWatchdogTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            let shouldScan = self.isScanningBinding?.wrappedValue ?? true
+            let isRunning = self.captureSession?.isRunning ?? false
+
+            if shouldScan && !isRunning {
+                print("🔄 Restarting capture session due to inactivity")
+                self.captureSession?.startRunning()
+            }
+
+            // Optional: refresh layout to force previewLayer update
+            DispatchQueue.main.async {
+                self.previewLayer?.frame = self.view.bounds
+            }
+        }
     }
 
     // MARK: - Camera Permission Handling

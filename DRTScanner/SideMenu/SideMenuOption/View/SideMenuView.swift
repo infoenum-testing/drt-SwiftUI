@@ -55,67 +55,70 @@ struct SideMenuView: View {
                             }
                             .padding(.top, 38)
                         }
+                
+                    
+                        // Merchandise/Ticket switch option
+                        if isMerchandise {
+                            SideMenuOption(imageName: "scan_seat", title: menuStrings?.scanTickets ?? menuStringsConstant.scanTicket) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isSwitchingToMerchandise = !isMerchandise
+                                    showConfirmationAlert = true
+                                }
+                            }
+                        } else {
+                            SideMenuOption(imageName: "scan_seat", title: menuStrings?.scanMerch ?? menuStringsConstant.scanMerchandise) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isSwitchingToMerchandise = !isMerchandise
+                                    showConfirmationAlert = true
+                                }
+                            }
+                        }
+                        
+                        // Settings option
+                        SideMenuOption(imageName: "setting", title: menuStrings?.settings ?? menuStringsConstant.setting) {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                showSettingsView = true
+                            }
+                        }
+                        
+                        // Scanning Stats option (only if not in merchandise mode)
+                        if !isMerchandise {
+                            SideMenuOption(imageName: "statics", title: menuStrings?.scanningStats ?? menuStringsConstant.scaningStats) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    showScanningStatsView = true
+                                }
+                            }
+                        }
                         // Go Online/Offline option
                         if isOfflineMode {
-                            SideMenuOption(title: menuStrings?.goOnline ?? menuStringsConstant.goOnline) {
+                            SideMenuOption(imageName: "online", title: menuStrings?.goOnline ?? menuStringsConstant.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOnlineView = true
                                 }
                             }
                             
                         } else {
-                            SideMenuOption(title: menuStrings?.goOffline ?? menuStringsConstant.goOffline) {
+                            SideMenuOption(imageName: "offline", title: menuStrings?.goOffline ?? menuStringsConstant.goOffline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
                             }
                         }
-                        // Scanning Stats option (only if not in merchandise mode)
-                        if !isMerchandise {
-                            SideMenuOption(title: menuStrings?.scanningStats ?? menuStringsConstant.scaningStats) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    showScanningStatsView = true
-                                }
-                                // isPresented = true
-                            }
-                        }
-                        // Settings option
-                        SideMenuOption(title: menuStrings?.settings ?? menuStringsConstant.setting) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showSettingsView = true
-                            }
-                        }
-                        // Merchandise/Ticket switch option
-                        if isMerchandise {
-                            SideMenuOption(title: menuStrings?.scanTickets ?? menuStringsConstant.scanTicket) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    isSwitchingToMerchandise = !isMerchandise
-                                    showConfirmationAlert = true
-                                }
-                            }
-                        } else {
-                            SideMenuOption(title: menuStrings?.scanMerch ?? menuStringsConstant.scanMerchandise) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    isSwitchingToMerchandise = !isMerchandise
-                                    showConfirmationAlert = true
-                                }
-                            }
-                        }
+                        
                         // Logout option
-                        SideMenuOption(title: menuStrings?.logOut ?? menuStringsConstant.logout) {
+                        SideMenuOption(imageName: "logout", title: menuStrings?.logOut ?? menuStringsConstant.logout) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
                         }
                         // About option
-                        SideMenuOption(title: menuStrings?.about ?? menuStringsConstant.about) {
+                        SideMenuOption(imageName: "information", title: menuStrings?.about ?? menuStringsConstant.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
-                            //   isPresented = false
                         }
                         // DRT Website option
-                        SideMenuOption(title: menuStrings?.website ?? menuStringsConstant.drtWebsite) {
+                        SideMenuOption(imageName: "settingweb", title: menuStrings?.website ?? menuStringsConstant.drtWebsite) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }

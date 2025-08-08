@@ -46,6 +46,8 @@ class LandingViewModel: ObservableObject {
             print("Received result: \(result)")
             if let skin = result.skin {
                 ColorManager.shared.updateSkin(to: skin)
+                DRTDatabaseManager.shared.insertOrUpdateSkin(skinModel: skin, context: context)
+
             }
             DispatchQueue.main.async {
                 self.drtUser = result
@@ -58,12 +60,8 @@ class LandingViewModel: ObservableObject {
                 self.lookupByOrderResultViewModel.errorMessage = nil
                 self.isUserLoggedIn = true
                 self.showAlert = false
+                UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
             }
-            
-            if let skinDict = result.skin {
-                DRTDatabaseManager.shared.insertOrUpdateSkin(skinModel: skinDict, context: context)
-            }
-            
         } catch {
             await MainActor.run {
                 self.isValidCode = false
@@ -82,17 +80,48 @@ class LandingViewModel: ObservableObject {
         }
     }
     
+    func getShowDetailsIfNeeded() {
+        guard !lastSkinUpdate() else { return }
+
+        Task {
+            guard let code = UserDefaults.standard.string(forKey: "showCode") else { return }
+            do {
+                let result = try await getShowCodeDataAsync(code: code)
+                print("Received result: \(result)")
+                if let skin = result.skin {
+                    UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
+                    ColorManager.shared.updateSkin(to: skin)
+                    let context = PersistenceController.shared.container.viewContext
+                    DRTDatabaseManager.shared.insertOrUpdateSkin(skinModel: skin, context: context)
+                }
+            } catch {
+                print("❌ Failed to fetch show code data: \(error)")
+                // You can also show an alert, log error, etc.
+            }
+        }
+    }
+    
     func getShowCodeDataAsync(code: String) async throws -> DRTUser {
         return try await withCheckedThrowingContinuation { continuation in
             IQAPIClient.getShowCodeData(code: code) { result in
                 switch result {
                 case .success(let user):
                     self.drtUser = user
+                    UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
                     continuation.resume(returning: user)
                 case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
         }
+    }
+    
+    private func lastSkinUpdate() -> Bool {
+        let now = Date()
+        if let lastCall = UserDefaults.standard.object(forKey: "lastSkinUpdate") as? Date {
+            let hoursSinceLastCall = now.timeIntervalSince(lastCall) / 3600
+            return hoursSinceLastCall >= 24
+        }
+        return true // No previous call, so allow
     }
 }

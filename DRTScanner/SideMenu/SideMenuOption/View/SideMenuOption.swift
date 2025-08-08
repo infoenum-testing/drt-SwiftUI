@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct SideMenuOption: View {
+    let imageName: String
     var title: String
     var action: (() -> Void)? = nil
     
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
+            Image(imageName)
+                .resizable()
+                .renderingMode(.template)
+                .foregroundColor(.white)
+                .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
+                
             Text(title)
                 .font(.verlagBoldAdaptive(size: 16))
                 .foregroundColor(Color.primaryText)

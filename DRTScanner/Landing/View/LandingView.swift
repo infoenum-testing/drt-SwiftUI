@@ -88,6 +88,9 @@ struct LandingView: View {
                             .padding(.horizontal, 20)
                             .padding(.top, UIScreen.main.bounds.height * 0.038)
                             .transition(.opacity)
+                            .onAppear {
+                                viewModel.getShowDetailsIfNeeded()
+                            }
                         }
                         
                         Spacer()
@@ -258,7 +261,7 @@ struct LandingView: View {
                             AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow: true)
                         }
                     }
-                    // Show code entry sheet
+                    // Show code entry sheet // for login time 
                     .customAlert(isPresented: $showSheet) {
                         ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
                             showCode = code

@@ -93,6 +93,8 @@ struct LookupByNumbersView: View {
                                 }
                             }) {
                                 Image(StringConstants.DRTImages.leftSideArrow)
+                                    .resizable()
+                                    .frame(width: 20, height: 30, alignment: .center)
                                     .foregroundStyle(Color.neutralText)
                                     .padding(10.adaptiveForIpad)
                             }
@@ -127,6 +129,7 @@ struct LookupByNumbersView: View {
                             }) {
                                 Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
                                     .foregroundColor(Color.neutralText)
+                                    .padding(10)
                             }
                             .padding(.trailing, 10.adaptiveForIpad)
                         }

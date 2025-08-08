@@ -23,6 +23,7 @@ class StringManager: ObservableObject {
     @Published var message: String = ""
     
     private init() {
+        loadDefaultStringsFromBundleIfNeeded()
         loadStringFromLocal()
     }
     
@@ -62,7 +63,7 @@ class StringManager: ObservableObject {
     }
     
     func loadStringFromLocal() {
-        if let strings = loadJSONFromFile(),let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
+        if let strings = loadJSONFromFile(), let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
             let decoder = JSONDecoder()
             
             do {
@@ -75,6 +76,30 @@ class StringManager: ObservableObject {
                 }
             } catch {
                 print("Decoding error: \(error)")
+            }
+        }
+    }
+    
+    func loadJSONFromBundle(fileName: String, fileExtension: String = "json") -> [String: Any]? {
+        guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
+            print("❌ File \(fileName).\(fileExtension) not found in bundle.")
+            return nil
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+            return jsonObject as? [String: Any]
+        } catch {
+            print("❌ Error reading JSON from bundle: \(error)")
+            return nil
+        }
+    }
+    
+    private func loadDefaultStringsFromBundleIfNeeded() {
+        if !isAnyLanguageFileSaved(prefix: "AppStringData") {
+            if let bundleDict = loadJSONFromBundle(fileName: "language") {
+                saveJSONToFile(json: bundleDict) // Save to Documents for persistence
             }
         }
     }

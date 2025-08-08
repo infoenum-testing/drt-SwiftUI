@@ -32,12 +32,8 @@ struct CustomCellView: View {
                     .foregroundColor(Color.neutralText)
                     .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(title)
-                        .font(.verlagBookAdaptive(size: 15))
-                        .foregroundColor(Color.neutralText)
-                    Text(subtitle)
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.neutralText)
+                    CustomsText(title: title, textFont: .verlagBookAdaptive(size: 15),foregroundColour: .neutralText)
+                    CustomsText(title: subtitle, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .neutralText)
                 }
                 Spacer()
                 Image(buttonImage)

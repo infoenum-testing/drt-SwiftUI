@@ -28,6 +28,8 @@ struct SeatLookupView: View {
                         }
                     } label: {
                         Image(StringConstants.DRTImages.leftSideArrow)
+                            .resizable()
+                            .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
                             .foregroundStyle(Color.neutralText)
                             .padding(10.adaptiveForIpad)
                     }

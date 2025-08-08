@@ -348,7 +348,7 @@ struct SeatHomeView: View {
             } else {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     isScanningCell = true
-                    scnanerReset.triggerReset()
+                        scnanerReset.triggerReset()
                     NotificationCenter.default.post(name: .resetCameraView, object: nil)
                 }
             }

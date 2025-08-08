@@ -74,6 +74,7 @@ struct ScanningStatsView: View {
         .onAppear {
             Task {
                 await viewModel.fetchStats()
+                UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
             }
         }
     }
