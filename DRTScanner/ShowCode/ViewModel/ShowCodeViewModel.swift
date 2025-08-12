@@ -29,15 +29,19 @@ class ShowCodeViewModel: ObservableObject {
         ["7", "8", "9"],
         ["-", "0", "OK"]
     ]
+    
+    func okayButtonAction (onCodeEntered: @escaping (String) -> Void, dismissSheet: @escaping () -> Void){
+        if !showCode.isEmpty {
+            onCodeEntered(showCode)
+            dismissSheet()
+        }
+    }
 
-    func handleButtonTap(_ button: String, onCodeEntered: @escaping (String) -> Void, dismissSheet: @escaping () -> Void) {
+    func handleButtonTap(_ button: String, dismissSheet: @escaping () -> Void) {
         clickedButton = button
 
         if button == "OK" {
-            if !showCode.isEmpty {
-                onCodeEntered(showCode)
                 dismissSheet()
-            }
         } else {
             showCode.append(button)
         }

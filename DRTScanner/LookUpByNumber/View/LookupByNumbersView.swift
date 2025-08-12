@@ -84,57 +84,57 @@ struct LookupByNumbersView: View {
         ZStack {
             VStack {
                 VStack {
-                    VStack {
                         // Top bar with back button, input field, and delete button
-                        HStack(alignment: .center) {
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    isPresented = false
-                                }
-                            }) {
-                                Image(StringConstants.DRTImages.leftSideArrow)
-                                    .resizable()
-                                    .frame(width: 20, height: 30, alignment: .center)
-                                    .foregroundStyle(Color.neutralText)
-                                    .padding(10.adaptiveForIpad)
+                    HStack(alignment: .center) {
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                isPresented = false
                             }
-                            .padding(.leading, 10.adaptiveForIpad)
-                            
-                            Spacer()
-                            
-                            ZStack(alignment: .center) {
-                                if !inputText.isEmpty {
-                                    Text(placeholderText)
-                                        .font(.verlagBookAdaptive(size: 10))
-                                        .foregroundColor(Color.neutralText)
-                                        .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
-                                        .animation(.easeInOut, value: inputText.isEmpty)
-                                }
-                                
-                                TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
-                                    .font(.verlagBoldAdaptive(size: 40))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(Color.neutralText)
-                                    .minimumScaleFactor(0.5)
-                                    .lineLimit(1)
-                                    .disabled(true)
-                                    .padding(.all, 10)
-                            }
-                            .frame(height: 50.adaptiveForIpad)
-                            
-                            Button(action: {
-                                if !inputText.isEmpty {
-                                    inputText.removeLast()
-                                }
-                            }) {
-                                Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
-                                    .foregroundColor(Color.neutralText)
-                                    .padding(10)
-                            }
-                            .padding(.trailing, 10.adaptiveForIpad)
+                        }) {
+                            Image(StringConstants.DRTImages.leftSideArrow)
+                                .resizable()
+                                .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
+                                .foregroundStyle(Color.neutralText)
+                                .padding(10.adaptiveForIpad)
                         }
-                        .padding([.top, .bottom], 20.adaptiveForIpad)
-                    }.background(Color.neutralBg)
+                        
+                        Spacer()
+                        
+                        ZStack(alignment: .center) {
+                            if !inputText.isEmpty {
+                                Text(placeholderText)
+                                    .font(.verlagBookAdaptive(size: 10))
+                                    .foregroundColor(Color.neutralText)
+                                    .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
+                                    .animation(.easeInOut, value: inputText.isEmpty)
+                            }
+                            
+                            TextField("", text: $inputText, prompt: Text(placeholderText).font(.verlagBoldAdaptive(size: 20)))
+                                .font(.verlagBoldAdaptive(size: 40))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(Color.neutralText)
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                                .disabled(true)
+                                .padding(.all, 10)
+                        }
+                        .frame(height: 50.adaptiveForIpad)
+                        
+                        Button(action: {
+                            if !inputText.isEmpty {
+                                inputText.removeLast()
+                            }
+                        }) {
+                            Image(StringConstants.DRTImages.arrowWithCrossBtnImage)
+                                .foregroundColor(Color.neutralText)
+                                .padding(10)
+                        }
+                        .padding(.trailing, 10.adaptiveForIpad)
+                    }
+                    .padding(.horizontal,15.adaptiveForIpad)
+                    .frame(maxHeight: 90.adaptiveForIpad)
+                    .background(Color.neutralBg)
+                    
                     // Keypad for entering numbers and OK
                     HStack {
                         VStack(spacing: 1) {
@@ -155,6 +155,7 @@ struct LookupByNumbersView: View {
                                                 .foregroundColor(button == StringManager.shared.strings?.home.ok ?? "OK" ? .primaryText : Color.primaryBg)
                                                 .frame(maxWidth: .infinity)
                                         }
+                                        .opacity(button == StringManager.shared.strings?.home.ok ?? "OK" && !isOKButtonEnabled ? 0.5 : 1.0)
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                                         .onTapGesture {
                                             handleButtonTap(button)
@@ -175,18 +176,30 @@ struct LookupByNumbersView: View {
                         if lookupType == .phoneNumber || lookupType == .creditCard {
                             LookupResultCardOrPhoneView(
                                 inputText: inputText,
-                                dismissAction: { showResultView = false },
+                                dismissAction: {
+                                    withAnimation {
+                                        showResultView = false
+                                    }
+                                },
                                 errorMessage: nil,
                                 lookupType: lookupType
-                            ).padding(.top, 0)
+                            )
+                            .padding(.top, 0)
+                               
                         } else {
                             
                             LookupOrderResultView(
                                 inputText: inputText,
-                                dismissAction: { showResultView = false },
+                                dismissAction: {
+                                    withAnimation {
+                                        showResultView = false
+                                    }
+                                },
                                 errorMessage: nil,
                                 order: firstOrder.first
-                            ).padding(.top, 0)
+                            )
+                            .padding(.top, 0)
+
                         }
                         
                     } else {
@@ -196,6 +209,7 @@ struct LookupByNumbersView: View {
                             }
                     }
                 }
+                .transition(.move(edge: .trailing))
             }
             // Loading overlay when fetching data
             if isLoading {
@@ -244,7 +258,9 @@ struct LookupByNumbersView: View {
                         }
                         DispatchQueue.main.async {
                             self.isLoading = false // Stop loading
-                            self.showResultView = true
+                            withAnimation {
+                                self.showResultView = true
+                            }
                         }
                     } catch {
                         print("Error fetching order: \(error)")

@@ -41,8 +41,8 @@ class InactivityManager: ObservableObject {
         let timeout = timeoutMinutes
         guard timeout > 0 else {
             DispatchQueue.main.async {
-                        UIApplication.shared.isIdleTimerDisabled = false
-                    }
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
             return
         }
 
@@ -59,8 +59,8 @@ class InactivityManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         DispatchQueue.main.async {
-                    UIApplication.shared.isIdleTimerDisabled = false
-                }
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
         isAsleep = false
     }
 

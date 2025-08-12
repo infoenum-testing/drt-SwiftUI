@@ -7,6 +7,7 @@
 import SwiftUI
 import CoreData
 import IQAPIClient
+import AVFoundation
 
 struct SeatCell: View {
     @Binding var seat: SeatModel
@@ -20,7 +21,8 @@ struct SeatCell: View {
     @Binding var showAlert: Bool
     @ObservedObject var lookupByOrderResultViewModel:LookupByOrderResultViewModel
     @EnvironmentObject var stringManager: StringManager
-    
+    @State var audioPlayer: AVAudioPlayer?
+
     // MARK: - Init
     init(seat: Binding<SeatModel>, showAlert: Binding<Bool>, lookupByOrderResultViewModel: LookupByOrderResultViewModel) {
         self._seat = seat
@@ -40,62 +42,70 @@ struct SeatCell: View {
     // MARK: - View
     var body: some View {
         VStack {
+            HStack {
             VStack(alignment: .leading) {
-                HStack {
-                    Text(isScanned ? String(format: stringManager.strings?.orderDetail.previouslyscanned ?? StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
-                        .font(.verlagBoldAdaptive(size: 18))
-                        .foregroundColor(Color.primaryBg)
+                    HStack {
+                        Text(isScanned ? String(format: stringManager.strings?.orderDetail.previouslyscanned ?? StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
+                            .font(.verlagBoldAdaptive(size: 18))
+                            .foregroundColor(Color.primaryBg)
+                    }
+                    HStack(alignment: .center) {
+                        HStack(alignment: .bottom, spacing: 2) {
+                            Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
+                                .font(.verlagBoldAdaptive(size: 15))
+                                .foregroundColor(Color.primaryBg)
+                                .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
+                            Text("\(seat.section)")
+                                .font(.verlagBoldAdaptive(size: 20))
+                                .foregroundColor(Color.primaryBg)
+                        }
+                        Spacer()
+                        HStack(alignment: .bottom, spacing: 2) {
+                            Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
+                                .font(.verlagBoldAdaptive(size: 15))
+                                .foregroundColor(Color.primaryBg)
+                                .padding(.bottom, 1.adaptiveForIpad)
+                            Text("\(seat.row)")
+                                .font(.verlagBoldAdaptive(size: 20))
+                                .foregroundColor(Color.primaryBg)
+                        }
+                        Spacer()
+                        HStack(alignment: .bottom, spacing: 2) {
+                            Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
+                                .font(.verlagBoldAdaptive(size: 15))
+                                .foregroundColor(Color.primaryBg)
+                                .padding(.bottom, 1.adaptiveForIpad)
+                            Text("\(seat.seat)")
+                                .font(.verlagBoldAdaptive(size: 22))
+                                .foregroundColor(Color.primaryBg)
+                        }
+                    }
                 }
-                HStack(alignment: .center) {
-                    HStack(alignment: .bottom, spacing: 0) {
-                        Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.primaryBg)
-                            .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
-                        Text("\(seat.section)")
-                            .font(.verlagBoldAdaptive(size: 20))
-                            .foregroundColor(Color.primaryBg)
-                    }
-                    Spacer()
-                    HStack(alignment: .bottom, spacing: 0) {
-                        Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.primaryBg)
-                            .padding(.bottom, 1.adaptiveForIpad)
-                        Text("\(seat.row)")
-                            .font(.verlagBoldAdaptive(size: 20))
-                            .foregroundColor(Color.primaryBg)
-                    }
-                    Spacer()
-                    HStack(alignment: .bottom, spacing: 0) {
-                        Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.primaryBg)
-                            .padding(.bottom, 1.adaptiveForIpad)
-                        Text("\(seat.seat)")
-                            .font(.verlagBoldAdaptive(size: 22))
-                            .foregroundColor(Color.primaryBg)
-                    }
-                    
-                    Spacer()
+                ZStack {
                     if isLoading {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .scaleEffect(1.0)
+                            .padding(.trailing)
                             .padding(10)
+                            .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+
                     } else {
                         Image(isScanned ? StringConstants.DRTImages.greenCheckImage : StringConstants.DRTImages.scanNow)
                             .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-                            .onTapGesture {
-                                updateSeatWithScannedQrCode()
-                            }
                             .disabled(isScanned)
                             .opacity(isScanned ? 0.5 : 1.0)
+                            .padding(.trailing)
                     }
+                }
+                .padding(.vertical)
+                .background(Color.primaryText)
+                .onTapGesture {
+                    updateSeatWithScannedQrCode()
                 }
             }
             .background(Color.primaryText)
-            .padding([.leading, .top, .trailing])
+            .padding([.leading, .top])
             .padding(.bottom, 5)
             .onAppear {
                 loadScannedStatus(for: seat)
@@ -124,6 +134,8 @@ struct SeatCell: View {
                 isLoading = false
                 saveScannedStatus(for: seat)
                 incrementDeviceScanCount()
+                playScanFeedback(scannerResult: .valid)
+
             }
         } else {
             
@@ -142,6 +154,7 @@ struct SeatCell: View {
                             // Scan was rejected
                             lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error
                             showAlert = true
+                            playScanFeedback(scannerResult: .valid)
                         } else {
                             // Scan accepted
                             let currentDate = Date()
@@ -152,6 +165,7 @@ struct SeatCell: View {
                             seat.scannedTime = currentDate
                             isScanned = true
                             //  incrementDeviceScanCount()
+                            playScanFeedback(scannerResult: .invalid)
                         }
                         
                     case .failure(let error):
@@ -164,6 +178,42 @@ struct SeatCell: View {
         }
     }
     
+    func playScanFeedback(scannerResult: ScannerResult) {
+        if UserDefaults.standard.bool(forKey:"kShouldPlayHaptic") {
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate) // Haptic vibration
+        }
+        
+        let shouldPlayBeep = UserDefaults.standard.bool(forKey: "kShouldPlayBeep")
+        if !shouldPlayBeep {
+            return
+        }
+       if scannerResult == .valid {
+           if let soundURL = Bundle.main.url(forResource: "scan", withExtension: "wav") {
+               do {
+                   audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                   audioPlayer?.prepareToPlay()
+                   audioPlayer?.play()
+               } catch {
+                   print("Error playing beep.mp3: \(error.localizedDescription)")
+               }
+           } else {
+               print("beep.mp3 not found in bundle")
+           }
+       } else if scannerResult == .invalid || scannerResult == .previouslyScanned {
+           if let soundURL = Bundle.main.url(forResource: "fail", withExtension: "wav") {
+               do {
+                   audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                   audioPlayer?.prepareToPlay()
+                   audioPlayer?.play()
+               } catch {
+                   print("Error playing beep.mp3: \(error.localizedDescription)")
+               }
+           } else {
+               print("beep.mp3 not found in bundle")
+           }
+       }
+       
+   }
     // MARK: - Core Data Save
     
     /// Saves the scanned time into Core Data for offline tracking

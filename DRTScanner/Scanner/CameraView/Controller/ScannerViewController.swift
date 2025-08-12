@@ -55,7 +55,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             checkCameraPermission()
         }
 
-        startWatchdogTimer()
+        //startWatchdogTimer()
     }
 
     // Cleans up observers when the controller is deallocated

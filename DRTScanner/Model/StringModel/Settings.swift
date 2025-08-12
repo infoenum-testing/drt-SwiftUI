@@ -23,6 +23,9 @@ struct Settings: Codable {
     let timer: String
     let duplicate: String
     let language: String
+    let timerInstruction: String
+    let duplicateInstruction: String
+    let sleepTimerInstruction: String
     
     private enum CodingKeys: String, CodingKey {
         case scanStats = "scan-stats"
@@ -38,5 +41,8 @@ struct Settings: Codable {
         case off = "off"
         case mins = "mins"
         case sec = "sec"
+        case duplicateInstruction = "duplicate-instructions"
+        case timerInstruction = "timer-instructions"
+        case sleepTimerInstruction = "sleep-timer-instructions"
     }
 }

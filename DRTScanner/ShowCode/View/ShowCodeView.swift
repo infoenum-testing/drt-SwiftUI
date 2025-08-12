@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ShowCodeView: View {
-    @Binding var showSheet: Bool // Controls visibility of the sheet
-    var onCodeEntered: (String) -> Void // Callback when code is completed
+    @Binding var showSheet: Bool
+    var onCodeEntered: (String) -> Void
     @EnvironmentObject var stringManager: StringManager
-    @StateObject private var viewModel = ShowCodeViewModel() // ViewModel for handling logic
-    @Environment(\.dismiss) var dismiss // Dismiss environment for fallback
+    @StateObject private var viewModel = ShowCodeViewModel()
+    @Environment(\.dismiss) var dismiss
     @Environment(\.sizeData) var sizeData
     
     var body: some View {
@@ -77,7 +77,7 @@ struct ShowCodeView: View {
                                     Color.black.opacity(opacity)
                                 }
                             // MARK: - Code Display and Controls
-                            HStack {
+                            HStack(alignment: .center) {
                                 // Close Button
                                 Button(action: {
                                     withAnimation {
@@ -89,17 +89,16 @@ struct ShowCodeView: View {
                                         .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                         .padding(5)
                                 }
-                                
                                 Spacer()
                                 
                                 // Disabled TextField Showing Current Code
-                                TextField(stringManager.strings?.login.showCode ?? StringConstants.Common.showCode, text: $viewModel.showCode)
-                                    .font(.verlagBoldAdaptive(size: 40))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(Color.primaryText)
-                                    .background(Color.clear)
-                                    .disabled(true)
-                                
+                                BlinkingCodeDisplay(
+                                    placeholder: stringManager.strings?.login.showCode ?? StringConstants.Common.showCode,
+                                    code: $viewModel.showCode
+                                )
+                                .padding(.top,20)
+                                .frame(maxWidth: .infinity)
+
                                 // Backspace Button
                                 Button(action: {
                                     viewModel.removeLastCharacter()
@@ -114,53 +113,37 @@ struct ShowCodeView: View {
                             }
                             .padding(.horizontal, 15.adaptiveForIpad)
                             .background(Color.black.opacity(opacity))
-                            // MARK: - QR Camera Button
-                            HStack {
-                                Button(action: {
-                                    withAnimation {
-                                        viewModel.isScannerVisible = true
-                                    }
-                                }) {
-                                    Image(systemName: "camera.metering.matrix")
-                                        .font(.verlagBookAdaptive(size: 25))
-                                        .foregroundColor(Color.primaryText)
-                                }
-                                Spacer()
-                            }
-                            .padding(.horizontal, 15)
-                            
+                            //
                             // MARK: - Grid of Buttons for Code Input
                             Grid(alignment: .center, horizontalSpacing: 0, verticalSpacing: 0.5) {
                                 ForEach(viewModel.buttons, id: \.self) { row in
                                     GridRow {
                                         ForEach(row, id: \.self) { button in
                                             ZStack {
+                                                // Letter buttons styling
+                                                Image(viewModel.clickedButton == button ?
+                                                      "lookupby_letters_clicked_btn" :
+                                                        "lookupby_letters_unclicked_btn")
+                                                .resizable()
                                                 if button == "OK" {
-                                                    // OK button image changes based on state
-                                                    Image(viewModel.isOKButtonEnabled ?
-                                                          (viewModel.isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") :
-                                                            "order_number_unclicked_btn")
-                                                    .resizable()
+                                                    Image(.qrcode)
+                                                        .resizable()
+                                                        .renderingMode(.template)
+                                                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad, alignment: .center)
+                                                        .foregroundColor(Color.primaryBg)
                                                 } else {
-                                                    // Letter buttons styling
-                                                    Image(viewModel.clickedButton == button ?
-                                                          "lookupby_letters_clicked_btn" :
-                                                            "lookupby_letters_unclicked_btn")
-                                                    .resizable()
+                                                    Text( button)
+                                                        .font(.verlagBoldAdaptive(size: 50))
+                                                        .scaleEffect(button.range(of: #"^[A-Z]$"#, options: .regularExpression) != nil ? 0.9 : 1.1)
+                                                        .foregroundColor(Color.primaryBg)
                                                 }
-                                                
-                                                // Button Label
-                                                Text(button)
-                                                    .font(.verlagBoldAdaptive(size: 50))
-                                                    .scaleEffect(button.range(of: #"^[A-Z]$"#, options: .regularExpression) != nil ? 0.9 : 1.1)
-                                                    .foregroundColor(button == "OK" ? Color.primaryText : Color.primaryBg)
                                             }
                                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                                             .onTapGesture {
                                                 // Handle tap for input or confirmation
-                                                viewModel.handleButtonTap(button, onCodeEntered: onCodeEntered) {
+                                                viewModel.handleButtonTap(button) {
                                                     withAnimation {
-                                                        showSheet = false
+                                                        viewModel.isScannerVisible = true
                                                     }
                                                 }
                                             }
@@ -169,6 +152,26 @@ struct ShowCodeView: View {
                                 }
                             }
                             .frame(maxHeight: .infinity)
+                            
+                            ZStack {
+                                Image(viewModel.isOKButtonEnabled ?
+                                      (viewModel.isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") :
+                                        "order_number_unclicked_btn")
+                                .resizable()
+                                
+                                Text("OK")
+                                    .font(.verlagBoldAdaptive(size: 50))
+                                    .foregroundColor(.primaryText )
+                            }
+                            .frame(height: 90.adaptiveForIpad)
+                            .padding(.top, -20)
+                            .onTapGesture {
+                                viewModel.okayButtonAction(onCodeEntered: onCodeEntered) {
+                                    withAnimation {
+                                        showSheet = false
+                                    }
+                                }
+                            }
                         }
                         // MARK: - Safe Area Padding Adjustment
                         .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader())

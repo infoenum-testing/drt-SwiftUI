@@ -19,18 +19,18 @@ struct ChooseSectionView: View {
         VStack(spacing:0) {
             HStack {
                 Button(action: {
-                    isPresented = false
+                    withAnimation {
+                        isPresented = false
+                    }
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
                         .resizable()
-                        .frame(width: 20, height: 30, alignment: .center)
+                        .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
                         .foregroundStyle(Color.neutralText)
                         .padding(10.adaptiveForIpad)
                 }
-                    .padding(.leading, 10.adaptiveForIpad)
-                .frame(height: 85, alignment: .center)
                 
-            Spacer()
+                Spacer()
                 
                 if isLoading {
                     ProgressView()
@@ -46,6 +46,8 @@ struct ChooseSectionView: View {
                 
                 Spacer()
             }
+            .padding(.horizontal,15.adaptiveForIpad)
+            .frame(maxHeight: 90.adaptiveForIpad)
             .background(Color.neutralBg)
             VStack {
                 ChooseSectionSubView(selectedSeat: $selectedSeat, isPresent: $isPresented)

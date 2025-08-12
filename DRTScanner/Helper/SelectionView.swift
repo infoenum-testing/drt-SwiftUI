@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TimePickerView: View {
+struct SelectionView: View {
     @Binding var selectedIndex: IdentifiableIndex?
     var index: Int
     var viewModel: SettingsViewModel
@@ -48,6 +48,22 @@ struct TimePickerView: View {
     
     var body: some View {
         VStack {
+            switch index {
+            case 3:
+                CustomsText(title: StringManager.shared.strings?.settings.timerInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+                    .padding([.top, .horizontal])
+
+            case 4:
+                CustomsText(title: StringManager.shared.strings?.settings.duplicateInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+                    .padding([.top, .horizontal])
+            case 5:
+                CustomsText(title: "", textFont: .verlagBookAdaptive(size: 12), foregroundColour: .white)
+
+            default:
+                CustomsText(title: StringManager.shared.strings?.settings.duplicateInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+                    .padding([.top, .horizontal])
+            }
+          
             Picker(StringConstants.Common.selectTime, selection: $selectedValue) {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     VStack {

@@ -69,7 +69,7 @@ struct SettingsView: View {
                     )) {
                         if let index = selectedTimerIndex {
                             // Time picker for editing timer settings
-                            TimePickerView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel)
+                            SelectionView(selectedIndex: $selectedTimerIndex, index: index.id, viewModel: viewModel)
                                 .padding(.leading, UIScreen.main.bounds.width * 0.1)
                         }
                     }

@@ -23,29 +23,28 @@ struct CustomCellView: View {
     
     var body: some View {
         VStack {
-            
+            Spacer()
             Button(action: {
                 buttonAction()
-            }) {                    HStack(alignment: .center) {
-                Image(imageName)
-                    .resizable()
-                    .foregroundColor(Color.neutralText)
-                    .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-                VStack(alignment: .leading, spacing: 6) {
-                    CustomsText(title: title, textFont: .verlagBookAdaptive(size: 15),foregroundColour: .neutralText)
-                    CustomsText(title: subtitle, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .neutralText)
+            }) {
+                HStack(alignment: .center) {
+                    Image(imageName)
+                        .resizable()
+                        .foregroundColor(Color.neutralText)
+                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                    VStack(alignment: .leading, spacing: 6) {
+                        CustomsText(title: title, textFont: .verlagBookAdaptive(size: 15),foregroundColour: .neutralText)
+                        CustomsText(title: subtitle, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .neutralText)
+                    }
+                    Spacer()
+                    Image(buttonImage)
+                        .resizable()
+                        .foregroundColor(Color.neutralText)
+                        .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
                 }
-                Spacer()
-                Image(buttonImage)
-                    .resizable()
-                    .foregroundColor(Color.neutralText)
-                    .frame(width: 15.adaptiveForIpad, height: 20.adaptiveForIpad)
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
-            .padding(.bottom, 5)
-                
-            }
-            
+            Spacer()
             if showDivider {
                 
                 if UIDevice.current.userInterfaceIdiom == .pad {

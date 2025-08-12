@@ -11,11 +11,13 @@ struct CustomsText: View {
     let title: String
     let textFont: Font
     let foregroundColour: Color
+    var alignment: TextAlignment = .leading
     
     var body: some View {
         Text(title)
             .font(textFont)
             .foregroundColor(foregroundColour)
+            .multilineTextAlignment(alignment)
     }
 }
 

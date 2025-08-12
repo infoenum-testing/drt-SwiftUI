@@ -11,17 +11,14 @@ import IQAPIClient
 // Main landing view for the app
 struct LandingView: View {
     @StateObject private var viewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
-    // Controls the display of the show code sheet
     @State private var showSheet = false
-    // Controls the display of the seat view
     @State private var showSeatView = false
-    // Controls the display of the logout alert
     @State private var showLogoutAlert = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
     @AppStorage("showCode") private var showCode: String = ""
     @AppStorage("isUserLoggedIn") private var isUserLoggedIn: Bool = false
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
-    @AppStorage("show") private var savedShow: String = ""
+    @AppStorage("show") private var showTime: String = ""
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @Environment(\.managedObjectContext) private var context
     @EnvironmentObject var stringManager: StringManager
@@ -51,8 +48,6 @@ struct LandingView: View {
                             .onAppear {
                                 animateLogo = true
                             }
-                        
-                        
                         Spacer()
                         
                         ProgressView()
@@ -65,11 +60,6 @@ struct LandingView: View {
                     VStack {
                         if viewModel.isValidCode && isUserLoggedIn {
                             HStack {
-                                Text(savedShow)
-                                    .font(.verlagBoldAdaptive(size: 16))
-                                    .foregroundColor(Color.primaryText)
-                                    .padding(.bottom)
-                                
                                 Spacer()
                                 Text(stringManager.strings?.menu.change ?? StringConstants.LandingView.changeShow)
                                     .font(.verlagBoldAdaptive(size: 16))
@@ -92,32 +82,37 @@ struct LandingView: View {
                                 viewModel.getShowDetailsIfNeeded()
                             }
                         }
-                        
-                        Spacer()
                         // Always show logo (with animation)
-                        if viewModel.isLoading || !viewModel.isLoading {
-                            AppLogoView(width: sizeData.isPortrait ? 300.adaptiveForIpad : 180.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 130.adaptiveForIpad)
-                                .scaleEffect(animateLogo ? 1 : 0.8)
-                                .opacity(animateLogo ? 1 : 0)
-                                .animation(.easeOut(duration: 0.7), value: animateLogo)
-                                .onAppear {
-                                    animateLogo = true
-                                }
-                        }
+                        AppLogoView(width: sizeData.isPortrait ? 300.adaptiveForIpad : 180.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 130.adaptiveForIpad)
+                            .scaleEffect(animateLogo ? 1 : 0.8)
+                            .opacity(animateLogo ? 1 : 0)
+                            .animation(.easeOut(duration: 0.7), value: animateLogo)
+                            .padding(.top, -30.adaptiveForIpad)
+                            .onAppear {
+                                animateLogo = true
+                            }
                         Spacer()
+                        
+                      
                         
                         // Show scan options if code is valid and user is logged in
                         if viewModel.isValidCode && isUserLoggedIn {
+                            CustomsText(title: "Selected Event", textFont: .verlagBoldAdaptive(size: 28), foregroundColour: .primaryText, alignment: .center)
+                                .opacity(animateButtons ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+                            
+                            CustomsText(title: showTime, textFont: .verlagBoldAdaptive(size: 25), foregroundColour: .secondaryBg, alignment: .center)
+                                .opacity(animateButtons ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+                            Spacer()
                             VStack {
                                 Text(stringManager.strings?.switchMode.question ?? StringConstants.LandingView.scanMerchOrSeat)
                                     .font(.verlagBoldAdaptive(size: 28))
                                     .multilineTextAlignment(.center)
-                                //                                .minimumScaleFactor(0.5)
                                     .foregroundColor(Color.primaryText)
                                     .padding(.bottom, 20)
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
-                                
                                 // Merchandise scan button
                                 Button(action: {
                                     //  isUserLoggedIn = true
@@ -134,7 +129,8 @@ struct LandingView: View {
                                         .foregroundColor(Color.primaryText)
                                         .cornerRadius(12)
                                         .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                                }.padding(.horizontal)
+                                }
+                                .padding(.horizontal)
                                     .padding(.bottom, 10)
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateButtons)

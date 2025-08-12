@@ -20,17 +20,16 @@ struct ChooseRowView: View {
         VStack {
             HStack {
                 Button(action: {
-                    isPresented = false
+                    withAnimation {
+                        isPresented = false
+                    }
                 }) {
                     Image(StringConstants.DRTImages.leftSideArrow)
                         .resizable()
-                        .frame(width: 20, height: 30, alignment: .center)
+                        .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
                         .foregroundStyle(Color.neutralText)
                         .padding(10.adaptiveForIpad)
                 }
-                .padding()
-                .padding(.leading, 10.adaptiveForIpad)
-                .frame(height: 85.adaptiveForIpad, alignment: .center)
                 
                 Spacer()
                 
@@ -47,10 +46,11 @@ struct ChooseRowView: View {
                 
                 Spacer()
             }
+            .padding(.horizontal,15.adaptiveForIpad)
+            .frame(maxHeight: 90.adaptiveForIpad)
             .background(Color.neutralBg)
-            HStack {
-                ChooseRowSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
-            }
+            
+            ChooseRowSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
         }
         .background(Color.primaryText)
         .onAppear {

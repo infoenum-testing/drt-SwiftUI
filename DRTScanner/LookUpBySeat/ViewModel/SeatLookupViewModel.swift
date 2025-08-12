@@ -74,7 +74,9 @@ class SeatLookupViewModel: ObservableObject {
                     self.order = nil
                     self.errorMessage = StringConstants.Common.noOrdersFound
                 }
-                self.showResultView = true
+                withAnimation {
+                    self.showResultView = true
+                }
                 self.isLoading = false
             }
         } else {
@@ -100,7 +102,9 @@ class SeatLookupViewModel: ObservableObject {
                         Task {
                             await self.lookupByOrderViewModel.fetchSeats(c: self.savedShowCode ?? "", q: String(orderDetail.oid ?? 0))
                         }
-                        self.showResultView = true
+                        withAnimation {
+                            self.showResultView = true
+                        }
                     case .failure(let error):
                         
                         self.errorMessage = "Failed to fetch seat details: \(error.localizedDescription)"

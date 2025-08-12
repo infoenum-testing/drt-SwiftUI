@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
+		E94FBD252E49E60C00712245 /* BlinkingCodeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */; };
 		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
 		E992D1642E379EA3004F249D /* scan.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1632E379EA3004F249D /* scan.wav */; };
 		E99385302E41E63700EFD485 /* LangCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E993852F2E41E63700EFD485 /* LangCode.swift */; };
@@ -62,7 +63,7 @@
 		E997FCC82E29486F00D9EC06 /* SizeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBD62E29486F00D9EC06 /* SizeData.swift */; };
 		E997FCC92E29486F00D9EC06 /* StringConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBD72E29486F00D9EC06 /* StringConstants.swift */; };
 		E997FCCA2E29486F00D9EC06 /* StringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBD82E29486F00D9EC06 /* StringManager.swift */; };
-		E997FCCB2E29486F00D9EC06 /* TimePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBD92E29486F00D9EC06 /* TimePickerView.swift */; };
+		E997FCCB2E29486F00D9EC06 /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBD92E29486F00D9EC06 /* SelectionView.swift */; };
 		E997FCCC2E29486F00D9EC06 /* SeatHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBDB2E29486F00D9EC06 /* SeatHomeView.swift */; };
 		E997FCCD2E29486F00D9EC06 /* SeatHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBDD2E29486F00D9EC06 /* SeatHomeViewModel.swift */; };
 		E997FCCE2E29486F00D9EC06 /* LandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBE02E29486F00D9EC06 /* LandingView.swift */; };
@@ -185,6 +186,7 @@
 		98E3FC742D539E9300DB8EF6 /* DRTScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRTScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFCA3F50E14FFB8DB1A2F950 /* Pods-DRTScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.debug.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DRTScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkingCodeDisplay.swift; sourceTree = "<group>"; };
 		E992D1612E379E9C004F249D /* fail.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fail.wav; sourceTree = "<group>"; };
 		E992D1632E379EA3004F249D /* scan.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scan.wav; sourceTree = "<group>"; };
 		E993852F2E41E63700EFD485 /* LangCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LangCode.swift; sourceTree = "<group>"; };
@@ -231,7 +233,7 @@
 		E997FBD62E29486F00D9EC06 /* SizeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeData.swift; sourceTree = "<group>"; };
 		E997FBD72E29486F00D9EC06 /* StringConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringConstants.swift; sourceTree = "<group>"; };
 		E997FBD82E29486F00D9EC06 /* StringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringManager.swift; sourceTree = "<group>"; };
-		E997FBD92E29486F00D9EC06 /* TimePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePickerView.swift; sourceTree = "<group>"; };
+		E997FBD92E29486F00D9EC06 /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 		E997FBDB2E29486F00D9EC06 /* SeatHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeatHomeView.swift; sourceTree = "<group>"; };
 		E997FBDD2E29486F00D9EC06 /* SeatHomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeatHomeViewModel.swift; sourceTree = "<group>"; };
 		E997FBE02E29486F00D9EC06 /* LandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingView.swift; sourceTree = "<group>"; };
@@ -564,7 +566,7 @@
 				E997FBD62E29486F00D9EC06 /* SizeData.swift */,
 				E997FBD72E29486F00D9EC06 /* StringConstants.swift */,
 				E997FBD82E29486F00D9EC06 /* StringManager.swift */,
-				E997FBD92E29486F00D9EC06 /* TimePickerView.swift */,
+				E997FBD92E29486F00D9EC06 /* SelectionView.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -1086,6 +1088,7 @@
 		E997FC6A2E29486F00D9EC06 /* ShowCode */ = {
 			isa = PBXGroup;
 			children = (
+				E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */,
 				E997FC672E29486F00D9EC06 /* View */,
 				E997FC692E29486F00D9EC06 /* ViewModel */,
 			);
@@ -1476,7 +1479,7 @@
 				E997FCC82E29486F00D9EC06 /* SizeData.swift in Sources */,
 				E997FCC92E29486F00D9EC06 /* StringConstants.swift in Sources */,
 				E997FCCA2E29486F00D9EC06 /* StringManager.swift in Sources */,
-				E997FCCB2E29486F00D9EC06 /* TimePickerView.swift in Sources */,
+				E997FCCB2E29486F00D9EC06 /* SelectionView.swift in Sources */,
 				E997FCCC2E29486F00D9EC06 /* SeatHomeView.swift in Sources */,
 				E997FCCD2E29486F00D9EC06 /* SeatHomeViewModel.swift in Sources */,
 				E997FCCE2E29486F00D9EC06 /* LandingView.swift in Sources */,
@@ -1551,6 +1554,7 @@
 				E997FD0A2E29486F00D9EC06 /* StatsStrings.swift in Sources */,
 				E997FD0B2E29486F00D9EC06 /* Switch-mode.swift in Sources */,
 				E997FD0C2E29486F00D9EC06 /* Unsold-scan-results.swift in Sources */,
+				E94FBD252E49E60C00712245 /* BlinkingCodeDisplay.swift in Sources */,
 				E997FD0D2E29486F00D9EC06 /* AppDelegate.swift in Sources */,
 				E997FD0E2E29486F00D9EC06 /* IQAPI+Base.swift in Sources */,
 				E997FD0F2E29486F00D9EC06 /* IQAPIClient+APIPath.swift in Sources */,

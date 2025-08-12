@@ -14,12 +14,19 @@ struct SideMenuOption: View {
     
     var body: some View {
         HStack(spacing: 10) {
-            Image(imageName)
-                .resizable()
-                .renderingMode(.template)
-                .foregroundColor(.white)
-                .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
-                
+            if imageName == "settingweb" {
+                Image(imageName)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.white)
+                    .frame(width: 30.adaptiveForIpad, height: 20.adaptiveForIpad)
+            } else {
+                Image(imageName)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(.white)
+                    .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
+            }
             Text(title)
                 .font(.verlagBoldAdaptive(size: 16))
                 .foregroundColor(Color.primaryText)

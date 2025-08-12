@@ -124,4 +124,17 @@ class LandingViewModel: ObservableObject {
         }
         return true // No previous call, so allow
     }
+    
+    func splitAfterSecondComma(_ text: String) -> String {
+        let parts = text.split(separator: ",", maxSplits: 2, omittingEmptySubsequences: false)
+        
+        if parts.count == 3 {
+            let firstPart = "\(parts[0]),\(parts[1])" // Up to second comma
+            let secondPart = parts[2].trimmingCharacters(in: .whitespaces) // Rest of string
+            return "\(firstPart)\n\(secondPart)"
+        }
+        
+        return text // If there are not at least two commas, return unchanged
+    }
+
 }

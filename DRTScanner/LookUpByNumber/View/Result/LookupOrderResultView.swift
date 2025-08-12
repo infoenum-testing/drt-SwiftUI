@@ -32,11 +32,11 @@ struct LookupOrderResultView: View {
     var body: some View {
         VStack {
             // Header section with back button and order/buyer info
-            VStack {
-                HStack (alignment: .center){
+            VStack (alignment: .center, spacing: 0){
+                HStack (alignment: .center) {
                     Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            dismissAction()
+                        withAnimation {
+                                dismissAction()
                         }
                     }) {
                         Image(StringConstants.DRTImages.leftSideArrow)
@@ -44,49 +44,50 @@ struct LookupOrderResultView: View {
                             .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
                             .foregroundStyle(Color.neutralText)
                             .padding(10.adaptiveForIpad)
-                    }.padding(.leading, 10)
+                    }
                     
                     Spacer()
-                    if viewModel.isLoading {
-                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
-                            .foregroundStyle(Color.neutralText)
-                            .font(.verlagBlackAdaptive(size: 25))
-                            .padding(.trailing, 20)
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                            .padding(.trailing, 5)
-                        Spacer()
-                    }
-                    if !viewModel.isLoading {
-                        if let buyerName = viewModel.buyerName {
-                            Text(buyerName.uppercased())
+                    VStack(spacing: 10.adaptiveForIpad) {
+                        if viewModel.isLoading {
+                            Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
                                 .foregroundStyle(Color.neutralText)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                                .padding(.trailing, 5)
                         } else {
-                            Text(stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound )
-                                .foregroundStyle(Color.neutralText)
-                                .font(.verlagBlackAdaptive(size: 25))
-                                .padding(.trailing, 20)
+                            if let buyerName = viewModel.buyerName {
+                                Text(buyerName.uppercased())
+                                    .foregroundStyle(Color.neutralText)
+                                    .font(.verlagBlackAdaptive(size: 25))
+                                    .padding(.trailing, 20)
+                            } else {
+                                Text(stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound )
+                                    .foregroundStyle(Color.neutralText)
+                                    .font(.verlagBlackAdaptive(size: 25))
+                                    .padding(.trailing, 20)
+                            }
                         }
-                        Spacer()
-                    }
-                }
-                if !viewModel.isLoading {
-                    if let _ = viewModel.buyerName , let order {
-                        HStack(alignment: .center) {
-                            Text("\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order.orderId ?? 0))")
-                                .font(.verlagBoldAdaptive(size: 15))
-                                .foregroundColor(Color.neutralText)
-                            Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order.cc ?? "")")
-                                .font(.verlagBoldAdaptive(size: 15))
-                                .foregroundColor(Color.neutralText)
+                        if !viewModel.isLoading {
+                            if let _ = viewModel.buyerName , let order {
+                                HStack(alignment: .center) {
+                                    CustomsText(title: "\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order.orderId ?? 0))", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: Color.neutralText)
+                                    
+                                    CustomsText(title: "\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order.cc ?? "")", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .neutralText)
+                                }
+                            }
                         }
                     }
+                    Spacer()
+
                 }
-            }.padding([.bottom, .top])
+                .padding(.horizontal,15.adaptiveForIpad)
                 .background(Color.neutralBg)
-                .frame(maxWidth: .infinity)
+            }
+            .frame(maxHeight: 90.adaptiveForIpad)
+            .background(Color.neutralBg)
+            .frame(maxWidth: .infinity)
             VStack {
                 // Merchandise section (online/offline)
                 if let isMerchandise, isMerchandise {
@@ -151,8 +152,7 @@ struct LookupOrderResultView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .padding(.trailing, 5)
                         Spacer()
-                    }
-                    if !viewModel.isLoading {
+                    } else {
                         ScrollView {
                             LazyVStack {
                                 ForEach(seats.indices, id: \.self) { index in

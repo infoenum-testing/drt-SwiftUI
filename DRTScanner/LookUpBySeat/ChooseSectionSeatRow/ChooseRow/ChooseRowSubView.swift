@@ -28,9 +28,11 @@ struct ChooseRowSubView: View {
                     .listRowBackground(Color.primaryText)
                     .onTapGesture {
                         // When a seat is tapped, update selectedSeat and selectedRow, and dismiss the view
-                        selectedSeat = seat
-                        selectedRow = seat
-                        isPresent = false
+                        withAnimation {
+                            selectedSeat = seat
+                            selectedRow = seat
+                            isPresent = false
+                        }
                     }
                     .listRowBackground(Color.primaryText)
                 Divider()

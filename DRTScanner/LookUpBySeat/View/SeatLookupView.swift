@@ -44,8 +44,7 @@ struct SeatLookupView: View {
                     .multilineTextAlignment(.center)
                     .disabled(true)
                     Spacer()
-                    Text("")
-                        .frame(width: 10.adaptiveForIpad,height: 10.adaptiveForIpad)
+                   
                 }
                 .padding(.horizontal,15.adaptiveForIpad)
                 .frame(maxHeight: 90.adaptiveForIpad)
@@ -93,39 +92,49 @@ struct SeatLookupView: View {
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.primaryText)
                 .padding(.horizontal)
-            }.background(Color.primaryText)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        // Sheet for displaying lookup result
-        .customSheetView(isPresented: $viewModel.showResultView) {
-            LookupOrderResultView(
-                inputText: String(viewModel.orderDetails.oid ?? 24241),
-                dismissAction: { viewModel.showResultView = false },
-                errorMessage: viewModel.errorMessage,
-                order: viewModel.order
-            )
-        }
-        // Sheet for choosing seat
-        .customSheetView(isPresented: $isSeatLookupPresented) {
-            ChooseSeatView(
-                isPresented: $isSeatLookupPresented,
-                selectedSeat: $viewModel.selectedSeat,
-                selectedSection: $viewModel.selectedSection,
-                selectedRow: $viewModel.selectedRow
-            )
-        }
-        // Sheet for choosing section
-        .customSheetView(isPresented: $isSectionLookupPresented) {
-            ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $viewModel.selectedSection)
-        }
-        // Sheet for choosing row
-        .customSheetView(isPresented: $isRowLookupPresented) {
-            ChooseRowView(
-                isPresented: $isRowLookupPresented,
-                selectedSeat: $viewModel.selectedRow,
-                selectedSection: $viewModel.selectedSection,
-                selectedRow: $viewModel.selectedRow
-            )
+            }
+            .background(Color.primaryText)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay {
+                // Sheet for choosing section
+                if isSectionLookupPresented {
+                    ChooseSectionView(isPresented: $isSectionLookupPresented, selectedSeat: $viewModel.selectedSection)
+                        .transition(.move(edge: .trailing))
+                }
+           
+                // Sheet for choosing row
+                if isRowLookupPresented {
+                    ChooseRowView(
+                        isPresented: $isRowLookupPresented,
+                        selectedSeat: $viewModel.selectedRow,
+                        selectedSection: $viewModel.selectedSection,
+                        selectedRow: $viewModel.selectedRow
+                    )
+                    .transition(.move(edge: .trailing))
+                }
+                // Sheet for choosing seat
+                if isSeatLookupPresented {
+                    ChooseSeatView(
+                        isPresented: $isSeatLookupPresented,
+                        selectedSeat: $viewModel.selectedSeat,
+                        selectedSection: $viewModel.selectedSection,
+                        selectedRow: $viewModel.selectedRow
+                    )
+                    .transition(.move(edge: .trailing))
+
+                }
+                // Sheet for displaying lookup result
+               if viewModel.showResultView {
+                    LookupOrderResultView(
+                        inputText: String(viewModel.orderDetails.oid ?? 24241),
+                        dismissAction: { viewModel.showResultView = false },
+                        errorMessage: viewModel.errorMessage,
+                        order: viewModel.order
+                    )
+                    .transition(.move(edge: .trailing))
+
+                }
+            }
         }
     }
 }

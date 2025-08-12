@@ -22,11 +22,12 @@ struct TableView: View {
         List {
             // Section selection cell
             SeatSectionLookupCell(action: {
-                isSectionLookupPresented = true
+                withAnimation {
+                    isSectionLookupPresented = true
+                }
             }, selectedSeat: selectedSection)
             .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
-            // When section changes, reset row and seat
             .onChange(of: selectedSection) { _ in
                 if !selectedSection.isEmpty {
                     selectedRow = ""
@@ -36,31 +37,33 @@ struct TableView: View {
             
             // Row selection cell
             SeatRowLookupCell(action: {
-                isRowLookupPresented = true
+                withAnimation {
+                    isRowLookupPresented = true
+                }
             }, selectedSeat: selectedRow)
             .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
             // Disable if no section is selected
             .disabled(selectedSection.isEmpty)
             .opacity(selectedSection.isEmpty ? 0.5 : 1.0)
-            // When row changes, reset seat
             .onChange(of: selectedRow) { _ in
                 if !selectedRow.isEmpty {
                     selectedSeat = ""
                 }
             }
             
-            // Seat selection cell
             SeatLookupCell(action: {
-                isSeatLookupPresented = true
+                withAnimation {
+                    isSeatLookupPresented = true
+                }
             }, selectedSeat: selectedSeat)
             .listRowBackground(Color.primaryText)
             .frame(height: 100.adaptiveForIpad)
-            // Disable if no row is selected
             .disabled(selectedRow.isEmpty)
             .opacity(selectedRow.isEmpty ? 0.5 : 1.0)
-        }.listStyle(.plain)
-            .padding(0)
-            .background(Color.primaryText)
+        }
+        .listStyle(.plain)
+        .padding(0)
+        .background(Color.primaryText)
     }
 }

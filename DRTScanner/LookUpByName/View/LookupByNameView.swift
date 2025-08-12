@@ -56,7 +56,6 @@ struct LookupByNameView: View {
                             .foregroundStyle(Color.neutralText)
                             .padding(10.adaptiveForIpad)
                     }
-                    .padding(.leading, 10)
 
                     Spacer()
 
@@ -99,8 +98,8 @@ struct LookupByNameView: View {
                             .padding(.horizontal, 20)
                     }
                 }
-                .padding(.horizontal, 2.adaptiveForIpad)
-                .padding([.top, .bottom], 12.adaptiveForIpad)
+                .padding(.horizontal,15.adaptiveForIpad)
+                .frame(maxHeight: 90.adaptiveForIpad)
                 .background(Color.neutralBg)
 
                 Spacer()
@@ -133,21 +132,25 @@ struct LookupByNameView: View {
                 
             }
             .background(Color.primaryText)
-            .customSheetView(isPresented: $showResultView) {
-                if let firstOrder = order {
-                    LookupByNameResultView(
-                        inputText: inputText,
-                        dismissAction: { showResultView = false },
-                        orders: firstOrder,
-                        errorMessage: nil
-                    )
-                } else {
-                    LookupByNameResultView(
-                        inputText: inputText,
-                        dismissAction: { showResultView = false },
-                        orders: [],
-                        errorMessage: order?.isEmpty ?? true ? StringManager.shared.strings?.searchResults.phoneNumber ?? StringConstants.Common.ordersNotFound : nil
-                    )
+            .overlay {
+                if showResultView {
+                    if let firstOrder = order {
+                        LookupByNameResultView(
+                            inputText: inputText,
+                            dismissAction: { showResultView = false },
+                            orders: firstOrder,
+                            errorMessage: nil
+                        )
+                        .transition(.move(edge: .trailing))
+                    } else {
+                        LookupByNameResultView(
+                            inputText: inputText,
+                            dismissAction: { showResultView = false },
+                            orders: [],
+                            errorMessage: order?.isEmpty ?? true ? StringManager.shared.strings?.searchResults.phoneNumber ?? StringConstants.Common.ordersNotFound : nil
+                        )
+                        .transition(.move(edge: .trailing))
+                    }
                 }
             }
         }.hideKeyboardOnTap()
@@ -162,10 +165,12 @@ struct LookupByNameView: View {
         Task {
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             DispatchQueue.main.async {
-                self.order = viewModel.orders
-                self.showResultView = true
-                self.isSearching = false
-                self.isOKButtonClicked = false
+                withAnimation {
+                    self.order = viewModel.orders
+                    self.showResultView = true
+                    self.isSearching = false
+                    self.isOKButtonClicked = false
+                }    
             }
         }
     }

@@ -47,47 +47,44 @@ struct LookupResultCardOrPhoneView: View {
     // MARK: - View
     var body: some View {
         VStack {
-            VStack {
-                HStack(alignment: .center) {
-                    // Back button to dismiss view
-                    Button(action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            dismissAction()
-                        }
-                    }) {
-                        Image(StringConstants.DRTImages.leftSideArrow)
-                            .resizable()
-                            .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
-                            .foregroundStyle(Color.neutralText)
-                            .padding(10.adaptiveForIpad)
+            HStack(alignment: .center) {
+                // Back button to dismiss view
+                Button(action: {
+                    withAnimation {
+                        dismissAction()
                     }
-                    .padding(.leading, 10)
-                    
-                    Spacer()
-                    
-                    // Show loading text & spinner
-                    if isLoading {
-                        Text(stringManager.strings?.searchResults.loading ?? "Loading...")
-                            .foregroundStyle(Color.neutralText)
-                            .font(.verlagBlackAdaptive(size: 25))
-                            .padding(.trailing, 20)
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                    }
-                    
-                    // Show result count or "No orders found"
-                    if !isLoading {
-                        Text(orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(orders.count)")
-                            .foregroundStyle(Color.neutralText)
-                            .font(.verlagBlackAdaptive(size: 25))
-                            .padding(.trailing, 20)
-                    }
-                    Spacer()
+                }) {
+                    Image(StringConstants.DRTImages.leftSideArrow)
+                        .resizable()
+                        .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
+                        .foregroundStyle(Color.neutralText)
+                        .padding(10.adaptiveForIpad)
                 }
+                
+                Spacer()
+                
+                // Show loading text & spinner
+                if isLoading {
+                    Text(stringManager.strings?.searchResults.loading ?? "Loading...")
+                        .foregroundStyle(Color.neutralText)
+                        .font(.verlagBlackAdaptive(size: 25))
+                        .padding(.trailing, 20)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                }
+                
+                // Show result count or "No orders found"
+                if !isLoading {
+                    Text(orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(orders.count)")
+                        .foregroundStyle(Color.neutralText)
+                        .font(.verlagBlackAdaptive(size: 25))
+                        .padding(.trailing, 20)
+                }
+                Spacer()
             }
-            .padding([.top, .bottom], 20)
+            .padding(.horizontal,15.adaptiveForIpad)
+            .frame(maxHeight: 90.adaptiveForIpad)
             .background(Color.neutralBg)
-            .frame(maxWidth: .infinity)
             
             // Orders List or Empty View
             VStack {
@@ -99,8 +96,11 @@ struct LookupResultCardOrPhoneView: View {
                             ForEach(orders, id: \.orderId) { seat in
                                 LookupCellView(result: seat) { orderId in
                                     selectedOrder = seat
-                                    oId = "\(orderId)"             // Store selected order ID
-                                    navigateToOrderResult = true   // Trigger sheet
+                                    oId = "\(orderId)"
+                                    withAnimation {
+                                        navigateToOrderResult = true
+                                    }// Store selected order ID
+                                       // Trigger sheet
                                 }
                                 .background(Color.primaryText)
                             }
@@ -124,14 +124,21 @@ struct LookupResultCardOrPhoneView: View {
         }
         
         // MARK: - Sheet View for Order Detail
-        .customSheetView(isPresented: $navigateToOrderResult) {
-            if let selectedOrder = selectedOrder {
-                LookupOrderResultView(
-                    inputText: oId ?? "",
-                    dismissAction: { navigateToOrderResult = false },
-                    errorMessage: nil,
-                    order: selectedOrder
-                )
+        .overlay {
+            if navigateToOrderResult {
+                if let selectedOrder = selectedOrder {
+                    LookupOrderResultView(
+                        inputText: oId ?? "",
+                        dismissAction: {
+                            withAnimation {
+                                navigateToOrderResult = false
+                            }
+                        },
+                        errorMessage: nil,
+                        order: selectedOrder
+                    )
+                    .transition(.move(edge: .trailing))
+                }
             }
         }
         .padding(.top, 0)

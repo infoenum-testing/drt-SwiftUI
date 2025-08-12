@@ -12,13 +12,13 @@ import CoreData
 
 // This view displays a list of seat sections for the user to choose from.
 struct ChooseSectionSubView: View {
-    @State private var seatLabels: [String] = [] // Holds the list of seat section labels
-    @Binding var selectedSeat: String // The currently selected seat (bound to parent)
-    @Binding var isPresent: Bool // Controls the presentation state (bound to parent)
-    @State private var selectedSection: String = "" // Stores the selected section locally
-    @Environment(\.managedObjectContext) private var viewContext // Core Data context
-    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false // Offline mode flag
-    @AppStorage("showCode") private var savedShowCode: String? // Saved show code for API
+    @State private var seatLabels: [String] = []
+    @Binding var selectedSeat: String
+    @Binding var isPresent: Bool
+    @State private var selectedSection: String = ""
+    @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
+    @AppStorage("showCode") private var savedShowCode: String?
     
     var body: some View {
         VStack {
@@ -29,9 +29,11 @@ struct ChooseSectionSubView: View {
                     .listRowBackground(Color.primaryText)
                     .onTapGesture {
                         // When a seat is tapped, update selection and dismiss view
-                        selectedSeat = seat
-                        isPresent = false
-                        selectedSection = seat
+                        withAnimation {
+                            selectedSeat = seat
+                            isPresent = false
+                            selectedSection = seat
+                        }
                     }
                     .listRowBackground(Color.primaryText)
                 
