@@ -38,7 +38,7 @@ struct ChooseRowView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .frame(width: 20, height: 20)
                 } else {
-                    Text(stringManager.strings?.seat.row ?? RowTitle)
+                    Text(stringManager.strings.seat.row)
                         .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(Color.neutralText)
                         .padding(.trailing, 50)

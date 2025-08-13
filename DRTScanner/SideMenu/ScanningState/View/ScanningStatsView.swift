@@ -23,11 +23,11 @@ struct ScanningStatsView: View {
     }
     
     var body: some View {
-        let statsString = stringManager.strings?.stats
+        let statsString = stringManager.strings.stats
         VStack(spacing: 15) {
             HStack {
                 Spacer()
-                Text(statsString?.scanningStats ?? StringConstants.SideMenuView.scaningStatsTitle)
+                Text(statsString.scanningStats)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.leading, 10)
@@ -53,16 +53,11 @@ struct ScanningStatsView: View {
                     ProgressView()
                         .tint(Color.neutralText)
                 } else if let stats = viewModel.stats {
-                    statsRow(title: statsString?.totalSeats ?? "Total Seats:", value: stats.totalSeats)
-                    statsRow(title: statsString?.totalScannableSeats ?? "Total Scannable Seats:", value: stats.seatsScannable)
-                    statsRow(title: statsString?.totalScannedSeats ?? "Total Scanned Seats:", value: stats.seatsScannedTotal)
-                    statsRow(title: statsString?.ticketsScannedByDevice ?? "Tickets Scanned by Device:", value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
-                } else if let error = viewModel.errorMessage {
-                    Text(error)
-                        .font(.verlagBookAdaptive(size: 16))
-                        .foregroundColor(.red)
-                        .padding(.top)
-                }
+                    statsRow(title: statsString.totalSeats, value: stats.totalSeats)
+                    statsRow(title: statsString.totalScannableSeats, value: stats.seatsScannable)
+                    statsRow(title: statsString.totalScannedSeats, value: stats.seatsScannedTotal)
+                    statsRow(title: statsString.ticketsScannedByDevice, value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
+                } 
                 Spacer()
             }
             .clipped()

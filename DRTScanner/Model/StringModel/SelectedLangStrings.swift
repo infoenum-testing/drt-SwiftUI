@@ -10,7 +10,7 @@ struct SelectedLangStrings: Codable {
     var lang: String
     let stats: StatsStrings
     let settings: Settings
-    let offline:OfflineStrings
+    let offline: OfflineStrings
     let dialogLogout: DialogLogout
     let mission: String
     let seat: SeatStrings
@@ -38,40 +38,40 @@ struct SelectedLangStrings: Codable {
     let appLogoSvg: String
     let appLogoPng: String
     let scanner: String
-    
+    let lookupName: String
     
     private enum CodingKeys: String, CodingKey {
-        case scanner = "scanner"
-        case lang = "lang"
-        case stats = "stats"
-        case settings =  "settings"
-        case offline = "offline"
+        case lang
+        case stats
+        case settings
+        case offline
         case dialogLogout = "dialog-logout"
-        case mission = "mission"
-        case seat = "seat"
+        case mission
+        case seat
         case dialogGoOnline = "dialog-go-online"
         case goldenTicket = "golden-ticket"
-        case login = "login"
+        case login
         case dialogOpenBrowser = "dialog-open-browser"
-        case attached = "attached"
-        case menu = "menu"
+        case menu
         case incorrectMode = "incorrect-mode"
         case serviceHref = "service-href"
         case noInternet = "no-internet"
         case switchMode = "switch-mode"
         case orderDetail = "order-detail"
         case dialogGoOffline = "dialog-go-offline"
-        case copyright = "copyright"
+        case errorMassage = "error"
+        case errorDescriptionMessages = "error-description"
+        case attached
+        case copyright
         case searchResults = "search-results"
         case unsoldScanResults = "unsold-scan-results"
         case serviceName = "service-name"
-        case home = "home"
+        case home
         case backImageSvg = "background-href-svg"
         case backImagePng = "background-href-png"
-        case appLogoSvg =  "logo-href-svg"
-        case appLogoPng =  "logo-href-png"
-        case errorMassage =  "error"
-        case errorDescriptionMessages = "error-description"
-        
+        case appLogoSvg = "logo-href-svg"
+        case appLogoPng = "logo-href-png"
+        case scanner
+        case lookupName = "lookup-name"
     }
 }

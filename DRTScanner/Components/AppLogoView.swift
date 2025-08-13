@@ -13,8 +13,8 @@ struct AppLogoView: View {
     @EnvironmentObject var stringManager: StringManager
     var body: some View {
         ZStack {
-            if let logo = stringManager.strings?.appLogoSvg {
-                if let url = URL(string: logo) {
+
+                if let url = URL(string: stringManager.strings.appLogoSvg) {
                   
                         SVGWebView(url: url, isLoading: $Loading)
                             .scaledToFill()
@@ -31,14 +31,6 @@ struct AppLogoView: View {
                             .animation(.easeInOut(duration: 0.3), value: Loading)}
                     }
                 }
-            } else {
-                Image(StringConstants.DRTImages.logo)
-                    .resizable()
-                    .scaledToFit()
-                    .clipped()
-                    .frame(width: width, height: height)
-                
-            }
         }
         .clipped()
         .frame(width: width, height: height)

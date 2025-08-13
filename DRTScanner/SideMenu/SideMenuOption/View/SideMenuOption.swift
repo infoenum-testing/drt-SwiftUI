@@ -18,13 +18,13 @@ struct SideMenuOption: View {
                 Image(imageName)
                     .resizable()
                     .renderingMode(.template)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 30.adaptiveForIpad, height: 20.adaptiveForIpad)
             } else {
                 Image(imageName)
                     .resizable()
                     .renderingMode(.template)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                     .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
             }
             Text(title)

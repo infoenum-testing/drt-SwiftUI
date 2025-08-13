@@ -14,8 +14,8 @@ struct LookupResultCardOrPhoneView: View {
     @AppStorage("showCode") private var savedShowCode: String?
     
     // MARK: - Input Parameters
-    let inputText: String                         // User-entered query (credit card or phone number)
-    var dismissAction: () -> Void                 // Action to dismiss this view (back button)
+    let inputText: String
+    var dismissAction: () -> Void
     
     // MARK: - View Models
     @StateObject private var creditCardViewModel = LookupByCreditCardResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
@@ -65,7 +65,7 @@ struct LookupResultCardOrPhoneView: View {
                 
                 // Show loading text & spinner
                 if isLoading {
-                    Text(stringManager.strings?.searchResults.loading ?? "Loading...")
+                    Text(stringManager.strings.searchResults.loading)
                         .foregroundStyle(Color.neutralText)
                         .font(.verlagBlackAdaptive(size: 25))
                         .padding(.trailing, 20)
@@ -75,7 +75,7 @@ struct LookupResultCardOrPhoneView: View {
                 
                 // Show result count or "No orders found"
                 if !isLoading {
-                    Text(orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(orders.count)")
+                    Text(orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(orders.count)")
                         .foregroundStyle(Color.neutralText)
                         .font(.verlagBlackAdaptive(size: 25))
                         .padding(.trailing, 20)
@@ -116,6 +116,9 @@ struct LookupResultCardOrPhoneView: View {
         
         // MARK: - Task: Initial API call
         .task {
+            // Sleep for 0.2 seconds (200_000_000 nanoseconds)
+            try? await Task.sleep(nanoseconds: 200_000_000)
+
             if lookupType == .phoneNumber {
                 await phoneViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             } else {

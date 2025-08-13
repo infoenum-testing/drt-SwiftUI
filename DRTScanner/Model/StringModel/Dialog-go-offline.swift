@@ -7,27 +7,25 @@
 import Foundation
 
 struct DialogGoOffline: Codable {
-
-	let cancel: String
-	let typeName: String
-	let preparing: String
-	let downloading: String
-	let title: String
-	let continueField: String
-	let badInput: String
-	let description: String
+    let title: String
+    let description: String
+    let typeName: String
+    let continueField: String
+    let cancel: String
+    let badInput: String
+    let preparing: String
+    let downloading: String
     let goOnlineFailed: String
     
-
-	private enum CodingKeys: String, CodingKey {
-		case cancel = "cancel"
-		case typeName = "type-name"
-		case preparing = "preparing"
-		case downloading = "downloading"
-		case title = "title"
-		case continueField = "continue"
-		case badInput = "bad-input"
-		case description = "description"
-        case goOnlineFailed = "goOnlineFailed"
-	}
+    private enum CodingKeys: String, CodingKey {
+        case title
+        case description
+        case typeName = "type-name"
+        case continueField = "continue"
+        case cancel
+        case badInput = "bad-input"
+        case preparing
+        case downloading
+        case goOnlineFailed
+    }
 }

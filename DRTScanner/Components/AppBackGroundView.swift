@@ -17,8 +17,7 @@ struct AppBackGroundView: View {
     @State private var Loading:Bool = true
     var body: some View {
         ZStack(alignment: .top) {
-            if let backImage = stringManager.strings?.backImageSvg {
-                if let url = URL(string: backImage) {
+                if let url = URL(string: stringManager.strings.backImageSvg) {
                     SVGWebView(url: url, isLoading: $Loading)
                         .scaledToFill()
                         .clipped()
@@ -61,26 +60,6 @@ struct AppBackGroundView: View {
                                        maxHeight: maxHeight)
                         }
                 }
-            } else {
-                Image(StringConstants.DRTImages.backgound)
-                    .resizable()
-                    .scaledToFill()
-                    .clipped()
-                    .frame(width: width, height: height)
-                    .frame(maxWidth:  maxWidth,
-                           maxHeight: maxHeight)
-                    .overlay {
-                        if shadow {
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                                startPoint: .top,
-                                endPoint: .center
-                            )
-                        }
-                    }
-                    .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.3), value: Loading)
-            }
         }
         .clipped()
         .frame(width:  width,

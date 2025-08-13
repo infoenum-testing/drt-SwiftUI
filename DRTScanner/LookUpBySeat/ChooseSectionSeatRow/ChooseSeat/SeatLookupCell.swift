@@ -16,7 +16,7 @@ struct SeatLookupCell: View {
     var body: some View {
         HStack {
             // Displays the seat label
-            Text(stringManager.strings?.seat.seat ?? StringConstants.LandingView.seatSection)
+            Text(stringManager.strings.seat.seat)
                 .font(.verlagBookAdaptive(size: 27))
                 .foregroundColor(Color.primaryBg)
                 .frame(maxWidth: .infinity, alignment: .leading)

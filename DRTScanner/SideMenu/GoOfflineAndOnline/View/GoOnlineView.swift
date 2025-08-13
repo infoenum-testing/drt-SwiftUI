@@ -26,12 +26,12 @@ struct GoOnlineView: View {
                 VStack(spacing: 15) {
                     Spacer()
                     if !showErrorMessage {
-                        Text(stringManager.strings?.menu.goOnline ?? StringConstants.SideMenuView.goOnline)
+                        Text(stringManager.strings.menu.goOnline)
                             .font(.verlagBoldAdaptive(size: 30))
                             .foregroundColor(Color.primaryText)
                     }
                     if isUploading {
-                        Text(stringManager.strings?.dialogGoOnline.uploading ?? StringConstants.SideMenuView.goOnlineServer)
+                        Text(stringManager.strings.dialogGoOnline.uploading)
                             .font(.verlagBookAdaptive(size: 18))
                             .foregroundColor(Color.primaryText)
                             .multilineTextAlignment(.leading)
@@ -59,11 +59,11 @@ struct GoOnlineView: View {
                             }
                         }
                     } else if showSuccessMessage {
-                        Text(stringManager.strings?.offline.uploaded ?? StringConstants.SideMenuView.goOnlineSuccess)
+                        Text(stringManager.strings.offline.uploaded)
                             .font(.verlagBoldAdaptive(size: 22))
                             .foregroundColor(Color.primaryText)
                     }  else if showErrorMessage {
-                        Text(stringManager.strings?.dialogGoOffline.goOnlineFailed ?? StringConstants.SideMenuView.goOnlineFailed)
+                        Text(stringManager.strings.dialogGoOffline.goOnlineFailed)
                             .font(.verlagBoldAdaptive(size: 18))
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
@@ -139,7 +139,7 @@ struct CustomAlertForError: View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
+                Text(StringManager.shared.strings.errorMassage.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom, 5)
@@ -148,7 +148,7 @@ struct CustomAlertForError: View {
             }
             
             VStack {
-                let finalMessage = NetworkMonitor.shared.isNetworkAvailable() ? message : StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
+                let finalMessage = NetworkMonitor.shared.isNetworkAvailable() ? message : StringManager.shared.strings.noInternet.description
                 Text(finalMessage)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(Color.primaryText)

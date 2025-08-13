@@ -37,7 +37,16 @@ struct LandingView: View {
         ScrollView {
             ZStack {
                 AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 10)
-                
+                if isUserLoggedIn {
+                    VStack {
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                            startPoint: .top,
+                            endPoint: .center
+                        )
+                        Spacer()
+                    }
+                }
                 if viewModel.isLoading {
                     VStack {
                         Spacer()
@@ -58,29 +67,8 @@ struct LandingView: View {
                     }
                 } else {
                     VStack {
-                        if viewModel.isValidCode && isUserLoggedIn {
-                            HStack {
-                                Spacer()
-                                Text(stringManager.strings?.menu.change ?? StringConstants.LandingView.changeShow)
-                                    .font(.verlagBoldAdaptive(size: 16))
-                                    .foregroundColor(Color.primaryText)
-                                    .padding(.bottom)
-                                Button(action: {
-                                    withAnimation(.spring()) {
-                                        showLogoutAlert = true
-                                    }
-                                }) {
-                                    Image(StringConstants.DRTImages.logout)
-                                        .resizable()
-                                        .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, UIScreen.main.bounds.height * 0.038)
-                            .transition(.opacity)
-                            .onAppear {
-                                viewModel.getShowDetailsIfNeeded()
-                            }
+                        if !isUserLoggedIn {
+                            Spacer()
                         }
                         // Always show logo (with animation)
                         AppLogoView(width: sizeData.isPortrait ? 300.adaptiveForIpad : 180.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 130.adaptiveForIpad)
@@ -93,20 +81,29 @@ struct LandingView: View {
                             }
                         Spacer()
                         
-                      
-                        
                         // Show scan options if code is valid and user is logged in
                         if viewModel.isValidCode && isUserLoggedIn {
-                            CustomsText(title: "Selected Event", textFont: .verlagBoldAdaptive(size: 28), foregroundColour: .primaryText, alignment: .center)
+                            CustomsText(title: stringManager.strings.menu.selected, textFont: .verlagBoldAdaptive(size: 28), foregroundColour: .primaryText, alignment: .center)
                                 .opacity(animateButtons ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
                             
                             CustomsText(title: showTime, textFont: .verlagBoldAdaptive(size: 25), foregroundColour: .secondaryBg, alignment: .center)
                                 .opacity(animateButtons ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+                            Button {
+                                //MARK: logout action
+                                withAnimation(.spring()) {
+                                    showLogoutAlert = true
+                                }
+                            } label: {
+                                CustomsText(title: stringManager.strings.menu.change, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryText, alignment: .center)
+                                    .opacity(animateButtons ? 1 : 0)
+                                    .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+                                    .padding(10)
+                            }
                             Spacer()
                             VStack {
-                                Text(stringManager.strings?.switchMode.question ?? StringConstants.LandingView.scanMerchOrSeat)
+                                Text(stringManager.strings.switchMode.question)
                                     .font(.verlagBoldAdaptive(size: 28))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(Color.primaryText)
@@ -121,7 +118,7 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(stringManager.strings?.switchMode.merchandise ?? StringConstants.LandingView.merchandise)
+                                    Text(stringManager.strings.switchMode.merchandise)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .frame(maxWidth: .infinity)
                                         .padding()
@@ -131,9 +128,9 @@ struct LandingView: View {
                                         .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 }
                                 .padding(.horizontal)
-                                    .padding(.bottom, 10)
-                                    .opacity(animateButtons ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateButtons)
+                                .padding(.bottom, 10)
+                                .opacity(animateButtons ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateButtons)
                                 
                                 // Seat scan button
                                 Button(action: {
@@ -143,7 +140,7 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(stringManager.strings?.switchMode.seat ?? StringConstants.LandingView.seat)
+                                    Text(stringManager.strings.switchMode.seat)
                                         .font(.verlagBoldAdaptive(size: 22))
                                         .frame(maxWidth: .infinity)
                                         .padding()
@@ -155,6 +152,9 @@ struct LandingView: View {
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.6).delay(0.7), value: animateButtons)
                             }
+                            .onAppear {
+                                viewModel.getShowDetailsIfNeeded()
+                            }
                         } else {
                             // Show code entry button if not logged in
                             Button(action: {
@@ -162,7 +162,7 @@ struct LandingView: View {
                                     showSheet = true
                                 }
                             }) {
-                                Text(stringManager.strings?.login.enterShowCode ?? StringConstants.LandingView.showCode)
+                                Text(stringManager.strings.login.enterShowCode)
                                     .font(.verlagBoldAdaptive(size: 22))
                                     .padding()
                                     .frame(maxWidth: .infinity)
@@ -177,7 +177,7 @@ struct LandingView: View {
                         }
                         
                         // Copyright text
-                        Text(stringManager.strings?.copyright.replacingOccurrences(of: ". All", with: ".\n All") ?? StringConstants.LandingView.copyRight)
+                        Text(stringManager.strings.copyright.replacingOccurrences(of: ". All", with: ".\n All"))
                             .font(.verlagBookAdaptive(size: 14))
                             .foregroundColor(Color.primaryText)
                             .multilineTextAlignment(.center)
@@ -196,8 +196,7 @@ struct LandingView: View {
                     .customAlert(isPresented: $showLogoutAlert) {
                         VStack {
                             Spacer()
-                            Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
-                                 StringConstants.LandingView.logoutConfirm)
+                            Text(isOfflineMode ? stringManager.strings.dialogLogout.whenOfflineDescription : stringManager.strings.dialogLogout.areYouSure)
                             .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
                             .foregroundColor(Color.primaryText)
                             .multilineTextAlignment(.center)
@@ -222,7 +221,7 @@ struct LandingView: View {
                                                 DRTDatabaseManager.shared.deleteSkin()
                                             }
                                         }) {
-                                            Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
+                                            Text(stringManager.strings.dialogLogout.continueField)
                                                 .font(.verlagBoldAdaptive(size: 30))
                                                 .foregroundColor(Color.primaryText)
                                                 .padding()
@@ -232,7 +231,7 @@ struct LandingView: View {
                                                 .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                         }
                                     }
-                                    //                                Spacer()
+                                    //                               Spacer()
                                     HStack {
                                         // Cancel button
                                         Button(action: {
@@ -240,7 +239,7 @@ struct LandingView: View {
                                                 showLogoutAlert = false
                                             }
                                         }) {
-                                            Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
+                                            Text(stringManager.strings.dialogLogout.cancel)
                                                 .font(.verlagBoldAdaptive(size: 30))
                                                 .foregroundColor(Color.primaryText)
                                                 .padding()
@@ -257,7 +256,7 @@ struct LandingView: View {
                             AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow: true)
                         }
                     }
-                    // Show code entry sheet // for login time 
+                    // Show code entry sheet // for login time
                     .customAlert(isPresented: $showSheet) {
                         ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
                             showCode = code
@@ -276,7 +275,7 @@ struct LandingView: View {
                                 VStack(alignment: .center) {
                                     HStack {
                                         Spacer()
-                                        Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
+                                        Text(StringManager.shared.strings.errorMassage.error)
                                             .padding(.leading, 30)
                                             .font(.verlagBoldAdaptive(size: 30))
                                             .foregroundColor(Color.primaryText)
@@ -298,7 +297,7 @@ struct LandingView: View {
                                         }
                                     }
                                     .padding(.top,20)
-                                    Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? stringManager.strings?.errorMassage.invalidShowCode ?? StringConstants.LandingView.invalidShowCode)
+                                    Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? stringManager.strings.errorMassage.invalidShowCode)
                                         .font(.verlagBookAdaptive(size: 18))
                                         .padding(.bottom)
                                         .foregroundColor(Color.primaryText)

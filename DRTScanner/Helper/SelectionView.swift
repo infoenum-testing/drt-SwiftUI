@@ -21,23 +21,18 @@ struct SelectionView: View {
         let initialValue: Int
         switch index {
         case 2:
-            initialValue = viewModel.deviceSleepTimeout
-        case 3:
             initialValue = viewModel.pauseScanTimeout/10
-        case 4:
+        case 3:
             initialValue = viewModel.duplicateScanSuppression / 5
-        case 5:
+        case 4:
             initialValue = {
-                switch viewModel.selectedLangText {
-                case StringManager.shared.allLangStrings?.enUS.lang ?? "English":
-                    return 0
-                case StringManager.shared.allLangStrings?.frCA.lang ?? "French":
-                    return 1
-                case StringManager.shared.allLangStrings?.esUS.lang ?? "Spanish":
-                    return 2
-                default:
-                    return 0
+                let languages = StringManager.allLanguages().map { $0.name }
+                if let index = languages.firstIndex(where: {
+                    $0.caseInsensitiveCompare(viewModel.selectedLangText) == .orderedSame
+                }) {
+                    return index
                 }
+                return 0
             }()
         default:
             initialValue = 0
@@ -49,18 +44,18 @@ struct SelectionView: View {
     var body: some View {
         VStack {
             switch index {
-            case 3:
-                CustomsText(title: StringManager.shared.strings?.settings.timerInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+            case 2:
+                CustomsText(title: StringManager.shared.strings.settings.timerInstructions, textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
                     .padding([.top, .horizontal])
 
-            case 4:
-                CustomsText(title: StringManager.shared.strings?.settings.duplicateInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+            case 3:
+                CustomsText(title: StringManager.shared.strings.settings.duplicateInstructions, textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
                     .padding([.top, .horizontal])
-            case 5:
+            case 4:
                 CustomsText(title: "", textFont: .verlagBookAdaptive(size: 12), foregroundColour: .white)
 
             default:
-                CustomsText(title: StringManager.shared.strings?.settings.duplicateInstruction ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
+                CustomsText(title: StringManager.shared.strings.settings.duplicateInstructions, textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
                     .padding([.top, .horizontal])
             }
           
@@ -86,7 +81,7 @@ struct SelectionView: View {
                 Button(action: {
                     selectedIndex = nil
                 }) {
-                    Text(StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
+                    Text(StringManager.shared.strings.dialogLogout.cancel)
                         .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)
@@ -99,7 +94,7 @@ struct SelectionView: View {
                     viewModel.saveTime(selectedValue, for: index)
                     selectedIndex = nil
                 }) {
-                    Text(StringManager.shared.strings?.settings.save ?? StringConstants.Common.save)
+                    Text(StringManager.shared.strings.settings.save)
                         .font(.verlagBoldAdaptive(size: 22))
                         .foregroundColor(Color.primaryBg)
                         .frame(maxWidth: .infinity)

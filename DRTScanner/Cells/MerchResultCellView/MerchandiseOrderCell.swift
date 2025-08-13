@@ -168,7 +168,7 @@ struct MerchandiseOrderCell: View {
                         if NetworkMonitor.shared.isNetworkAvailable() {
                             lookupByOrderResultViewModel.errorMessage = error.localizedDescription
                         } else {
-                            lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
+                            lookupByOrderResultViewModel.errorMessage = StringManager.shared.strings.noInternet.description
                         }
                         showAlert = true
                     }

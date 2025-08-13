@@ -6,22 +6,21 @@
 //
 import Foundation
 
+
 struct DialogLogout: Codable {
-
-	let whenOfflineDescription: String
-	let continueField: String
-	let cancel: String
-	let whenOfflineTitle: String
-	let confirm: String
-	let areYouSure: String
-
-	private enum CodingKeys: String, CodingKey {
-		case whenOfflineDescription = "when-offline-description"
-		case continueField = "continue"
-		case cancel = "cancel"
-		case whenOfflineTitle = "when-offline-title"
-		case confirm = "confirm"
-		case areYouSure = "are-you-sure"
-	}
-
+    let confirm: String
+    let areYouSure: String
+    let continueField: String
+    let cancel: String
+    let whenOfflineTitle: String
+    let whenOfflineDescription: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case confirm
+        case areYouSure = "are-you-sure"
+        case continueField = "continue"
+        case cancel
+        case whenOfflineTitle = "when-offline-title"
+        case whenOfflineDescription = "when-offline-description"
+    }
 }

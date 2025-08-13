@@ -27,14 +27,14 @@ struct AboutView: View {
                 AppLogoView(width:  120.adaptiveForIpad, height: 65.adaptiveForIpad)
                 
                 VStack(spacing: 16) {
-                    Text(stringManager.strings?.mission ?? StringConstants.SideMenuView.aboutDescriptionText)
+                    Text(stringManager.strings.mission)
                         .font(.verlagBoldAdaptive(size: 16))
                         .foregroundColor(Color.primaryText)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal)
                     
-                    Text(stringManager.strings?.serviceHref ?? AboutView.urlString)
+                    Text(stringManager.strings.serviceHref)
                         .foregroundColor(Color.primaryText)
                         .font(.verlagBoldAdaptive(size: 30))
                         .padding()
@@ -47,16 +47,15 @@ struct AboutView: View {
                         }
                         .alert(isPresented: $showWebsiteAlert) {
                             Alert(
-                                title: Text(stringManager.strings?.dialogOpenBrowser.description ?? StringConstants.SideMenuView.openDrtWebsiteMessage),
+                                title: Text(stringManager.strings.dialogOpenBrowser.description),
                                 message: Text(""),
-                                primaryButton: .default(Text(stringManager.strings?.dialogOpenBrowser.continueField ?? "OPEN")) { openWebsite() },
-                                secondaryButton: .cancel(Text(stringManager.strings?.dialogOpenBrowser.cancel ?? "CANCEL"))
+                                primaryButton: .default(Text(stringManager.strings.dialogOpenBrowser.continueField)) { openWebsite() },
+                                secondaryButton: .cancel(Text(stringManager.strings.dialogOpenBrowser.cancel))
                             )
                         }
                     
-                    Text(stringManager.strings?.copyright
+                    Text(stringManager.strings.copyright
                         .replacingOccurrences(of: ". All", with: ".\n All")
-                         ?? StringConstants.LandingView.copyRight
                     )
                     .font(.verlagBookAdaptive(size: 14))
                     .foregroundColor(Color.primaryText)
@@ -87,7 +86,7 @@ struct AboutView: View {
     }
     
     func openWebsite() {
-        let urlString = stringManager.strings?.serviceHref ?? "https://www.drttix.com"
+        let urlString = stringManager.strings.serviceHref
         if let url = URL(string: urlString) {
             UIApplication.shared.open(url)
         }

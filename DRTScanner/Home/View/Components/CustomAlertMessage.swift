@@ -19,7 +19,7 @@ struct CustomAlertMessage:View {
                     .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                 Spacer()
                 
-                Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
+                Text(StringManager.shared.strings.errorMassage.error)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)
                 Spacer()

@@ -38,7 +38,7 @@ struct ChooseSeatView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .frame(width: 20, height: 20)
                 } else {
-                    Text(stringManager.strings?.seat.seat ?? sectionsTitle)
+                    Text(stringManager.strings.seat.seat)
                         .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(.neutralText)
                         .padding(.trailing, 50)

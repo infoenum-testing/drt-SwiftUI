@@ -13,7 +13,6 @@ class SettingsViewModel: ObservableObject {
     @AppStorage("kShouldPlayHaptic") var shouldPlayHaptic: Bool = false
     
     // Timeout settings for device sleep and scan pause
-    @AppStorage("kDeviceSleepTimeout") var deviceSleepTimeout: Int = 0
     @AppStorage("kPauseScanTimeout") var pauseScanTimeout: Int = 0
     
     // Scan behavior settings related to duplicate suppression
@@ -24,14 +23,14 @@ class SettingsViewModel: ObservableObject {
     // MARK: - Time Options Arrays
     
     // Arrays for time options displayed in the UI
-    let mins = StringManager.shared.strings?.settings.mins ?? "mins"
-    let sec = StringManager.shared.strings?.settings.sec ?? "sec"
-    let off = StringManager.shared.strings?.settings.off ?? "OFF"
+    let mins = StringManager.shared.strings.settings.mins
+    let sec = StringManager.shared.strings.settings.sec
+    let off = StringManager.shared.strings.settings.off
     
     // Published variables for text formatting of time options (displayed to the user)
-    @Published var deviceSleepTimeoutText: String = "00:00 \(StringManager.shared.strings?.settings.mins ?? "mins")"
-    @Published var pauseScanTimeoutText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
-    @Published var duplicateScanSuppressionText: String = "0 \(StringManager.shared.strings?.settings.sec ?? "sec")"
+    @Published var deviceSleepTimeoutText: String = "00:00 \(StringManager.shared.strings.settings.mins)"
+    @Published var pauseScanTimeoutText: String = "0 \(StringManager.shared.strings.settings.sec)"
+    @Published var duplicateScanSuppressionText: String = "0 \(StringManager.shared.strings.settings.sec)"
     @Published var selectedLangText: String =  UserDefaults.standard.string(forKey: "selectedLang") ?? StringManager.shared.currentLang()
     
     // MARK: - Predefined Time Option Strings
@@ -39,7 +38,9 @@ class SettingsViewModel: ObservableObject {
     lazy var deviceSleepOptions = (0...10).map { "\($0):00 \(mins)" }
     lazy var pauseScanOptions = ["0", "10", "20", "30"].map { "\($0) \(sec)" }
     lazy var  duplicateScanOptions = stride(from: 0, through: 30, by: 5).map { "\($0) \(sec)" }
-    let languages = [StringManager.shared.allLangStrings?.enUS.lang ?? "ENGLISH", StringManager.shared.allLangStrings?.frCA.lang ?? "FRANÇAIS",StringManager.shared.allLangStrings?.esUS.lang ?? "ESPAÑOL"]
+    var languages: [String] {
+         StringManager.allLanguages().map { $0.name }
+     }
     
     init() {
         updateTextValues()
@@ -48,10 +49,9 @@ class SettingsViewModel: ObservableObject {
     /// Returns the available time options for a specific setting based on its index.
     func getTimeOptions(for index: Int) -> [String] {
         switch index {
-        case 2: return deviceSleepOptions
-        case 3: return pauseScanOptions
-        case 4: return duplicateScanOptions
-        case 5: return languages
+        case 2: return pauseScanOptions
+        case 3: return duplicateScanOptions
+        case 4: return languages
         default: return []
         }
     }
@@ -60,12 +60,10 @@ class SettingsViewModel: ObservableObject {
     func saveTime(_ timeIndex: Int, for index: Int) {
         switch index {
         case 2:
-            deviceSleepTimeout = timeIndex
-        case 3:
             pauseScanTimeout = timeIndex * 10
-        case 4:
+        case 3:
             duplicateScanSuppression = timeIndex * 5 // Set duplicate scan suppression (in 5 seconds)
-        case 5:
+        case 4:
             UserDefaults.standard.set(languages[timeIndex],forKey: "selectedLang")
             selectedLangText = languages[timeIndex]
             StringManager.shared.updateLang(for: languages[timeIndex])
@@ -78,10 +76,8 @@ class SettingsViewModel: ObservableObject {
     
     /// Updates the text values that display time-related settings to the user.
     private func updateTextValues() {
-        let mins = StringManager.shared.strings?.settings.mins ?? "mins"
-        let sec = StringManager.shared.strings?.settings.sec ?? "sec"
-        let off = StringManager.shared.strings?.settings.off ?? "OFF"
-        deviceSleepTimeoutText = deviceSleepTimeout == 0 ? off : "\(deviceSleepTimeout):00 \(mins)"
+        let sec = StringManager.shared.strings.settings.sec
+        let off = StringManager.shared.strings.settings.off
         pauseScanTimeoutText = pauseScanTimeout == 0 ? off : "\(pauseScanTimeout) \(sec)"
         duplicateScanSuppressionText = duplicateScanSuppression == 0 ? off : "\(duplicateScanSuppression) \(sec)"
         
@@ -90,8 +86,8 @@ class SettingsViewModel: ObservableObject {
     }
     
     private func reloadStrings() {
-        let mins = StringManager.shared.strings?.settings.mins ?? "mins"
-        let sec = StringManager.shared.strings?.settings.sec ?? "sec"
+        let mins = StringManager.shared.strings.settings.mins
+        let sec = StringManager.shared.strings.settings.sec
         
         pauseScanTimeoutText = "0 \(sec)"
         duplicateScanSuppressionText =  "0 \(sec)"

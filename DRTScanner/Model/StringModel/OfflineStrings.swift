@@ -9,19 +9,23 @@
 import Foundation
 
 struct OfflineStrings: Codable {
-    let success: String
-    let uploaded: String
-    let blockedTicket: String
     let download: String
-    let invalidBarcode: String
+    let success: String
     let uploading: String
-
-    enum CodingKeys: String, CodingKey {
-        case success
-        case uploaded
-        case blockedTicket = "blocked-ticket"
+    let downloading: String
+    let uploaded: String
+    let invalidBarcode: String
+    let blockedTicket: String
+    let uploadFailed: String
+    
+    private enum CodingKeys: String, CodingKey {
         case download
-        case invalidBarcode = "invalid-barcode"
+        case success
         case uploading
+        case downloading
+        case uploaded
+        case invalidBarcode = "invalid-barcode"
+        case blockedTicket = "blocked-ticket"
+        case uploadFailed = "upload-failed"
     }
 }

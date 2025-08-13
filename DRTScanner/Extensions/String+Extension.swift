@@ -21,4 +21,15 @@ extension String {
         formatter.timeZone = TimeZone.current
         return formatter.string(from: date)
     }
+    
+    func toDateFromMillisecondsTimestamp() -> Date? {
+           // Try converting to Double first
+           guard let timestampDouble = Double(self) else {
+               return nil
+           }
+           
+           // Convert milliseconds to seconds
+           let date = Date(timeIntervalSince1970: timestampDouble / 1000)
+           return date
+       }
 }

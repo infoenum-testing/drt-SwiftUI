@@ -93,7 +93,7 @@ struct ShowCodeView: View {
                                 
                                 // Disabled TextField Showing Current Code
                                 BlinkingCodeDisplay(
-                                    placeholder: stringManager.strings?.login.showCode ?? StringConstants.Common.showCode,
+                                    placeholder: stringManager.strings.login.showCode,
                                     code: $viewModel.showCode
                                 )
                                 .padding(.top,20)

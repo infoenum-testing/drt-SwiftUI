@@ -41,7 +41,7 @@ struct GoOfflineView: View {
             AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6,shadow: true)
             VStack(alignment: .leading, spacing: 10) {
                 Spacer()
-                Text(stringManager.strings?.dialogGoOffline.description ?? StringConstants.SideMenuView.goOfflineViewDiscription)
+                Text(stringManager.strings.dialogGoOffline.description)
                     .font(.verlagBookAdaptive(size: 18))
                     .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
@@ -50,7 +50,7 @@ struct GoOfflineView: View {
                     .padding(.horizontal)
                 
                 if !isSyncing {
-                    TextField(stringManager.strings?.dialogGoOffline.typeName ?? StringConstants.SideMenuView.goOfflineViewTextFieldText, text: $name)
+                    TextField(stringManager.strings.dialogGoOffline.typeName, text: $name)
                         .padding(UIDevice.current.userInterfaceIdiom == .pad ? 20 : 15)
                         .font(.verlagBookAdaptive(size: 30))
                         .background(Color.neutralBg)
@@ -97,7 +97,7 @@ struct GoOfflineView: View {
                                 goOffline()
                             }
                         }) {
-                            Text(stringManager.strings?.dialogGoOffline.continueField ?? StringConstants.Common.continueTextAlert)
+                            Text(stringManager.strings.dialogGoOffline.continueField)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(isContinueDisabled ? Color.neutralBg : Color.primaryText)
                                 .padding()
@@ -118,7 +118,7 @@ struct GoOfflineView: View {
                                 isPresented = false
                             }
                         }) {
-                            Text(stringManager.strings?.dialogGoOffline.cancel ?? StringConstants.Common.cancel)
+                            Text(stringManager.strings.dialogGoOffline.cancel)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(Color.primaryText)
                                 .padding()
@@ -146,7 +146,7 @@ struct GoOfflineView: View {
         guard name.count >= 5 else { return }
         isSyncing = true
         progress = 0.0
-        downloadLabel = stringManager.strings?.dialogGoOffline.preparing ?? "Preparing Download"
+        downloadLabel = stringManager.strings.dialogGoOffline.preparing
         
         IQAPIClient.getAllDataOffline(code: savedShowCode ?? "", username: name) { result in
             switch result {
@@ -167,7 +167,7 @@ struct GoOfflineView: View {
                 if let orderDetails = response as? [String: Any] {
                     DispatchQueue.global(qos: .userInitiated).async {
                         DispatchQueue.main.async {
-                            downloadLabel = stringManager.strings?.dialogGoOffline.downloading ?? "Downloading Database"
+                            downloadLabel = stringManager.strings.dialogGoOffline.downloading
                         }
                         DRTDatabaseManager.shared.syncServerData(
                             serverDict: orderDetails,
@@ -215,7 +215,7 @@ struct GoOfflineView: View {
                     if NetworkMonitor.shared.isNetworkAvailable() {
                         viewModel.errorMessage = error.localizedDescription
                     } else {
-                        viewModel.errorMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
+                        viewModel.errorMessage = StringManager.shared.strings.noInternet.description
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showOfflineAlert = true

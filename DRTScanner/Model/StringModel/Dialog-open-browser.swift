@@ -7,15 +7,13 @@
 import Foundation
 
 struct DialogOpenBrowser: Codable {
-
-	let continueField: String
-	let cancel: String
-	let description: String
-
-	private enum CodingKeys: String, CodingKey {
-		case continueField = "continue"
-		case cancel = "cancel"
-		case description = "description"
-	}
-
+    let continueField: String
+    let cancel: String
+    let description: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case continueField = "continue"
+        case cancel
+        case description
+    }
 }

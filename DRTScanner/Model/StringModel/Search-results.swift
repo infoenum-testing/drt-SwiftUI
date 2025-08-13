@@ -7,27 +7,25 @@
 import Foundation
 
 struct SearchResults: Codable {
-    
-    let cc: String
     let counts: String
+    let totalResults: String
     let order: String
+    let cc: String
     let phoneNumber: String
     let resultNotFound: String
-    let totalResults: String
-    let search: String
     let loading: String
     let nomerchandiseFound: String
+    let search: String
     
     private enum CodingKeys: String, CodingKey {
-        case cc
         case counts
+        case totalResults = "total-results"
         case order
+        case cc
         case phoneNumber = "phone-number"
         case resultNotFound = "result-not-found"
-        case totalResults = "total-results"
-        case nomerchandiseFound = "nomerchandiseFound"
-        case search = "search"
-        case loading = "loading"
+        case loading
+        case nomerchandiseFound
+        case search
     }
-    
 }

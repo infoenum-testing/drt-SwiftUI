@@ -52,18 +52,18 @@ struct LookupByNumbersView: View {
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"],
-        ["-", "0", StringManager.shared.strings?.home.ok ?? "OK"]
+        ["-", "0", StringManager.shared.strings.home.ok]
     ]
     
     // Placeholder text based on lookup type
     var placeholderText: String {
         switch lookupType {
         case .orderNumber:
-            return stringManager.strings?.home.orderNumber ?? StringConstants.SeatHomeView.orderNumber
+            return stringManager.strings.home.orderNumber
         case .phoneNumber:
-            return stringManager.strings?.home.phoneNumber ?? StringConstants.SeatHomeView.phoneNumber
+            return stringManager.strings.home.phoneNumber
         case .creditCard:
-            return stringManager.strings?.home.creditCard ?? StringConstants.SeatHomeView.creditCard
+            return stringManager.strings.home.creditCard
         }
     }
     
@@ -83,7 +83,7 @@ struct LookupByNumbersView: View {
     var body: some View {
         ZStack {
             VStack {
-                VStack {
+                VStack(spacing: 0) {
                         // Top bar with back button, input field, and delete button
                     HStack(alignment: .center) {
                         Button(action: {
@@ -142,9 +142,16 @@ struct LookupByNumbersView: View {
                                 HStack(spacing: 0) {
                                     ForEach(row, id: \.self) { button in
                                         ZStack {
-                                            if button == StringManager.shared.strings?.home.ok ?? "OK" {
-                                                Image(isOKButtonEnabled ? (isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") : "order_number_unclicked_btn")
-                                                    .resizable()
+                                            if button == StringManager.shared.strings.home.ok {
+                                                if !isOKButtonEnabled {
+                                                    Image("order_number_unclicked_btn")
+                                                        .renderingMode(.template )
+                                                        .resizable()
+                                                        .foregroundColor(.disableBGColour)
+                                                } else {
+                                                    Image(isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn")
+                                                        .resizable()
+                                                }
                                             } else {
                                                 Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")
                                                     .resizable()
@@ -152,10 +159,9 @@ struct LookupByNumbersView: View {
                                             
                                             Text(button)
                                                 .font(.verlagBoldAdaptive(size: 50))
-                                                .foregroundColor(button == StringManager.shared.strings?.home.ok ?? "OK" ? .primaryText : Color.primaryBg)
+                                                .foregroundColor(button == StringManager.shared.strings.home.ok ? (isOKButtonEnabled ? .primaryText : .disableTextColour) : Color.primaryBg)
                                                 .frame(maxWidth: .infinity)
                                         }
-                                        .opacity(button == StringManager.shared.strings?.home.ok ?? "OK" && !isOKButtonEnabled ? 0.5 : 1.0)
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                                         .onTapGesture {
                                             handleButtonTap(button)
@@ -172,41 +178,32 @@ struct LookupByNumbersView: View {
             // Show result view if a lookup has been performed
             if showResultView {
                 VStack {
-                    if let firstOrder = order {
-                        if lookupType == .phoneNumber || lookupType == .creditCard {
-                            LookupResultCardOrPhoneView(
-                                inputText: inputText,
-                                dismissAction: {
-                                    withAnimation {
-                                        showResultView = false
-                                    }
-                                },
-                                errorMessage: nil,
-                                lookupType: lookupType
-                            )
-                            .padding(.top, 0)
-                               
-                        } else {
-                            
-                            LookupOrderResultView(
-                                inputText: inputText,
-                                dismissAction: {
-                                    withAnimation {
-                                        showResultView = false
-                                    }
-                                },
-                                errorMessage: nil,
-                                order: firstOrder.first
-                            )
-                            .padding(.top, 0)
-
-                        }
+                    if lookupType == .phoneNumber || lookupType == .creditCard {
+                        LookupResultCardOrPhoneView(
+                            inputText: inputText,
+                            dismissAction: {
+                                withAnimation {
+                                    showResultView = false
+                                }
+                            },
+                            errorMessage: nil,
+                            lookupType: lookupType
+                        )
+                        .padding(.top, 0)
                         
                     } else {
-                        LookupOrderResultView(inputText: inputText, dismissAction: { showResultView = false }, errorMessage: StringConstants.Common.ordersNotFound, order: OrdersNewApi(buyerName: "", cc: "", phone: "", orderId: 0, valid: true,goldenTicketText: "", isGoldenTicket: nil, message: "", seats: [], merch: []))
-                            .onAppear {
-                                order = nil
-                            }
+                        
+                        LookupOrderResultView(
+                            inputText: inputText,
+                            dismissAction: {
+                                withAnimation {
+                                    showResultView = false
+                                }
+                            },
+                            errorMessage: nil
+                        )
+                        .padding(.top, 0)
+                        
                     }
                 }
                 .transition(.move(edge: .trailing))
@@ -239,23 +236,6 @@ struct LookupByNumbersView: View {
                 isLoading = true
                 Task {
                     do {
-                        switch lookupType {
-                        case .creditCard:
-                            await creditCardViewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
-                            DispatchQueue.main.async {
-                                self.order = creditCardViewModel.orders.isEmpty ? [] : [creditCardViewModel.orders.first!]
-                            }
-                        case .phoneNumber:
-                            await phoneViewModels.fetchSeats(c: savedShowCode ?? "", q: inputText)
-                            DispatchQueue.main.async {
-                                self.order = phoneViewModels.orders.isEmpty ? [] : [phoneViewModels.orders.first!]
-                            }
-                        case .orderNumber:
-                            await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
-                            DispatchQueue.main.async {
-                                self.order = viewModel.orders.isEmpty ? [] : [viewModel.orders.first!]
-                            }
-                        }
                         DispatchQueue.main.async {
                             self.isLoading = false // Stop loading
                             withAnimation {

@@ -7,19 +7,19 @@
 import Foundation
 
 struct ErrorDescriptionMessages: Codable {
+    let reachServer: String
     let badResponse: String
     let findServer: String
     let connectSecurely: String
-    let reachServer: String
     let connect: String
     let connectionOffline: String
-
-    enum CodingKeys: String, CodingKey {
+    
+    private enum CodingKeys: String, CodingKey {
+        case reachServer = "reach-server"
         case badResponse = "bad-response"
         case findServer = "find-server"
         case connectSecurely = "connect-securely"
-        case reachServer = "reach-server"
-        case connect = "connect"
+        case connect
         case connectionOffline = "connection-offline"
     }
 }

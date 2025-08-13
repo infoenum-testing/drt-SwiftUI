@@ -10,158 +10,170 @@ import Foundation
 import Combine
 import IQAPIClient
 
-class StringManager: ObservableObject {
-    private let lastStringAPICallKey = "LastStringAPICallTimestamp"
-    
+final class StringManager: ObservableObject {
     static let shared = StringManager()
-    @Published var strings: SelectedLangStrings?
-    
+
+    @Published var strings: SelectedLangStrings
     @Published var allLangStrings: AppStringsModel?
-    
+
     @Published var isShowAlert: Bool = false
     @Published var title: String = ""
     @Published var message: String = ""
-    
+
+    private let lastStringAPICallKey = "LastStringAPICallTimestamp"
+
+    // MARK: - Init
     private init() {
-        loadDefaultStringsFromBundleIfNeeded()
+        if !JsonFileManager.isAnyLanguageFileSaved(prefix: "AppStringData"),
+           let bundleDict = JsonFileManager.loadJSONFromBundle(fileName: "language") {
+            JsonFileManager.saveJSONToFile(json: bundleDict)
+        }
+        let selectedCode = Self.getOrSetInitialLanguageCode()
+
+        guard let allStrings = JsonFileManager.loadJSONFromBundle(fileName: "language"),
+              let jsonData = try? JSONSerialization.data(withJSONObject: allStrings, options: []),
+              let appStrings = try? JSONDecoder().decode(AppStringsModel.self, from: jsonData) else {
+            fatalError("❌ Failed to load and decode JSON from bundle.")
+        }
+
+        allLangStrings = appStrings
+        guard let selectedStrings = appStrings[selectedCode] else {
+            fatalError("❌ Selected language not found in JSON.")
+        }
+        strings = selectedStrings
+
         loadStringFromLocal()
     }
-    
+
+    // MARK: - Language Helpers (dynamic)
+    static func allLanguages() -> [(code: String, name: String)] {
+        // First try from saved file in Documents (if exists)
+        if JsonFileManager.isAnyLanguageFileSaved(prefix: "AppStringData"),
+           let dict = JsonFileManager.loadJSONFromFile() as? [String: Any] {
+            return parseLanguages(from: dict)
+        }
+        
+        // Fallback: load from bundled JSON file
+        if let dict = JsonFileManager.loadJSONFromBundle(fileName: "language") as? [String: Any] {
+            return parseLanguages(from: dict)
+        }
+        
+        // Default: empty list
+        return []
+    }
+
+    // Shared parser to avoid duplication
+    private static func parseLanguages(from dict: [String: Any]) -> [(code: String, name: String)] {
+        return dict.compactMap { key, value in
+            if let langDict = value as? [String: Any],
+               let langName = langDict["lang"] as? String {
+                return (code: key, name: langName)
+            }
+            return nil
+        }
+        .sorted { $0.name < $1.name }
+    }
+
+
+    static func code(for nameOrCode: String) -> String {
+        let langs = allLanguages()
+        if let found = langs.first(where: { $0.code.caseInsensitiveCompare(nameOrCode) == .orderedSame ||
+                                            $0.name.caseInsensitiveCompare(nameOrCode) == .orderedSame }) {
+            return found.code
+        }
+        return nameOrCode
+    }
+
+    static func name(for codeOrName: String) -> String {
+        let langs = allLanguages()
+        if let found = langs.first(where: { $0.code.caseInsensitiveCompare(codeOrName) == .orderedSame ||
+                                            $0.name.caseInsensitiveCompare(codeOrName) == .orderedSame }) {
+            return found.name
+        }
+        return codeOrName
+    }
+
+    private static func getOrSetInitialLanguageCode() -> String {
+        if let savedLang = UserDefaults.standard.string(forKey: "selectedLang") {
+            return code(for: savedLang)
+        } else {
+            let systemCode = AppStringsModel.getSystemLangCode()
+            let availableLangCodes = StringManager.allLanguages().map { $0.code }
+
+            let normalized: String
+            if availableLangCodes.contains(systemCode) {
+                normalized = code(for: systemCode)
+            } else {
+                normalized = code(for: "en_US")
+            }
+
+            UserDefaults.standard.set(name(for: normalized), forKey: "selectedLang")
+            return normalized
+        }
+    }
+
+    // MARK: - Update Lang
+    func updateLang(for nameOrCode: String) {
+        let langCode = Self.code(for: nameOrCode)
+        if let langStrings = allLangStrings?[langCode] {
+            strings = langStrings
+        }
+    }
+
+    func returnLangCode() -> String {
+        Self.code(for: strings.lang)
+    }
+
+    func currentLang() -> String {
+        Self.name(for: returnLangCode())
+    }
+
+    // MARK: - Loading Strings
     func loadStrings() {
         if !shouldMakeAPICall() {
             loadStringFromLocal()
             return
         }
-        
+
         IQAPIClient.getStringLanguage { result in
             switch result {
-            case .success(let strings):
-                print(strings)
+            case .success(let stringsDict):
                 DispatchQueue.main.async {
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
-                        let decoder = JSONDecoder()
-                        
-                        do {
-                            let appStrings = try decoder.decode(AppStringsModel.self, from: jsonData)
-                            self.allLangStrings = appStrings
-                            if let langCode = UserDefaults.standard.string(forKey: "selectedLang") {
-                                self.updateLang(for: langCode)
-                            } else {
-                                self.updateLangBasedOnCode()
-                            }
-                        } catch {
-                            print("Decoding error: \(error)")
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: stringsDict, options: []),
+                       let appStrings = try? JSONDecoder().decode(AppStringsModel.self, from: jsonData) {
+                        self.allLangStrings = appStrings
+                        if let savedLang = UserDefaults.standard.string(forKey: "selectedLang") {
+                            self.updateLang(for: savedLang)
+                        } else {
+                            self.updateLang(for: Self.getOrSetInitialLanguageCode())
                         }
+                        JsonFileManager.saveJSONToFile(json: stringsDict)
+                        UserDefaults.standard.set(Date(), forKey: self.lastStringAPICallKey)
                     }
-                    saveJSONToFile(json: strings)
                 }
-                
             case .failure(let error):
-                print("Failed to fetch strings:", error)
+                print("❌ Failed to fetch strings:", error)
             }
         }
     }
-    
+
     func loadStringFromLocal() {
-        if let strings = loadJSONFromFile(), let jsonData = try? JSONSerialization.data(withJSONObject: strings, options: []) {
-            let decoder = JSONDecoder()
-            
-            do {
-                let appStrings = try decoder.decode(AppStringsModel.self, from: jsonData)
-                self.allLangStrings = appStrings
-                if let langCode = UserDefaults.standard.string(forKey: "selectedLang") {
-                    self.updateLang(for: langCode)
-                } else {
-                    self.updateLangBasedOnCode()
-                }
-            } catch {
-                print("Decoding error: \(error)")
+        if let localDict = JsonFileManager.loadJSONFromFile(),
+           let jsonData = try? JSONSerialization.data(withJSONObject: localDict, options: []),
+           let appStrings = try? JSONDecoder().decode(AppStringsModel.self, from: jsonData) {
+            self.allLangStrings = appStrings
+            if let savedLang = UserDefaults.standard.string(forKey: "selectedLang") {
+                self.updateLang(for: savedLang)
+            } else {
+                self.updateLang(for: Self.getOrSetInitialLanguageCode())
             }
         }
     }
-    
-    func loadJSONFromBundle(fileName: String, fileExtension: String = "json") -> [String: Any]? {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
-            print("❌ File \(fileName).\(fileExtension) not found in bundle.")
-            return nil
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-            return jsonObject as? [String: Any]
-        } catch {
-            print("❌ Error reading JSON from bundle: \(error)")
-            return nil
-        }
-    }
-    
-    private func loadDefaultStringsFromBundleIfNeeded() {
-        if !isAnyLanguageFileSaved(prefix: "AppStringData") {
-            if let bundleDict = loadJSONFromBundle(fileName: "language") {
-                saveJSONToFile(json: bundleDict) // Save to Documents for persistence
-            }
-        }
-    }
-    
+
     private func shouldMakeAPICall() -> Bool {
-        let now = Date()
         if let lastCall = UserDefaults.standard.object(forKey: lastStringAPICallKey) as? Date {
-               let hoursSinceLastCall = now.timeIntervalSince(lastCall) / 3600
-               return hoursSinceLastCall >= 24
-           }
-           return true // No previous call, so allow
-       }
-    
-    func updateLang(for code: String) {
-        var tamp = "en_US"
-        switch code {
-        case allLangStrings?.enUS.lang ?? "ENGLISH":
-            tamp = "en_US"
-        case allLangStrings?.frCA.lang ?? "FRANÇAIS":
-            tamp = "fr_CA"
-        case allLangStrings?.esUS.lang ?? "ESPAÑOL":
-            tamp = "es_US"
-        default:
-            tamp = "en_US"
+            return Date().timeIntervalSince(lastCall) / 3600 >= 24
         }
-        self.strings =  allLangStrings?[tamp]
-    }
-    
-    func updateLangBasedOnCode() {
-        let code = LangCode.currentLangCode()
-        if let selctedLang = allLangStrings?[code] {
-            self.strings =  selctedLang
-        } else {
-            self.strings =  allLangStrings?["en_US"]
-        }
-    }
-    
-    func returnLangCode()-> String {
-        let  code = strings?.lang ?? "en_US"
-        switch code {
-        case allLangStrings?.enUS.lang ?? "ENGLISH":
-            return "en_US"
-        case allLangStrings?.frCA.lang ?? "FRANÇAIS":
-            return "fr_CA"
-        case allLangStrings?.esUS.lang ?? "ESPAÑOL":
-            return "es_US"
-        default:
-            return "en_US"
-        }
-    }
-    
-    func currentLang()-> String {
-        let  code = strings?.lang ?? "en_US"
-        switch code {
-        case "en_US" :
-            return allLangStrings?.enUS.lang ?? "ENGLISH"
-        case "fr_CA" :
-            return  allLangStrings?.frCA.lang ?? "FRANÇAIS"
-        case "es_US" :
-            return  allLangStrings?.esUS.lang ?? "ESPAÑOL"
-        default:
-            return allLangStrings?.enUS.lang ?? "ENGLISH"
-        }
+        return true
     }
 }

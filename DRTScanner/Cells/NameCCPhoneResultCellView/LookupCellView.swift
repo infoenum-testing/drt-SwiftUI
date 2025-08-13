@@ -33,13 +33,13 @@ struct LookupCellView: View {
                             .foregroundColor(Color.primaryBg)
                         
                         HStack(spacing: 12) {
-                            Text("\(stringManager.strings?.searchResults.order ?? StringConstants.LandingView.orderLabel): \(String(result.orderId ?? 0))")
-                            Text("\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel) \(result.cc ?? "")")
+                            Text("\(stringManager.strings.searchResults.order): \(String(result.orderId ?? 0))")
+                            Text("\(stringManager.strings.searchResults.cc) \(result.cc ?? "")")
                         }
                         .font(.verlagBoldAdaptive(size: 15))
                         .foregroundColor(Color.primaryBg)
                         
-                        Text("\(stringManager.strings?.searchResults.phoneNumber ?? StringConstants.LandingView.phoneLabel) \(result.phone ?? "")")
+                        Text("\(stringManager.strings.searchResults.phoneNumber) \(result.phone ?? "")")
                             .font(.verlagBoldAdaptive(size: 15))
                             .foregroundColor(Color.primaryBg)
                     }

@@ -7,23 +7,23 @@
 import Foundation
 
 struct ErrorMessages: Codable {
+    let timedout: String
     let badServerResponse: String
+    let findServer: String
     let connect: String
     let connectSecurely: String
-    let invalidShowCode: String
     let offline: String
-    let timedout: String
-    let findServer: String
+    let invalidShowCode: String
     let error: String
-
-    enum CodingKeys: String, CodingKey {
+    
+    private enum CodingKeys: String, CodingKey {
+        case timedout
         case badServerResponse = "bad-server-response"
-        case connect = "connect"
-        case connectSecurely = "connect-securely"
-        case invalidShowCode = "invalidShowCode"
-        case offline = "offline"
-        case timedout = "timedout"
         case findServer = "find-server"
-        case error = "error"
+        case connect
+        case connectSecurely = "connect-securely"
+        case offline
+        case invalidShowCode = "invalidShowCode"
+        case error
     }
 }

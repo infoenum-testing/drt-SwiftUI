@@ -37,7 +37,7 @@ struct ChooseSectionView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                         .frame(width: 20, height: 20)
                 } else {
-                    Text(stringManager.strings?.seat.section ?? sectionsTitle)
+                    Text(stringManager.strings.seat.section)
                         .font(.verlagBlackAdaptive(size: 30))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.neutralText)

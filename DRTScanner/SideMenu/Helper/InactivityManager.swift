@@ -17,10 +17,6 @@ class InactivityManager: ObservableObject {
     
     @Published var isAsleep: Bool = false
 
-    private var timeoutMinutes: Int {
-        UserDefaults.standard.integer(forKey: "kDeviceSleepTimeout")
-    }
-
     private init() {
         observeAppLifecycle()
         observeTimeoutChanges()
@@ -38,15 +34,7 @@ class InactivityManager: ObservableObject {
             UIApplication.shared.isIdleTimerDisabled = true
         }
 
-        let timeout = timeoutMinutes
-        guard timeout > 0 else {
-            DispatchQueue.main.async {
-                UIApplication.shared.isIdleTimerDisabled = false
-            }
-            return
-        }
-
-        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(timeout * 60), repeats: false) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(30 * 60), repeats: false) { [weak self] _ in
             self?.enterSleepMode()
         }
     }

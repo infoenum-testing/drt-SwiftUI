@@ -14,7 +14,6 @@ import CoreData
 class ScanningStatsViewModel: ObservableObject {
     @Published var stats: StatsModel?
     @Published var isLoading = false
-    @Published var errorMessage: String?
     
     private var isStatsSaved = false
     private let viewContext: NSManagedObjectContext
@@ -29,7 +28,6 @@ class ScanningStatsViewModel: ObservableObject {
     
     func fetchStats() async {
         isLoading = true
-        errorMessage = nil
         
         if !isOfflineMode {
             do {
@@ -46,7 +44,6 @@ class ScanningStatsViewModel: ObservableObject {
                 }
             } catch {
                 print("API failed: \(error.localizedDescription)")
-                errorMessage = "Failed to fetch data from API. Loading from local storage..."
             }
         }
         

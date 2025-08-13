@@ -32,7 +32,7 @@ struct LookupByNameView: View {
     var placeholderText: String {
         switch lookupType {
         case .name:
-            return stringManager.strings?.home.name ?? "NAME"
+            return stringManager.strings.home.name
         }
     }
 
@@ -113,7 +113,7 @@ struct LookupByNameView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        Text(stringManager.strings?.searchResults.search ?? StringConstants.Common.search)
+                        Text(stringManager.strings.searchResults.search)
                             .font(.verlagBoldAdaptive(size: 36))
                             .foregroundColor(Color.primaryText)
                             .padding()
@@ -134,23 +134,16 @@ struct LookupByNameView: View {
             .background(Color.primaryText)
             .overlay {
                 if showResultView {
-                    if let firstOrder = order {
                         LookupByNameResultView(
                             inputText: inputText,
-                            dismissAction: { showResultView = false },
-                            orders: firstOrder,
+                            dismissAction: {
+                                withAnimation {
+                                    showResultView = false
+                                }
+                            },
                             errorMessage: nil
                         )
                         .transition(.move(edge: .trailing))
-                    } else {
-                        LookupByNameResultView(
-                            inputText: inputText,
-                            dismissAction: { showResultView = false },
-                            orders: [],
-                            errorMessage: order?.isEmpty ?? true ? StringManager.shared.strings?.searchResults.phoneNumber ?? StringConstants.Common.ordersNotFound : nil
-                        )
-                        .transition(.move(edge: .trailing))
-                    }
                 }
             }
         }.hideKeyboardOnTap()
@@ -163,10 +156,8 @@ struct LookupByNameView: View {
         isOKButtonClicked = true
 
         Task {
-            await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             DispatchQueue.main.async {
                 withAnimation {
-                    self.order = viewModel.orders
                     self.showResultView = true
                     self.isSearching = false
                     self.isOKButtonClicked = false

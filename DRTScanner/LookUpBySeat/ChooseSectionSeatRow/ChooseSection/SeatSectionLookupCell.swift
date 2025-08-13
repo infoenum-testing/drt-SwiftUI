@@ -16,7 +16,7 @@ struct SeatSectionLookupCell: View {
     var body: some View {
         HStack {
             // Displays the label for the section (e.g., "Section")
-            Text(stringManager.strings?.seat.section ?? StringConstants.Common.section)
+            Text(stringManager.strings.seat.section)
                 .font(.verlagBookAdaptive(size: 27))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)

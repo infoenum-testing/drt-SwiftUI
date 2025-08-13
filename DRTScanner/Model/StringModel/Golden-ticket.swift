@@ -7,11 +7,5 @@
 import Foundation
 
 struct GoldenTicket: Codable {
-
-	let title: String
-
-	private enum CodingKeys: String, CodingKey {
-		case title = "title"
-	}
-
+    let title: String
 }

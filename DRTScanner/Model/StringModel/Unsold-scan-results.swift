@@ -7,13 +7,6 @@
 import Foundation
 
 struct UnsoldScanResults: Codable {
-
-	let H: String
-	let X: String
-
-	private enum CodingKeys: String, CodingKey {
-		case H = "H"
-		case X = "X"
-	}
-
+    let H: String
+    let X: String
 }

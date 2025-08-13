@@ -30,7 +30,7 @@ struct InvalidMerchandiseTicketView: View {
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom)
                 
-                Text(stringManager.strings?.incorrectMode.tickets ?? StringConstants.DRTToastMessages.inValidMerchandiseVoucher)
+                Text(stringManager.strings.incorrectMode.tickets)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)

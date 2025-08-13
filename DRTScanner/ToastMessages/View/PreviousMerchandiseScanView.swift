@@ -41,7 +41,7 @@ struct PreviousMerchandiseScanView: View {
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(Color.primaryText)
                     }
-                    let raw = stringManager.strings?.orderDetail.previouslyscanned ?? "PREVIOUSLY SCANNED AT %@"
+                    let raw = stringManager.strings.orderDetail.previouslyScanned
                     Text(raw.replacingOccurrences(of: "%@", with: message))
                         .font(.verlagBoldAdaptive(size: 26))
                         .multilineTextAlignment(.center)

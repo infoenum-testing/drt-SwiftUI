@@ -16,7 +16,7 @@ struct ShowOfflineAlertView:View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text(StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error)
+                Text(StringManager.shared.strings.errorMassage.error)
                     .padding(.leading, 20)
                     .font(.verlagBoldAdaptive(size: 30))
                     .foregroundColor(Color.primaryText)

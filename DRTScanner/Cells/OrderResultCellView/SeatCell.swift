@@ -44,14 +44,22 @@ struct SeatCell: View {
         VStack {
             HStack {
             VStack(alignment: .leading) {
-                    HStack {
-                        Text(isScanned ? String(format: stringManager.strings?.orderDetail.previouslyscanned ?? StringConstants.LandingView.previouslyScannedAt, scannedTime ?? "") : stringManager.strings?.orderDetail.notYetScanned ?? StringConstants.LandingView.notYetScanned)
+                HStack {
+                    if isScanned {
+                        if let scannTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
+                            Text(getScanLabel(from: scannTime))
+                                .font(.verlagBoldAdaptive(size: 18))
+                                .foregroundColor(Color.primaryBg)
+                        }
+                    } else {
+                        Text(stringManager.strings.orderDetail.notYetScanned)
                             .font(.verlagBoldAdaptive(size: 18))
                             .foregroundColor(Color.primaryBg)
                     }
+                }
                     HStack(alignment: .center) {
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings?.orderDetail.section ?? StringConstants.LandingView.sectionLabel)
+                            Text(stringManager.strings.orderDetail.section)
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.primaryBg)
                                 .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
@@ -61,7 +69,7 @@ struct SeatCell: View {
                         }
                         Spacer()
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings?.orderDetail.row ?? StringConstants.LandingView.rowLabel)
+                            Text(stringManager.strings.orderDetail.row)
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.primaryBg)
                                 .padding(.bottom, 1.adaptiveForIpad)
@@ -71,7 +79,7 @@ struct SeatCell: View {
                         }
                         Spacer()
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings?.orderDetail.seat ?? StringConstants.LandingView.seatLabel)
+                            Text(stringManager.strings.orderDetail.seat)
                                 .font(.verlagBoldAdaptive(size: 15))
                                 .foregroundColor(Color.primaryBg)
                                 .padding(.bottom, 1.adaptiveForIpad)
@@ -152,7 +160,7 @@ struct SeatCell: View {
                     case .success(let jsonResponse):
                         if let valid = jsonResponse["valid"] as? Bool, !valid {
                             // Scan was rejected
-                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings?.errorMassage.error ?? StringConstants.Common.error
+                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings.errorMassage.error
                             showAlert = true
                             playScanFeedback(scannerResult: .valid)
                         } else {
@@ -295,5 +303,34 @@ struct SeatCell: View {
     
     /// Placeholder for fetching scanned status from server
     private func loadScannedStatusOnline(for seat: SeatModel, completion: @escaping (Bool) -> Void) {
+    }
+    
+    
+    func getScanLabel(from scanDate: Date) -> String {
+        let now = Date()
+        let diffSeconds = Int(now.timeIntervalSince(scanDate))
+        let diffMinutes = diffSeconds / 60
+        let diffHours = diffMinutes / 60
+        let diffDays = diffHours / 24
+
+        let labelTemplate =  stringManager.strings.orderDetail.previouslyScanned
+        let labelscaned =  stringManager.strings.orderDetail.scanned
+
+        switch diffMinutes {
+        case ..<2:
+            return String(format: labelscaned, stringManager.strings.orderDetail.justNow)
+        case 2..<60:
+            let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
+            return String(format: labelTemplate, timeLabel)
+        case 60..<1440:
+            let hourAgoString = diffHours == 1 ? stringManager.strings.orderDetail.hourAgo : stringManager.strings.orderDetail.hoursAgo
+            let timeLabel = String(format: hourAgoString, "\(diffHours)")
+            return String(format: labelTemplate, timeLabel)
+        case 1440..<2880:
+            return String(format: labelTemplate, stringManager.strings.orderDetail.yesterday)
+        default:
+            let timeLabel = String(format: stringManager.strings.orderDetail.daysAgo, "\(diffDays)")
+            return String(format: labelTemplate, timeLabel)
+        }
     }
 }

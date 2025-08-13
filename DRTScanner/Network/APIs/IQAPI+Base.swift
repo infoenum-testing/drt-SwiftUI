@@ -56,12 +56,12 @@ public extension IQAPIClient {
                         
                         //Handle 401 in basic API calls...
                         if let message = object["message"] as? String {
-                            let error = NSError(domain: StringManager.shared.strings?.errorMassage.badServerResponse ?? StringConstants.APIError.serverError, code: statusCode, userInfo: [NSLocalizedDescriptionKey: message])
+                            let error = NSError(domain: StringManager.shared.strings.errorMassage.badServerResponse, code: statusCode, userInfo: [NSLocalizedDescriptionKey: message])
                             return .error(error)
                         }
                         
                         // Handle refresh case
-                        let error = NSError(domain: StringManager.shared.strings?.errorMassage.badServerResponse ?? StringConstants.APIError.serverError, code: IQNSURLServerError.accessTokenExpired.rawValue, userInfo: [NSLocalizedDescriptionKey: "Access Token expired"])
+                        let error = NSError(domain: StringManager.shared.strings.errorMassage.badServerResponse, code: IQNSURLServerError.accessTokenExpired.rawValue, userInfo: [NSLocalizedDescriptionKey: "Access Token expired"])
                         return .error(error)
                     }
                     
@@ -72,12 +72,12 @@ public extension IQAPIClient {
                     
                 } else if statusCode >= 500 && statusCode < 600 {
                     let errorMessage = object["message"] as? String ?? StringConstants.APIError.clientError
-                    let error = NSError(domain: StringManager.shared.strings?.errorMassage.badServerResponse ?? StringConstants.APIError.serverError, code: statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                    let error = NSError(domain: StringManager.shared.strings.errorMassage.badServerResponse, code: statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
                     return .error(error)
                 }
                 
             } else if let message = object["message"] as? String {
-                let error = NSError(domain: StringManager.shared.strings?.errorMassage.badServerResponse ?? StringConstants.APIError.serverError, code: NSURLErrorBadServerResponse, userInfo: [NSLocalizedDescriptionKey: message])
+                let error = NSError(domain: StringManager.shared.strings.errorMassage.badServerResponse, code: NSURLErrorBadServerResponse, userInfo: [NSLocalizedDescriptionKey: message])
                 return .error(error)
             }
             return .success(object)

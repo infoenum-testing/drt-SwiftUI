@@ -55,7 +55,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             checkCameraPermission()
         }
 
-        //startWatchdogTimer()
+        startWatchdogTimer()
     }
 
     // Cleans up observers when the controller is deallocated
@@ -117,8 +117,8 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: StringManager.shared.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel, style: .cancel))
-        alert.addAction(UIAlertAction(title: StringManager.shared.strings?.settings.settings ?? StringConstants.SideMenuView.settingSmall, style: .default) { _ in
+        alert.addAction(UIAlertAction(title: StringManager.shared.strings.dialogLogout.cancel, style: .cancel))
+        alert.addAction(UIAlertAction(title: StringManager.shared.strings.settings.settings, style: .default) { _ in
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }

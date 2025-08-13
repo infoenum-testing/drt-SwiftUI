@@ -32,7 +32,7 @@ struct InvalidSeatTicketView: View {
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom)
                 
-                Text(stringManager.strings?.incorrectMode.merch ?? StringConstants.DRTToastMessages.inValidTicketVoucher)
+                Text(stringManager.strings.incorrectMode.merch)
                     .font(.verlagBlackAdaptive(size: 30))
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)

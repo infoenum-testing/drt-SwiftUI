@@ -10,39 +10,45 @@ import Foundation
 
 struct Settings: Codable {
     
-    let scanStats: String
-    let sleepTimer: String
-    let haptics: String
-    let flashTimeout: String
-    let sound: String
     let settings: String
-    let off: String
-    let mins: String
-    let sec: String
-    let save: String
+    let sound: String
+    let haptics: String
+    let sleepTimer: String
+    let sleepTimerInstructions: String
     let timer: String
+    let timerInstructions: String
     let duplicate: String
-    let language: String
-    let timerInstruction: String
-    let duplicateInstruction: String
-    let sleepTimerInstruction: String
+    let duplicateInstructions: String
+    let scanStats: String
+    let flashTimeout: String
+    let save: String
+    let changeLanguage: String
+    let sec: String
+    let mins: String
+    let off: String
+    let mode: String
+    let offline: String
+    let online: String
     
     private enum CodingKeys: String, CodingKey {
-        case scanStats = "scan-stats"
+        case settings
+        case sound
+        case haptics
         case sleepTimer = "sleep-timer"
-        case save = "save"
-        case haptics = "haptics"
+        case sleepTimerInstructions = "sleep-timer-instructions"
+        case timer
+        case timerInstructions = "timer-instructions"
+        case duplicate
+        case duplicateInstructions = "duplicate-instructions"
+        case scanStats = "scan-stats"
         case flashTimeout = "flash-timeout"
-        case sound = "sound"
-        case settings = "settings"
-        case timer = "timer"
-        case duplicate = "duplicate"
-        case language = "change-language"
-        case off = "off"
-        case mins = "mins"
-        case sec = "sec"
-        case duplicateInstruction = "duplicate-instructions"
-        case timerInstruction = "timer-instructions"
-        case sleepTimerInstruction = "sleep-timer-instructions"
+        case save
+        case changeLanguage = "change-language"
+        case sec
+        case mins
+        case off
+        case mode
+        case offline
+        case online
     }
 }

@@ -32,62 +32,59 @@ struct LookupOrderResultView: View {
     var body: some View {
         VStack {
             // Header section with back button and order/buyer info
-            VStack (alignment: .center, spacing: 0){
-                HStack (alignment: .center) {
-                    Button(action: {
-                        withAnimation {
-                                dismissAction()
-                        }
-                    }) {
-                        Image(StringConstants.DRTImages.leftSideArrow)
-                            .resizable()
-                            .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
-                            .foregroundStyle(Color.neutralText)
-                            .padding(10.adaptiveForIpad)
+            HStack (alignment: .center) {
+                Button(action: {
+                    withAnimation {
+                        dismissAction()
                     }
-                    
-                    Spacer()
-                    VStack(spacing: 10.adaptiveForIpad) {
-                        if viewModel.isLoading {
-                            Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
+                }) {
+                    Image(StringConstants.DRTImages.leftSideArrow)
+                        .resizable()
+                        .frame(width: 20.adaptiveForIpad, height: 30.adaptiveForIpad, alignment: .center)
+                        .foregroundStyle(Color.neutralText)
+                        .padding(10.adaptiveForIpad)
+                }
+                
+                Spacer()
+                VStack(spacing: 10.adaptiveForIpad) {
+                    if viewModel.isLoading {
+                        Text(viewModel.isLoading ? stringManager.strings.searchResults.loading : "")
+                            .foregroundStyle(Color.neutralText)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                            .padding(.trailing, 5)
+                    } else {
+                        if let buyerName = viewModel.buyerName {
+                            Text(buyerName.uppercased())
                                 .foregroundStyle(Color.neutralText)
                                 .font(.verlagBlackAdaptive(size: 25))
                                 .padding(.trailing, 20)
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                .padding(.trailing, 5)
                         } else {
-                            if let buyerName = viewModel.buyerName {
-                                Text(buyerName.uppercased())
-                                    .foregroundStyle(Color.neutralText)
-                                    .font(.verlagBlackAdaptive(size: 25))
-                                    .padding(.trailing, 20)
-                            } else {
-                                Text(stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound )
-                                    .foregroundStyle(Color.neutralText)
-                                    .font(.verlagBlackAdaptive(size: 25))
-                                    .padding(.trailing, 20)
-                            }
+                            Text(stringManager.strings.searchResults.resultNotFound )
+                                .foregroundStyle(Color.neutralText)
+                                .font(.verlagBlackAdaptive(size: 25))
+                                .padding(.trailing, 20)
                         }
-                        if !viewModel.isLoading {
-                            if let _ = viewModel.buyerName , let order {
-                                HStack(alignment: .center) {
-                                    CustomsText(title: "\(stringManager.strings?.searchResults.order ?? StringConstants.Common.Order): \(String(order.orderId ?? 0))", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: Color.neutralText)
-                                    
-                                    CustomsText(title: "\(stringManager.strings?.searchResults.cc ?? StringConstants.LandingView.ccLabel)" + " \(order.cc ?? "")", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .neutralText)
-                                }
+                    }
+                    if !viewModel.isLoading {
+                        if let _ = viewModel.buyerName , let order = viewModel.orders.first {
+                            HStack(alignment: .center) {
+                                CustomsText(title: "\(stringManager.strings.searchResults.order): \(String(order.orderId ?? 0))", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: Color.neutralText)
+                                
+                                CustomsText(title: "\(stringManager.strings.searchResults.cc)" + " \(order.cc ?? "")", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .neutralText)
                             }
                         }
                     }
-                    Spacer()
-
                 }
-                .padding(.horizontal,15.adaptiveForIpad)
-                .background(Color.neutralBg)
+                Spacer()
+                
             }
+            .padding(.horizontal,15.adaptiveForIpad)
             .frame(maxHeight: 90.adaptiveForIpad)
             .background(Color.neutralBg)
-            .frame(maxWidth: .infinity)
+            
             VStack {
                 // Merchandise section (online/offline)
                 if let isMerchandise, isMerchandise {
@@ -97,8 +94,7 @@ struct LookupOrderResultView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                                 .padding()
                             Spacer()
-                        }
-                        else if !products.isEmpty {
+                        } else if !products.isEmpty {
                             ScrollView {
                                 LazyVStack {
                                     ForEach(productOrders) { order in
@@ -113,7 +109,7 @@ struct LookupOrderResultView: View {
                             }
                             .padding(0)
                         } else {
-                            Text(stringManager.strings?.searchResults.nomerchandiseFound ?? "No merchandise found.")
+                            Text(stringManager.strings.searchResults.nomerchandiseFound)
                                 .foregroundColor(Color.neutralText)
                             Spacer()
                         }
@@ -144,7 +140,7 @@ struct LookupOrderResultView: View {
                 } else {
                     // Seat section
                     if viewModel.isLoading {
-                        Text(viewModel.isLoading ? stringManager.strings?.searchResults.loading ?? "Loading..." : "")
+                        Text(viewModel.isLoading ? stringManager.strings.searchResults.loading : "")
                             .foregroundColor(Color.primaryText)
                             .font(.verlagBlackAdaptive(size: 25))
                             .padding(.trailing, 20)
@@ -171,13 +167,14 @@ struct LookupOrderResultView: View {
         .background(Color.primaryText)
         .task {
             // Fetch seats and merchandise when view appears
+            try? await Task.sleep(nanoseconds: 200_000_000)
             isLoadingMerch = true
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             self.seats = viewModel.seatsModel ?? []
             self.merch = viewModel.merchModel ?? []
             self.merchOrders = merch.map { MerchandiseOrder(from: $0) }
             
-            if let orderId = order?.orderId {
+            if let orderId = viewModel.orders.first?.orderId {
                 fetchProducts(orderId: orderId)
             }
             isLoadingMerch = false

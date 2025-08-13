@@ -25,8 +25,7 @@ struct LogoutView:View {
             VStack(alignment: .center) {
                 Spacer()
                 VStack {
-                    Text(isOfflineMode ? stringManager.strings?.dialogLogout.whenOfflineDescription ?? StringConstants.LandingView.isOfflineAlertMessage : stringManager.strings?.dialogLogout.areYouSure ??
-                         StringConstants.LandingView.logoutConfirm)
+                    Text(isOfflineMode ? stringManager.strings.dialogLogout.whenOfflineDescription : stringManager.strings.dialogLogout.areYouSure)
                     .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
                     .foregroundColor(Color.primaryText)
                     .multilineTextAlignment(.center)
@@ -39,7 +38,7 @@ struct LogoutView:View {
                 VStack {
                     if !isOfflineMode {
                         HStack {
-                            Text(stringManager.strings?.dialogLogout.continueField ?? StringConstants.Common.logout)
+                            Text(stringManager.strings.dialogLogout.continueField)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(Color.primaryText)
                                 .padding()
@@ -61,7 +60,7 @@ struct LogoutView:View {
                                 }
                         }
                         HStack {
-                            Text(stringManager.strings?.dialogLogout.cancel ?? StringConstants.Common.cancel)
+                            Text(stringManager.strings.dialogLogout.cancel)
                                 .font(.verlagBoldAdaptive(size: 30))
                                 .foregroundColor(Color.primaryText)
                                 .padding()

@@ -7,11 +7,7 @@
 import Foundation
 
 struct DialogGoOnline: Codable {
-
-	let uploading: String
-
-	private enum CodingKeys: String, CodingKey {
-		case uploading = "uploading"
-	}
-
+    let title: String
+    let message: String
+    let uploading: String
 }

@@ -43,7 +43,19 @@ class ShowCodeViewModel: ObservableObject {
         if button == "OK" {
                 dismissSheet()
         } else {
-            showCode.append(button)
+            if button == "-" {
+                if showCode.count <= 5 && !showCode.contains("-") {
+                    showCode.append("-")
+                }
+            } else {
+                if showCode.count == 5 && !showCode.contains("-") {
+                    showCode.append("-")
+                }
+                showCode.append(button)
+                if showCode.count == 5 && !showCode.contains("-") {
+                    showCode.append("-")
+                }
+            }
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

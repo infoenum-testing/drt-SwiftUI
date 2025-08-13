@@ -7,13 +7,6 @@
 import Foundation
 
 struct IncorrectMode: Codable {
-
-	let merch: String
-	let tickets: String
-
-	private enum CodingKeys: String, CodingKey {
-		case merch = "merch"
-		case tickets = "tickets"
-	}
-
+    let merch: String
+    let tickets: String
 }

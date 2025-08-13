@@ -68,7 +68,7 @@ class LookupByCreditCardResultViewModel: ObservableObject {
                 if NetworkMonitor.shared.isNetworkAvailable() {
                     self.errorMessage = error.localizedDescription
                 } else {
-                    self.errorMessage = StringManager.shared.strings?.noInternet.description ?? StringConstants.Common.noInternetError
+                    self.errorMessage = StringManager.shared.strings.noInternet.description
                 }
                 self.isLoading = false
             }

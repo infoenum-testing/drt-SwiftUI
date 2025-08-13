@@ -24,7 +24,7 @@ struct SettingsView: View {
                 HStack {
                     Spacer()
                     // Title for the Settings screen
-                    Text(stringManager.strings?.settings.settings  ?? StringConstants.SideMenuView.settingSmall)
+                    Text(stringManager.strings.settings.settings)
                         .font(.verlagBoldAdaptive(size: 24))
                         .padding(.leading, 10)
                         .padding(.top, 30)
@@ -118,17 +118,16 @@ struct SettingsView: View {
     // Array of all setting items to display
     private var settingItems: [SettingItem] {
         var items: [SettingItem] = [
-            SettingItem(title: stringManager.strings?.settings.sound ?? "SOUND", toggleBinding: $viewModel.shouldPlayBeep),
-            SettingItem(title: stringManager.strings?.settings.haptics ?? "HAPTICS", toggleBinding: $viewModel.shouldPlayHaptic),
-            SettingItem(title: stringManager.strings?.settings.sleepTimer ?? "SLEEP TIMER", value: viewModel.deviceSleepTimeoutText),
-            SettingItem(title: stringManager.strings?.settings.timer ?? "SCANNING PAUSE TIMER", value: viewModel.pauseScanTimeoutText),
-            SettingItem(title: stringManager.strings?.settings.duplicate ?? "DUPLICATE SCAN SUPPRESSION", value: viewModel.duplicateScanSuppressionText),
-            SettingItem(title: stringManager.strings?.settings.language ?? "LANGUAGE", value: viewModel.selectedLangText)
+            SettingItem(title: stringManager.strings.settings.sound, toggleBinding: $viewModel.shouldPlayBeep),
+            SettingItem(title: stringManager.strings.settings.haptics, toggleBinding: $viewModel.shouldPlayHaptic),
+            SettingItem(title: stringManager.strings.settings.timer, value: viewModel.pauseScanTimeoutText),
+            SettingItem(title: stringManager.strings.settings.duplicate, value: viewModel.duplicateScanSuppressionText),
+            SettingItem(title: stringManager.strings.settings.changeLanguage, value: viewModel.selectedLangText)
         ]
         
         // Add scan stats toggle if not in Merchandise mode
         if !isMerchandise {
-            items.append(SettingItem(title: stringManager.strings?.settings.scanStats ?? "SCAN STATS ON SCAN SCREEN", toggleBinding: $viewModel.showScanStats))
+            items.append(SettingItem(title: stringManager.strings.settings.scanStats, toggleBinding: $viewModel.showScanStats))
         }
         
         return items

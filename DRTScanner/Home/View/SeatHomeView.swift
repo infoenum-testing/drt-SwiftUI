@@ -176,16 +176,16 @@ struct SeatHomeView: View {
                                     // List of lookup methods (order number, name, phone, credit card, seat)
                                     VStack(spacing: 0) {
                                         // Lookup by order number
-                                        CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.orderNumber ?? StringConstants.SeatHomeView.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
+                                        CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                             // Set lookup type and show alert for order number
                                             seatHomeViewModel.selectedLookupType = .orderNumber
                                             isScanningCell = false
                                             withAnimation(.easeInOut(duration: 0.3)) {
                                                 showLookupAlert = true
                                             }
-                                        }.padding(.top)
+                                        }/*.padding(.top)*/
                                         // Lookup by name
-                                        CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.name ?? StringConstants.SeatHomeView.name,
+                                        CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.name,
                                                        cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                             // Set lookup type and show alert for name
                                             selectedLookupByName = .name
@@ -195,7 +195,7 @@ struct SeatHomeView: View {
                                             }
                                         }
                                         // Lookup by phone number
-                                        CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.phoneNumber ?? StringConstants.SeatHomeView.phoneNumber,
+                                        CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.phoneNumber,
                                                        cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                             // Set lookup type and show alert for phone number
                                             seatHomeViewModel.selectedLookupType = .phoneNumber
@@ -205,7 +205,7 @@ struct SeatHomeView: View {
                                             }
                                         }
                                         // Lookup by credit card
-                                        CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.creditCard ?? StringConstants.SeatHomeView.creditCard,
+                                        CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.creditCard,
                                                        cellHeight: dynamicCellHeight,
                                                        bottomLineColor: isMerchandise ? Color.neutralBg : Color.primaryText, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                        showDivider: isMerchandise ? false : true
@@ -219,7 +219,7 @@ struct SeatHomeView: View {
                                         }
                                         // Lookup by seat (only if not in merchandise mode)
                                         if !isMerchandise {
-                                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings?.home.lookUpBy ?? StringConstants.SeatHomeView.lookUpBy, subtitle: stringManager.strings?.home.seat ?? StringConstants.SeatHomeView.seat, cellHeight: dynamicCellHeight , bottomLineColor: Color.neutralBg,
+                                            CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.seat, cellHeight: dynamicCellHeight , bottomLineColor: Color.neutralBg,
                                                            buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                            showDivider: false
                                             ) {

@@ -40,7 +40,7 @@ struct LookupByNameResultView: View {
                 Spacer()
                 // Loading indicator and text
                 if viewModel.isLoading {
-                    Text(stringManager.strings?.searchResults.loading ?? "Loading...")
+                    Text(stringManager.strings.searchResults.loading)
                         .foregroundColor(Color.neutralText)
                         .font(.verlagBlackAdaptive(size: 25))
                         .padding(.trailing, 20)
@@ -50,7 +50,7 @@ struct LookupByNameResultView: View {
                 }
                 // Display total results or no orders found
                 if !viewModel.isLoading {
-                    Text(viewModel.orders.isEmpty ? stringManager.strings?.searchResults.resultNotFound ?? StringConstants.Common.noOrdersFound : (stringManager.strings?.searchResults.totalResults ?? StringConstants.Common.totalResults) + " \(viewModel.orders.count)")
+                    Text(viewModel.orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(viewModel.orders.count)")
                         .foregroundColor(Color.neutralText)
                         .font(.verlagBlackAdaptive(size: 25))
                         .padding(.trailing, 20)
@@ -88,6 +88,7 @@ struct LookupByNameResultView: View {
         .background(Color.primaryText)
         .task {
             // Fetch orders when view appears
+            try? await Task.sleep(nanoseconds: 2_000_000_00)
             await viewModel.fetchSeats(c: savedShowCode ?? "", q: inputText)
             self.orders = viewModel.orders
         }
