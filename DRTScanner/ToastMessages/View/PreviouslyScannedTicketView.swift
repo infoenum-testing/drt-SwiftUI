@@ -83,8 +83,11 @@ struct PreviouslyScannedTicketView: View {
             let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
             return String(format: labelTemplate, timeLabel)
         case 60..<1440:
-            let timeLabel = String(format: stringManager.strings.orderDetail.hoursAgo, "\(diffHours)")
+            let hourAgoString = diffHours == 1 ? stringManager.strings.orderDetail.hourAgo : stringManager.strings.orderDetail.hoursAgo
+            let timeLabel = String(format: hourAgoString, "\(diffHours)")
             return String(format: labelTemplate, timeLabel)
+        case 1440..<2880:
+            return String(format: labelTemplate, stringManager.strings.orderDetail.yesterday)
         default:
             let timeLabel = String(format: stringManager.strings.orderDetail.daysAgo, "\(diffDays)")
             return String(format: labelTemplate, timeLabel)
