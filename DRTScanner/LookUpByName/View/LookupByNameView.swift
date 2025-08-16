@@ -61,9 +61,7 @@ struct LookupByNameView: View {
 
                     ZStack(alignment: .center) {
                         if !inputText.isEmpty {
-                            Text(placeholderText)
-                                .font(.verlagBookAdaptive(size: 10))
-                                .foregroundColor(Color.neutralText)
+                            CustomsText(title: placeholderText, textFont: .verlagBookAdaptive(size: 10), foregroundColour: .neutralText)
                                 .offset(y: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? -35 : -50) : -25)
                                 .animation(.easeInOut, value: inputText.isEmpty)
                         }
@@ -113,9 +111,7 @@ struct LookupByNameView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        Text(stringManager.strings.searchResults.search)
-                            .font(.verlagBoldAdaptive(size: 36))
-                            .foregroundColor(Color.primaryText)
+                        CustomsText(title: stringManager.strings.searchResults.search, textFont: .verlagBoldAdaptive(size: 36), foregroundColour: .primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color.secondaryBg)

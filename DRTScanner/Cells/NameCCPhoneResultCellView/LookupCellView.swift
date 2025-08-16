@@ -28,20 +28,15 @@ struct LookupCellView: View {
                 HStack(alignment: .center) {
                     // Left content
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(result.buyerName ?? "")
-                            .font(.verlagBlackAdaptive(size: 24))
-                            .foregroundColor(Color.primaryBg)
+                        CustomsText(title: result.buyerName ?? "", textFont: .verlagBlackAdaptive(size: 24), foregroundColour: .primaryBg)
+                     
                         
                         HStack(spacing: 12) {
-                            Text("\(stringManager.strings.searchResults.order): \(String(result.orderId ?? 0))")
-                            Text("\(stringManager.strings.searchResults.cc) \(result.cc ?? "")")
-                        }
-                        .font(.verlagBoldAdaptive(size: 15))
-                        .foregroundColor(Color.primaryBg)
+                            CustomsText(title: "\(stringManager.strings.searchResults.order): \(String(result.orderId ?? 0))", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
+                            CustomsText(title: "\(stringManager.strings.searchResults.cc) \(result.cc ?? "")", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
                         
-                        Text("\(stringManager.strings.searchResults.phoneNumber) \(result.phone ?? "")")
-                            .font(.verlagBoldAdaptive(size: 15))
-                            .foregroundColor(Color.primaryBg)
+                        }
+                        CustomsText(title: "\(stringManager.strings.searchResults.phoneNumber) \(result.phone ?? "")", textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
                     }
                     
                     Spacer()

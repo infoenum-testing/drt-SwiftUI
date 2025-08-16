@@ -62,9 +62,7 @@ struct SelectionView: View {
             Picker(StringConstants.Common.selectTime, selection: $selectedValue) {
                 ForEach(viewModel.getTimeOptions(for: index).indices, id: \.self) { idx in
                     VStack {
-                        Text(viewModel.getTimeOptions(for: index)[idx])
-                            .font(.pickerBoldText(size: 20))
-                            .foregroundColor(Color.primaryText)
+                        CustomsText(title: viewModel.getTimeOptions(for: index)[idx], textFont: .pickerBoldText(size: 20), foregroundColour: .primaryText)
                             .padding(.vertical, 10)
                             .padding(.horizontal, 10)
                             .tag(idx)
@@ -81,9 +79,7 @@ struct SelectionView: View {
                 Button(action: {
                     selectedIndex = nil
                 }) {
-                    Text(StringManager.shared.strings.dialogLogout.cancel)
-                        .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(Color.primaryBg)
+                    CustomsText(title: StringManager.shared.strings.dialogLogout.cancel, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -94,9 +90,8 @@ struct SelectionView: View {
                     viewModel.saveTime(selectedValue, for: index)
                     selectedIndex = nil
                 }) {
-                    Text(StringManager.shared.strings.settings.save)
-                        .font(.verlagBoldAdaptive(size: 22))
-                        .foregroundColor(Color.primaryBg)
+                  
+                    CustomsText(title: StringManager.shared.strings.settings.save, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.clear)

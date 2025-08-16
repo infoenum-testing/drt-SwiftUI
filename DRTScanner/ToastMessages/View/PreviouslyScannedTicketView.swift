@@ -48,8 +48,7 @@ struct PreviouslyScannedTicketView: View {
                 }
                 
                 if let scanDate = Date.todayAtTime(scannedTime) {
-                    CustomsText(title: getScanLabel(from: scanDate), textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
-                        .multilineTextAlignment(.center)
+                    CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
                 }
                 if isInFullScreen {
                     Spacer()
@@ -63,34 +62,6 @@ struct PreviouslyScannedTicketView: View {
             .background(backGround)
             .ignoresSafeArea(edges: .bottom)
             .transition(.opacity)
-        }
-    }
-
-    func getScanLabel(from scanDate: Date, isFirstScan: Bool = false) -> String {
-        let now = Date()
-        let diffSeconds = Int(now.timeIntervalSince(scanDate))
-        let diffMinutes = diffSeconds / 60
-        let diffHours = diffMinutes / 60
-        let diffDays = diffHours / 24
-
-
-        let labelTemplate = isFirstScan ? stringManager.strings.orderDetail.scanned : stringManager.strings.orderDetail.previouslyScanned
-
-        switch diffMinutes {
-        case ..<2:
-            return String(format: labelTemplate, stringManager.strings.orderDetail.justNow)
-        case 2..<60:
-            let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
-            return String(format: labelTemplate, timeLabel)
-        case 60..<1440:
-            let hourAgoString = diffHours == 1 ? stringManager.strings.orderDetail.hourAgo : stringManager.strings.orderDetail.hoursAgo
-            let timeLabel = String(format: hourAgoString, "\(diffHours)")
-            return String(format: labelTemplate, timeLabel)
-        case 1440..<2880:
-            return String(format: labelTemplate, stringManager.strings.orderDetail.yesterday)
-        default:
-            let timeLabel = String(format: stringManager.strings.orderDetail.daysAgo, "\(diffDays)")
-            return String(format: labelTemplate, timeLabel)
         }
     }
 }

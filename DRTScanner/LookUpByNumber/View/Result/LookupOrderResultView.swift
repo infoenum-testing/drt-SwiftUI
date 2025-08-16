@@ -48,23 +48,17 @@ struct LookupOrderResultView: View {
                 Spacer()
                 VStack(spacing: 10.adaptiveForIpad) {
                     if viewModel.isLoading {
-                        Text(viewModel.isLoading ? stringManager.strings.searchResults.loading : "")
-                            .foregroundStyle(Color.neutralText)
-                            .font(.verlagBlackAdaptive(size: 25))
+                        CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                             .padding(.trailing, 20)
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .padding(.trailing, 5)
                     } else {
                         if let buyerName = viewModel.buyerName {
-                            Text(buyerName.uppercased())
-                                .foregroundStyle(Color.neutralText)
-                                .font(.verlagBlackAdaptive(size: 25))
+                            CustomsText(title: buyerName.uppercased(), textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                                 .padding(.trailing, 20)
                         } else {
-                            Text(stringManager.strings.searchResults.resultNotFound )
-                                .foregroundStyle(Color.neutralText)
-                                .font(.verlagBlackAdaptive(size: 25))
+                            CustomsText(title: stringManager.strings.searchResults.resultNotFound, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                                 .padding(.trailing, 20)
                         }
                     }

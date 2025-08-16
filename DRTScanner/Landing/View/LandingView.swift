@@ -103,13 +103,11 @@ struct LandingView: View {
                             }
                             Spacer()
                             VStack {
-                                Text(stringManager.strings.switchMode.question)
-                                    .font(.verlagBoldAdaptive(size: 28))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(Color.primaryText)
+                                CustomsText(title: stringManager.strings.switchMode.question, textFont: .verlagBoldAdaptive(size: 28), foregroundColour: .primaryText, alignment: .center)
                                     .padding(.bottom, 20)
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+                                
                                 // Merchandise scan button
                                 Button(action: {
                                     //  isUserLoggedIn = true
@@ -118,12 +116,10 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(stringManager.strings.switchMode.merchandise)
-                                        .font(.verlagBoldAdaptive(size: 22))
+                                    CustomsText(title: stringManager.strings.switchMode.merchandise, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryText)
                                         .frame(maxWidth: .infinity)
                                         .padding()
                                         .background(Color.secondaryBg)
-                                        .foregroundColor(Color.primaryText)
                                         .cornerRadius(12)
                                         .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 }
@@ -140,12 +136,10 @@ struct LandingView: View {
                                         showSeatView = true
                                     }
                                 }) {
-                                    Text(stringManager.strings.switchMode.seat)
-                                        .font(.verlagBoldAdaptive(size: 22))
+                                    CustomsText(title: stringManager.strings.switchMode.seat, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryText)
                                         .frame(maxWidth: .infinity)
                                         .padding()
                                         .background(Color.secondaryBg)
-                                        .foregroundColor(Color.primaryText)
                                         .cornerRadius(12)
                                         .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                                 }.padding(.horizontal)
@@ -162,12 +156,10 @@ struct LandingView: View {
                                     showSheet = true
                                 }
                             }) {
-                                Text(stringManager.strings.login.enterShowCode)
-                                    .font(.verlagBoldAdaptive(size: 22))
+                                CustomsText(title: stringManager.strings.login.enterShowCode, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryText)
                                     .padding()
                                     .frame(maxWidth: .infinity)
                                     .background(Color.secondaryBg)
-                                    .foregroundColor(Color.primaryText)
                                     .cornerRadius(12)
                                     .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                             }.padding(.horizontal)
@@ -177,10 +169,7 @@ struct LandingView: View {
                         }
                         
                         // Copyright text
-                        Text(stringManager.strings.copyright.replacingOccurrences(of: ". All", with: ".\n All"))
-                            .font(.verlagBookAdaptive(size: 14))
-                            .foregroundColor(Color.primaryText)
-                            .multilineTextAlignment(.center)
+                        CustomsText(title: stringManager.strings.copyright.replacingOccurrences(of: ". All", with: ".\n All"), textFont: .verlagBookAdaptive(size: 14), foregroundColour: .primaryText, alignment: .center)
                             .padding(.top, 20)
                             .padding(.horizontal, 10)
                             .padding(.bottom)
@@ -196,10 +185,7 @@ struct LandingView: View {
                     .customAlert(isPresented: $showLogoutAlert) {
                         VStack {
                             Spacer()
-                            Text(isOfflineMode ? stringManager.strings.dialogLogout.whenOfflineDescription : stringManager.strings.dialogLogout.areYouSure)
-                            .font(isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26))
-                            .foregroundColor(Color.primaryText)
-                            .multilineTextAlignment(.center)
+                            CustomsText(title: isOfflineMode ? stringManager.strings.dialogLogout.whenOfflineDescription : stringManager.strings.dialogLogout.areYouSure, textFont: isOfflineMode ? .verlagBookAdaptive(size: 18) : .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
                             .minimumScaleFactor(0.5)
                             .lineLimit(isOfflineMode ? 10 : 1)
                             .padding(.top, 20)
@@ -221,9 +207,7 @@ struct LandingView: View {
                                                 DRTDatabaseManager.shared.deleteSkin()
                                             }
                                         }) {
-                                            Text(stringManager.strings.dialogLogout.continueField)
-                                                .font(.verlagBoldAdaptive(size: 30))
-                                                .foregroundColor(Color.primaryText)
+                                            CustomsText(title: stringManager.strings.dialogLogout.continueField, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                                                 .padding()
                                                 .frame(maxWidth: .infinity)
                                                 .background(Color.secondaryBg)
@@ -239,9 +223,7 @@ struct LandingView: View {
                                                 showLogoutAlert = false
                                             }
                                         }) {
-                                            Text(stringManager.strings.dialogLogout.cancel)
-                                                .font(.verlagBoldAdaptive(size: 30))
-                                                .foregroundColor(Color.primaryText)
+                                            CustomsText(title: stringManager.strings.dialogLogout.cancel, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                                                 .padding()
                                                 .frame(maxWidth: .infinity)
                                         }
@@ -275,10 +257,8 @@ struct LandingView: View {
                                 VStack(alignment: .center) {
                                     HStack {
                                         Spacer()
-                                        Text(StringManager.shared.strings.errorMassage.error)
+                                        CustomsText(title: StringManager.shared.strings.errorMassage.error, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                                             .padding(.leading, 30)
-                                            .font(.verlagBoldAdaptive(size: 30))
-                                            .foregroundColor(Color.primaryText)
                                             .padding(.bottom, 10)
                                             .padding(.top, 20)
                                         
@@ -297,10 +277,8 @@ struct LandingView: View {
                                         }
                                     }
                                     .padding(.top,20)
-                                    Text(viewModel.lookupByOrderResultViewModel.errorMessage ?? stringManager.strings.errorMassage.invalidShowCode)
-                                        .font(.verlagBookAdaptive(size: 18))
+                                    CustomsText(title: viewModel.lookupByOrderResultViewModel.errorMessage ?? stringManager.strings.errorMassage.invalidShowCode, textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText)
                                         .padding(.bottom)
-                                        .foregroundColor(Color.primaryText)
                                 }
                                 .padding()
                                 .background(Color.secondaryBg)

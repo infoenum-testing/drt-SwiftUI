@@ -15,6 +15,9 @@ struct MerchandiseScanView: View {
     let backGround:Color
     var body: some View {
         VStack {
+            if isInFullScreen {
+                Spacer()
+            }
             VStack {
                 if isInFullScreen {
                     Spacer()
@@ -29,7 +32,7 @@ struct MerchandiseScanView: View {
                     .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                     .foregroundColor(Color.primaryText)
                     .padding(.top, -10.adaptiveForIpad)
-
+                
                 VStack(spacing: 5) {
                     Text("\(name)")
                     if variantName != "" {
@@ -47,11 +50,11 @@ struct MerchandiseScanView: View {
                     .frame(height: 110)
                 }
             }
+            .frame(width: UIScreen.main.bounds.width)
+            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .background(backGround)
+            .ignoresSafeArea(edges: .bottom)
+            .transition(.opacity)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(backGround)
-        .ignoresSafeArea(edges: .bottom)
-        .transition(.opacity)
     }
 }

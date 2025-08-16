@@ -13,9 +13,7 @@ struct ShowOfflineSuccesAlertView: View {
             Spacer()
             HStack {
                 Spacer()
-                Text(stringManager.strings.offline.success)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(Color.primaryText)
+                CustomsText(title: stringManager.strings.offline.success, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                     .padding(.bottom, 10)
                     .padding(.top, 20)
                 
@@ -23,10 +21,7 @@ struct ShowOfflineSuccesAlertView: View {
             }
             
             VStack {
-                Text(stringManager.strings.offline.download)
-                    .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(Color.primaryText)
-                    .multilineTextAlignment(.center)
+                CustomsText(title: stringManager.strings.offline.download, textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText, alignment: .center)
                     .padding()
             }
             Spacer()

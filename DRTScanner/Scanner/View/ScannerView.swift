@@ -314,7 +314,6 @@ struct ScannerView: View, Equatable {
                         if isInvalidSeatTicket {
                             InvalidSeatTicketView(message: invalidMessage, isInFullScreen: true,backGround:Color.invalid)
                         }
-                        //                        }
                         Spacer()
                     }.frame(height: isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight)
                         .onAppear {
@@ -341,7 +340,8 @@ struct ScannerView: View, Equatable {
                                 }
                                 Spacer()
                             }
-                        }  .frame(width: dragAreaSize.width, height: dragAreaSize.height)
+                        }
+                        .frame(width: dragAreaSize.width, height: dragAreaSize.height)
                             .background(.black.opacity(0.000001))
                             .gesture(
                                 DragGesture(minimumDistance: 0)
@@ -710,7 +710,6 @@ struct ScannerView: View, Equatable {
             isScanning = true
             isScannerActive = true
             isScanningCell = true
-            //        linePosition = 0
             startLineAnimation()
             startInactivityTimer()
             startFlashInactivityTimer()

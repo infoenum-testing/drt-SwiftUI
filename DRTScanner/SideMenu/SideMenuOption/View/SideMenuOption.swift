@@ -27,9 +27,8 @@ struct SideMenuOption: View {
                     .foregroundColor(.primaryText)
                     .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
             }
-            Text(title)
-                .font(.verlagBoldAdaptive(size: 16))
-                .foregroundColor(Color.primaryText)
+            CustomsText(title: title, textFont: .verlagBoldAdaptive(size: 16), foregroundColour: .primaryText)
+
             Spacer()
         }
         .padding(UIDevice.current.userInterfaceIdiom == .pad ? 30 : 20)

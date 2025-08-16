@@ -40,9 +40,7 @@ struct LookupByNameResultView: View {
                 Spacer()
                 // Loading indicator and text
                 if viewModel.isLoading {
-                    Text(stringManager.strings.searchResults.loading)
-                        .foregroundColor(Color.neutralText)
-                        .font(.verlagBlackAdaptive(size: 25))
+                    CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                         .padding(.trailing, 20)
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
@@ -50,9 +48,7 @@ struct LookupByNameResultView: View {
                 }
                 // Display total results or no orders found
                 if !viewModel.isLoading {
-                    Text(viewModel.orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(viewModel.orders.count)")
-                        .foregroundColor(Color.neutralText)
-                        .font(.verlagBlackAdaptive(size: 25))
+                    CustomsText(title: viewModel.orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(viewModel.orders.count)", textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                         .padding(.trailing, 20)
                 }
                 Spacer()

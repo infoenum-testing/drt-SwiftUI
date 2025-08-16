@@ -44,15 +44,15 @@ class ShowCodeViewModel: ObservableObject {
                 dismissSheet()
         } else {
             if button == "-" {
-                if showCode.count <= 5 && !showCode.contains("-") {
+                if showCode.count <= StringManager.shared.strings.login.showCodeLength && !showCode.contains("-") {
                     showCode.append("-")
                 }
             } else {
-                if showCode.count == 5 && !showCode.contains("-") {
+                if showCode.count == StringManager.shared.strings.login.showCodeLength && !showCode.contains("-") {
                     showCode.append("-")
                 }
                 showCode.append(button)
-                if showCode.count == 5 && !showCode.contains("-") {
+                if showCode.count == StringManager.shared.strings.login.showCodeLength && !showCode.contains("-") {
                     showCode.append("-")
                 }
             }

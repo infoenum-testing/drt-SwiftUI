@@ -16,12 +16,9 @@ struct ShowOfflineAlertView:View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                Text(StringManager.shared.strings.errorMassage.error)
-                    .padding(.leading, 20)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(Color.primaryText)
+                CustomsText(title: StringManager.shared.strings.errorMassage.error, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
+                    .padding([.top,.leading], 20)
                     .padding(.bottom, 10)
-                    .padding(.top, 20)
                 
                 Spacer()
                 Button(action: {
@@ -38,10 +35,7 @@ struct ShowOfflineAlertView:View {
             }
             
             VStack {
-                Text(viewModel.errorMessage ?? "")
-                    .font(.verlagBookAdaptive(size: 18))
-                    .foregroundColor(Color.primaryText)
-                    .multilineTextAlignment(.center)
+                CustomsText(title: viewModel.errorMessage ?? "", textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText, alignment: .center)
                     .padding()
             }
         }

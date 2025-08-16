@@ -19,9 +19,7 @@ struct CustomAlertMessage:View {
                     .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                 Spacer()
                 
-                Text(StringManager.shared.strings.errorMassage.error)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(Color.primaryText)
+                CustomsText(title: StringManager.shared.strings.errorMassage.error, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                 Spacer()
                 
                 Button(action: {
@@ -36,11 +34,7 @@ struct CustomAlertMessage:View {
                         .contentShape(Rectangle())
                 }
             }
-            
-            Text(stringManager.message)
-                .font(.verlagBookAdaptive(size: 18))
-                .foregroundColor(Color.primaryText)
-                .multilineTextAlignment(.center)
+            CustomsText(title: stringManager.message, textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText, alignment: .center)
                 .padding(.top,5)
             
         }

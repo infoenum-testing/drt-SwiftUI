@@ -15,6 +15,9 @@ struct InvalidSeatTicketView: View {
     let backGround: Color
     var body: some View {
         VStack {
+            if isInFullScreen {
+                Spacer()
+            }
             VStack {
                 if isInFullScreen {
                     Spacer()
@@ -47,11 +50,11 @@ struct InvalidSeatTicketView: View {
                     .frame(height: 110)
                 }
             }
+            .frame(width: UIScreen.main.bounds.width)
+            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .background(backGround)
+            .ignoresSafeArea(edges: .bottom)
+            .transition(.opacity)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(backGround)
-        .ignoresSafeArea(edges: .bottom)
-        .transition(.opacity)
     }
 }

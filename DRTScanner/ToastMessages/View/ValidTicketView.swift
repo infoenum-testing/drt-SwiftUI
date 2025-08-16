@@ -15,7 +15,9 @@ struct ValidTicketView: View {
     let backGround: Color
     var body: some View {
         VStack {
-            
+            if isInFullScreen {
+                Spacer()
+            }
             VStack(spacing: 15) {
                 if isInFullScreen {
                     Spacer()
@@ -50,11 +52,11 @@ struct ValidTicketView: View {
                     .frame(height: 110)
                 }
             }
-            
+            .frame(width: UIScreen.main.bounds.width)
+            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : backGround)
+            .transition(.opacity)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .frame(height: isInFullScreen ? UIScreen.main.bounds.height : UIScreen.main.bounds.height * 0.6)
-        .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : backGround)
-        .transition(.opacity)
+     
     }
 }

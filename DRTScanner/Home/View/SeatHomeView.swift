@@ -144,16 +144,14 @@ struct SeatHomeView: View {
                             .clipped()
                             .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
                             .padding(.top,-10)
+                            
                             // Bottom row: show name
                             HStack {
                                 Spacer()
-                                Text(savedShow)
-                                    .font(.verlagBoldAdaptive(size: 20))
-                                    .foregroundColor(Color.primaryText)
+                                CustomsText(title: savedShow, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryText)
                                     .padding(.leading, 5)
                                 Spacer()
                             }
-                            
                             .padding(12)
                             .background(Color.secondaryBg)
                             
@@ -183,7 +181,7 @@ struct SeatHomeView: View {
                                             withAnimation(.easeInOut(duration: 0.3)) {
                                                 showLookupAlert = true
                                             }
-                                        }/*.padding(.top)*/
+                                        }
                                         // Lookup by name
                                         CustomCellView(imageName: StringConstants.SeatHomeView.lastNameIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.name,
                                                        cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
@@ -246,7 +244,6 @@ struct SeatHomeView: View {
                                         // Show invalid ticket view
                                         InvalidTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
                                     }
-                                    //                            else if isMerchandise {
                                     // Show merchandise-related ticket status views
                                     if isMerchPreScanned {
                                         PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: false,backGround:Color.previous)
@@ -261,9 +258,9 @@ struct SeatHomeView: View {
                                     if isInvalidSeatTicket {
                                         InvalidSeatTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
                                     }
-                                    //                            }
                                 }
-                            }.scrollDisabled(UIDevice.current.userInterfaceIdiom == .pad && UIDevice.isLandscape ? false : true)
+                            }
+                            .scrollDisabled(UIDevice.current.userInterfaceIdiom == .pad && UIDevice.isLandscape ? false : true)
                                 .opacity(!isFullScreen ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                                 .background(Color.neutralBg)
@@ -369,7 +366,6 @@ struct SeatHomeView: View {
             }
         }
         .onChange(of: UIDevice.isLandscape, perform: { newValue in
-            print("something")
             isLoading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 isLoading.toggle()

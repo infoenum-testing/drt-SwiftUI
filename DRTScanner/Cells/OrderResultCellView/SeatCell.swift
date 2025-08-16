@@ -47,45 +47,31 @@ struct SeatCell: View {
                 HStack {
                     if isScanned {
                         if let scannTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
-                            Text(getScanLabel(from: scannTime))
-                                .font(.verlagBoldAdaptive(size: 18))
-                                .foregroundColor(Color.primaryBg)
+                            CustomsText(title: getScanLabel(from: scannTime), textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
                         }
                     } else {
-                        Text(stringManager.strings.orderDetail.notYetScanned)
-                            .font(.verlagBoldAdaptive(size: 18))
-                            .foregroundColor(Color.primaryBg)
+                        CustomsText(title: stringManager.strings.orderDetail.notYetScanned, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
                     }
                 }
                     HStack(alignment: .center) {
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings.orderDetail.section)
-                                .font(.verlagBoldAdaptive(size: 15))
-                                .foregroundColor(Color.primaryBg)
-                                .padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad ? 3.5 : 2)
-                            Text("\(seat.section)")
-                                .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(Color.primaryBg)
+                            CustomsText(title: stringManager.strings.orderDetail.section, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
+                            
+                            CustomsText(title: "\(seat.section)", textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
+                          
                         }
                         Spacer()
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings.orderDetail.row)
-                                .font(.verlagBoldAdaptive(size: 15))
-                                .foregroundColor(Color.primaryBg)
+                            CustomsText(title: stringManager.strings.orderDetail.row, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
                                 .padding(.bottom, 1.adaptiveForIpad)
-                            Text("\(seat.row)")
-                                .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(Color.primaryBg)
+                            
+                            CustomsText(title: "\(seat.row)", textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
                         }
                         Spacer()
                         HStack(alignment: .bottom, spacing: 2) {
-                            Text(stringManager.strings.orderDetail.seat)
-                                .font(.verlagBoldAdaptive(size: 15))
-                                .foregroundColor(Color.primaryBg)
-                                .padding(.bottom, 1.adaptiveForIpad)
-                            Text("\(seat.seat)")
-                                .font(.verlagBoldAdaptive(size: 22))
-                                .foregroundColor(Color.primaryBg)
+                            CustomsText(title: stringManager.strings.orderDetail.seat, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
+                            
+                            CustomsText(title: seat.seat, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
                         }
                     }
                 }
@@ -94,19 +80,18 @@ struct SeatCell: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .scaleEffect(1.0)
-                            .padding(.trailing)
                             .padding(10)
-                            .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                            .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
 
                     } else {
                         Image(isScanned ? StringConstants.DRTImages.greenCheckImage : StringConstants.DRTImages.scanNow)
-                            .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                            .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                             .disabled(isScanned)
                             .opacity(isScanned ? 0.5 : 1.0)
-                            .padding(.trailing)
                     }
                 }
                 .padding(.vertical)
+                .frame(width:UIScreen.main.bounds.width*0.20)
                 .background(Color.primaryText)
                 .onTapGesture {
                     updateSeatWithScannedQrCode()
@@ -119,7 +104,8 @@ struct SeatCell: View {
                 loadScannedStatus(for: seat)
             }
             Divider()
-        }.edgesIgnoringSafeArea(.leading)
+        }
+        .edgesIgnoringSafeArea(.leading)
     }
     
     /// Updates seat as scanned, saving locally or sending to API depending on mode
@@ -158,13 +144,9 @@ struct SeatCell: View {
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let jsonResponse):
-                        if let valid = jsonResponse["valid"] as? Bool, !valid {
+                        if jsonResponse.valid {
                             // Scan was rejected
-                            lookupByOrderResultViewModel.errorMessage = jsonResponse["message"] as? String ?? StringManager.shared.strings.errorMassage.error
-                            showAlert = true
-                            playScanFeedback(scannerResult: .valid)
-                        } else {
-                            // Scan accepted
+                          
                             let currentDate = Date()
                             let formatter = DateFormatter()
                             formatter.dateFormat = "HH:mm"
@@ -173,6 +155,11 @@ struct SeatCell: View {
                             seat.scannedTime = currentDate
                             isScanned = true
                             //  incrementDeviceScanCount()
+                            playScanFeedback(scannerResult: .valid)
+                        } else {
+                            // Scan accepted
+                            lookupByOrderResultViewModel.errorMessage = jsonResponse.message
+                            showAlert = true
                             playScanFeedback(scannerResult: .invalid)
                         }
                         
@@ -318,19 +305,25 @@ struct SeatCell: View {
 
         switch diffMinutes {
         case ..<2:
-            return String(format: labelscaned, stringManager.strings.orderDetail.justNow)
+            let lable =  String(format: labelscaned, "")
+            return "\(lable) \n \(stringManager.strings.orderDetail.justNow)"
         case 2..<60:
             let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
-            return String(format: labelTemplate, timeLabel)
+            let lable = String(format: labelTemplate, "")
+            return "\(lable) \n \(timeLabel)"
         case 60..<1440:
             let hourAgoString = diffHours == 1 ? stringManager.strings.orderDetail.hourAgo : stringManager.strings.orderDetail.hoursAgo
             let timeLabel = String(format: hourAgoString, "\(diffHours)")
-            return String(format: labelTemplate, timeLabel)
+            let lable = String(format: labelTemplate, "")
+            return "\(lable) \n \(timeLabel)"
         case 1440..<2880:
-            return String(format: labelTemplate, stringManager.strings.orderDetail.yesterday)
+            let lable = String(format: labelTemplate, "")
+            return "\(lable) \n \(stringManager.strings.orderDetail.yesterday)"
+
         default:
             let timeLabel = String(format: stringManager.strings.orderDetail.daysAgo, "\(diffDays)")
-            return String(format: labelTemplate, timeLabel)
+            let lable = String(format: labelTemplate, "")
+            return "\(lable) \n \(timeLabel)"
         }
     }
 }

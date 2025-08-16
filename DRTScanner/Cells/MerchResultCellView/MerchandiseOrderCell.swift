@@ -63,9 +63,7 @@ struct MerchandiseOrderCell: View {
                 }
                 
                 // Display quantity
-                Text("\(merchandiseOrder.qty)")
-                    .font(.verlagBookAdaptive(size: 20))
-                    .foregroundColor(Color.primaryText)
+                CustomsText(title: "\(merchandiseOrder.qty)", textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText)
                     .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                     .background(Color.secondaryBg)
                     .clipShape(Circle())
@@ -75,13 +73,8 @@ struct MerchandiseOrderCell: View {
             
             HStack(alignment: .center, spacing: 5) {
                 // Display merchandise name and variant
-                Text(merchandiseOrder.name)
-                    .font(.verlagBoldAdaptive(size: 20))
-                    .foregroundColor(Color.primaryBg)
-                
-                Text(merchandiseOrder.variantName)
-                    .font(.verlagBookAdaptive(size: 15))
-                    .foregroundColor(Color.neutralText)
+                CustomsText(title: merchandiseOrder.name, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
+                CustomsText(title: merchandiseOrder.variantName, textFont: .verlagBookAdaptive(size: 15), foregroundColour: .neutralText)
                 Spacer()
             }
             
