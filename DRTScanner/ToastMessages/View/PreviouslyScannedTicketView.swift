@@ -12,6 +12,7 @@ struct PreviouslyScannedTicketView: View {
     let orderName: String
     let orderNumber: String
     let scannedTime: String
+    let tsScannedDate: String
     let isInFullScreen: Bool
     let backGround:Color
     @EnvironmentObject var stringManager: StringManager
@@ -47,9 +48,12 @@ struct PreviouslyScannedTicketView: View {
                         .foregroundColor(Color.primaryText)
                 }
                 
-                if let scanDate = Date.todayAtTime(scannedTime) {
+                if let scanDate = tsScannedDate.toDateFromMillisecondsTimestamp() {
+                    CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
+                } else  if let scanDate = Date.todayAtTime(scannedTime) {
                     CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
                 }
+                
                 if isInFullScreen {
                     Spacer()
                 } else {

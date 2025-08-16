@@ -67,9 +67,9 @@ struct LandingView: View {
                     }
                 } else {
                     VStack {
-                        if !isUserLoggedIn {
+//                        if !isUserLoggedIn {
                             Spacer()
-                        }
+//                        }
                         // Always show logo (with animation)
                         AppLogoView(width: sizeData.isPortrait ? 300.adaptiveForIpad : 180.adaptiveForIpad, height: sizeData.isPortrait ? 300.adaptiveForIpad : 130.adaptiveForIpad)
                             .scaleEffect(animateLogo ? 1 : 0.8)

@@ -66,6 +66,7 @@ struct SeatHomeView: View {
             print(orderDateScanned)
         }
     }
+    @State var tsScannedDate: String = ""
     // Stores error messages
     @State private var errorMessage : String = ""
     @State private var invalidMessage : String = ""
@@ -162,7 +163,7 @@ struct SeatHomeView: View {
                         // Shows background image unless in full screen
                         VStack {
                             // Scanner view for scanning tickets
-                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, landingView:landingView,controller: controller, showOfflineAlert: $showOfflineAlert)
+                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, tsScannedDate: $tsScannedDate, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, landingView:landingView,controller: controller, showOfflineAlert: $showOfflineAlert)
                                 .frame(width: UIScreen.main.bounds.width)
                                 .frame(maxHeight: isFullScreen ? .infinity : nil)
                                 .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
@@ -235,7 +236,7 @@ struct SeatHomeView: View {
                                     // Show previously scanned ticket view if ticket is valid and already scanned
                                     if isTicketValid {
                                         if isPreScanned {
-                                            PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: false,backGround:Color.previous)
+                                            PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, tsScannedDate: tsScannedDate,  isInFullScreen: false,backGround:Color.previous)
                                         } else {
                                             // Show valid ticket view
                                             ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: false,backGround:Color.valid)
@@ -246,7 +247,7 @@ struct SeatHomeView: View {
                                     }
                                     // Show merchandise-related ticket status views
                                     if isMerchPreScanned {
-                                        PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: false,backGround:Color.previous)
+                                        PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, tsScannedDate: tsScannedDate,  isInFullScreen: false,backGround:Color.previous)
                                     }
                                     if isMerchTicketValid {
                                         MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: false,backGround:Color.valid)

@@ -110,6 +110,7 @@ struct ScannerView: View, Equatable {
     @Binding var orderNumber: String
     // Stores the date the order was scanned (binding from parent)
     @Binding var orderDateScanned: String
+    @Binding var tsScannedDate: String
     // Indicates if the ticket is a golden ticket (binding from parent)
     @Binding var isGoldenTicket: Bool
     // Indicates if the merchandise ticket is valid (binding from parent)
@@ -185,6 +186,7 @@ struct ScannerView: View, Equatable {
          merchOrderName: Binding<String>,
          merchVariantName: Binding<String>,
          orderDateScanned: Binding<String>,
+         tsScannedDate: Binding<String>,
          invalidMessage: Binding<String>,
          isMerchTicketValid: Binding<Bool>,
          isFullScreen: Binding<Bool>,
@@ -209,6 +211,7 @@ struct ScannerView: View, Equatable {
         _merchOrderName =  merchOrderName
         _merchVariantName =  merchVariantName
         _orderDateScanned = orderDateScanned
+        _tsScannedDate = tsScannedDate
         _isMerchTicketValid = isMerchTicketValid
         _isFullScreen = isFullScreen
         _isScanningCell = isScanningCell
@@ -294,7 +297,7 @@ struct ScannerView: View, Equatable {
                         Spacer()
                         if isTicketValid {
                             if isPreScanned {
-                                PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, isInFullScreen: true,backGround:Color.previous)
+                                PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, tsScannedDate: tsScannedDate, isInFullScreen: true,backGround:Color.previous)
                             } else {
                                 ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: true,backGround:Color.valid)
                             }
@@ -302,7 +305,7 @@ struct ScannerView: View, Equatable {
                             InvalidTicketView(message: invalidMessage, isInFullScreen: true, backGround:Color.invalid)
                         }
                         if isMerchPreScanned {
-                            PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, isInFullScreen: true, backGround: Color.previous)
+                            PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, tsScannedDate: tsScannedDate, isInFullScreen: true, backGround: Color.previous)
                         }
                         if isMerchTicketValid {
                             MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: true, backGround: Color.valid)
@@ -1067,7 +1070,7 @@ struct ScannerView: View, Equatable {
                                         orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? ""
                                         orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                         orderDateScanned = responseDict["date_scanned"] as? String ?? ""
-                                        
+                                        tsScannedDate = responseDict["tsScanned"] as? String ?? ""
                                         scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                                             withAnimation {
@@ -1083,6 +1086,7 @@ struct ScannerView: View, Equatable {
                                     orderName = (responseDict["buyer_name"] as? String)?.capitalized ?? StringManager.shared.strings.offline.blockedTicket
                                     orderNumber = String(responseDict["oid"] as? Int ?? 0)
                                     orderDateScanned = responseDict["date_scanned"] as? String ?? ""
+                                    tsScannedDate = responseDict["tsScanned"] as? String ?? ""
                                     isGoldenTicket = (responseDict["is_golden_ticket"] == nil)
                                     scannerViewModel.playScanFeedback(scannerResult: .valid, haptic: shouldPlayHapticNew)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
@@ -1142,6 +1146,7 @@ struct ScannerView: View, Equatable {
                                         merchOrderName = name
                                         merchVariantName = variantName
                                         orderDateScanned = ts.formatToDate()
+                                        tsScannedDate = ts
                                         
                                         if message.contains("Previously scanned") || isValid {
                                             if message.contains("Previously scanned") {
@@ -1252,7 +1257,7 @@ struct ScannerView: View, Equatable {
                                                     } else {
                                                         orderDateScanned = ""
                                                     }
-                                                    
+                                                    tsScannedDate = scanResponse.tsScanned ?? ""
                                                     scannerViewModel.playScanFeedback(scannerResult: .previouslyScanned, haptic: shouldPlayHapticNew)
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                                                         withAnimation {

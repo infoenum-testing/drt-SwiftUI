@@ -14,7 +14,7 @@ struct DRTScannerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let persistenceController = PersistenceController.shared
     @StateObject var stringManager = StringManager.shared
-    
+    @StateObject var network = NetworkMonitor.shared
     @StateObject private var inactivityManager = InactivityManager.shared
     @State private var sizeData: SizeData = .empty
     
@@ -25,16 +25,19 @@ struct DRTScannerApp: App {
                     .padding([.leading, .trailing], 20)
                     .environmentObject(inactivityManager)
                     .environmentObject(stringManager)
+                    .environmentObject(network)
                     .ignoresSafeArea(.keyboard, edges: .bottom)
                     .environment(\.sizeData, sizeData)
                     .readSizeData($sizeData)
-            } .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .ignoresSafeArea(.keyboard, edges: .bottom)
-                .detectGlobalTaps(disabled: false)
-                .onAppear {
-                    InactivityManager.shared.start()
-                    stringManager.loadStrings()
-                }
+            }
+            .environment(\.managedObjectContext, persistenceController.container.viewContext)
+
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .detectGlobalTaps(disabled: false)
+            .onAppear {
+                InactivityManager.shared.start()
+                stringManager.loadStrings()
+            }
         }
     }
 }

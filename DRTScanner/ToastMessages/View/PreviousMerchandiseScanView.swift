@@ -11,6 +11,7 @@ struct PreviousMerchandiseScanView: View {
     let name: String
     let variantName: String
     let message: String
+    let tsScannedDate: String
     let isInFullScreen: Bool
     @EnvironmentObject var stringManager: StringManager
     let backGround:Color
@@ -44,11 +45,11 @@ struct PreviousMerchandiseScanView: View {
                             .font(.verlagBoldAdaptive(size: 26))
                             .foregroundColor(Color.primaryText)
                     }
-                    let raw = stringManager.strings.orderDetail.previouslyScanned
-                    Text(raw.replacingOccurrences(of: "%@", with: message))
-                        .font(.verlagBoldAdaptive(size: 26))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(Color.primaryText)
+                    if let scanDate = tsScannedDate.toDateFromMillisecondsTimestamp() {
+                        CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
+                    } else  if let scanDate = Date.todayAtTime(message) {
+                        CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
+                    }
                 }
 
                 if isInFullScreen {
