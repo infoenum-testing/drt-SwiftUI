@@ -306,24 +306,24 @@ struct SeatCell: View {
         switch diffMinutes {
         case ..<2:
             let lable =  String(format: labelscaned, "")
-            return "\(lable) \n \(stringManager.strings.orderDetail.justNow)"
+            return "\(lable)\n\(stringManager.strings.orderDetail.justNow)"
         case 2..<60:
             let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
             let lable = String(format: labelTemplate, "")
-            return "\(lable) \n \(timeLabel)"
+            return "\(lable)\n\(timeLabel)"
         case 60..<1440:
             let hourAgoString = diffHours == 1 ? stringManager.strings.orderDetail.hourAgo : stringManager.strings.orderDetail.hoursAgo
             let timeLabel = String(format: hourAgoString, "\(diffHours)")
             let lable = String(format: labelTemplate, "")
-            return "\(lable) \n \(timeLabel)"
+            return "\(lable)\n\(timeLabel)"
         case 1440..<2880:
             let lable = String(format: labelTemplate, "")
-            return "\(lable) \n \(stringManager.strings.orderDetail.yesterday)"
+            return "\(lable)\n\(stringManager.strings.orderDetail.yesterday)"
 
         default:
             let timeLabel = String(format: stringManager.strings.orderDetail.daysAgo, "\(diffDays)")
             let lable = String(format: labelTemplate, "")
-            return "\(lable) \n \(timeLabel)"
+            return "\(lable)\n\(timeLabel)"
         }
     }
 }

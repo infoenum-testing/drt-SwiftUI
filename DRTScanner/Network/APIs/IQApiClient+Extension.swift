@@ -132,7 +132,7 @@ extension IQAPIClient {
     
     /// Scans ticket QR codes with a specified type (e.g., "merch", "seat").
     @discardableResult
-    static func scanTicketQrCode(code: String, type: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
+    static func scanTicketQrCode(code: String, type: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<ScanResponse, Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/ticket?c=\(code)&devicename=\(deviceName)"
         let lanCode = StringManager.shared.returnLangCode()

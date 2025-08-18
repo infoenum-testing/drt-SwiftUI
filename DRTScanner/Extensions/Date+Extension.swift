@@ -17,9 +17,7 @@ extension Date {
 extension Date {
     func formatToTimeString() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.amSymbol = "AM"
-        formatter.pmSymbol = "PM"
+        formatter.dateFormat = "yyyy-MM-dd h:mm a"
         formatter.timeZone = TimeZone.current
         return formatter.string(from: self)
     }
@@ -27,21 +25,9 @@ extension Date {
 
 extension Date {
     static func todayAtTime(_ timeString: String) -> Date? {
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "h:mm a"
-        timeFormatter.amSymbol = "AM"
-        timeFormatter.pmSymbol = "PM"
-        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
-        guard let timeOnlyDate = timeFormatter.date(from: timeString) else { return nil }
-        
-        let calendar = Calendar.current
-        let now = Date()
-        let timeComponents = calendar.dateComponents([.hour, .minute], from: timeOnlyDate)
-        var todayComponents = calendar.dateComponents([.year, .month, .day], from: now)
-        todayComponents.hour = timeComponents.hour
-        todayComponents.minute = timeComponents.minute
-        
-        return calendar.date(from: todayComponents)
+        let formatter = DateFormatter()
+          formatter.dateFormat = "yyyy-MM-dd h:mm a"
+          formatter.timeZone = TimeZone.current
+          return formatter.date(from: timeString)
     }
 }

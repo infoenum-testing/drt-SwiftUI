@@ -10,46 +10,20 @@ import SwiftUI
 
 struct InvalidMerchandiseTicketView: View {
     @EnvironmentObject var stringManager: StringManager
-    let isInFullScreen: Bool
     let backGround: Color
     var body: some View {
         VStack {
-            if isInFullScreen {
-                Spacer()
-            }
             VStack {
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 0)
-                }
                 Image("circle_and_cross_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
                     .bold()
                     .foregroundColor(Color.primaryText)
                     .padding(.bottom)
-                
-                Text(stringManager.strings.incorrectMode.tickets)
-                    .font(.verlagBlackAdaptive(size: 30))
-                    .multilineTextAlignment(.center)
-                    .fontWeight(.bold)
-                    .foregroundColor(Color.primaryText)
-                
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 110)
-                }
+                CustomsText(title: stringManager.strings.incorrectMode.tickets, textFont: .verlagBlackAdaptive(size: 30), foregroundColour: .primaryText, alignment: .center)
             }
             .frame(width: UIScreen.main.bounds.width)
-            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .frame(height: UIScreen.main.bounds.height*0.485)
             .background(backGround)
             .ignoresSafeArea(edges: .bottom)
             .transition(.opacity)

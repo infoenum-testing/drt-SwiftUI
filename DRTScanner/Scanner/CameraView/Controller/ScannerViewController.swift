@@ -332,15 +332,15 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
                     self.turnFlashOn()
                 }
 
+                // Lock scanning
                 self.didJustScan = true
                 self.isScanningBinding?.wrappedValue = false
                 self.onScan?(payload)
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                // Keep bounding box visible for 1 second
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.boundingBoxLayer.isHidden = true
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    // Unlock scanning after 1 second
                     self.didJustScan = false
                     self.isScanningBinding?.wrappedValue = true
                 }

@@ -12,23 +12,12 @@ struct PreviousMerchandiseScanView: View {
     let variantName: String
     let message: String
     let tsScannedDate: String
-    let isInFullScreen: Bool
     @EnvironmentObject var stringManager: StringManager
     let backGround:Color
     var body: some View {
         VStack {
-            if isInFullScreen {
-                Spacer()
-            }
+
             VStack(spacing: 20) {
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 0)
-                }
                 Image("circle_and_!_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -51,18 +40,9 @@ struct PreviousMerchandiseScanView: View {
                         CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
                     }
                 }
-
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 110)
-                }
             }
             .frame(width: UIScreen.main.bounds.width)
-            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .frame(height: UIScreen.main.bounds.height*0.485)
             .background(backGround)
             .ignoresSafeArea(edges: .bottom)
             .transition(.opacity)

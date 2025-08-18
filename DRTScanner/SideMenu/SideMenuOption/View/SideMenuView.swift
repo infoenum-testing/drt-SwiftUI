@@ -187,7 +187,7 @@ struct SideMenuView: View {
                         .padding(.bottom)
                     
                     VStack {
-                        // NO button
+                        // yes button
                         HStack {
                             Spacer()
                             Button(action: {
@@ -212,7 +212,7 @@ struct SideMenuView: View {
                         .padding(.horizontal)
                         .padding(.top)
                         
-                        // YES button
+                        // no button
                         HStack {
                             Spacer()
                             Button(action: {
@@ -227,8 +227,9 @@ struct SideMenuView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             Spacer()
-                        }.background(Color.clear)
-                            .padding(.horizontal)
+                        }
+                        .background(Color.clear)
+                        .padding(.horizontal)
                         
                     }.onChange(of: isSwitchingToMerchandise ?? false) { newValue in
                         isMerchandise = newValue

@@ -7,59 +7,41 @@
 
 import SwiftUI
 
+enum ScanResult {
+    case validTicket(orderName: String, orderNumber: String, isGoldenTicket: Bool)
+    case preScannedTicket(orderName: String, orderNumber: String, scannedTime: String, tsScannedDate: String)
+    case invalidTicket(message: String)
+    case validMerch(orderName: String, variantName: String)
+    case preScannedMerch(orderName: String, variantName: String, scannedTime: String, tsScannedDate: String)
+    case incorrctMerchMode
+    case incorrectTicketMode
+    case none
+}
+
 // Main view for seat management and scanning
 struct SeatHomeView: View {
-    // Used to dismiss the current view
     @Environment(\.presentationMode) var presentationMode
-    // Stores the show name
     @AppStorage("show") private var savedShow: String = ""
-    // Controls the side menu presentation
     @State private var isSideMenuPresented = false
-    // Controls the visibility of the seat view (passed from parent)
     @Binding var showSeatView: Bool
-    // Indicates if the merchandise mode is active
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
-    // Controls the display of the logout/alert dialog
     @State private var showAlert = false
-    // Controls the display of the order number lookup view
     @State private var showOrderNumberView = false
-    // Controls the display of the lookup alert (by number)
     @State private var showLookupAlert = false
-    // Controls the display of the lookup alert (by name)
     @State private var showLookupAlertByName = false
-    // Controls the display of the lookup alert (by seat)
     @State private var showLookupAlertBySeat = false
-    // ViewModel for seat home logic
     @StateObject private var seatHomeViewModel  =  SeatHomeViewModel()
-    // Stores the selected lookup type by name
     @State private var selectedLookupByName: LookupByName = .name
-    // Controls the display of the go offline view
     @State private var showGoOfflineView = false
-    // Controls the display of the scanning stats view
     @State private var showScanningStatsView = false
-    // Controls the display of the about view
     @State private var showAboutView = false
-    // Controls the display of the offline error alert
     @State private var showOfflineAlert = false
-    // Controls the display of the offline success alert
     @State private var showOfflineSuccessAlert = false
-    // Stores the last scanned barcode
     @State private var scannedBarcode: String? = nil
-    // Indicates if the ticket is valid
-    @State private var isTicketValid: Bool = false
-    // Indicates if the ticket was previously scanned
+
     @State private var isPreScanned: Bool = false
-    // Indicates if the ticket is invalid
-    @State private var isInvalidTicket: Bool = false
-    // Indicates if the seat ticket is invalid
-    @State private var isInvalidSeatTicket: Bool = false
-    // Indicates if the merchandise ticket is invalid
-    @State private var isInvalidMerchTicket: Bool = false
-    // Stores the order name
     @State private var orderName: String = ""
-    // Stores the order number
     @State private var orderNumber: String = ""
-    // Stores the date/time the order was scanned
     @State private var orderDateScanned: String = "" {
         didSet {
             print(_orderDateScanned)
@@ -67,21 +49,12 @@ struct SeatHomeView: View {
         }
     }
     @State var tsScannedDate: String = ""
-    // Stores error messages
     @State private var errorMessage : String = ""
     @State private var invalidMessage : String = ""
-    // Indicates if the ticket is a golden ticket
     @State private var isGoldenTicket: Bool = false
-    // Indicates if the merchandise ticket is valid
-    @State private var isMerchTicketValid: Bool = false
-    // Indicates if the merchandise ticket was previously scanned
-    @State private var isMerchPreScanned: Bool = false
-    // Controls full screen mode for the scanner
     @State private var isFullScreen: Bool = false
-    // Controls whether the scanner is active
     @State private var isScanningCell = true
     @State private var isLoading = false
-    // ViewModel to trigger scanner reset
     @StateObject private var scnanerReset = ScannerViewModel()
     @State private var isLoadingSvgImage = false
     @State private var merchOrderName = ""
@@ -91,7 +64,8 @@ struct SeatHomeView: View {
     @ObservedObject var landingView:LandingViewModel
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     @EnvironmentObject var stringManager: StringManager
-    
+    @State private var scanResult: ScanResult = .none
+
     let controller = ScannerViewController()
     
     // Computes the dynamic cell height based on device and mode
@@ -163,18 +137,28 @@ struct SeatHomeView: View {
                         // Shows background image unless in full screen
                         VStack {
                             // Scanner view for scanning tickets
-                            ScannerView(seat: $seatHomeViewModel.selectedSeat, scannerLineAnimation: $scannerLineAnimation, isTicketValid: $isTicketValid, isPreScanned: $isPreScanned, isInvalidTicket: $isInvalidTicket, orderName: $orderName, orderNumber: $orderNumber, merchOrderName: $merchOrderName, merchVariantName: $merchVariantName, orderDateScanned: $orderDateScanned, tsScannedDate: $tsScannedDate, invalidMessage: $invalidMessage, isMerchTicketValid: $isMerchTicketValid, isFullScreen: $isFullScreen, isScanningCell: $isScanningCell,isGoldenTicket: $isGoldenTicket, isInvalidSeatTicket: $isInvalidSeatTicket, isInvalidMerchTicket: $isInvalidMerchTicket, isMerchPreScanned: $isMerchPreScanned, scannerViewModel: scnanerReset, lookupByOrderResultViewModel: viewModel, landingView:landingView,controller: controller, showOfflineAlert: $showOfflineAlert)
-                                .frame(width: UIScreen.main.bounds.width)
-                                .frame(maxHeight: isFullScreen ? .infinity : nil)
-                                .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
+                            ScannerView(seat: $seatHomeViewModel.selectedSeat,
+                                        scannerLineAnimation: $scannerLineAnimation,
+                                        orderDateScanned: $orderDateScanned,
+                                        tsScannedDate: $tsScannedDate,
+                                        invalidMessage: $invalidMessage,
+                                        isFullScreen: $isFullScreen,
+                                        isScanningCell: $isScanningCell,
+                                        isGoldenTicket: $isGoldenTicket,
+                                        scannerViewModel: scnanerReset,
+                                        lookupByOrderResultViewModel: viewModel,
+                                        landingView: landingView,
+                                        controller: controller,
+                                        scanResultEnum: $scanResult,
+                                        showOfflineAlert:  $showOfflineAlert)
                             
-                            // Scrollable area containing lookup options and ticket status views
-                            ScrollView(showsIndicators: false) {
-                                // Show lookup options only if no ticket state is currently active
-                                if !isTicketValid && !isInvalidTicket && !isMerchTicketValid && !isInvalidSeatTicket && !isInvalidMerchTicket && !isMerchPreScanned {
-                                    // List of lookup methods (order number, name, phone, credit card, seat)
+                            .frame(width: UIScreen.main.bounds.width)
+                            .frame(maxHeight: isFullScreen ? .infinity : nil)
+                            .modifier(ConditionalEdgeIgnore(isFullScreen: isFullScreen))
+                            
+                            if !isFullScreen {
+                                ScrollView(showsIndicators: false) {
                                     VStack(spacing: 0) {
-                                        // Lookup by order number
                                         CustomCellView(imageName: StringConstants.SeatHomeView.orderNumberIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.orderNumber, cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
                                             // Set lookup type and show alert for order number
                                             seatHomeViewModel.selectedLookupType = .orderNumber
@@ -193,30 +177,27 @@ struct SeatHomeView: View {
                                                 showLookupAlertByName = true
                                             }
                                         }
-                                        // Lookup by phone number
+                                        
                                         CustomCellView(imageName: StringConstants.SeatHomeView.phoneNumberIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.phoneNumber,
                                                        cellHeight: dynamicCellHeight, buttonImage: StringConstants.SeatHomeView.rightSideArrow) {
-                                            // Set lookup type and show alert for phone number
                                             seatHomeViewModel.selectedLookupType = .phoneNumber
                                             isScanningCell = false
                                             withAnimation(.easeInOut(duration: 0.3)) {
                                                 showLookupAlert = true
                                             }
                                         }
-                                        // Lookup by credit card
                                         CustomCellView(imageName: StringConstants.SeatHomeView.creditCardIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.creditCard,
                                                        cellHeight: dynamicCellHeight,
                                                        bottomLineColor: isMerchandise ? Color.neutralBg : Color.primaryText, buttonImage: StringConstants.SeatHomeView.rightSideArrow,
                                                        showDivider: isMerchandise ? false : true
                                         ) {
-                                            // Set lookup type and show alert for credit card
                                             seatHomeViewModel.selectedLookupType = .creditCard
                                             isScanningCell = false
                                             withAnimation(.easeInOut(duration: 0.3)) {
                                                 showLookupAlert = true
                                             }
                                         }
-                                        // Lookup by seat (only if not in merchandise mode)
+                                        
                                         if !isMerchandise {
                                             CustomCellView(imageName: StringConstants.SeatHomeView.seatIcon, title: stringManager.strings.home.lookUpBy, subtitle: stringManager.strings.home.seat, cellHeight: dynamicCellHeight , bottomLineColor: Color.neutralBg,
                                                            buttonImage: StringConstants.SeatHomeView.rightSideArrow,
@@ -231,46 +212,60 @@ struct SeatHomeView: View {
                                         }
                                     }
                                 }
-                                // Show ticket status views if not in full screen mode
-                                if !isFullScreen {
-                                    // Show previously scanned ticket view if ticket is valid and already scanned
-                                    if isTicketValid {
-                                        if isPreScanned {
-                                            PreviouslyScannedTicketView(orderName: orderName, orderNumber: orderNumber, scannedTime: orderDateScanned, tsScannedDate: tsScannedDate,  isInFullScreen: false,backGround:Color.previous)
-                                        } else {
-                                            // Show valid ticket view
-                                            ValidTicketView(orderName: orderName, orderNumber: orderNumber, isGoldenTicket: isGoldenTicket, isInFullScreen: false,backGround:Color.valid)
-                                        }
-                                    } else if isInvalidTicket {
-                                        // Show invalid ticket view
-                                        InvalidTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
-                                    }
-                                    // Show merchandise-related ticket status views
-                                    if isMerchPreScanned {
-                                        PreviousMerchandiseScanView(name: merchOrderName, variantName: merchVariantName, message: orderDateScanned, tsScannedDate: tsScannedDate,  isInFullScreen: false,backGround:Color.previous)
-                                    }
-                                    if isMerchTicketValid {
-                                        MerchandiseScanView(variantName: merchVariantName, name: merchOrderName, isInFullScreen: false,backGround:Color.valid)
-                                    }
-                                    if isInvalidMerchTicket {
-                                        InvalidMerchandiseTicketView(isInFullScreen: false,backGround:Color.invalid)
-                                    }
-                                    // Show invalid seat ticket view
-                                    if isInvalidSeatTicket {
-                                        InvalidSeatTicketView(message: invalidMessage, isInFullScreen: false,backGround:Color.invalid)
-                                    }
-                                }
-                            }
-                            .scrollDisabled(UIDevice.current.userInterfaceIdiom == .pad && UIDevice.isLandscape ? false : true)
+                                .scrollDisabled(UIDevice.current.userInterfaceIdiom == .pad && UIDevice.isLandscape ? false : true)
                                 .opacity(!isFullScreen ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.4), value: isFullScreen)
                                 .background(Color.neutralBg)
-                                .onChange(of: orderDateScanned) { newValue in
-                                    print(newValue)
-                                    print(newValue)
-                                }
+                            }
                         }
                         .background(.black)
+                        
+                        //MARK: scnner result view
+                        VStack {
+                            Spacer()
+                            Group {
+                                switch scanResult {
+                                case .validTicket(let orderName, let orderNumber, let isGoldenTicket):
+                                    ValidTicketView(orderName: orderName,
+                                                    orderNumber: orderNumber,
+                                                    isGoldenTicket: isGoldenTicket,
+                                                    backGround: Color.valid)
+                                    
+                                case .preScannedTicket(let orderName, let orderNumber, let scannedTime, let tsScannedDate):
+                                    PreviouslyScannedTicketView(orderName: orderName,
+                                                                orderNumber: orderNumber,
+                                                                scannedTime: scannedTime,
+                                                                tsScannedDate: tsScannedDate,
+                                                                backGround: Color.previous)
+                                    
+                                    
+                                case .invalidTicket(let message):
+                                    InvalidTicketView(message: message,
+                                                      backGround: Color.invalid)
+                                    
+                                case .validMerch(let orderName, let variantName):
+                                    MerchandiseScanView(variantName: variantName,
+                                                        name: orderName,
+                                                        backGround: Color.valid)
+                                    
+                                case .preScannedMerch(let orderName, let variantName, let scannedTime, let tsScannedDate):
+                                    PreviousMerchandiseScanView(name: orderName,
+                                                                variantName: variantName,
+                                                                message: scannedTime,
+                                                                tsScannedDate: tsScannedDate,
+                                                                backGround: Color.previous)
+                                    
+                                case .incorrctMerchMode:
+                                    InvalidMerchandiseTicketView(backGround: Color.invalid)
+                                    
+                                case .incorrectTicketMode:
+                                    InvalidSeatTicketView(backGround: Color.invalid)
+                                    
+                                case .none:
+                                    EmptyView() // nothing scanned yet
+                                }
+                            }
+                        }
                     }
                     .overlay {
                         VStack {

@@ -11,22 +11,11 @@ import SwiftUI
 struct MerchandiseScanView: View {
     let variantName: String
     let name: String
-    let isInFullScreen: Bool
     let backGround:Color
     var body: some View {
         VStack {
-            if isInFullScreen {
-                Spacer()
-            }
             VStack {
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 0)
-                }
+             
                 Image("circle_and_check_icon")
                     .resizable()
                     .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
@@ -41,17 +30,9 @@ struct MerchandiseScanView: View {
                 }
                 .foregroundColor(Color.primaryText)
                 .font(.verlagBoldAdaptive(size: 26))
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 110)
-                }
             }
             .frame(width: UIScreen.main.bounds.width)
-            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .frame(height: UIScreen.main.bounds.height*0.485)
             .background(backGround)
             .ignoresSafeArea(edges: .bottom)
             .transition(.opacity)

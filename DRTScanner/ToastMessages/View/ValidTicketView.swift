@@ -11,22 +11,10 @@ struct ValidTicketView: View {
     let orderName: String
     let orderNumber: String
     let isGoldenTicket: Bool
-    let isInFullScreen: Bool
     let backGround: Color
     var body: some View {
         VStack {
-            if isInFullScreen {
-                Spacer()
-            }
             VStack(spacing: 15) {
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 0)
-                }
                 Image("circle_and_check_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -42,18 +30,9 @@ struct ValidTicketView: View {
                         .font(.verlagBoldAdaptive(size: 26))
                         .foregroundColor(Color.primaryText)
                 }
-                
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {
-                        
-                    }
-                    .frame(height: 110)
-                }
             }
             .frame(width: UIScreen.main.bounds.width)
-            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .frame(height: UIScreen.main.bounds.height*0.485)
             .background(isGoldenTicket ? Color(red: 1.0, green: 0.84, blue: 0.0) : backGround)
             .transition(.opacity)
         }

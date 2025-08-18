@@ -13,23 +13,12 @@ struct PreviouslyScannedTicketView: View {
     let orderNumber: String
     let scannedTime: String
     let tsScannedDate: String
-    let isInFullScreen: Bool
     let backGround:Color
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
         VStack {
-            if isInFullScreen {
-                Spacer()
-            }
             VStack {
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {}
-                    .frame(height: 0)
-                }
-                
                 Image("circle_and_!_icon")
                     .resizable()
                     .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
@@ -53,16 +42,9 @@ struct PreviouslyScannedTicketView: View {
                 } else  if let scanDate = Date.todayAtTime(scannedTime) {
                     CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
                 }
-                
-                if isInFullScreen {
-                    Spacer()
-                } else {
-                    VStack {}
-                    .frame(height: 110)
-                }
             }
             .frame(width: UIScreen.main.bounds.width)
-            .frame(height: isInFullScreen ? UIScreen.main.bounds.height*0.47 : UIScreen.main.bounds.height * 0.6)
+            .frame(height: UIScreen.main.bounds.height*0.485)
             .background(backGround)
             .ignoresSafeArea(edges: .bottom)
             .transition(.opacity)
