@@ -19,7 +19,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     var isScanningBinding: Binding<Bool>?
     var flashControlHandler: ((Bool) -> Void)?
     private var hasCheckedPermissions = false
-
+    var isStopSessionByME: Bool = false
     @AppStorage("kAutoEnableFlashTimeout") private var autoEnableFlashTimeout: Bool = false
 
     private var scheduledFlashWorkItem: DispatchWorkItem?
@@ -54,8 +54,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             hasCheckedPermissions = true
             checkCameraPermission()
         }
-
-        startWatchdogTimer()
+        checkCameraSessionRunning()
     }
 
     // Cleans up observers when the controller is deallocated
@@ -64,24 +63,35 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         NotificationCenter.default.removeObserver(self)
         print("🗑️ ScannerViewController deinitialized")
     }
-
-    private func startWatchdogTimer() {
-        scanningWatchdogTimer?.invalidate() // Stop existing timer if any
+    
+    func checkCameraSessionRunning() {
+        // Always reset the timer
+        scanningWatchdogTimer?.invalidate()
 
         scanningWatchdogTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
             guard let self = self else { return }
 
-            let shouldScan = self.isScanningBinding?.wrappedValue ?? true
-            let isRunning = self.captureSession?.isRunning ?? false
-
-            if shouldScan && !isRunning {
-                print("🔄 Restarting capture session due to inactivity")
-                self.captureSession?.startRunning()
+            if self.isStopSessionByME {
+                self.scanningWatchdogTimer?.invalidate()
+                self.scanningWatchdogTimer = nil
+                return
             }
 
-            // Optional: refresh layout to force previewLayer update
+            // Check capture session state
+            let isRunning = self.captureSession?.isRunning ?? false
+
+            if !isRunning {
+                print("🔄 Restarting capture session (watchdog)")
+                DispatchQueue.global(qos: .userInitiated).async {
+                    self.captureSession?.startRunning()
+                }
+            }
+
+            // Refresh preview layer to avoid freezes
             DispatchQueue.main.async {
                 self.previewLayer?.frame = self.view.bounds
+                self.previewLayer?.setNeedsDisplay()
+                self.previewLayer?.connection?.isEnabled = true
             }
         }
     }
@@ -326,23 +336,29 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
                   let payload = bestResult.payloadStringValue else { return }
 
             DispatchQueue.main.async {
-                self.drawBoundingBox(for: bestResult)
+                // Convert bounding box to preview coordinates
+                guard let previewLayer = self.previewLayer else { return }
+                var rect = bestResult.boundingBox
+                rect.origin.y = 1 - rect.origin.y - rect.size.height
+                let convertedRect = previewLayer.layerRectConverted(fromMetadataOutputRect: rect)
 
-                if self.autoEnableFlashTimeout {
-                    self.turnFlashOn()
-                }
+                // ✅ Only accept if inside the visible preview
+                if self.view.bounds.contains(convertedRect) {
+                    self.drawBoundingBox(for: bestResult)
 
-                // Lock scanning
-                self.didJustScan = true
-                self.isScanningBinding?.wrappedValue = false
-                self.onScan?(payload)
+                    if self.autoEnableFlashTimeout {
+                        self.turnFlashOn()
+                    }
 
-                // Keep bounding box visible for 1 second
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self.boundingBoxLayer.isHidden = true
-                    // Unlock scanning after 1 second
-                    self.didJustScan = false
-                    self.isScanningBinding?.wrappedValue = true
+                    self.didJustScan = true
+                    self.isScanningBinding?.wrappedValue = false
+                    self.onScan?(payload)
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.boundingBoxLayer.isHidden = true
+                        self.didJustScan = false
+                        self.isScanningBinding?.wrappedValue = true
+                    }
                 }
             }
         }

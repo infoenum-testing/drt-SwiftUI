@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24B83" minimumToolsVersion="Xcode 7.3" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D81" minimumToolsVersion="Xcode 7.3" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Order" representedClassName="Order" syncable="YES">
         <attribute name="buyerName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="cc" optional="YES" attributeType="String" syncable="YES"/>
@@ -72,6 +72,10 @@
         <attribute name="color_neutral_text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="color_Previous" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="color_Valid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="colorButtonBg" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="colorButtonText" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="colorGoldenTicket" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="colorGrayText" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="logo_href" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Stats" representedClassName=".Stats" syncable="YES">

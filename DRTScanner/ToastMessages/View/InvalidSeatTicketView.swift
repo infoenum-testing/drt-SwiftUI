@@ -13,25 +13,23 @@ struct InvalidSeatTicketView: View {
     let backGround: Color
     var body: some View {
         VStack {
-            VStack {
-                Image("circle_and_cross_icon")
-                    .resizable()
-                    .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
-                    .bold()
-                    .foregroundColor(Color.primaryText)
-                    .padding(.bottom)
-                
-                Text(stringManager.strings.incorrectMode.merch)
-                    .font(.verlagBlackAdaptive(size: 30))
-                    .multilineTextAlignment(.center)
-                    .fontWeight(.bold)
-                    .foregroundColor(Color.primaryText)
-            }
-            .frame(width: UIScreen.main.bounds.width)
-            .frame(height: UIScreen.main.bounds.height*0.485)
-            .background(backGround)
-            .ignoresSafeArea(edges: .bottom)
-            .transition(.opacity)
+            Image("circle_and_cross_icon")
+                .resizable()
+                .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
+                .bold()
+                .foregroundColor(Color.primaryText)
+                .padding(.bottom)
+            
+            Text(stringManager.strings.incorrectMode.merch)
+                .font(.verlagBlackAdaptive(size: 30))
+                .multilineTextAlignment(.center)
+                .fontWeight(.bold)
+                .foregroundColor(Color.primaryText)
         }
+        .frame(width: UIScreen.main.bounds.width)
+        .frame(height: UIScreen.main.bounds.height*0.485)
+        .background(backGround)
+        .ignoresSafeArea(edges: .bottom)
+        .transition(.opacity)
     }
 }

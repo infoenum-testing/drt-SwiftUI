@@ -27,5 +27,9 @@ extension Skin {
     @NSManaged public var color_neutral_bg: String?
     @NSManaged public var color_neutral_text: String?
     @NSManaged public var logo_href: String?
+    @NSManaged public var colorButtonBg: String?
+    @NSManaged public var colorButtonText: String?
+    @NSManaged public var colorGoldenTicket: String?
+    @NSManaged public var colorGrayText: String?
 
 }

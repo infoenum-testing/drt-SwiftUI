@@ -20,7 +20,10 @@ struct SkinModel: Codable {
     let color1Bg: String
     let color2Text: String
     let logoHref: String
-
+    let colorButtonBg: String
+    let colorButtonText: String
+    let colorGoldenTicket: String
+    let colorGrayText: String
     private enum CodingKeys: String, CodingKey {
         case colorValid = "colorValid"
         case colorNeutralText = "colorNeutralText"
@@ -33,6 +36,10 @@ struct SkinModel: Codable {
         case color1Bg = "color1Bg"
         case color2Text = "color2Text"
         case logoHref = "logoHref"
+        case colorButtonBg = "colorButtonBg"
+        case colorButtonText = "colorButtonText"
+        case colorGoldenTicket = "colorGoldenTicket"
+        case colorGrayText = "colorGrayText"
     }
 }
 
@@ -49,7 +56,11 @@ extension SkinModel {
             let invalid = skin.color_Invalid,
             let prev = skin.color_Previous,
             let bgHref = skin.background_href,
-            let logo = skin.logo_href
+            let logo = skin.logo_href,
+            let colorButtonBg = skin.colorButtonBg,
+            let colorButtonText = skin.colorButtonText,
+            let colorGoldenTicket = skin.colorGoldenTicket,
+            let colorGrayText = skin.colorGrayText
         else {
             return nil
         }
@@ -65,5 +76,9 @@ extension SkinModel {
         self.colorPrevious = prev
         self.backgroundHref = bgHref
         self.logoHref = logo
+        self.colorButtonBg = colorButtonBg
+        self.colorButtonText = colorButtonText
+        self.colorGoldenTicket = colorGoldenTicket
+        self.colorGrayText = colorGrayText
     }
 }

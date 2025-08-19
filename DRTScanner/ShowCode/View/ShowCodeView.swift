@@ -77,7 +77,7 @@ struct ShowCodeView: View {
                                     Color.black.opacity(opacity)
                                 }
                             // MARK: - Code Display and Controls
-                            HStack(alignment: .center) {
+                            HStack(alignment: .bottom) {
                                 // Close Button
                                 Button(action: {
                                     withAnimation {
@@ -86,22 +86,22 @@ struct ShowCodeView: View {
                                 }) {
                                     Image(StringConstants.DRTImages.crossImage)
                                         .resizable()
-                                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                        .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                                         .padding(5)
                                 }
                                 Spacer()
                                 VStack(spacing: 0){
                                     if viewModel.showCode.isEmpty {
-                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .clear)
+                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .clear)
                                     } else {
-                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryText)
+                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryText)
                                     }
                                     // Disabled TextField Showing Current Code
                                     BlinkingCodeDisplay(
                                         placeholder: stringManager.strings.login.showCode,
                                         code: $viewModel.showCode
                                     )
-                                    .padding(.top,20)
+                                    .padding(.top,10)
                                     .frame(maxWidth: .infinity)
                                 }
 

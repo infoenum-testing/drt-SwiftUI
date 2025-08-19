@@ -39,13 +39,13 @@ struct SeatLookupView: View {
                     TextField("", text: $viewModel.seatText,
                               prompt: Text(stringManager.strings.seat.lookUpSeat)
                         .font(.verlagBoldAdaptive(size: 30))
-                        .foregroundColor(.black.opacity(0.2)))
+                        .foregroundColor(.colorGrayText))
                     .font(.verlagBoldAdaptive(size: 42))
                     .foregroundColor(Color.neutralText)
                     .multilineTextAlignment(.center)
                     .disabled(true)
                     Spacer()
-                   
+                    
                 }
                 .padding(.horizontal,15.adaptiveForIpad)
                 .frame(maxHeight: 90.adaptiveForIpad)

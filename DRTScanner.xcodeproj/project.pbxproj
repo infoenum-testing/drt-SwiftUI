@@ -22,7 +22,6 @@
 		E997FC9D2E29486F00D9EC06 /* Verlag-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E997FC532E29486F00D9EC06 /* Verlag-Bold.otf */; };
 		E997FC9E2E29486F00D9EC06 /* Verlag-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = E997FC542E29486F00D9EC06 /* Verlag-Book.otf */; };
 		E997FC9F2E29486F00D9EC06 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E997FC562E29486F00D9EC06 /* Images.xcassets */; };
-		E997FCA02E29486F00D9EC06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E997FC912E29486F00D9EC06 /* Assets.xcassets */; };
 		E997FCA22E29486F00D9EC06 /* AlertViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBA12E29486F00D9EC06 /* AlertViewModifier.swift */; };
 		E997FCA32E29486F00D9EC06 /* AlertViewModifierGoOfflineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBA22E29486F00D9EC06 /* AlertViewModifierGoOfflineView.swift */; };
 		E997FCA42E29486F00D9EC06 /* CustomCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FBA42E29486F00D9EC06 /* CustomCellView.swift */; };
@@ -166,7 +165,6 @@
 		E997FD302E29486F00D9EC06 /* PreviousMerchandiseScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC8D2E29486F00D9EC06 /* PreviousMerchandiseScanView.swift */; };
 		E997FD312E29486F00D9EC06 /* ValidTicketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC8E2E29486F00D9EC06 /* ValidTicketView.swift */; };
 		E997FD322E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E997FC922E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld */; };
-		E997FD332E29486F00D9EC06 /* Color+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FC4B2E29486F00D9EC06 /* Color+Extensions.swift */; };
 		E997FD342E29486F00D9EC06 /* View+Extensions.swift in Resources */ = {isa = PBXBuildFile; fileRef = E997FBCD2E29486F00D9EC06 /* View+Extensions.swift */; };
 		E9A68C412E2BD57800096B55 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A68C402E2BD57800096B55 /* NetworkMonitor.swift */; };
 		E9AA78E52E30F7C200233D98 /* ErrorMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9AA78E42E30F7C200233D98 /* ErrorMessages.swift */; };
@@ -305,7 +303,6 @@
 		E997FC442E29486F00D9EC06 /* IQApiClient+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IQApiClient+Extension.swift"; sourceTree = "<group>"; };
 		E997FC462E29486F00D9EC06 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
 		E997FC492E29486F00D9EC06 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		E997FC4B2E29486F00D9EC06 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		E997FC4D2E29486F00D9EC06 /* Aileron-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aileron-Regular.otf"; sourceTree = "<group>"; };
 		E997FC4E2E29486F00D9EC06 /* Avenir-Book.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Avenir-Book.ttf"; sourceTree = "<group>"; };
 		E997FC4F2E29486F00D9EC06 /* Avenir-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Avenir-Light.ttf"; sourceTree = "<group>"; };
@@ -344,7 +341,6 @@
 		E997FC8C2E29486F00D9EC06 /* PreviouslyScannedTicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviouslyScannedTicketView.swift; sourceTree = "<group>"; };
 		E997FC8D2E29486F00D9EC06 /* PreviousMerchandiseScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousMerchandiseScanView.swift; sourceTree = "<group>"; };
 		E997FC8E2E29486F00D9EC06 /* ValidTicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidTicketView.swift; sourceTree = "<group>"; };
-		E997FC912E29486F00D9EC06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E997FC932E29486F00D9EC06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E997FC952E29486F00D9EC06 /* DRT_Scanner.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DRT_Scanner.xcdatamodel; sourceTree = "<group>"; };
 		E997FC962E29486F00D9EC06 /* DRT_Scanner 1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DRT_Scanner 1.1.xcdatamodel"; sourceTree = "<group>"; };
@@ -965,14 +961,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		E997FC4C2E29486F00D9EC06 /* Color */ = {
-			isa = PBXGroup;
-			children = (
-				E997FC4B2E29486F00D9EC06 /* Color+Extensions.swift */,
-			);
-			path = Color;
-			sourceTree = "<group>";
-		};
 		E997FC552E29486F00D9EC06 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1000,7 +988,6 @@
 			isa = PBXGroup;
 			children = (
 				E9B3CE312E44EAE400743995 /* language.json */,
-				E997FC4C2E29486F00D9EC06 /* Color */,
 				E997FC552E29486F00D9EC06 /* Fonts */,
 				E997FC572E29486F00D9EC06 /* Images */,
 			);
@@ -1277,7 +1264,6 @@
 				E997FC6A2E29486F00D9EC06 /* ShowCode */,
 				E997FC872E29486F00D9EC06 /* SideMenu */,
 				E997FC902E29486F00D9EC06 /* ToastMessages */,
-				E997FC912E29486F00D9EC06 /* Assets.xcassets */,
 				E997FC922E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld */,
 				E997FC932E29486F00D9EC06 /* Info.plist */,
 			);
@@ -1379,13 +1365,11 @@
 				E997FC9B2E29486F00D9EC06 /* Avenir-Light.ttf in Resources */,
 				E992D1642E379EA3004F249D /* scan.wav in Resources */,
 				E992D1622E379E9C004F249D /* fail.wav in Resources */,
-				E997FD332E29486F00D9EC06 /* Color+Extensions.swift in Resources */,
 				E997FD342E29486F00D9EC06 /* View+Extensions.swift in Resources */,
 				E997FC9C2E29486F00D9EC06 /* Verlag-Black.otf in Resources */,
 				E997FC9D2E29486F00D9EC06 /* Verlag-Bold.otf in Resources */,
 				E997FC9E2E29486F00D9EC06 /* Verlag-Book.otf in Resources */,
 				E997FC9F2E29486F00D9EC06 /* Images.xcassets in Resources */,
-				E997FCA02E29486F00D9EC06 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

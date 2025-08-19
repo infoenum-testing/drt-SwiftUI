@@ -47,7 +47,11 @@ extension Color {
         color2Bg:         "FFCE62",
         color1Bg:         "74B9AE",
         color2Text:       "FFFFFF",
-        logoHref:         ""
+        logoHref:         "",
+        colorButtonBg:     "CBCBCB",
+        colorButtonText:   "B3B3B3",
+        colorGoldenTicket:  "FFD700",
+        colorGrayText:      "B3B3B3"
     )}
     
     static var valid:            Color { Color(hex: palette.colorValid) }
@@ -65,4 +69,11 @@ extension Color {
     // white , light Orange
     static var secondaryText:    Color { Color(hex: palette.color2Text) }
     static var secondaryBg:      Color { Color(hex: palette.color2Bg) }
+    
+    static var colorButtonBg:       Color { Color(hex: palette.colorButtonBg) }
+    static var colorButtonText:     Color { Color(hex: palette.colorButtonText) }
+    static var colorGoldenTicket:   Color { Color(hex: palette.colorGoldenTicket) }
+    static var colorGrayText:       Color { Color(hex: palette.colorGrayText) }
+    
+    
 }

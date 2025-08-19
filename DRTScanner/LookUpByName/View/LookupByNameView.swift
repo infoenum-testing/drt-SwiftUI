@@ -71,7 +71,7 @@ struct LookupByNameView: View {
                             text: $inputText,
                             prompt: Text(placeholderText)
                                 .font(.verlagBoldAdaptive(size: 20))
-                                .foregroundColor(Color.black.opacity(0.2))
+                                .foregroundColor(.colorGrayText)
                         )
                         .font(.verlagBoldAdaptive(size: 34))
                         .multilineTextAlignment(.center)

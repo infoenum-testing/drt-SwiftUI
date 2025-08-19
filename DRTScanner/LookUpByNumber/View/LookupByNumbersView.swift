@@ -147,7 +147,7 @@ struct LookupByNumbersView: View {
                                                     Image("order_number_unclicked_btn")
                                                         .renderingMode(.template )
                                                         .resizable()
-                                                        .foregroundColor(.disableBGColour)
+                                                        .foregroundColor(.colorButtonBg)
                                                 } else {
                                                     Image(isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn")
                                                         .resizable()
@@ -159,7 +159,7 @@ struct LookupByNumbersView: View {
                                             
                                             Text(button)
                                                 .font(.verlagBoldAdaptive(size: 50))
-                                                .foregroundColor(button == StringManager.shared.strings.home.ok ? (isOKButtonEnabled ? .primaryText : .disableTextColour) : Color.primaryBg)
+                                                .foregroundColor(button == StringManager.shared.strings.home.ok ? (isOKButtonEnabled ? .primaryText : .colorButtonText) : Color.primaryBg)
                                                 .frame(maxWidth: .infinity)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)

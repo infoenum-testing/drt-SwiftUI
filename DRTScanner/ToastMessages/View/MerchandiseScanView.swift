@@ -14,28 +14,25 @@ struct MerchandiseScanView: View {
     let backGround:Color
     var body: some View {
         VStack {
-            VStack {
-             
-                Image("circle_and_check_icon")
-                    .resizable()
-                    .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
-                    .foregroundColor(Color.primaryText)
-                    .padding(.top, -10.adaptiveForIpad)
-                
-                VStack(spacing: 5) {
-                    Text("\(name)")
-                    if variantName != "" {
-                        Text("Variant Name : \(variantName)")
-                    }
-                }
+            Image("circle_and_check_icon")
+                .resizable()
+                .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                 .foregroundColor(Color.primaryText)
-                .font(.verlagBoldAdaptive(size: 26))
+                .padding(.top, -10.adaptiveForIpad)
+            
+            VStack(spacing: 5) {
+                Text("\(name)")
+                if variantName != "" {
+                    Text("Variant Name : \(variantName)")
+                }
             }
-            .frame(width: UIScreen.main.bounds.width)
-            .frame(height: UIScreen.main.bounds.height*0.485)
-            .background(backGround)
-            .ignoresSafeArea(edges: .bottom)
-            .transition(.opacity)
+            .foregroundColor(Color.primaryText)
+            .font(.verlagBoldAdaptive(size: 26))
         }
+        .frame(width: UIScreen.main.bounds.width)
+        .frame(height: UIScreen.main.bounds.height*0.485)
+        .background(backGround)
+        .ignoresSafeArea(edges: .bottom)
+        .transition(.opacity)
     }
 }
