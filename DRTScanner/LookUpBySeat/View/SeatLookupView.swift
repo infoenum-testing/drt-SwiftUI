@@ -89,7 +89,7 @@ struct SeatLookupView: View {
                 }
                 .disabled(viewModel.isLoading || viewModel.selectedSeat.isEmpty)
                 .opacity(viewModel.selectedSeat.isEmpty ? 0.6 : 1.0)
-                .frame(height: geometry.size.height * 0.08)
+                .frame(height: UIScreen.main.bounds.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.primaryText)
                 .padding(.horizontal)

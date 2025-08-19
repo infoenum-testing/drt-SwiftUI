@@ -256,8 +256,23 @@ struct LookupByNumbersView: View {
                     inputText.append(button)
                 }
             case .phoneNumber:
-                if inputText.count < 10  {
-                    inputText.append(button)
+                if inputText.count < 12  {
+                    if inputText.count == 2 || inputText.count == 6 {
+                        if button != "-" {
+                            inputText.append(button)
+                            inputText.append("-")
+                        }
+                    } else if (inputText.count == 3 || inputText.count == 7), button == "-" {
+                        inputText.append(button)
+                    } else if (inputText.count == 3 || inputText.count == 7) {
+                        let index = inputText.index(inputText.startIndex, offsetBy: 2) // or 6 for 7
+                        if inputText[index] != "-" {
+                            inputText.append("-")
+                        }
+                        inputText.append(button)
+                    } else if button != "-" {
+                        inputText.append(button)
+                    }
                 }
             case .orderNumber:
                 if inputText.count < 7  {

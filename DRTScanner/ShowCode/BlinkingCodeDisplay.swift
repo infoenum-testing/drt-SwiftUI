@@ -16,58 +16,68 @@ struct BlinkingCodeDisplay: View {
     @State private var availableWidth: CGFloat = 0
     @State private var isCurcerShowing: Bool = false
     var body: some View {
-        GeometryReader { geo in
-            let needsScroll = textWidth > geo.size.width
-            ScrollView(.horizontal, showsIndicators: false) {
-                ScrollViewReader { proxy in
-                    ZStack {
-                        if code.isEmpty {
-                            Text(placeholder)
-                                .font(.verlagBoldAdaptive(size: 40))
-                                .foregroundColor(Color.primaryText.opacity(0.5))
-                                .id("placeholder")
-                        }
-                        HStack(spacing: 0) {
-                            Text(code)
-                                .font(.verlagBoldAdaptive(size: 40))
-                                .foregroundColor(Color.primaryText)
-                                .background(
-                                    GeometryReader { textGeo in
-                                        Color.clear
-                                            .onAppear {
-                                                textWidth = textGeo.size.width
+        ZStack {
+            if code.isEmpty {
+                ZStack {
+                    Text(placeholder)
+                        .font(.verlagBoldAdaptive(size: 40))
+                        .foregroundColor(Color.primaryText.opacity(0.5))
+                        .id("placeholder")
+                    Rectangle()
+                        .fill(showCursor ? Color.primaryText : Color.clear)
+                        .frame(width: 2, height: 40.adaptiveForIpad)
+                        .padding(.leading, 2)
+                        .id("cursor")
+                }
+            } else {
+                GeometryReader { geo in
+                    let needsScroll = textWidth > geo.size.width
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        ScrollViewReader { proxy in
+                            ZStack {
+                                HStack(spacing: 0) {
+                                    Text(code)
+                                        .font(.verlagBoldAdaptive(size: 40))
+                                        .foregroundColor(Color.primaryText)
+                                        .background(
+                                            GeometryReader { textGeo in
+                                                Color.clear
+                                                    .onAppear {
+                                                        textWidth = textGeo.size.width
+                                                    }
+                                                    .onChange(of: code) { _ in
+                                                        textWidth = textGeo.size.width
+                                                    }
                                             }
-                                            .onChange(of: code) { _ in
-                                                textWidth = textGeo.size.width
-                                            }
+                                        )
+                                        .id("text")
+                                        .offset(x: centerOffset(for: geo.size.width))
+                                    Rectangle()
+                                        .fill(showCursor ? Color.primaryText : Color.clear)
+                                        .frame(width: 2, height: 40.adaptiveForIpad)
+                                        .padding(.leading, 2)
+                                        .offset(x: centerOffset(for: geo.size.width + 2))
+                                        .id("cursor")
+                                }
+                            }
+                            .onAppear {
+                                availableWidth = geo.size.width
+                                scrollProxy = proxy
+                            }
+                            .onChange(of: code) { _ in
+                                if needsScroll {
+                                    withAnimation(.easeOut(duration: 0.2)) {
+                                        proxy.scrollTo("cursor", anchor: .trailing)
                                     }
-                                )
-                                .id("text")
-                                .offset(x: centerOffset(for: geo.size.width))
-                            Rectangle()
-                                .fill(showCursor ? Color.primaryText : Color.clear)
-                                .frame(width: 2, height: 40)
-                                .padding(.leading, 2)
-                                .offset(x: centerOffset(for: geo.size.width + 2))
-                                .id("cursor")
-                        }
-                    }
-                    .onAppear {
-                        availableWidth = geo.size.width
-                        scrollProxy = proxy
-                    }
-                    .onChange(of: code) { _ in
-                        if needsScroll {
-                            withAnimation(.easeOut(duration: 0.2)) {
-                                proxy.scrollTo("cursor", anchor: .trailing)
+                                }
                             }
                         }
                     }
+                    .scrollDisabled(!needsScroll)
                 }
+                .frame(height: 40.adaptiveForIpad) // match TextField height
             }
-            .scrollDisabled(!needsScroll)
         }
-        .frame(height: 50) // match TextField height
         .onTapGesture {
             if !isCurcerShowing {
                 isCurcerShowing = true
@@ -90,9 +100,9 @@ struct BlinkingCodeDisplay: View {
         }
     }
     private func centerOffset(for availableWidth: CGFloat) -> CGFloat {
-         if textWidth == 0 { return 0 }
-         
-         let centeredOffset = (availableWidth - textWidth) / 2
-         return max(0, centeredOffset) // if text wider, stick to leading
-     }
+        if textWidth == 0 { return 0 }
+        
+        let centeredOffset = (availableWidth - textWidth) / 2
+        return max(0, centeredOffset) // if text wider, stick to leading
+    }
 }

@@ -30,7 +30,6 @@ struct SideMenuView: View {
                                 
     var body: some View {
         let menuStrings = stringManager.strings.menu
-        let menuStringsConstant =  StringConstants.SideMenuView.self
         GeometryReader { geometry in
             ZStack(alignment: .trailing) {
                 // Dimmed background
@@ -43,7 +42,7 @@ struct SideMenuView: View {
                         HStack(alignment: .bottom) {
                             let modeText = stringManager.strings.settings.mode
                             let formattedString = String(format: modeText, seatTMerchedext, onlineOfflineText)
-                            CustomsText(title: formattedString, textFont: .verlagBook(size: 20), foregroundColour: .primaryText)
+                            CustomsText(title: formattedString, textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText)
                             .padding(.leading)
                             
                             Spacer()

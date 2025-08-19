@@ -683,11 +683,11 @@ struct ScannerView: View, Equatable {
                 // Additional offline barcode check
                 offlineBarCodeCheck(scanType: scanType, qr: qr, cleanedQR: cleanedQR)
             } else if isMerchandiseMode {
-                // Offline merchendise lookup
-                offlineMarchediseModel(scanType: scanType, qrCodes: separatedQRCodes, cleanedQR: cleanedQR)
+                // Offline merchandise lookup
+                offlineMerchandiseModel(scanType: scanType, qrCodes: separatedQRCodes, cleanedQR: cleanedQR)
             } else {
                 // Offline seat lookup
-                offlineSeatChecks(scanType: scanType, separatedQRCodes: separatedQRCodes, cleanedQR: cleanedQR)
+                offlineSeatMode(scanType: scanType, separatedQRCodes: separatedQRCodes, cleanedQR: cleanedQR)
             }
         } else {
             // MARK: - Step 4: Online mode scanning
@@ -724,7 +724,7 @@ struct ScannerView: View, Equatable {
                 .replacingOccurrences(of: "]}", with: "")
                 .replacingOccurrences(of: "\"", with: "")
         } else {
-            scanResultEnum = .invalidTicket(message: StringManager.shared.strings.offline.invalidBarcode)
+            scanResultEnum = .invalidTicket(message: isMerchandiseMode ? StringManager.shared.strings.orderDetail.invalidProduct : StringManager.shared.strings.orderDetail.invalidTicket)
             dismissPopUp(scannerResult: .invalid)
         }
 
@@ -762,8 +762,8 @@ struct ScannerView: View, Equatable {
         // Record new scan time
         lastScanTimes[cleanedQR] = now
     }
-    //MARK: offline marhcedise mode
-    func offlineMarchediseModel(scanType: String, qrCodes: String, cleanedQR: String){
+    //MARK: offline merchandise mode
+    func offlineMerchandiseModel(scanType: String, qrCodes: String, cleanedQR: String){
         if scanType == "merch" {
             // Offline merchandise lookup in Core Data
             let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
@@ -813,8 +813,8 @@ struct ScannerView: View, Equatable {
             
         }
     }
-    //MARK: ofline seat mode
-    func offlineSeatChecks(scanType: String, separatedQRCodes: String, cleanedQR: String){
+    //MARK: offline seat mode
+    func offlineSeatMode(scanType: String, separatedQRCodes: String, cleanedQR: String){
         if scanType == "seat" {
             let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "qrCode == %@", separatedQRCodes)
@@ -851,7 +851,7 @@ struct ScannerView: View, Equatable {
             dismissPopUp(scannerResult: .invalid)
         }
     }
-    //MARK: ofline BarCode check
+    //MARK: offline BarCode check
     func offlineBarCodeCheck(scanType: String, qr: String, cleanedQR: String){
         if scanType == "barcode" {
             let fetchRequest: NSFetchRequest<Seat> = Seat.fetchRequest()

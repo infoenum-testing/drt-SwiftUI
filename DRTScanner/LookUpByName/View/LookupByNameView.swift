@@ -121,7 +121,7 @@ struct LookupByNameView: View {
                 }
                 .disabled(isSearching || inputText.isEmpty)
                 .opacity(inputText.isEmpty ? 0.6 : 1.0)
-                .frame(height: geometry.size.height * 0.08)
+                .frame(height: UIScreen.main.bounds.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.primaryText)
                 .padding(.horizontal)

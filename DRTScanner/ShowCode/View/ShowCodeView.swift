@@ -90,14 +90,20 @@ struct ShowCodeView: View {
                                         .padding(5)
                                 }
                                 Spacer()
-                                
-                                // Disabled TextField Showing Current Code
-                                BlinkingCodeDisplay(
-                                    placeholder: stringManager.strings.login.showCode,
-                                    code: $viewModel.showCode
-                                )
-                                .padding(.top,20)
-                                .frame(maxWidth: .infinity)
+                                VStack(spacing: 0){
+                                    if viewModel.showCode.isEmpty {
+                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .clear)
+                                    } else {
+                                        CustomsText(title: stringManager.strings.login.showCode, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryText)
+                                    }
+                                    // Disabled TextField Showing Current Code
+                                    BlinkingCodeDisplay(
+                                        placeholder: stringManager.strings.login.showCode,
+                                        code: $viewModel.showCode
+                                    )
+                                    .padding(.top,20)
+                                    .frame(maxWidth: .infinity)
+                                }
 
                                 // Backspace Button
                                 Button(action: {

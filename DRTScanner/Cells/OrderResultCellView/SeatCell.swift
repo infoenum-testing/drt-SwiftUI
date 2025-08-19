@@ -12,6 +12,7 @@ import AVFoundation
 struct SeatCell: View {
     @Binding var seat: SeatModel
     @State private var isScanned: Bool
+    @State private var isScannedFirst: Bool = false
     @State private var scannedTime: String?
     @State private var isLoading = false
     @AppStorage("isOfflineMode") private var isOffline: Bool = false
@@ -45,9 +46,12 @@ struct SeatCell: View {
             HStack {
             VStack(alignment: .leading) {
                 HStack {
-                    if isScanned {
-                        if let scannTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
-                            CustomsText(title: getScanLabel(from: scannTime), textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
+                    if isScannedFirst {
+                        let stringLabel = String(format: stringManager.strings.orderDetail.scanned, "")
+                        CustomsText(title: "\(stringLabel)\n\(stringManager.strings.orderDetail.justNow)", textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
+                    } else if isScanned {
+                        if let scanTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
+                            CustomsText(title: getScanLabel(from: scanTime), textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
                         }
                     } else {
                         CustomsText(title: stringManager.strings.orderDetail.notYetScanned, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
@@ -125,6 +129,7 @@ struct SeatCell: View {
                 
                 seat.scannedTime = currentDate
                 isScanned = true
+                isScannedFirst = true
                 isLoading = false
                 saveScannedStatus(for: seat)
                 incrementDeviceScanCount()
@@ -154,6 +159,7 @@ struct SeatCell: View {
                             
                             seat.scannedTime = currentDate
                             isScanned = true
+                            isScannedFirst = true
                             //  incrementDeviceScanCount()
                             playScanFeedback(scannerResult: .valid)
                         } else {
@@ -301,11 +307,10 @@ struct SeatCell: View {
         let diffDays = diffHours / 24
 
         let labelTemplate =  stringManager.strings.orderDetail.previouslyScanned
-        let labelscaned =  stringManager.strings.orderDetail.scanned
 
         switch diffMinutes {
         case ..<2:
-            let lable =  String(format: labelscaned, "")
+            let lable =  String(format: labelTemplate, "")
             return "\(lable)\n\(stringManager.strings.orderDetail.justNow)"
         case 2..<60:
             let timeLabel = String(format: stringManager.strings.orderDetail.minsAgo, "\(diffMinutes)")
