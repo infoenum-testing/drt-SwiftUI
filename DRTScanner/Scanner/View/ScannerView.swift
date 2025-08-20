@@ -294,10 +294,7 @@ struct ScannerView: View, Equatable {
                         // Full screen toggle button
                         Button {
                             withAnimation {
-                                if isFullScreen {
-                                    linePosition = 0
-                                }
-                                resetCameraView()
+                                resetScanner()
                                 isFullScreen.toggle()
                             }
                         } label: {
@@ -350,10 +347,7 @@ struct ScannerView: View, Equatable {
                                         .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
                                         .onTapGesture {
                                             stopLineAnimation()
-                                            if isFullScreen {
-                                                linePosition = 0
-                                            }
-                                            resetCameraView()
+                                            resetScanner()
                                         }
                                     Spacer()
                                 }
@@ -380,16 +374,10 @@ struct ScannerView: View, Equatable {
                                 .font(.verlagBoldAdaptive(size: 20))
                                 .foregroundColor(Color.primaryText)
                                 .onTapGesture {
-                                    if isFullScreen {
-                                        linePosition = 0
-                                    }
-                                    resetCameraView()
+                                    resetScanner()
                                 }
                         ).onTapGesture {
-                            if isFullScreen {
-                                linePosition = 0
-                            }
-                            resetCameraView()
+                            resetScanner()
                         }
                         .padding(.bottom, -30)
                 }
@@ -411,12 +399,14 @@ struct ScannerView: View, Equatable {
             }
         } // Listen for camera reset notifications
         .onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
-            if isStopScanVisible || isCustomColorVisible {
-                if isFullScreen {
-                    linePosition = 0
-                }
+            if isStopScanVisible {
+                resetScanner()
+            } else if isCustomColorVisible {
+                resetScanner()
             }
-            resetCameraView()
+            else {
+                resetCameraView()
+            }
         }
         // Setup and state management on appear/disappear and state changes
         .onAppear {
@@ -441,20 +431,14 @@ struct ScannerView: View, Equatable {
             if isVisible {
                 stopLineAnimation()
             } else {
-                if isFullScreen {
-                    linePosition = 0
-                }
-                resetCameraView()
+                resetScanner()
             }
         }
         .onChange(of: scannerLineAnimation) { isVisible in
             if !isVisible {
                 stopLineAnimation()
             } else {
-                if isFullScreen {
-                    linePosition = 0
-                }
-                resetCameraView()
+                resetScanner()
             }
         }
         .onChange(of: isOffline) { newValue in
@@ -570,6 +554,29 @@ struct ScannerView: View, Equatable {
     private var isAnyOverlayDisplayed: Bool {
         isFullScreen && scanResult != .none
     }
+    
+    // Resets the scanner to its initial state
+    private func resetScanner() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            scannerController?.isStopSessionByME = false
+            scannerController?.captureSession?.startRunning()
+            scannerController?.checkCameraSessionRunning()
+        }
+        isCustomColorVisible = false
+        isStopScanVisible = false
+        scannedCode = nil
+        scanResult = nil
+        isScanning = true
+        isScannerActive = true
+        isScanningCell = true
+        if isFullScreen {
+            linePosition = 0
+        }
+        startLineAnimation()
+        startInactivityTimer()
+        startFlashInactivityTimer()
+    }
+    
     
     // Resets the camera view and scanning state
     private func resetCameraView() {
