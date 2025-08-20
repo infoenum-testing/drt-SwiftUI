@@ -22,7 +22,7 @@ struct InvalidMerchandiseTicketView: View {
             CustomsText(title: stringManager.strings.incorrectMode.tickets, textFont: .verlagBlackAdaptive(size: 30), foregroundColour: .primaryText, alignment: .center)
         }
         .frame(width: UIScreen.main.bounds.width)
-        .frame(height: UIScreen.main.bounds.height*0.485)
+        .frame(height: UIDevice.isIpad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height*0.485 : resultSheetHeightForIpad()) : resultSheetHeightForIphone())
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)

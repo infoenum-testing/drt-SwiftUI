@@ -39,7 +39,7 @@ extension Color {
     private static var palette: SkinModel { ColorManager.shared.skin ?? SkinModel(
         colorValid:       "4F8C3B",
         colorNeutralText: "333333",
-        colorNeutralBg:   "C3C3C3",
+        colorNeutralBg:   "B8DCD6",
         color1Text:       "FFFFFF",
         backgroundHref:   "",
         colorInvalid:     "FF4242",

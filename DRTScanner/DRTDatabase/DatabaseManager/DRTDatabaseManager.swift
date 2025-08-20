@@ -369,6 +369,10 @@ class DRTDatabaseManager {
         skin.color_neutral_text = skinModel.colorNeutralText
         skin.logo_href = skinModel.logoHref
         skin.background_href = skinModel.backgroundHref
+        skin.colorButtonBg = skinModel.colorButtonBg
+        skin.colorGoldenTicket = skinModel.colorGoldenTicket
+        skin.colorButtonText = skinModel.colorButtonText
+        skin.colorGrayText = skinModel.colorGrayText
         
         do {
             try context.save()

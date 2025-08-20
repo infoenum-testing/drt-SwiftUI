@@ -157,6 +157,19 @@ func topSafeAreaPaddingHeader() -> CGFloat {
     return topInset
 }
 
+func resultSheetHeightForIphone() -> CGFloat {
+    return UIScreen.main.bounds.height
+        - (115.adaptiveForIpad + topSafeAreaPaddingHeader())
+        - (UIScreen.main.bounds.height / 3)
+}
+
+func resultSheetHeightForIpad() -> CGFloat {
+    return UIScreen.main.bounds.height
+        - (100.adaptiveForIpad + topSafeAreaPaddingHeader())
+        - (UIScreen.main.bounds.height / 3)
+}
+
+
 
 func calculatedTopPadding() -> CGFloat {
     let device = UIDevice.current.userInterfaceIdiom

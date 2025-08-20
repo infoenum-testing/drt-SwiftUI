@@ -20,15 +20,16 @@ struct BlinkingCodeDisplay: View {
             if code.isEmpty {
                 ZStack {
                     Text(placeholder)
-                        .font(.verlagBoldAdaptive(size: 40))
+                        .font(.verlagBoldAdaptive(size: 35))
                         .foregroundColor(Color.primaryText.opacity(0.5))
                         .id("placeholder")
                     Rectangle()
                         .fill(showCursor ? Color.primaryText : Color.clear)
-                        .frame(width: 2, height: 40.adaptiveForIpad)
+                        .frame(width: 2, height: 35.adaptiveForIpad)
                         .padding(.leading, 2)
                         .id("cursor")
                 }
+                .frame(height: 40.adaptiveForIpad)
             } else {
                 GeometryReader { geo in
                     let needsScroll = textWidth > geo.size.width
@@ -37,7 +38,7 @@ struct BlinkingCodeDisplay: View {
                             ZStack {
                                 HStack(spacing: 0) {
                                     Text(code)
-                                        .font(.verlagBoldAdaptive(size: 40))
+                                        .font(.verlagBoldAdaptive(size: 35))
                                         .foregroundColor(Color.primaryText)
                                         .background(
                                             GeometryReader { textGeo in
@@ -54,7 +55,7 @@ struct BlinkingCodeDisplay: View {
                                         .offset(x: centerOffset(for: geo.size.width))
                                     Rectangle()
                                         .fill(showCursor ? Color.primaryText : Color.clear)
-                                        .frame(width: 2, height: 40.adaptiveForIpad)
+                                        .frame(width: 2, height: 35.adaptiveForIpad)
                                         .padding(.leading, 2)
                                         .offset(x: centerOffset(for: geo.size.width + 2))
                                         .id("cursor")
