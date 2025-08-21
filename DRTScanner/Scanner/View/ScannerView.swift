@@ -682,7 +682,7 @@ struct ScannerView: View, Equatable {
         guard let (scanType, cleanedQR, qrCodes) = parseQR(qr) else { return }
 
         // MARK: - Step 2: Duplicate suppression check
-        duplicateSepration(cleanedQR: cleanedQR)
+        guard duplicateSepration(cleanedQR: cleanedQR) else { return }
         
         // MARK: - Step 3: Offline mode scanning
         if isOfflineMode {
@@ -742,7 +742,7 @@ struct ScannerView: View, Equatable {
         return (scanType, cleanedQR, qrCodes)
     }
     //MARK: duplicate Sepration
-    func duplicateSepration(cleanedQR: String){
+    func duplicateSepration(cleanedQR: String)-> Bool{
         let now = Date()
         let suppressionSeconds = Double(duplicateScanSuppressionNew)
         
@@ -761,7 +761,7 @@ struct ScannerView: View, Equatable {
             
             if timeSinceLast < suppressionSeconds {
                 print("⚠️ Duplicate scan suppressed for: \(cleanedQR)")
-                return
+                return false
             } else {
                 print("✅ Suppression window expired for: \(cleanedQR)")
             }
@@ -769,6 +769,7 @@ struct ScannerView: View, Equatable {
         
         // Record new scan time
         lastScanTimes[cleanedQR] = now
+        return true
     }
     //MARK: offline merchandise mode
     func offlineMerchandiseModel(scanType: String, qrCodes: String, cleanedQR: String){
@@ -1011,7 +1012,7 @@ struct ScannerView: View, Equatable {
                             lastScanTimes[cleanedQR] = Date()
                             suppressedOnce.remove(cleanedQR)
                         } else if scanResponse.message?.lowercased() == "previously scanned".lowercased() {
-                            scanResultEnum = .preScannedTicket(orderName: String(scanResponse.oid ?? 0), orderNumber: scanResponse.buyerName ?? "", scannedTime: orderDateScanned, tsScannedDate: scanResponse.tsScanned ?? "")
+                            scanResultEnum = .preScannedTicket(orderName: scanResponse.buyerName ?? "", orderNumber: String(scanResponse.oid ?? 0), scannedTime: orderDateScanned, tsScannedDate: scanResponse.tsScanned ?? "")
                             dismissPopUp(scannerResult: .previouslyScanned)
                             isScanning = false
                             
