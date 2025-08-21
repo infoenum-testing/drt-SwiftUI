@@ -25,6 +25,7 @@ struct InvalidSeatTicketView: View {
                 .multilineTextAlignment(.center)
                 .fontWeight(.bold)
                 .foregroundColor(Color.primaryText)
+                .padding(.horizontal, 10)
         }
         .frame(width: UIScreen.main.bounds.width)
         .frame(height: UIDevice.isIpad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height*0.485 : resultSheetHeightForIpad()) : resultSheetHeightForIphone())

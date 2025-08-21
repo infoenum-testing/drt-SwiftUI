@@ -28,6 +28,8 @@ struct MerchandiseScanView: View {
             }
             .foregroundColor(Color.primaryText)
             .font(.verlagBoldAdaptive(size: 26))
+            .padding(.horizontal, 10)
+
         }
         .frame(width: UIScreen.main.bounds.width)
         .frame(height: UIDevice.isIpad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height*0.485 : resultSheetHeightForIpad()) : resultSheetHeightForIphone())

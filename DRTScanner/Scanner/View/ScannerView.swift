@@ -733,7 +733,7 @@ struct ScannerView: View, Equatable {
                 .replacingOccurrences(of: "\"", with: "")
         } else {
             scanResultEnum = .invalidTicket(message: isMerchandiseMode ? StringManager.shared.strings.orderDetail.invalidProduct : StringManager.shared.strings.orderDetail.invalidTicket)
-            dismissPopUp(scannerResult: .invalid)
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
         }
 
         let qrCodes = cleanedQR.components(separatedBy: ",").filter { !$0.isEmpty }
@@ -794,7 +794,7 @@ struct ScannerView: View, Equatable {
                         // Optional: update UI info
                         scanResultEnum = .validMerch(orderName: product.name ?? "",
                                                      variantName: product.variantName ?? "")
-                        dismissPopUp(scannerResult: .valid)
+                        dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                     } else {
                         // Set state to show previous scan view
                         var time: String = ""
@@ -804,24 +804,23 @@ struct ScannerView: View, Equatable {
                         }
                         
                         scanResultEnum = .preScannedMerch(orderName: product.name ?? "", variantName: product.variantName ?? "", scannedTime: time, tsScannedDate: time)
-                        dismissPopUp(scannerResult: .previouslyScanned)
+                        dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                     }
                 } else {
                     // ❌ No matching product found
                     scanResultEnum = .invalidTicket(message: StringManager.shared.strings.orderDetail.invalidProduct)
-                    dismissPopUp(scannerResult: .invalid)
+                    dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                 }
             } catch {
                 print(error.localizedDescription)
             }
-        } else if scanType == "seat" {
-            // wrong mode to scan like seat in march
-            scanResultEnum = .incorrectTicketMode
-            dismissPopUp(scannerResult: .invalid)
         } else {
-            
+            // wrong mode to scan like seat in march
+            scanResultEnum = .incorrectMerchMode
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
         }
     }
+    
     //MARK: offline seat mode
     func offlineSeatMode(scanType: String, separatedQRCodes: String, cleanedQR: String){
         if scanType == "seat" {
@@ -834,7 +833,7 @@ struct ScannerView: View, Equatable {
                     if let scannedTime = seatEntity.date_scanned {
                         // Already scanned seat
                         scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ?? "Blocked Seat", orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", scannedTime: scannedTime.formatToTimeString(), tsScannedDate: scannedTime.formatToTimeString())
-                        dismissPopUp(scannerResult: .previouslyScanned)
+                        dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                     } else {
                         // Mark as scanned
                         seatEntity.locally_scanned += 1
@@ -842,14 +841,14 @@ struct ScannerView: View, Equatable {
                         seatEntity.date_scanned = Date()
                         try viewContext.save()
                         scanResultEnum = .validTicket(orderName: seatEntity.order?.buyerName ?? "Blocked Seat", orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", isGoldenTicket: false)
-                        dismissPopUp(scannerResult: .valid)
+                        dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     }
                 } else {
                     // Invalid offline seat QR
                     scanResultEnum = .invalidTicket(message: StringManager.shared.strings.orderDetail.invalidTicket)
-                    dismissPopUp(scannerResult: .invalid)
+                    dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                 }
             } catch {
                 
@@ -857,9 +856,10 @@ struct ScannerView: View, Equatable {
         } else {
             // wrong mode to scan qr
             scanResultEnum = .incorrectTicketMode
-            dismissPopUp(scannerResult: .invalid)
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
         }
     }
+    
     //MARK: offline BarCode check
     func offlineBarCodeCheck(scanType: String, qr: String, cleanedQR: String){
         if scanType == "barcode" {
@@ -871,62 +871,62 @@ struct ScannerView: View, Equatable {
                 if let seatEntity = results.first {
                     if let scannedTime = seatEntity.date_scanned {
                         scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ?? StringManager.shared.strings.offline.blockedTicket, orderNumber: seatEntity.orderId.map(String.init) ?? "", scannedTime: scannedTime.formatted(date: .omitted, time: .shortened), tsScannedDate: scannedTime.formatted(date: .omitted, time: .shortened))
-                        dismissPopUp(scannerResult: .previouslyScanned)
+                        dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                     } else {
                         seatEntity.locally_scanned += 1
                         deviceScanCount += 1
                         seatEntity.date_scanned = Date()
                         try viewContext.save()
                         scanResultEnum = .validTicket(orderName: seatEntity.order?.buyerName ?? StringManager.shared.strings.offline.blockedTicket, orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", isGoldenTicket: false)
-                        dismissPopUp(scannerResult: .valid)
+                        dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     }
                 } else {
                     scanResultEnum = .invalidTicket(message: stringManager.strings.offline.invalidBarcode)
-                    dismissPopUp(scannerResult: .invalid)
+                    dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                 }
             } catch {
                 scanResultEnum = .invalidTicket(message: stringManager.strings.offline.invalidBarcode)
-                dismissPopUp(scannerResult: .invalid)
+                dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
             }
         }
     }
     
     //MARK: barCodeAPi
     func onlineBarCodeAPI(rawQR: String, cleanedQR: String){
-            IQAPIClient.scanTicketBarcode(code: savedShowCode ?? "", barcode: rawQR) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let responseData):
-                        if let responseDict = responseData as? [String: Any], let message = responseDict["message"] as? String {
-                            if message == "Previously Scanned" {
-                                scanResultEnum = .preScannedTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? "", orderNumber: String(responseDict["oid"] as? Int ?? 0), scannedTime: responseDict["date_scanned"] as? String ?? "", tsScannedDate: responseDict["tsScanned"] as? String ?? "")
-                                dismissPopUp(scannerResult: .previouslyScanned)
-                                
-                            } else {
-                                scanResultEnum = .validTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? StringManager.shared.strings.offline.blockedTicket,
-                                                              orderNumber: String(responseDict["oid"] as? Int ?? 0),
-                                                              isGoldenTicket: (responseDict["is_golden_ticket"] == nil))
-                                dismissPopUp(scannerResult: .valid)
-                                Task {
-                                    await viewModel.fetchStats()
-                                }
-                                lastScanTimes[cleanedQR] = Date()
-                                suppressedOnce.remove(cleanedQR)
-                            }
-                        }
-                    case .failure(let error):
-                        if NetworkMonitor.shared.isNetworkAvailable() {
-                            invalidMessage = error.localizedDescription
+        IQAPIClient.scanTicketBarcode(code: savedShowCode ?? "", barcode: rawQR) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let responseData):
+                    if let responseDict = responseData as? [String: Any], let message = responseDict["message"] as? String {
+                        if message == "Previously Scanned" {
+                            scanResultEnum = .preScannedTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? "", orderNumber: String(responseDict["oid"] as? Int ?? 0), scannedTime: responseDict["date_scanned"] as? String ?? "", tsScannedDate: responseDict["tsScanned"] as? String ?? "")
+                            dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
+                            
                         } else {
-                            invalidMessage = StringManager.shared.strings.noInternet.description
+                            scanResultEnum = .validTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? StringManager.shared.strings.offline.blockedTicket,
+                                                          orderNumber: String(responseDict["oid"] as? Int ?? 0),
+                                                          isGoldenTicket: (responseDict["is_golden_ticket"] == nil))
+                            dismissPopUp(scannerResult: .valid, isInvaildMode: false)
+                            Task {
+                                await viewModel.fetchStats()
+                            }
+                            lastScanTimes[cleanedQR] = Date()
+                            suppressedOnce.remove(cleanedQR)
                         }
-                        scanResultEnum = .invalidTicket(message: invalidMessage)
-                        dismissPopUp(scannerResult: .invalid)
                     }
+                case .failure(let error):
+                    if NetworkMonitor.shared.isNetworkAvailable() {
+                        invalidMessage = error.localizedDescription
+                    } else {
+                        invalidMessage = StringManager.shared.strings.noInternet.description
+                    }
+                    scanResultEnum = .invalidTicket(message: invalidMessage)
+                    dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                 }
             }
+        }
     }
     
     //MARK: MerchandiseAPI
@@ -959,15 +959,15 @@ struct ScannerView: View, Equatable {
                                                                       variantName: variantName,
                                                                       scannedTime: ts.formatToDate(),
                                                                       tsScannedDate: ts)
-                                    dismissPopUp(scannerResult: .previouslyScanned)
+                                    dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                                 } else {
-                                    scanResultEnum = .incorrectTicketMode
-                                    dismissPopUp(scannerResult: .valid)
+                                    scanResultEnum = .incorrectMerchMode
+                                    dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
                                 }
                             } else {
                                 // ❗ Show error message if valid is false
                                 scanResultEnum = .invalidTicket(message: message)
-                                dismissPopUp(scannerResult: .invalid)
+                                dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                             }
                         }
                         
@@ -980,14 +980,14 @@ struct ScannerView: View, Equatable {
                             invalidMessage = StringManager.shared.strings.noInternet.description
                         }
                         scanResultEnum = .invalidTicket(message: invalidMessage)
-                        dismissPopUp(scannerResult: .invalid)
+                        dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                     }
                 }
             }
         } else {
             // Offline or wrong scan type
-            scanResultEnum = .incorrectTicketMode
-            dismissPopUp(scannerResult: .invalid)
+            scanResultEnum = .incorrectMerchMode
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
             isScanning = false
         }
     }
@@ -1002,7 +1002,7 @@ struct ScannerView: View, Equatable {
                     case .success(let scanResponse):
                         if scanResponse.valid {
                             scanResultEnum = .validTicket(orderName: scanResponse.buyerName ?? "", orderNumber: String(scanResponse.oid ?? 0), isGoldenTicket: scanResponse.isGoldenTicket ?? false)
-                            dismissPopUp(scannerResult: .valid)
+                            dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                             
                             seat?.scannedTime = Date()
                             isScanning = false
@@ -1013,7 +1013,7 @@ struct ScannerView: View, Equatable {
                             suppressedOnce.remove(cleanedQR)
                         } else if scanResponse.message?.lowercased() == "previously scanned".lowercased() {
                             scanResultEnum = .preScannedTicket(orderName: scanResponse.buyerName ?? "", orderNumber: String(scanResponse.oid ?? 0), scannedTime: orderDateScanned, tsScannedDate: scanResponse.tsScanned ?? "")
-                            dismissPopUp(scannerResult: .previouslyScanned)
+                            dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                             isScanning = false
                             
                         } else {
@@ -1022,9 +1022,6 @@ struct ScannerView: View, Equatable {
                                     lookupByOrderResultViewModel.errorMessage = message
                                     showOfflineAlert = true
                                 }
-                            } else {
-                                scanResultEnum = .invalidTicket(message: "")
-                                dismissPopUp(scannerResult: .invalid)
                             }
                             isScanning = false
                         }
@@ -1036,7 +1033,7 @@ struct ScannerView: View, Equatable {
                             invalidMessage = StringManager.shared.strings.noInternet.description
                         }
                         scanResultEnum = .invalidTicket(message: invalidMessage)
-                        dismissPopUp(scannerResult: .valid)
+                        dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                         isScanning = false
                     }
                 }
@@ -1044,15 +1041,17 @@ struct ScannerView: View, Equatable {
             
         } else {
             scanResultEnum = .incorrectTicketMode
-            dismissPopUp(scannerResult: .invalid)
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
             isScanning = false
         }
     }
     //MARK: dismised scaned popup
-
-    func dismissPopUp(scannerResult: ScannerResult){
+    func dismissPopUp(scannerResult: ScannerResult, isInvaildMode: Bool) {
         scannerViewModel.playScanFeedback(scannerResult: scannerResult, haptic: shouldPlayHapticNew)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+        
+        let delay: Double = isInvaildMode ? 20 : 5
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             withAnimation {
                 scanResultEnum = .none
             }

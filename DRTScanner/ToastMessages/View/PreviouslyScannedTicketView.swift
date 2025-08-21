@@ -34,12 +34,18 @@ struct PreviouslyScannedTicketView: View {
                 Text("Order: \(orderNumber)")
                     .font(.verlagBoldAdaptive(size: 26))
                     .foregroundColor(Color.primaryText)
+                    .padding(.horizontal, 10)
+
             }
             
             if let scanDate = tsScannedDate.toDateFromMillisecondsTimestamp() {
                 CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
+                    .padding(.horizontal, 10)
+
             } else  if let scanDate = Date.todayAtTime(scannedTime) {
                 CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)
+                    .padding(.horizontal, 10)
+
             }
         }
         .frame(width: UIScreen.main.bounds.width)

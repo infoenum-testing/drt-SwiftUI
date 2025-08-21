@@ -23,11 +23,14 @@ struct ValidTicketView: View {
             Text(orderName.capitalized)
                 .font(.verlagBlackAdaptive(size: 30))
                 .foregroundColor(Color.primaryText)
+                .padding(.horizontal, 10)
             
             if orderNumber != "0" {
                 Text("Order: \(orderNumber)")
                     .font(.verlagBoldAdaptive(size: 26))
                     .foregroundColor(Color.primaryText)
+                    .padding(.horizontal, 10)
+
             }
         }
         .frame(width: UIScreen.main.bounds.width)

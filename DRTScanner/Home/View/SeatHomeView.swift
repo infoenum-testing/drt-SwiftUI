@@ -13,7 +13,7 @@ enum ScanResult {
     case invalidTicket(message: String)
     case validMerch(orderName: String, variantName: String)
     case preScannedMerch(orderName: String, variantName: String, scannedTime: String, tsScannedDate: String)
-    case incorrctMerchMode
+    case incorrectMerchMode
     case incorrectTicketMode
     case none
 }
@@ -255,7 +255,7 @@ struct SeatHomeView: View {
                                                                 tsScannedDate: tsScannedDate,
                                                                 backGround: Color.previous)
                                     
-                                case .incorrctMerchMode:
+                                case .incorrectMerchMode:
                                     InvalidMerchandiseTicketView(backGround: Color.invalid)
                                     
                                 case .incorrectTicketMode:
