@@ -24,19 +24,20 @@ struct PreviouslyScannedTicketView: View {
                 .bold()
                 .foregroundColor(Color.primaryText)
                 .padding([.top, .bottom], 5)
-            
-            Text(orderName.capitalized)
-                .font(.verlagBlackAdaptive(size: 30))
-                .foregroundColor(Color.primaryText)
-                .multilineTextAlignment(.center)
-            
             if orderNumber != "0" {
-                Text("Order: \(orderNumber)")
+                Text("\(orderNumber)")
                     .font(.verlagBoldAdaptive(size: 26))
                     .foregroundColor(Color.primaryText)
                     .padding(.horizontal, 10)
 
             }
+            
+            Text("Buyer: \(orderName.capitalized)")
+                .font(.verlagBoldAdaptive(size: 26))
+                .foregroundColor(Color.primaryText)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 5.adaptiveForIpad)
+            
             
             if let scanDate = tsScannedDate.toDateFromMillisecondsTimestamp() {
                 CustomsText(title: String.getScanLabel(from: scanDate) , textFont: .verlagBoldAdaptive(size: 26), foregroundColour: .primaryText, alignment: .center)

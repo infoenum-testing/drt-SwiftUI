@@ -20,6 +20,7 @@ struct GoOfflineView: View {
     
     @Binding var isPresented: Bool
     @Binding var showOfflineAlert: Bool
+    @Binding var showAlertText: Bool
     @Binding var showOfflineSuccessAlert: Bool
     
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
@@ -33,7 +34,7 @@ struct GoOfflineView: View {
     @EnvironmentObject var stringManager: StringManager
     
     var isContinueDisabled: Bool {
-        name.count < 5 || isSyncing || !isValidName(name)
+        name.count < 5 || isSyncing || !name.isValidName()
     }
     
     var body: some View {
@@ -60,6 +61,13 @@ struct GoOfflineView: View {
                         .focused($isNameFieldFocused)
                         .submitLabel(.done)
                         .cornerRadius(12)
+                        .onChange(of: name) { newValue in
+                            // Allow only alphabets (a-z, A-Z) and spaces
+                            let filtered = newValue.filter { $0.isLetter || $0.isWhitespace }
+                            if filtered != newValue {
+                                name = filtered
+                            }
+                        }
                         .onSubmit {
                             isNameFieldFocused = false
                         }
@@ -92,22 +100,26 @@ struct GoOfflineView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            isNameFieldFocused = false
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                goOffline()
+                            if isContinueDisabled {
+                                viewModel.errorMessage = stringManager.strings.errorDescriptionMessages.shortNameError
+                                showOfflineAlert = true
+                                showAlertText = true
+                            } else {
+                                isNameFieldFocused = false
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    goOffline()
+                                }
                             }
                         }) {
                             Text(stringManager.strings.dialogGoOffline.continueField)
                                 .font(.verlagBoldAdaptive(size: 30))
-                                .foregroundColor(isContinueDisabled ? Color.neutralBg : Color.primaryText)
+                                .foregroundColor(isContinueDisabled ? Color.colorButtonText : Color.primaryText)
                                 .padding()
                                 .frame(maxWidth: .infinity)
                         }
-                        .opacity(isContinueDisabled ? 0.6 : 1.0)
-                        .background(Color.secondaryBg)
+                        .background(isContinueDisabled ? Color.colorButtonBg : Color.secondaryBg)
                         .cornerRadius(12)
                         .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                        .disabled(isContinueDisabled)
                         Spacer()
                     }.padding(.top)
                         .padding(.horizontal)
@@ -135,13 +147,6 @@ struct GoOfflineView: View {
         .frame(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.6)
     }
     
-    func isValidName(_ name: String) -> Bool {
-        let pattern = "^[A-Za-z]+([ '-][A-Za-z]+)*$"
-        let regex = try? NSRegularExpression(pattern: pattern)
-        let range = NSRange(location: 0, length: name.utf16.count)
-        return regex?.firstMatch(in: name, options: [], range: range) != nil
-    }
-    
     private func goOffline() {
         guard name.count >= 5 else { return }
         isSyncing = true
@@ -160,6 +165,7 @@ struct GoOfflineView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             viewModel.errorMessage = responseDict["message"] as? String ?? "There was an issue going offline. Please try again."
                             showOfflineAlert = true
+                            showAlertText = false
                         }
                     }
                     return
@@ -193,6 +199,7 @@ struct GoOfflineView: View {
                                         isPresented = false
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             showOfflineAlert = true
+                                            showAlertText = false
                                         }
                                     }
                                 }
@@ -205,6 +212,7 @@ struct GoOfflineView: View {
                         isPresented = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             showOfflineAlert = true
+                            showAlertText = false
                         }
                     }
                 }
@@ -219,6 +227,7 @@ struct GoOfflineView: View {
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showOfflineAlert = true
+                        showAlertText = false
                     }
                 }
             }

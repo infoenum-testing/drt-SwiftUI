@@ -26,6 +26,10 @@ struct LookupByNameView: View {
         managedObjectContext: PersistenceController.shared.container.viewContext
     )
     @EnvironmentObject var stringManager: StringManager
+    @Binding var showOfflineAlert: Bool
+    @Binding var showAlertText: Bool
+
+    @ObservedObject var resultViewModel: LookupByOrderResultViewModel
 
     let lookupType: LookupByName
 
@@ -36,10 +40,10 @@ struct LookupByNameView: View {
         }
     }
 
-    var isOKButtonEnabled: Bool {
-        return !inputText.isEmpty
+    var isOKButtonDisable: Bool {
+        return  inputText.count < 5 || !inputText.isValidName()
     }
-
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -79,6 +83,13 @@ struct LookupByNameView: View {
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                         .padding(.all, 10)
+                        .onChange(of: inputText) { newValue in
+                            // Allow only alphabets (a-z, A-Z) and spaces
+                            let filtered = newValue.filter { $0.isLetter || $0.isWhitespace }
+                            if filtered != newValue {
+                                inputText = filtered
+                            }
+                        }
                         .submitLabel(.search)
                         .onSubmit {
                             performSearch()
@@ -111,16 +122,14 @@ struct LookupByNameView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        CustomsText(title: stringManager.strings.searchResults.search, textFont: .verlagBoldAdaptive(size: 36), foregroundColour: .primaryText)
+                        CustomsText(title: stringManager.strings.searchResults.search, textFont: .verlagBoldAdaptive(size: 36), foregroundColour: isOKButtonDisable ? .colorButtonText : .primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.secondaryBg)
+                            .background(isOKButtonDisable ? Color.colorButtonBg : Color.secondaryBg)
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
                 }
-                .disabled(isSearching || inputText.isEmpty)
-                .opacity(inputText.isEmpty ? 0.6 : 1.0)
                 .frame(height: UIScreen.main.bounds.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.primaryText)
@@ -146,7 +155,12 @@ struct LookupByNameView: View {
     }
 
     private func performSearch() {
-        guard isOKButtonEnabled else { return }
+        guard !isOKButtonDisable else {
+            showOfflineAlert = true
+            showAlertText = true
+            resultViewModel.errorMessage = stringManager.strings.errorDescriptionMessages.shortNameError
+            return
+        }
 
         isSearching = true
         isOKButtonClicked = true

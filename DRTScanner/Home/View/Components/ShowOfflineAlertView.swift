@@ -8,15 +8,15 @@ import SwiftUI
 
 struct ShowOfflineAlertView:View {
     
-    @ObservedObject var viewModel:LookupByOrderResultViewModel
+    @ObservedObject var viewModel: LookupByOrderResultViewModel
     
     @Binding var showOfflineAlert:Bool
-    
+    @Binding var showAlertText: Bool
     var body: some View {
         VStack(alignment: .center) {
             HStack {
                 Spacer()
-                CustomsText(title: StringManager.shared.strings.errorMassage.error, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
+                CustomsText(title: showAlertText ? StringManager.shared.strings.dialogLogout.whenOfflineTitle : StringManager.shared.strings.errorMassage.error, textFont: .verlagBoldAdaptive(size: 30), foregroundColour: .primaryText)
                     .padding([.top,.leading], 20)
                     .padding(.bottom, 10)
                 

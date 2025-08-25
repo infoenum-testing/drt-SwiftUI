@@ -169,7 +169,7 @@ struct ShowCodeView: View {
                                     .font(.verlagBoldAdaptive(size: 50))
                                     .foregroundColor(.primaryText )
                             }
-                            .frame(height: 120.adaptiveForIpad)
+                            .frame(height: UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad)
                             .padding(.top, -20)
                             .onTapGesture {
                                 viewModel.okayButtonAction(onCodeEntered: onCodeEntered) {

@@ -252,7 +252,7 @@ struct LookupByNumbersView: View {
             
             switch lookupType {
             case .creditCard:
-                if inputText.count < 4  {
+                if inputText.count < 4 && button != "-" {
                     inputText.append(button)
                 }
             case .phoneNumber:
@@ -275,7 +275,7 @@ struct LookupByNumbersView: View {
                     }
                 }
             case .orderNumber:
-                if inputText.count < 7  {
+                if inputText.count < 7 &&  button != "-" {
                     inputText.append(button)
                 }
             }

@@ -69,6 +69,21 @@ extension UIDevice {
     static var isLandscape: Bool {
         return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
     }
+    
+    static var isNonNotchIphone: Bool {
+        return UIDevice.current.userInterfaceIdiom == .phone && !hasNotch
+    }
+    
+    static var hasNotch: Bool {
+        guard UIDevice.current.userInterfaceIdiom == .phone else { return false }
+
+        if let window = UIApplication.shared.connectedScenes
+            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+            .first {
+            return window.safeAreaInsets.top >= 44
+        }
+        return false
+    }
 }
 
 extension BinaryInteger {

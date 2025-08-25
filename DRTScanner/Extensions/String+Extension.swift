@@ -67,4 +67,13 @@ extension String {
             return "\(lable)\n\(timeLabel)"
         }
     }
+    
+    func isValidName() -> Bool {
+        // \p{L} = any Unicode letter
+        // (space, hyphen, apostrophe allowed between words)
+        let pattern = "^[\\p{L}]+([ '\\-][\\p{L}]+)*$"
+        let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        let range = NSRange(location: 0, length: self.utf16.count)
+        return regex?.firstMatch(in: self, options: [], range: range) != nil
+    }
 }

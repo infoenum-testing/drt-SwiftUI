@@ -15,16 +15,14 @@ struct InvalidSeatTicketView: View {
         VStack {
             Image("circle_and_cross_icon")
                 .resizable()
-                .frame(width: 120.adaptiveForIpad, height: 120.adaptiveForIpad)
+                .frame(width: UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad, height: UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad)
                 .bold()
                 .foregroundColor(Color.primaryText)
                 .padding(.bottom)
-            
-            Text(stringManager.strings.incorrectMode.merch)
-                .font(.verlagBlackAdaptive(size: 30))
-                .multilineTextAlignment(.center)
+            CustomsText(title: stringManager.strings.incorrectMode.incorrectMode, textFont: .verlagBlackAdaptive(size: 30), foregroundColour: .primaryText, alignment: .center)
                 .fontWeight(.bold)
-                .foregroundColor(Color.primaryText)
+                .padding(.horizontal, 10)
+            CustomsText(title: stringManager.strings.incorrectMode.merch, textFont: .verlagBlackAdaptive(size: 20), foregroundColour: .primaryText, alignment: .center)
                 .padding(.horizontal, 10)
         }
         .frame(width: UIScreen.main.bounds.width)

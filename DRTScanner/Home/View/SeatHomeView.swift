@@ -36,6 +36,7 @@ struct SeatHomeView: View {
     @State private var showScanningStatsView = false
     @State private var showAboutView = false
     @State private var showOfflineAlert = false
+    @State private var showAlertText = false
     @State private var showOfflineSuccessAlert = false
     @State private var scannedBarcode: String? = nil
 
@@ -281,7 +282,7 @@ struct SeatHomeView: View {
                                         }
                                 }
                             } else if showLookupAlertByName {
-                                LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
+                                LookupByNameView(isPresented: $showLookupAlertByName, showOfflineAlert: $showOfflineAlert, showAlertText: $showAlertText, resultViewModel: viewModel, lookupType: selectedLookupByName)
                                     .clipped()
                                     .background(Color.primaryText)
                                     .transition(.move(edge: .trailing))
@@ -315,9 +316,11 @@ struct SeatHomeView: View {
         }
         
         .onChange(of: showLookupAlert) { newValue in
-            if newValue == false {
+            if newValue {
+                scnanerReset.shouldResetScanner = false
+            } else {
                 isScanningCell = true
-                scnanerReset.triggerReset()
+                scnanerReset.shouldResetScanner = true
             }
         }
         .onChange(of: showLookupAlertByName) { newValue in
@@ -338,17 +341,16 @@ struct SeatHomeView: View {
         .onChange(of: isSideMenuPresented) { newValue in
             if newValue {
                 isScanningCell = false
+                scnanerReset.shouldResetScanner = false
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    isScanningCell = true
-                        scnanerReset.triggerReset()
-                    NotificationCenter.default.post(name: .resetCameraView, object: nil)
-                }
+                isScanningCell = true
+                scnanerReset.shouldResetScanner = true
+                NotificationCenter.default.post(name: .resetCameraView, object: nil)
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {
             withAnimation(.easeInOut(duration: 0.3)) {
-                GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
+                GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showAlertText: $showAlertText, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
             }
         }
         .customAlert(isPresented: $showScanningStatsView) {
@@ -371,7 +373,7 @@ struct SeatHomeView: View {
             LogoutView(showAlert: $showAlert, showSeatView: $showSeatView)
         }
         .customAlert(isPresented: $showOfflineAlert) {
-            ShowOfflineAlertView(viewModel: viewModel, showOfflineAlert: $showOfflineAlert)
+            ShowOfflineAlertView(viewModel: viewModel, showOfflineAlert: $showOfflineAlert, showAlertText: $showAlertText)
         }
         .customAlert(isPresented: $showOfflineSuccessAlert) {
             ShowOfflineSuccesAlertView()

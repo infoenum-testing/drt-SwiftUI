@@ -13,6 +13,7 @@ struct ErrorDescriptionMessages: Codable {
     let connectSecurely: String
     let connect: String
     let connectionOffline: String
+    let shortNameError: String
     
     private enum CodingKeys: String, CodingKey {
         case reachServer = "reach-server"
@@ -21,5 +22,6 @@ struct ErrorDescriptionMessages: Codable {
         case connectSecurely = "connect-securely"
         case connect
         case connectionOffline = "connection-offline"
+        case shortNameError = "short-name"
     }
 }
