@@ -12,6 +12,7 @@ struct CameraScannerView: UIViewControllerRepresentable, Equatable {
     var onControllerCreated: ((ScannerViewController) -> Void)?
     let controller: ScannerViewController
     @Binding var isScanning: Bool
+    @Binding var isSideMenuPresented: Bool
     
     static func == (lhs: CameraScannerView, rhs: CameraScannerView) -> Bool {
         return lhs.controller == rhs.controller
@@ -19,11 +20,13 @@ struct CameraScannerView: UIViewControllerRepresentable, Equatable {
     
     init(
         isScanning: Binding<Bool>,
+        isSideMenuPresented: Binding<Bool>,
         controller: ScannerViewController,
         onScan: @escaping (String) -> Void,
         onControllerCreated: ((ScannerViewController) -> Void)? = nil
     ) {
         self._isScanning = isScanning
+        self._isSideMenuPresented = isSideMenuPresented
         self.controller = controller
         self.onScan = onScan
         self.onControllerCreated = onControllerCreated
@@ -39,14 +42,19 @@ struct CameraScannerView: UIViewControllerRepresentable, Equatable {
 
     func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) {
         if isScanning {
+            guard isSideMenuPresented == false else { return }
             uiViewController.startScanning()
+            print("my camera session start ✅")
         } else {
             uiViewController.stopScanning()
+            print("my camera session stop ❌")
         }
     }
 
     static func dismantleUIViewController(_ uiViewController: ScannerViewController, coordinator: ()) {
         uiViewController.isStopSessionByME = true
-        uiViewController.captureSession?.stopRunning()
+        if uiViewController.captureSession?.isRunning ?? false {
+            uiViewController.captureSession?.stopRunning()
+        }
     }
 }

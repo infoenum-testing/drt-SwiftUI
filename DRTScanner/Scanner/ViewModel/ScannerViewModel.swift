@@ -15,9 +15,6 @@ class ScannerViewModel: ObservableObject {
     @Published var shouldResetScanner = false
     
     private var audioPlayer: AVAudioPlayer?
-    func triggerReset() {
-        shouldResetScanner.toggle()
-    }
     
     func disableFlash() {
         guard let device = AVCaptureDevice.default(for: .video),

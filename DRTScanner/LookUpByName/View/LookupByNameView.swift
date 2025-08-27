@@ -26,11 +26,7 @@ struct LookupByNameView: View {
         managedObjectContext: PersistenceController.shared.container.viewContext
     )
     @EnvironmentObject var stringManager: StringManager
-    @Binding var showOfflineAlert: Bool
-    @Binding var showAlertText: Bool
-
-    @ObservedObject var resultViewModel: LookupByOrderResultViewModel
-
+    
     let lookupType: LookupByName
 
     var placeholderText: String {
@@ -40,8 +36,8 @@ struct LookupByNameView: View {
         }
     }
 
-    var isOKButtonDisable: Bool {
-        return  inputText.count < 5 || !inputText.isValidName()
+    var isOKButtonEnabled: Bool {
+        return  !inputText.isEmpty && inputText.isValidName()
     }
     
     var body: some View {
@@ -122,14 +118,15 @@ struct LookupByNameView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: geometry.size.width * 0.1, height: geometry.size.width * 0.1)
                     } else {
-                        CustomsText(title: stringManager.strings.searchResults.search, textFont: .verlagBoldAdaptive(size: 36), foregroundColour: isOKButtonDisable ? .colorButtonText : .primaryText)
+                        CustomsText(title: stringManager.strings.searchResults.search, textFont: .verlagBoldAdaptive(size: 36), foregroundColour: !isOKButtonEnabled ? .colorButtonText : .primaryText)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(isOKButtonDisable ? Color.colorButtonBg : Color.secondaryBg)
+                            .background(!isOKButtonEnabled ? Color.colorButtonBg : Color.secondaryBg)
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
                     }
                 }
+                .disabled(!isOKButtonEnabled)
                 .frame(height: UIScreen.main.bounds.height * 0.08)
                 .padding(.bottom, UIScreen.main.bounds.height * 0.05)
                 .background(Color.primaryText)
@@ -155,10 +152,7 @@ struct LookupByNameView: View {
     }
 
     private func performSearch() {
-        guard !isOKButtonDisable else {
-            showOfflineAlert = true
-            showAlertText = true
-            resultViewModel.errorMessage = stringManager.strings.errorDescriptionMessages.shortNameError
+        guard isOKButtonEnabled else {
             return
         }
 

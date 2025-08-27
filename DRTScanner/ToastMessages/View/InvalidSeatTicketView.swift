@@ -22,8 +22,8 @@ struct InvalidSeatTicketView: View {
             CustomsText(title: stringManager.strings.incorrectMode.incorrectMode, textFont: .verlagBlackAdaptive(size: 30), foregroundColour: .primaryText, alignment: .center)
                 .fontWeight(.bold)
                 .padding(.horizontal, 10)
-            CustomsText(title: stringManager.strings.incorrectMode.merch, textFont: .verlagBlackAdaptive(size: 20), foregroundColour: .primaryText, alignment: .center)
-                .padding(.horizontal, 10)
+            CustomsText(title: stringManager.strings.incorrectMode.merch, textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText, alignment: .center)
+                .padding(.horizontal, 50)
         }
         .frame(width: UIScreen.main.bounds.width)
         .frame(height: UIDevice.isIpad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height*0.485 : resultSheetHeightForIpad()) : resultSheetHeightForIphone())

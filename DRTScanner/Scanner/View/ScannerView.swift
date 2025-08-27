@@ -94,6 +94,7 @@ struct ScannerView: View, Equatable {
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     @Binding var scanResultEnum: ScanResult
+    @Binding var isSideMenuPresented: Bool
     
     let controller: ScannerViewController
     
@@ -115,7 +116,8 @@ struct ScannerView: View, Equatable {
          landingView: LandingViewModel,
          controller: ScannerViewController,
          scanResultEnum: Binding<ScanResult>,
-         showOfflineAlert: Binding<Bool>) {
+         showOfflineAlert: Binding<Bool>,
+    isSideMenuPresented: Binding<Bool>) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
         _scannerLineAnimation = scannerLineAnimation
@@ -131,6 +133,7 @@ struct ScannerView: View, Equatable {
         _invalidMessage = invalidMessage
         self.controller = controller
         _scanResultEnum = scanResultEnum
+        _isSideMenuPresented = isSideMenuPresented
     }
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
@@ -141,6 +144,7 @@ struct ScannerView: View, Equatable {
                 ZStack {
                     CameraScannerView(
                         isScanning: $isScanningCell,
+                        isSideMenuPresented: $isSideMenuPresented,
                         controller: controller,
                         onScan: { scanned in
                             scannedCode = scanned
@@ -156,7 +160,7 @@ struct ScannerView: View, Equatable {
                     )
                 }
                 .padding(.bottom,-30)
-                .frame(height: isFullScreen ? nil : scanViewHeight.adaptiveForIpadScan)
+                .frame(height: isFullScreen ? UIScreen.main.bounds.height+10 : scanViewHeight.adaptiveForIpadScan)
                 .frame(maxWidth: .infinity)
                 .overlay {
                     // Animated scan line overlay
@@ -174,13 +178,6 @@ struct ScannerView: View, Equatable {
                                     .padding(.bottom, 20)
                             }
                         }
-                    }
-                }
-                .onChange(of: isScanning) { newValue in // Start or stop scanning based on state
-                    if newValue {
-                        scannerController?.startScanning()
-                    } else {
-                        scannerController?.stopScanning()
                     }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
@@ -387,8 +384,8 @@ struct ScannerView: View, Equatable {
                 }
             }
             .onChange(of: scannerViewModel.shouldResetScanner) { newValue in
-                if newValue {
-                    resetCameraView()  // Reset camera view if requested
+                if newValue && !isStopScanVisible {
+                    resetScanner()  // Reset camera view if requested
                 }
                 // if scan states is true then call the api
                 if UserDefaults.standard.bool(forKey: "kShowScanStats") {
@@ -399,15 +396,14 @@ struct ScannerView: View, Equatable {
             }
         } // Listen for camera reset notifications
         .onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
-            if isStopScanVisible {
-                resetScanner()
-            } else if isCustomColorVisible {
-                resetScanner()
-            }
-            else {
-                resetCameraView()
-            }
+//            if isStopScanVisible || isCustomColorVisible {
+//                resetScanner()
+//            }
+//            else {
+//                resetCameraView()
+//            }
         }
+        
         // Setup and state management on appear/disappear and state changes
         .onAppear {
             setupScanner() // Initial scanner setup
@@ -559,7 +555,10 @@ struct ScannerView: View, Equatable {
     private func resetScanner() {
         DispatchQueue.global(qos: .userInitiated).async {
             scannerController?.isStopSessionByME = false
-            scannerController?.captureSession?.startRunning()
+            let isRunning = scannerController?.captureSession?.isRunning ?? false
+            if !isRunning {
+                scannerController?.startScanning()
+            }
             scannerController?.checkCameraSessionRunning()
         }
         isCustomColorVisible = false
@@ -582,7 +581,10 @@ struct ScannerView: View, Equatable {
     private func resetCameraView() {
         DispatchQueue.global(qos: .userInitiated).async {
             scannerController?.isStopSessionByME = false
-            scannerController?.captureSession?.startRunning()
+            let isRunning = scannerController?.captureSession?.isRunning ?? false
+            if !isRunning {
+                scannerController?.startScanning()
+            }
             scannerController?.checkCameraSessionRunning()
         }
         DispatchQueue.main.async {
@@ -632,7 +634,9 @@ struct ScannerView: View, Equatable {
     private func stopScanner() {
         isScannerActive = false
         scannerController?.isStopSessionByME = true
-        scannerController?.captureSession?.stopRunning()
+        if scannerController?.captureSession?.isRunning ?? false {
+            scannerController?.stopScanning()
+        }
         
     }
     
@@ -733,7 +737,7 @@ struct ScannerView: View, Equatable {
                 .replacingOccurrences(of: "\"", with: "")
         } else {
             scanResultEnum = .invalidTicket(message: isMerchandiseMode ? StringManager.shared.strings.orderDetail.invalidProduct : StringManager.shared.strings.orderDetail.invalidTicket)
-            dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
+            dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
         }
 
         let qrCodes = cleanedQR.components(separatedBy: ",").filter { !$0.isEmpty }
@@ -832,7 +836,7 @@ struct ScannerView: View, Equatable {
                 if let seatEntity = results.first {
                     if let scannedTime = seatEntity.date_scanned {
                         // Already scanned seat
-                        scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ?? "Blocked Seat", orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", scannedTime: scannedTime.formatToTimeString(), tsScannedDate: scannedTime.formatToTimeString())
+                        scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ?? StringManager.shared.strings.offline.blockedTicket , orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", scannedTime: scannedTime.formatToTimeString(), tsScannedDate: scannedTime.formatToTimeString())
                         dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                     } else {
                         // Mark as scanned
@@ -870,7 +874,7 @@ struct ScannerView: View, Equatable {
                 let results = try viewContext.fetch(fetchRequest)
                 if let seatEntity = results.first {
                     if let scannedTime = seatEntity.date_scanned {
-                        scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ?? StringManager.shared.strings.offline.blockedTicket, orderNumber: seatEntity.orderId.map(String.init) ?? "", scannedTime: scannedTime.formatted(date: .omitted, time: .shortened), tsScannedDate: scannedTime.formatted(date: .omitted, time: .shortened))
+                        scanResultEnum = .preScannedTicket(orderName: seatEntity.order?.buyerName ??  StringManager.shared.strings.offline.blockedTicket, orderNumber: seatEntity.orderId.map(String.init) ?? "", scannedTime:  scannedTime.formatToTimeString(), tsScannedDate:  scannedTime.formatToTimeString())
                         dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                     } else {
                         seatEntity.locally_scanned += 1
@@ -899,22 +903,20 @@ struct ScannerView: View, Equatable {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let responseData):
-                    if let responseDict = responseData as? [String: Any], let message = responseDict["message"] as? String {
-                        if message == "Previously Scanned" {
-                            scanResultEnum = .preScannedTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? "", orderNumber: String(responseDict["oid"] as? Int ?? 0), scannedTime: responseDict["date_scanned"] as? String ?? "", tsScannedDate: responseDict["tsScanned"] as? String ?? "")
-                            dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
-                            
-                        } else {
-                            scanResultEnum = .validTicket(orderName: (responseDict["buyer_name"] as? String)?.capitalized ?? StringManager.shared.strings.offline.blockedTicket,
-                                                          orderNumber: String(responseDict["oid"] as? Int ?? 0),
-                                                          isGoldenTicket: (responseDict["is_golden_ticket"] == nil))
-                            dismissPopUp(scannerResult: .valid, isInvaildMode: false)
-                            Task {
-                                await viewModel.fetchStats()
-                            }
-                            lastScanTimes[cleanedQR] = Date()
-                            suppressedOnce.remove(cleanedQR)
+                    if responseData.message == "Previously scanned" {
+                        scanResultEnum = .preScannedTicket(orderName: (responseData.buyerName ?? "").capitalized , orderNumber: String(responseData.oid ?? 0), scannedTime: responseData.dateScanned ?? "", tsScannedDate: responseData.tsScanned ?? "")
+                        dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
+                        
+                    } else {
+                        scanResultEnum = .validTicket(orderName: (responseData.buyerName ?? "").capitalized,
+                                                      orderNumber: String(responseData.oid ?? 0),
+                                                      isGoldenTicket: responseData.isGoldenTicket ?? false)
+                        dismissPopUp(scannerResult: .valid, isInvaildMode: false)
+                        Task {
+                            await viewModel.fetchStats()
                         }
+                        lastScanTimes[cleanedQR] = Date()
+                        suppressedOnce.remove(cleanedQR)
                     }
                 case .failure(let error):
                     if NetworkMonitor.shared.isNetworkAvailable() {
@@ -988,7 +990,7 @@ struct ScannerView: View, Equatable {
             // Offline or wrong scan type
             scanResultEnum = .incorrectMerchMode
             dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
-            isScanning = false
+           
         }
     }
     
@@ -1005,7 +1007,6 @@ struct ScannerView: View, Equatable {
                             dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                             
                             seat?.scannedTime = Date()
-                            isScanning = false
                             Task {
                                 await viewModel.fetchStats()
                             }
@@ -1014,7 +1015,6 @@ struct ScannerView: View, Equatable {
                         } else if scanResponse.message?.lowercased() == "previously scanned".lowercased() {
                             scanResultEnum = .preScannedTicket(orderName: scanResponse.buyerName ?? "", orderNumber: String(scanResponse.oid ?? 0), scannedTime: orderDateScanned, tsScannedDate: scanResponse.tsScanned ?? "")
                             dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
-                            isScanning = false
                             
                         } else {
                             if let message = scanResponse.message, !message.isEmpty {
@@ -1023,7 +1023,6 @@ struct ScannerView: View, Equatable {
                                     showOfflineAlert = true
                                 }
                             }
-                            isScanning = false
                         }
                            
                     case .failure(let error):
@@ -1034,7 +1033,6 @@ struct ScannerView: View, Equatable {
                         }
                         scanResultEnum = .invalidTicket(message: invalidMessage)
                         dismissPopUp(scannerResult: .valid, isInvaildMode: false)
-                        isScanning = false
                     }
                 }
             }
@@ -1042,7 +1040,6 @@ struct ScannerView: View, Equatable {
         } else {
             scanResultEnum = .incorrectTicketMode
             dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
-            isScanning = false
         }
     }
     //MARK: dismised scaned popup
@@ -1056,6 +1053,7 @@ struct ScannerView: View, Equatable {
                 scanResultEnum = .none
             }
         }
+        isScanning = false
     }
     
 }

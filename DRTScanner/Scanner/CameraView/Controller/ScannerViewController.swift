@@ -68,7 +68,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         // Always reset the timer
         scanningWatchdogTimer?.invalidate()
 
-        scanningWatchdogTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+        scanningWatchdogTimer = Timer.scheduledTimer(withTimeInterval: 30*60, repeats: true) { [weak self] _ in
             guard let self = self else { return }
 
             if self.isStopSessionByME {
@@ -183,7 +183,10 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         captureSession = session
         DispatchQueue.global(qos: .userInitiated).async {
-            session.startRunning()
+            let isRunning = self.captureSession?.isRunning ?? false
+            if !isRunning {
+                session.startRunning()
+            }
             DispatchQueue.main.async {
                 self.isScanning = true
                 self.onCameraReady?() // Notify SwiftUI to start animation
@@ -257,8 +260,9 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-
-            self.captureSession?.startRunning()
+            if !(self.captureSession?.isRunning ?? false)  {
+                self.captureSession?.startRunning()
+            }
             print("▶️ Capture session started")
 
             if self.autoEnableFlashTimeout,

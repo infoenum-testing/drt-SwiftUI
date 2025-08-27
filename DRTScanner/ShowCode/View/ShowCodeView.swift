@@ -24,6 +24,7 @@ struct ShowCodeView: View {
                     if viewModel.isScannerVisible {
                         CameraScannerView(
                             isScanning: .constant(true),
+                            isSideMenuPresented: .constant(false),
                             controller: ScannerViewController(),
                             onScan: { scannedCode in
                                 // Handle QR scanned code

@@ -153,7 +153,7 @@ extension IQAPIClient {
     
     /// Scans a ticket using a barcode
     @discardableResult
-    static func scanTicketBarcode(code: String, barcode: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<Any, Error>) -> Void) -> DataRequest? {
+    static func scanTicketBarcode(code: String, barcode: String, completionHandler: @Sendable @escaping (_ result: Swift.Result<ScanResponse, Error>) -> Void) -> DataRequest? {
         let path = APIPath.ticket.rawValue
         let deviceName = DeviceManager.shared.getDeviceName()
         let lanCode = StringManager.shared.returnLangCode()

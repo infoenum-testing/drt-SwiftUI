@@ -63,10 +63,11 @@ struct SeatHomeView: View {
     @State var scannerLineAnimation: Bool = true
     @StateObject private var viewModel = LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext)
     @ObservedObject var landingView:LandingViewModel
-    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
+    @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0010
+    
     @EnvironmentObject var stringManager: StringManager
     @State private var scanResult: ScanResult = .none
-
+    @State private var scannerController: ScannerViewController? =  ScannerViewController()
     let controller = ScannerViewController()
     
     // Computes the dynamic cell height based on device and mode
@@ -103,7 +104,7 @@ struct SeatHomeView: View {
                                     Button(action: {
                                         // Toggle side menu
                                         withAnimation(.easeInOut) {
-                                            isSideMenuPresented.toggle()
+                                            isSideMenuPresented = true
                                         }
                                     }) {
                                         Image("side_menu")
@@ -151,7 +152,8 @@ struct SeatHomeView: View {
                                         landingView: landingView,
                                         controller: controller,
                                         scanResultEnum: $scanResult,
-                                        showOfflineAlert:  $showOfflineAlert)
+                                        showOfflineAlert:  $showOfflineAlert,
+                                        isSideMenuPresented: $isSideMenuPresented)
                             
                             .frame(width: UIScreen.main.bounds.width)
                             .frame(maxHeight: isFullScreen ? .infinity : nil)
@@ -282,7 +284,7 @@ struct SeatHomeView: View {
                                         }
                                 }
                             } else if showLookupAlertByName {
-                                LookupByNameView(isPresented: $showLookupAlertByName, showOfflineAlert: $showOfflineAlert, showAlertText: $showAlertText, resultViewModel: viewModel, lookupType: selectedLookupByName)
+                                LookupByNameView(isPresented: $showLookupAlertByName, lookupType: selectedLookupByName)
                                     .clipped()
                                     .background(Color.primaryText)
                                     .transition(.move(edge: .trailing))
@@ -316,24 +318,13 @@ struct SeatHomeView: View {
         }
         
         .onChange(of: showLookupAlert) { newValue in
-            if newValue {
-                scnanerReset.shouldResetScanner = false
-            } else {
-                isScanningCell = true
-                scnanerReset.shouldResetScanner = true
-            }
+            checkToResetCamera(newValue: newValue)
         }
         .onChange(of: showLookupAlertByName) { newValue in
-            if newValue == false {
-                isScanningCell = true
-                scnanerReset.triggerReset()
-            }
+            checkToResetCamera(newValue: newValue)
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
-            if newValue == false {
-                isScanningCell = true
-                scnanerReset.triggerReset()
-            }
+            checkToResetCamera(newValue: newValue)
         }
         .sideMenuViewModify(isPresented: $isSideMenuPresented) {
             SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)
@@ -342,10 +333,13 @@ struct SeatHomeView: View {
             if newValue {
                 isScanningCell = false
                 scnanerReset.shouldResetScanner = false
+                if scannerController?.captureSession?.isRunning ?? false {
+                    scannerController?.captureSession?.stopRunning()
+                }
             } else {
                 isScanningCell = true
                 scnanerReset.shouldResetScanner = true
-                NotificationCenter.default.post(name: .resetCameraView, object: nil)
+//                NotificationCenter.default.post(name: .resetCameraView, object: nil)
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {
@@ -382,5 +376,18 @@ struct SeatHomeView: View {
             CustomAlertMessage()
         }
         .ignoresSafeArea()
+    }
+    
+    // reset camera view
+    func checkToResetCamera(newValue: Bool){
+        if newValue {
+            scnanerReset.shouldResetScanner = false
+            if scannerController?.captureSession?.isRunning ?? false {
+                scannerController?.captureSession?.stopRunning()
+            }
+        } else {
+            isScanningCell = true
+            scnanerReset.shouldResetScanner = true
+        }
     }
 }
