@@ -154,7 +154,7 @@
 		E997FD252E29486F00D9EC06 /* SettingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC7B2E29486F00D9EC06 /* SettingItem.swift */; };
 		E997FD262E29486F00D9EC06 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC7C2E29486F00D9EC06 /* SettingsView.swift */; };
 		E997FD272E29486F00D9EC06 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC7E2E29486F00D9EC06 /* SettingsViewModel.swift */; };
-		E997FD282E29486F00D9EC06 /* SideMenuOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC812E29486F00D9EC06 /* SideMenuOption.swift */; };
+		E997FD282E29486F00D9EC06 /* SideMenuCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC812E29486F00D9EC06 /* SideMenuCellView.swift */; };
 		E997FD292E29486F00D9EC06 /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC822E29486F00D9EC06 /* SideMenuView.swift */; };
 		E997FD2A2E29486F00D9EC06 /* SideMenuViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC852E29486F00D9EC06 /* SideMenuViewModifier.swift */; };
 		E997FD2B2E29486F00D9EC06 /* InvalidMerchandiseTicketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC882E29486F00D9EC06 /* InvalidMerchandiseTicketView.swift */; };
@@ -331,7 +331,7 @@
 		E997FC7B2E29486F00D9EC06 /* SettingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingItem.swift; sourceTree = "<group>"; };
 		E997FC7C2E29486F00D9EC06 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E997FC7E2E29486F00D9EC06 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
-		E997FC812E29486F00D9EC06 /* SideMenuOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOption.swift; sourceTree = "<group>"; };
+		E997FC812E29486F00D9EC06 /* SideMenuCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuCellView.swift; sourceTree = "<group>"; };
 		E997FC822E29486F00D9EC06 /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
 		E997FC852E29486F00D9EC06 /* SideMenuViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuViewModifier.swift; sourceTree = "<group>"; };
 		E997FC882E29486F00D9EC06 /* InvalidMerchandiseTicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidMerchandiseTicketView.swift; sourceTree = "<group>"; };
@@ -1179,7 +1179,7 @@
 		E997FC832E29486F00D9EC06 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E997FC812E29486F00D9EC06 /* SideMenuOption.swift */,
+				E997FC812E29486F00D9EC06 /* SideMenuCellView.swift */,
 				E997FC822E29486F00D9EC06 /* SideMenuView.swift */,
 			);
 			path = View;
@@ -1568,7 +1568,7 @@
 				E997FD252E29486F00D9EC06 /* SettingItem.swift in Sources */,
 				E997FD262E29486F00D9EC06 /* SettingsView.swift in Sources */,
 				E997FD272E29486F00D9EC06 /* SettingsViewModel.swift in Sources */,
-				E997FD282E29486F00D9EC06 /* SideMenuOption.swift in Sources */,
+				E997FD282E29486F00D9EC06 /* SideMenuCellView.swift in Sources */,
 				E997FD292E29486F00D9EC06 /* SideMenuView.swift in Sources */,
 				E997FD2A2E29486F00D9EC06 /* SideMenuViewModifier.swift in Sources */,
 				E997FD2B2E29486F00D9EC06 /* InvalidMerchandiseTicketView.swift in Sources */,
@@ -1714,7 +1714,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"DRTScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D46TEELVUP;
@@ -1757,7 +1757,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"DRTScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = D46TEELVUP;

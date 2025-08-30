@@ -40,22 +40,26 @@ struct SettingsView: View {
                             .contentShape(Rectangle())
                     }
                     .padding(.top, 20)
-                }.background(Color.secondaryBg)
-                    .padding(.vertical)
-                    .padding(.leading)
+                }
+                .background(Color.neutralBg)
+                .padding(.vertical)
+                .padding(.leading)
                 
-                // List of settings
                 List {
                     settingsSection
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.secondaryBg)
-            } .detectGlobalTaps(disabled: selectedTimerIndex != nil)
+                .background(Color.neutralBg)
+            }
+            .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
                 .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
-                .background(Color.secondaryBg)
+                .background(Color.neutralBg)
                 .padding(.top, -30)
             // Overlay for time picker modal
             ZStack {
@@ -75,7 +79,6 @@ struct SettingsView: View {
                     }
             }
             .padding(.top,-30)
-            
         }
     }
     
@@ -96,7 +99,7 @@ struct SettingsView: View {
                     Toggle("", isOn: toggleBinding)
                         .labelsHidden()
                         .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.5 : 1.0)
-                        .padding(10)
+                        .padding(3)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             toggleBinding.wrappedValue.toggle()
@@ -112,6 +115,8 @@ struct SettingsView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, minHeight: 50.adaptiveForIpad)
+            .background(Color.primaryBg)
+            .padding(.bottom, 7)
         }
     }
     

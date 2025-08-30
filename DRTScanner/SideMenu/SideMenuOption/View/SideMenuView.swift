@@ -64,14 +64,14 @@ struct SideMenuView: View {
                     
                         // Merchandise/Ticket switch option
                         if isMerchandise {
-                            SideMenuOption(imageName: "scan_seat", title: menuStrings.scanTickets) {
+                            SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanTickets) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
                                 }
                             }
                         } else {
-                            SideMenuOption(imageName: "scan_seat", title: menuStrings.scanMerch) {
+                            SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanMerch) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isSwitchingToMerchandise = !isMerchandise
                                     showConfirmationAlert = true
@@ -80,15 +80,15 @@ struct SideMenuView: View {
                         }
                         
                         // Settings option
-                        SideMenuOption(imageName: "setting", title: menuStrings.settings) {
+                        SideMenuCellView(imageName: "setting", title: menuStrings.settings) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showSettingsView = true
                             }
                         }
                         
-                        // Scanning Stats option (only if not in merchandise mode)
+                        // Scanning Stats option (only if seat mode)
                         if !isMerchandise {
-                            SideMenuOption(imageName: "statics", title: menuStrings.scanningStats) {
+                            SideMenuCellView(imageName: "statics", title: menuStrings.scanningStats) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showScanningStatsView = true
                                 }
@@ -96,14 +96,14 @@ struct SideMenuView: View {
                         }
                         // Go Online/Offline option
                         if isOfflineMode {
-                            SideMenuOption(imageName: "online", title: menuStrings.goOnline) {
+                            SideMenuCellView(imageName: "online", title: menuStrings.goOnline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOnlineView = true
                                 }
                             }
                             
                         } else {
-                            SideMenuOption(imageName: "offline", title: menuStrings.goOffline) {
+                            SideMenuCellView(imageName: "offline", title: menuStrings.goOffline) {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     showGoOfflineView = true
                                 }
@@ -111,19 +111,19 @@ struct SideMenuView: View {
                         }
                         
                         // Logout option
-                        SideMenuOption(imageName: "logout", title: menuStrings.logOut) {
+                        SideMenuCellView(imageName: "logout", title: menuStrings.logOut) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showAlert = true
                             }
                         }
                         // About option
-                        SideMenuOption(imageName: "information", title: menuStrings.about) {
+                        SideMenuCellView(imageName: "information", title: menuStrings.about) {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 showAboutView = true
                             }
                         }
                         // DRT Website option
-                        SideMenuOption(imageName: "settingweb", title: menuStrings.website) {
+                        SideMenuCellView(imageName: "settingweb", title: menuStrings.website) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 showWebsiteAlert = true
                             }
@@ -166,7 +166,8 @@ struct SideMenuView: View {
         }.sideMenuViewModify(isPresented: $showSettingsView) {
             // Settings view presentation
             withAnimation(.easeInOut(duration: 0.3)) {
-                SettingsView(isPresented: $showSettingsView).padding(.top, 30)
+                SettingsView(isPresented: $showSettingsView)
+                    .padding(.top, 30)
             }
         }
         // Go Online view presentation

@@ -67,7 +67,7 @@ struct SeatHomeView: View {
     
     @EnvironmentObject var stringManager: StringManager
     @State private var scanResult: ScanResult = .none
-    @State private var scannerController: ScannerViewController? =  ScannerViewController()
+    @State private var scannerController: ScannerViewController =  ScannerViewController()
     let controller = ScannerViewController()
     
     // Computes the dynamic cell height based on device and mode
@@ -153,7 +153,8 @@ struct SeatHomeView: View {
                                         controller: controller,
                                         scanResultEnum: $scanResult,
                                         showOfflineAlert:  $showOfflineAlert,
-                                        isSideMenuPresented: $isSideMenuPresented)
+                                        isSideMenuPresented: $isSideMenuPresented,
+                                        scannerController: $scannerController)
                             
                             .frame(width: UIScreen.main.bounds.width)
                             .frame(maxHeight: isFullScreen ? .infinity : nil)
@@ -333,13 +334,12 @@ struct SeatHomeView: View {
             if newValue {
                 isScanningCell = false
                 scnanerReset.shouldResetScanner = false
-                if scannerController?.captureSession?.isRunning ?? false {
-                    scannerController?.captureSession?.stopRunning()
+                if scannerController.captureSession?.isRunning ?? false {
+                    scannerController.stopScanning()
                 }
             } else {
                 isScanningCell = true
                 scnanerReset.shouldResetScanner = true
-//                NotificationCenter.default.post(name: .resetCameraView, object: nil)
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {
@@ -382,8 +382,8 @@ struct SeatHomeView: View {
     func checkToResetCamera(newValue: Bool){
         if newValue {
             scnanerReset.shouldResetScanner = false
-            if scannerController?.captureSession?.isRunning ?? false {
-                scannerController?.captureSession?.stopRunning()
+            if scannerController.captureSession?.isRunning ?? false {
+                scannerController.stopScanning()
             }
         } else {
             isScanningCell = true

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SideMenuOption: View {
+struct SideMenuCellView: View {
     let imageName: String
     var title: String
     var action: (() -> Void)? = nil

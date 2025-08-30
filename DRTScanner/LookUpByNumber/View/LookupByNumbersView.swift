@@ -235,15 +235,11 @@ struct LookupByNumbersView: View {
                 }
                 isLoading = true
                 Task {
-                    do {
-                        DispatchQueue.main.async {
-                            self.isLoading = false // Stop loading
-                            withAnimation {
-                                self.showResultView = true
-                            }
+                    DispatchQueue.main.async {
+                        self.isLoading = false // Stop loading
+                        withAnimation {
+                            self.showResultView = true
                         }
-                    } catch {
-                        print("Error fetching order: \(error)")
                     }
                 }
             }

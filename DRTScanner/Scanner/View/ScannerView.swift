@@ -28,7 +28,7 @@ struct ScannerView: View, Equatable {
     @State private var isScannerActive = true
     @State private var isCustomColorVisible = false
     @State private var isStopScanVisible = false
-    @State private var scannerController: ScannerViewController? =  ScannerViewController()
+    @Binding var scannerController: ScannerViewController
     @State private var isScanned = false
     @State private var scannedTime: String?
     @State private var isLoading = false
@@ -51,10 +51,8 @@ struct ScannerView: View, Equatable {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var isOfflineMode = false
-    // Indicates if merchandise mode is enabled (runtime)
     @State private var isMerchandiseMode = false
     @State private var shouldPlayHapticNew = false
-    // Duplicate scan suppression value (runtime)
     @State private var duplicateScanSuppressionNew = 0
     
     @State private var toastMessage: String?
@@ -82,22 +80,20 @@ struct ScannerView: View, Equatable {
     @StateObject private var keyboardObserver = KeyboardObserver()
     @ObservedObject var lookupByOrderResultViewModel: LookupByOrderResultViewModel
     @ObservedObject var landingView:LandingViewModel
-    // Controls visibility of the offline alert (binding from parent)
     @Binding var showOfflineAlert: Bool
-    // Indicates if the input field is active
     @State private var isInputActive: Bool = false
-    // Stores the scanned code from external input
     @State private var scannedExternalCode: String = ""
-    
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var isCameraAuthorized: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
-    //    @StateObject private var landingViewModel = LandingViewModel(lookupByOrderResultViewModel: LookupByOrderResultViewModel(managedObjectContext: PersistenceController.shared.container.viewContext))
     @AppStorage("deviceScanCount") private var deviceScanCount: Int = 0
     
     @Binding var scanResultEnum: ScanResult
     @Binding var isSideMenuPresented: Bool
     
     let controller: ScannerViewController
-    
+    @State private var dismissWorkItem: DispatchWorkItem? = nil
+    @State private var hasMoveToInactive: Bool = false
     static func == (lhs: ScannerView, rhs: ScannerView) -> Bool {
         return lhs.controller == rhs.controller
     }
@@ -117,7 +113,8 @@ struct ScannerView: View, Equatable {
          controller: ScannerViewController,
          scanResultEnum: Binding<ScanResult>,
          showOfflineAlert: Binding<Bool>,
-    isSideMenuPresented: Binding<Bool>) {
+         isSideMenuPresented: Binding<Bool>,
+         scannerController: Binding<ScannerViewController>) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
         _scannerLineAnimation = scannerLineAnimation
@@ -134,6 +131,7 @@ struct ScannerView: View, Equatable {
         self.controller = controller
         _scanResultEnum = scanResultEnum
         _isSideMenuPresented = isSideMenuPresented
+        _scannerController = scannerController
     }
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
@@ -158,6 +156,7 @@ struct ScannerView: View, Equatable {
                         }
                         // Bind scanning state
                     )
+//                    .id(isSideMenuPresented)
                 }
                 .padding(.bottom,-30)
                 .frame(height: isFullScreen ? UIScreen.main.bounds.height+10 : scanViewHeight.adaptiveForIpadScan)
@@ -394,16 +393,38 @@ struct ScannerView: View, Equatable {
                     }
                 }
             }
-        } // Listen for camera reset notifications
-        .onReceive(NotificationCenter.default.publisher(for: .resetCameraView)) { _ in
-//            if isStopScanVisible || isCustomColorVisible {
-//                resetScanner()
-//            }
-//            else {
-//                resetCameraView()
-//            }
         }
-        
+        //MARK: backGround mode
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .active:
+                if hasMoveToInactive {
+                    hasMoveToInactive = false
+                    print("✅ App is in Foreground (active)")
+                        resetScanner()
+                }
+            case .inactive:
+                print("⚪️ App is inactive (transition state)")
+                if scannerController.captureSession?.isRunning ?? false {
+                    hasMoveToInactive = true
+                    // stop scanning in viewReprentable
+                    isScanningCell = false
+                    stopLineAnimation()
+                   scannerController.stopScanning()
+                }
+            case .background:
+                if scannerController.captureSession?.isRunning ?? false {
+                    hasMoveToInactive = true
+                    // stop scanning in viewReprentable
+                    isScanningCell = false
+                    stopLineAnimation()
+                   scannerController.stopScanning()
+                }
+            @unknown default:
+                print("❓ Unknown state")
+            }
+        }
+
         // Setup and state management on appear/disappear and state changes
         .onAppear {
             setupScanner() // Initial scanner setup
@@ -478,7 +499,7 @@ struct ScannerView: View, Equatable {
         guard autoEnableFlashTimeout else { return }
         
         flashAutoOnTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(autoEnableFlashDelay), repeats: false) { _ in
-            if let scanner = scannerController, scanner.captureSession?.isRunning == true {
+            if scannerController.captureSession?.isRunning == true {
                 if !isFlashOn {
                     DispatchQueue.main.async {
                         isFlashOn = true
@@ -502,7 +523,7 @@ struct ScannerView: View, Equatable {
                     toggleTorch(status: false)
                 }
                 
-                if let scanner = scannerController, scanner.captureSession?.isRunning == true {
+                if scannerController.captureSession?.isRunning == true {
                     startFlashInactivityTimer()
                 } else {
                     print("⏹️ Flash auto-off: Scanner not running, not restarting timer")
@@ -531,9 +552,6 @@ struct ScannerView: View, Equatable {
         isStopScanVisible = false
         if isCameraAuthorized {
             let animationHeight = isFullScreen ? UIScreen.main.bounds.height * 1 : scanViewHeight
-            if isFullScreen {
-                linePosition = 0
-            }
             withAnimation(Animation.linear(duration: Double(animationHeight / lineSpeed)).repeatForever(autoreverses: true)) {
                 linePosition = animationHeight
             }
@@ -543,7 +561,9 @@ struct ScannerView: View, Equatable {
     // Stops the animation for the scanning line
     private func stopLineAnimation() {
         isStopScanVisible = true
-        linePosition = 0
+        withAnimation(.none) {
+            linePosition = 0
+        }
     }
     
     // Computed property to check if any overlay is displayed
@@ -554,12 +574,12 @@ struct ScannerView: View, Equatable {
     // Resets the scanner to its initial state
     private func resetScanner() {
         DispatchQueue.global(qos: .userInitiated).async {
-            scannerController?.isStopSessionByME = false
-            let isRunning = scannerController?.captureSession?.isRunning ?? false
+            scannerController.isStopSessionByME = false
+            let isRunning = scannerController.captureSession?.isRunning ?? false
             if !isRunning {
-                scannerController?.startScanning()
+                scannerController.startScanning()
             }
-            scannerController?.checkCameraSessionRunning()
+            scannerController.checkCameraSessionRunning()
         }
         isCustomColorVisible = false
         isStopScanVisible = false
@@ -568,38 +588,11 @@ struct ScannerView: View, Equatable {
         isScanning = true
         isScannerActive = true
         isScanningCell = true
-        if isFullScreen {
-            linePosition = 0
-        }
         startLineAnimation()
         startInactivityTimer()
         startFlashInactivityTimer()
     }
-    
-    
-    // Resets the camera view and scanning state
-    private func resetCameraView() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            scannerController?.isStopSessionByME = false
-            let isRunning = scannerController?.captureSession?.isRunning ?? false
-            if !isRunning {
-                scannerController?.startScanning()
-            }
-            scannerController?.checkCameraSessionRunning()
-        }
-        DispatchQueue.main.async {
-            isCustomColorVisible = false
-            isStopScanVisible = false
-            scannedCode = nil
-            scanResult = nil
-            isScanning = true
-            isScannerActive = true
-            isScanningCell = true
-            startLineAnimation()
-            startInactivityTimer()
-            startFlashInactivityTimer()
-        }
-    }
+
     
     // Starts the inactivity timer to pause scanning after a period of inactivity
     private func startInactivityTimer() {
@@ -612,7 +605,7 @@ struct ScannerView: View, Equatable {
                 isScanningCell = false
                 self.activateColorOverlay()
                 stopLineAnimation()
-                self.scannerController?.stopScanning()
+                self.scannerController.stopScanning()
                 if isFlashOn {
                     isFlashOn = false
                     toggleTorch(status: false)
@@ -633,9 +626,9 @@ struct ScannerView: View, Equatable {
     
     private func stopScanner() {
         isScannerActive = false
-        scannerController?.isStopSessionByME = true
-        if scannerController?.captureSession?.isRunning ?? false {
-            scannerController?.stopScanning()
+        scannerController.isStopSessionByME = true
+        if scannerController.captureSession?.isRunning ?? false {
+            scannerController.stopScanning()
         }
         
     }
@@ -907,7 +900,7 @@ struct ScannerView: View, Equatable {
                         scanResultEnum = .preScannedTicket(orderName: (responseData.buyerName ?? "").capitalized , orderNumber: String(responseData.oid ?? 0), scannedTime: responseData.dateScanned ?? "", tsScannedDate: responseData.tsScanned ?? "")
                         dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                         
-                    } else {
+                    } else if responseData.valid {
                         scanResultEnum = .validTicket(orderName: (responseData.buyerName ?? "").capitalized,
                                                       orderNumber: String(responseData.oid ?? 0),
                                                       isGoldenTicket: responseData.isGoldenTicket ?? false)
@@ -917,6 +910,9 @@ struct ScannerView: View, Equatable {
                         }
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
+                    } else {
+                        scanResultEnum = .invalidTicket(message: invalidMessage)
+                        dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                     }
                 case .failure(let error):
                     if NetworkMonitor.shared.isNetworkAvailable() {
@@ -955,17 +951,15 @@ struct ScannerView: View, Equatable {
                             let name = responseDict["name"] as? String ?? ""
                             let variantName = responseDict["variantName"] as? String ?? ""
                             
-                            if message.contains("Previously scanned") || isValid {
-                                if message.contains("Previously scanned") {
-                                    scanResultEnum = .preScannedMerch(orderName: name,
-                                                                      variantName: variantName,
-                                                                      scannedTime: ts.formatToDate(),
-                                                                      tsScannedDate: ts)
-                                    dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
-                                } else {
-                                    scanResultEnum = .incorrectMerchMode
-                                    dismissPopUp(scannerResult: .invalid, isInvaildMode: true)
-                                }
+                            if message.contains("Previously scanned") {
+                                scanResultEnum = .preScannedMerch(orderName: name,
+                                                                  variantName: variantName,
+                                                                  scannedTime: ts.formatToDate(),
+                                                                  tsScannedDate: ts)
+                                dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
+                            } else if isValid {
+                                scanResultEnum = .validMerch(orderName: name, variantName: variantName)
+                                dismissPopUp(scannerResult: .valid, isInvaildMode: true)
                             } else {
                                 // ❗ Show error message if valid is false
                                 scanResultEnum = .invalidTicket(message: message)
@@ -1043,16 +1037,26 @@ struct ScannerView: View, Equatable {
         }
     }
     //MARK: dismised scaned popup
+
     func dismissPopUp(scannerResult: ScannerResult, isInvaildMode: Bool) {
         scannerViewModel.playScanFeedback(scannerResult: scannerResult, haptic: shouldPlayHapticNew)
-        
+
+        // Cancel any existing scheduled dismiss
+        dismissWorkItem?.cancel()
+
+        // Create new dismiss task
         let delay: Double = isInvaildMode ? 20 : 5
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+        let workItem = DispatchWorkItem {
             withAnimation {
                 scanResultEnum = .none
             }
         }
+
+        dismissWorkItem = workItem
+
+        // Schedule the latest dismiss
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+
         isScanning = false
     }
     

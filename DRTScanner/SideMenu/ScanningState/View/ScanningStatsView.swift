@@ -24,54 +24,57 @@ struct ScanningStatsView: View {
     
     var body: some View {
         let statsString = stringManager.strings.stats
-        VStack(spacing: 15) {
-            HStack {
-                Spacer()
-                Text(statsString.scanningStats)
-                    .font(.verlagBoldAdaptive(size: 30))
-                    .foregroundColor(Color.primaryText)
-                    .padding(.leading, 10)
-                
-                Spacer()
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        isPresented = false
+        ZStack {
+            AppBackGroundView(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.35,shadow: true)
+            VStack(spacing: 15) {
+                HStack {
+                    Spacer()
+                    Text(statsString.scanningStats)
+                        .font(.verlagBoldAdaptive(size: 30))
+                        .foregroundColor(Color.primaryText)
+                        .padding(.leading, 10)
+                    
+                    Spacer()
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isPresented = false
+                        }
+                    }) {
+                        Image(StringConstants.DRTImages.crossImage)
+                            .resizable()
+                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
+                            .padding(.bottom)
                     }
-                }) {
-                    Image(StringConstants.DRTImages.crossImage)
-                        .resizable()
-                        .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                        .background(Color.clear)
-                        .contentShape(Rectangle())
-                        .padding(.bottom)
+                }
+                .padding(.top,38)
+                VStack {
+                    Spacer()
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .tint(Color.neutralText)
+                    } else if let stats = viewModel.stats {
+                        statsRow(title: statsString.totalSeats, value: stats.totalSeats)
+                        statsRow(title: statsString.totalScannableSeats, value: stats.seatsScannable)
+                        statsRow(title: statsString.totalScannedSeats, value: stats.seatsScannedTotal)
+                        statsRow(title: statsString.ticketsScannedByDevice, value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
+                    }
+                    Spacer()
+                }
+                .clipped()
+                .frame(height: UIScreen.main.bounds.height * 0.22)
+            }
+            .padding(15)
+            .onAppear {
+                Task {
+                    await viewModel.fetchStats()
+                    UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
                 }
             }
-            .padding(.top,38)
-            VStack {
-                Spacer()
-                if viewModel.isLoading {
-                    ProgressView()
-                        .tint(Color.neutralText)
-                } else if let stats = viewModel.stats {
-                    statsRow(title: statsString.totalSeats, value: stats.totalSeats)
-                    statsRow(title: statsString.totalScannableSeats, value: stats.seatsScannable)
-                    statsRow(title: statsString.totalScannedSeats, value: stats.seatsScannedTotal)
-                    statsRow(title: statsString.ticketsScannedByDevice, value: isOffline ? deviceScanCount : stats.seatsScannedByDevice)
-                } 
-                Spacer()
-            }
-            .clipped()
-            .frame(height: UIScreen.main.bounds.height * 0.22)
         }
-        .padding(15)
-        .background(Color.secondaryBg)
+        .frame(width: UIScreen.main.bounds.width,height:UIScreen.main.bounds.height * 0.35)
         .edgesIgnoringSafeArea(.all)
-        .onAppear {
-            Task {
-                await viewModel.fetchStats()
-                UserDefaults.standard.set(Date(), forKey: "lastSkinUpdate")
-            }
-        }
     }
     
     @ViewBuilder

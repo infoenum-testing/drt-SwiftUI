@@ -10,12 +10,11 @@ import UIKit
 import Vision
 import SwiftUI
 
-// ScannerViewController handles camera setup, scanning, flash control, and barcode detection
 class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     var captureSession: AVCaptureSession?
     var previewLayer: AVCaptureVideoPreviewLayer?
-    var onScan: ((String) -> Void)? // Callback when a scan is successful
+    var onScan: ((String) -> Void)?
     var isScanningBinding: Binding<Bool>?
     var flashControlHandler: ((Bool) -> Void)?
     private var hasCheckedPermissions = false
@@ -30,23 +29,21 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     private var boundingBoxLayer = CAShapeLayer()
     private var flashAutoOffTimer: Timer?
     private var isFlashOn = false
-    private var lastScanTime: Date = .distantPast
     private var scanningWatchdogTimer: Timer?
 
+    private var lastProcessedFrameTime: Date = .distantPast
+    private let frameProcessingInterval: TimeInterval = 0.2 // throttle frames
 
-    // Called after the controller's view is loaded into memory
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAutoFlash), name: .enableAutoFlash, object: nil)
     }
 
-    // Adjusts the preview layer's frame when the view's layout changes
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.bounds
     }
-    
-    // Checks camera permissions when the view appears
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -60,6 +57,8 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     // Cleans up observers when the controller is deallocated
     deinit {
         scanningWatchdogTimer?.invalidate()
+        flashAutoOffTimer?.invalidate()
+        scheduledFlashWorkItem?.cancel()
         NotificationCenter.default.removeObserver(self)
         print("🗑️ ScannerViewController deinitialized")
     }
@@ -151,9 +150,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         do {
             let input = try AVCaptureDeviceInput(device: videoCaptureDevice)
-            if session.canAddInput(input) {
-                session.addInput(input)
-            }
+            if session.canAddInput(input) { session.addInput(input) }
         } catch {
             print("❌ Error setting up camera input: \(error)")
             return
@@ -162,10 +159,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         let output = AVCaptureVideoDataOutput()
         let outputQueue = DispatchQueue(label: "CameraSampleBufferQueue")
         output.setSampleBufferDelegate(self, queue: outputQueue)
-
-        if session.canAddOutput(output) {
-            session.addOutput(output)
-        }
+        if session.canAddOutput(output) { session.addOutput(output) }
 
         previewLayer = AVCaptureVideoPreviewLayer(session: session)
         previewLayer?.videoGravity = .resizeAspectFill
@@ -174,7 +168,6 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
             view.layer.addSublayer(previewLayer)
         }
 
-        // Setup red bounding box layer
         boundingBoxLayer.strokeColor = UIColor.red.cgColor
         boundingBoxLayer.lineWidth = 2
         boundingBoxLayer.fillColor = UIColor.clear.cgColor
@@ -183,70 +176,49 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         captureSession = session
         DispatchQueue.global(qos: .userInitiated).async {
-            let isRunning = self.captureSession?.isRunning ?? false
-            if !isRunning {
-                session.startRunning()
-            }
+            if !(self.captureSession?.isRunning ?? false) { session.startRunning() }
             DispatchQueue.main.async {
                 self.isScanning = true
-                self.onCameraReady?() // Notify SwiftUI to start animation
+                self.onCameraReady?()
             }
         }
     }
 
     // MARK: - Flash Control
 
-    // Handles auto flash notification
     @objc private func handleAutoFlash() {
-        print("⚡ Auto flash triggered")
         turnFlashOn()
     }
 
-    // Turns the camera flash on
     func turnFlashOn() {
-        guard !isFlashOn,
-              let device = AVCaptureDevice.default(for: .video),
-              device.hasTorch else { return }
-
+        guard !isFlashOn, let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
         DispatchQueue.main.async {
             do {
                 try device.lockForConfiguration()
                 try device.setTorchModeOn(level: 1.0)
                 device.unlockForConfiguration()
                 self.isFlashOn = true
-                print("💡 Flash turned ON")
                 self.startFlashAutoOffTimer()
-            } catch {
-                print("⚠️ Flash On Error: \(error)")
-            }
+            } catch { print("⚠️ Flash On Error: \(error)") }
         }
     }
 
-    // Turns the camera flash off
     func turnFlashOff() {
-        guard isFlashOn,
-              let device = AVCaptureDevice.default(for: .video),
-              device.hasTorch else { return }
-
+        guard isFlashOn, let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
         DispatchQueue.main.async {
             do {
                 try device.lockForConfiguration()
                 device.torchMode = .off
                 device.unlockForConfiguration()
                 self.isFlashOn = false
-                print("💡 Flash turned OFF")
                 self.flashAutoOffTimer?.invalidate()
                 self.flashAutoOffTimer = nil
-            } catch {
-                print("⚠️ Flash Off Error: \(error)")
-            }
+            } catch { print("⚠️ Flash Off Error: \(error)") }
         }
     }
 
-    // Starts a timer to automatically turn off the flash after 5 seconds
     private func startFlashAutoOffTimer() {
         flashAutoOffTimer?.invalidate()
-
         flashAutoOffTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
             self?.turnFlashOff()
         }
@@ -260,20 +232,11 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-            if !(self.captureSession?.isRunning ?? false)  {
-                self.captureSession?.startRunning()
-            }
+            if !(self.captureSession?.isRunning ?? false) { self.captureSession?.startRunning() }
             print("▶️ Capture session started")
-
-            if self.autoEnableFlashTimeout,
-               AVCaptureDevice.default(for: .video)?.hasTorch == true {
-
+            if self.autoEnableFlashTimeout, AVCaptureDevice.default(for: .video)?.hasTorch == true {
                 self.scheduledFlashWorkItem?.cancel()
-
-                let workItem = DispatchWorkItem { [weak self] in
-                    self?.turnFlashOn()
-                }
-
+                let workItem = DispatchWorkItem { [weak self] in self?.turnFlashOn() }
                 self.scheduledFlashWorkItem = workItem
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: workItem)
             }
@@ -282,25 +245,20 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // Stops the scanning session
     func stopScanning() {
-        if captureSession?.isRunning == true {
-            captureSession?.stopRunning()
-            print("🛑 Capture session stopped")
-            isScanning = false
-            turnFlashOff()
-        }
+          if captureSession?.isRunning == true {
+              captureSession?.stopRunning()
+              isScanning = false
+              turnFlashOff()
+              print("🛑 Capture session stopped")
+          }
+          scheduledFlashWorkItem?.cancel()
+          scheduledFlashWorkItem = nil
+      }
 
-        scheduledFlashWorkItem?.cancel()
-        scheduledFlashWorkItem = nil
-    }
-
-    // Enables or disables scanning
-    func enableScanning(_ enable: Bool) {
-        isScanningEnabled = enable
-    }
+    func enableScanning(_ enable: Bool) { isScanningEnabled = enable }
 
     // MARK: - Bounding Box Drawing
 
-    // Draws a bounding box around the detected barcode
     private func drawBoundingBox(for observation: VNBarcodeObservation) {
         guard let previewLayer = self.previewLayer else { return }
 
@@ -323,15 +281,13 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     // MARK: - Barcode Detection
 
-    // Handles the output from the camera and processes barcode detection
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard isScanningBinding?.wrappedValue ?? true else { return }
-        guard !didJustScan else { return }
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-
         let now = Date()
-        guard now.timeIntervalSince(lastScanTime) > 0.5 else { return }
-        lastScanTime = now
+        guard now.timeIntervalSince(lastProcessedFrameTime) > frameProcessingInterval else { return }
+        lastProcessedFrameTime = now
+
+        guard isScanningBinding?.wrappedValue ?? true, !didJustScan,
+              let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         let request = VNDetectBarcodesRequest { request, error in
             guard error == nil,
@@ -340,19 +296,14 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
                   let payload = bestResult.payloadStringValue else { return }
 
             DispatchQueue.main.async {
-                // Convert bounding box to preview coordinates
                 guard let previewLayer = self.previewLayer else { return }
                 var rect = bestResult.boundingBox
                 rect.origin.y = 1 - rect.origin.y - rect.size.height
                 let convertedRect = previewLayer.layerRectConverted(fromMetadataOutputRect: rect)
 
-                // ✅ Only accept if inside the visible preview
                 if self.view.bounds.contains(convertedRect) {
                     self.drawBoundingBox(for: bestResult)
-
-                    if self.autoEnableFlashTimeout {
-                        self.turnFlashOn()
-                    }
+                    if self.autoEnableFlashTimeout { self.turnFlashOn() }
 
                     self.didJustScan = true
                     self.isScanningBinding?.wrappedValue = false
@@ -372,9 +323,6 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
     }
 }
 
-// MARK: - Notification Extension
-
-// Extension to define custom notification names
 extension Notification.Name {
     static let enableAutoFlash = Notification.Name("enableAutoFlash")
 }

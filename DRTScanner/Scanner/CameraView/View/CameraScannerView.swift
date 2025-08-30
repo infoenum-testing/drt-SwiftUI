@@ -54,7 +54,7 @@ struct CameraScannerView: UIViewControllerRepresentable, Equatable {
     static func dismantleUIViewController(_ uiViewController: ScannerViewController, coordinator: ()) {
         uiViewController.isStopSessionByME = true
         if uiViewController.captureSession?.isRunning ?? false {
-            uiViewController.captureSession?.stopRunning()
+            uiViewController.stopScanning()
         }
     }
 }

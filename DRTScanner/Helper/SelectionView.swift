@@ -47,6 +47,8 @@ struct SelectionView: View {
             case 2:
                 CustomsText(title: StringManager.shared.strings.settings.timerInstructions, textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
                     .padding([.top, .horizontal])
+                    .frame(width: UIScreen.main.bounds.width - 100)
+                   
 
             case 3:
                 CustomsText(title: StringManager.shared.strings.settings.duplicateInstructions, textFont: .verlagBookAdaptive(size: 18), foregroundColour: Color.primaryText, alignment: .center)
@@ -79,7 +81,7 @@ struct SelectionView: View {
                 Button(action: {
                     selectedIndex = nil
                 }) {
-                    CustomsText(title: StringManager.shared.strings.dialogLogout.cancel, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
+                    CustomsText(title: StringManager.shared.strings.dialogLogout.cancel, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .secondaryText)
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -91,7 +93,7 @@ struct SelectionView: View {
                     selectedIndex = nil
                 }) {
                   
-                    CustomsText(title: StringManager.shared.strings.settings.save, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
+                    CustomsText(title: StringManager.shared.strings.settings.save, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .secondaryText)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.clear)
@@ -99,7 +101,7 @@ struct SelectionView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.secondaryBg)
+        .background(Color.primaryBg)
         .cornerRadius(10)
         .padding()
     }
