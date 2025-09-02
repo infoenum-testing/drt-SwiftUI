@@ -4,37 +4,47 @@
 //
 //  Created by IE15 on 17/07/25.
 //
+
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct AppLogoView: View {
-    let width:CGFloat
-    let height:CGFloat
-    @State private var Loading:Bool = true
+    let width: CGFloat
+    let height: CGFloat
+    @State private var shouldShowLogo: Bool = true
     @EnvironmentObject var stringManager: StringManager
+    
     var body: some View {
         ZStack {
-
-                if let url = URL(string: stringManager.strings.appLogoSvg) {
-                  
-                        SVGWebView(url: url, isLoading: $Loading)
-                            .scaledToFill()
-                            .clipped()
-                            .frame(width: width, height: height)
-                    .overlay {
-                        if Loading {
-                            Image(StringConstants.DRTImages.logo)
-                                .resizable()
-                                .scaledToFit()
-                                .clipped()
-                                .frame(width: width, height: height)
-                                .transition(.opacity)
-                            .animation(.easeInOut(duration: 0.3), value: Loading)}
+            if let url = URL(string: stringManager.strings.appLogoSvg) {
+                WebImage(url: url, options: [.retryFailed])
+                    .onSuccess { _, _, _ in
+                        DispatchQueue.main.async {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                shouldShowLogo = false
+                            }
+                        }
                     }
-                }
+                    .onFailure { error in
+                        print("⚠️ Logo load failed: \(error.localizedDescription)")
+                     
+                    }
+                    .resizable()
+                    .scaledToFit()
+                    .clipped()
+                    .frame(width: width, height: height)
+            }
+            
+            if shouldShowLogo {
+                Image(StringConstants.DRTImages.logo)
+                    .resizable()
+                    .scaledToFit()
+                    .clipped()
+                    .frame(width: width, height: height)
+                    .transition(.opacity)
+            }
         }
-        .clipped()
         .frame(width: width, height: height)
-        .transition(.opacity)
-        .animation(.easeInOut(duration: 0.3), value: Loading)
+        .animation(.easeInOut(duration: 0.3), value: shouldShowLogo)
     }
 }

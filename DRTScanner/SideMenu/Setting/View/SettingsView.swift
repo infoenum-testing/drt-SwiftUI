@@ -41,7 +41,7 @@ struct SettingsView: View {
                     }
                     .padding(.top, 20)
                 }
-                .background(Color.neutralBg)
+                .background(Color.primaryBg)
                 .padding(.vertical)
                 .padding(.leading)
                 
@@ -54,13 +54,13 @@ struct SettingsView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.neutralBg)
+                .background(Color.primaryBg)
             }
             .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
-                .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
-                .background(Color.neutralBg)
-                .padding(.top, -30)
+            .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
+            .background(Color.primaryBg)
+            .padding(.top, -30)
             // Overlay for time picker modal
             ZStack {
                 Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
@@ -85,38 +85,41 @@ struct SettingsView: View {
     // Section containing all setting items
     private var settingsSection: some View {
         ForEach(Array(settingItems.enumerated()), id: \.element.title) { index, setting in
-            HStack {
-                // Setting title
-                Text(setting.title)
-                    .foregroundColor(Color.primaryText)
-                    .font(.verlagBoldAdaptive(size: 14))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Spacer()
-                
-                // Toggle for boolean settings, button for timer settings
-                if let toggleBinding = setting.toggleBinding {
-                    Toggle("", isOn: toggleBinding)
-                        .labelsHidden()
+            VStack {
+                HStack {
+                    // Setting title
+                    Text(setting.title)
+                        .foregroundColor(Color.primaryText)
+                        .font(.verlagBoldAdaptive(size: 14))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Spacer()
+                    
+                    // Toggle for boolean settings, button for timer settings
+                    if let toggleBinding = setting.toggleBinding {
+                        UIKitToggle(isOn: toggleBinding, onColor: UIColor(.previous), offColor: UIColor(.neutralText)) {_ in
+                            toggleBinding.wrappedValue.toggle()
+                        }
                         .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.5 : 1.0)
                         .padding(3)
-                        .contentShape(Rectangle())
                         .onTapGesture {
                             toggleBinding.wrappedValue.toggle()
                         }
-                } else {
-                    Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
-                        Text(setting.value ?? "")
-                            .foregroundColor(Color.primaryText)
-                            .font(.verlagBoldAdaptive(size: 16))
-                            .padding(8)
+                    } else {
+                        Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
+                            Text(setting.value ?? "")
+                                .foregroundColor(Color.primaryText)
+                                .font(.verlagBoldAdaptive(size: 16))
+                                .padding(8)
+                        }
                     }
                 }
+                .padding()
+                .frame(maxWidth: .infinity, minHeight: 50.adaptiveForIpad)
+                .background(Color.primaryBg)
+                .padding(.bottom, 7.adaptiveForIpad)
             }
-            .padding()
-            .frame(maxWidth: .infinity, minHeight: 50.adaptiveForIpad)
-            .background(Color.primaryBg)
-            .padding(.bottom, 7)
+            .background(Color.neutralBg)
         }
     }
     

@@ -10,32 +10,37 @@ import SwiftUI
 struct SideMenuCellView: View {
     let imageName: String
     var title: String
+    var showDivider: Bool = true
     var action: (() -> Void)? = nil
     
     var body: some View {
-        HStack(spacing: 10) {
-            if imageName == "settingweb" {
-                Image(imageName)
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundColor(.primaryText)
-                    .frame(width: 30.adaptiveForIpad, height: 20.adaptiveForIpad)
-            } else {
-                Image(imageName)
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundColor(.primaryText)
-                    .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
+        VStack {
+            HStack(spacing: 10) {
+                if imageName == "settingweb" {
+                    Image(imageName)
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primaryText)
+                        .frame(width: 30.adaptiveForIpad, height: 20.adaptiveForIpad)
+                } else {
+                    Image(imageName)
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(.primaryText)
+                        .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
+                }
+                CustomsText(title: title, textFont: .verlagBoldAdaptive(size: 16), foregroundColour: .primaryText)
+                
+                Spacer()
             }
-            CustomsText(title: title, textFont: .verlagBoldAdaptive(size: 16), foregroundColour: .primaryText)
-
-            Spacer()
+            .padding(UIDevice.current.userInterfaceIdiom == .pad ? 30 : 20)
+            .frame(maxWidth: .infinity)
+            .background(Color.primaryBg)
+            .onTapGesture {
+                action?()
+            }
+            .padding(.bottom, 7.adaptiveForIpad)
         }
-        .padding(UIDevice.current.userInterfaceIdiom == .pad ? 30 : 20)
-        .frame(maxWidth: .infinity)
-        .background(Color.primaryBg)
-        .onTapGesture {
-            action?()
-        }
+        .background(showDivider ? Color.neutralBg : Color.clear)
     }
 }

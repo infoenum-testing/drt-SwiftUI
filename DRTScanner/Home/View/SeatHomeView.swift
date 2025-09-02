@@ -333,13 +333,13 @@ struct SeatHomeView: View {
         .onChange(of: isSideMenuPresented) { newValue in
             if newValue {
                 isScanningCell = false
-                scnanerReset.shouldResetScanner = false
-                if scannerController.captureSession?.isRunning ?? false {
-                    scannerController.stopScanning()
-                }
+//                scnanerReset.shouldResetScanner = false
+//                if scannerController.captureSession?.isRunning ?? false {
+//                    scannerController.stopScanning()
+//                }
             } else {
                 isScanningCell = true
-                scnanerReset.shouldResetScanner = true
+//                scnanerReset.shouldResetScanner = true
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {

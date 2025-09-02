@@ -7,6 +7,8 @@
 
 import SwiftUI
 import IQAPIClient
+import SDWebImage
+import SDWebImageSVGCoder
 
 @main
 struct DRTScannerApp: App {
@@ -17,6 +19,11 @@ struct DRTScannerApp: App {
     @StateObject var network = NetworkMonitor.shared
     @StateObject private var inactivityManager = InactivityManager.shared
     @State private var sizeData: SizeData = .empty
+    
+    init() {
+        let svgCoder = SDImageSVGCoder.shared
+        SDImageCodersManager.shared.addCoder(svgCoder)
+    }
     
     var body: some Scene {
         WindowGroup {

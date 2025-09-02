@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D059AA92E65E05C0082B6B7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AA82E65E05C0082B6B7 /* SDWebImageSwiftUI */; };
+		6D059AAC2E65E4660082B6B7 /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AAB2E65E4660082B6B7 /* SDWebImageSVGCoder */; };
+		6DAF005C2E66B0A4008F7449 /* UIKitToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAF005B2E66B0A4008F7449 /* UIKitToggle.swift */; };
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
 		E94FBD252E49E60C00712245 /* BlinkingCodeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */; };
 		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
@@ -95,7 +98,6 @@
 		E997FCE92E29486F00D9EC06 /* Merchandise.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC0F2E29486F00D9EC06 /* Merchandise.swift */; };
 		E997FCEA2E29486F00D9EC06 /* MerchandiseOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC102E29486F00D9EC06 /* MerchandiseOrder.swift */; };
 		E997FCEB2E29486F00D9EC06 /* QrMerchandise.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC112E29486F00D9EC06 /* QrMerchandise.swift */; };
-		E997FCEC2E29486F00D9EC06 /* SVGWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC132E29486F00D9EC06 /* SVGWebView.swift */; };
 		E997FCED2E29486F00D9EC06 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC162E29486F00D9EC06 /* APIError.swift */; };
 		E997FCEE2E29486F00D9EC06 /* OfflineDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC172E29486F00D9EC06 /* OfflineDataModel.swift */; };
 		E997FCEF2E29486F00D9EC06 /* OrdersOfflineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E997FC182E29486F00D9EC06 /* OrdersOfflineModel.swift */; };
@@ -181,6 +183,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6DAF005B2E66B0A4008F7449 /* UIKitToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitToggle.swift; sourceTree = "<group>"; };
 		98E3FC742D539E9300DB8EF6 /* DRTScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRTScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFCA3F50E14FFB8DB1A2F950 /* Pods-DRTScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.debug.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DRTScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -264,7 +267,6 @@
 		E997FC0F2E29486F00D9EC06 /* Merchandise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Merchandise.swift; sourceTree = "<group>"; };
 		E997FC102E29486F00D9EC06 /* MerchandiseOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchandiseOrder.swift; sourceTree = "<group>"; };
 		E997FC112E29486F00D9EC06 /* QrMerchandise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrMerchandise.swift; sourceTree = "<group>"; };
-		E997FC132E29486F00D9EC06 /* SVGWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGWebView.swift; sourceTree = "<group>"; };
 		E997FC162E29486F00D9EC06 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		E997FC172E29486F00D9EC06 /* OfflineDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineDataModel.swift; sourceTree = "<group>"; };
 		E997FC182E29486F00D9EC06 /* OrdersOfflineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersOfflineModel.swift; sourceTree = "<group>"; };
@@ -364,6 +366,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D059AAC2E65E4660082B6B7 /* SDWebImageSVGCoder in Frameworks */,
+				6D059AA92E65E05C0082B6B7 /* SDWebImageSwiftUI in Frameworks */,
 				A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -788,7 +792,6 @@
 		E997FC142E29486F00D9EC06 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E997FC132E29486F00D9EC06 /* SVGWebView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1291,6 +1294,7 @@
 		E9C2EB3F2E44869000C3468C /* HelperView */ = {
 			isa = PBXGroup;
 			children = (
+				6DAF005B2E66B0A4008F7449 /* UIKitToggle.swift */,
 				E9C2EB422E4486C100C3468C /* CustomsText.swift */,
 			);
 			path = HelperView;
@@ -1343,6 +1347,10 @@
 				Base,
 			);
 			mainGroup = 98E3FC6B2D539E9300DB8EF6;
+			packageReferences = (
+				6D059AA72E65E05C0082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				6D059AAA2E65E4660082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */,
+			);
 			productRefGroup = 98E3FC752D539E9300DB8EF6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1502,7 +1510,6 @@
 				E997FCEA2E29486F00D9EC06 /* MerchandiseOrder.swift in Sources */,
 				E997FCEB2E29486F00D9EC06 /* QrMerchandise.swift in Sources */,
 				E9D054712E2A6E48005C7565 /* OfflineStrings.swift in Sources */,
-				E997FCEC2E29486F00D9EC06 /* SVGWebView.swift in Sources */,
 				E997FCED2E29486F00D9EC06 /* APIError.swift in Sources */,
 				E997FCEE2E29486F00D9EC06 /* OfflineDataModel.swift in Sources */,
 				E997FCEF2E29486F00D9EC06 /* OrdersOfflineModel.swift in Sources */,
@@ -1568,6 +1575,7 @@
 				E997FD252E29486F00D9EC06 /* SettingItem.swift in Sources */,
 				E997FD262E29486F00D9EC06 /* SettingsView.swift in Sources */,
 				E997FD272E29486F00D9EC06 /* SettingsViewModel.swift in Sources */,
+				6DAF005C2E66B0A4008F7449 /* UIKitToggle.swift in Sources */,
 				E997FD282E29486F00D9EC06 /* SideMenuCellView.swift in Sources */,
 				E997FD292E29486F00D9EC06 /* SideMenuView.swift in Sources */,
 				E997FD2A2E29486F00D9EC06 /* SideMenuViewModifier.swift in Sources */,
@@ -1811,6 +1819,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6D059AA72E65E05C0082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.3;
+			};
+		};
+		6D059AAA2E65E4660082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSVGCoder.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6D059AA82E65E05C0082B6B7 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D059AA72E65E05C0082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		6D059AAB2E65E4660082B6B7 /* SDWebImageSVGCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D059AAA2E65E4660082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */;
+			productName = SDWebImageSVGCoder;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		E997FC922E29486F00D9EC06 /* DRT_Scanner.xcdatamodeld */ = {

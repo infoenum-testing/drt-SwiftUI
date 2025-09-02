@@ -37,112 +37,122 @@ struct SideMenuView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack {
-                    VStack(spacing: 5) {
-                        // Close button
-                        HStack(alignment: .bottom) {
-                            let modeText = stringManager.strings.settings.mode
-                            let formattedString = String(format: modeText, seatTMerchedext, onlineOfflineText)
-                            CustomsText(title: formattedString, textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText)
-                            .padding(.leading)
-                            
-                            Spacer()
-                            Button(action: {
-                                withAnimation(.easeInOut) {
-                                    isPresented = false
+                    HStack {
+                        Spacer()
+                        ZStack(alignment: .top) {
+                            VStack(spacing: 5) {
+                                // Close button
+                                HStack(alignment: .bottom) {
+                                    let modeText = stringManager.strings.settings.mode
+                                    let formattedString = String(format: modeText, seatTMerchedext, onlineOfflineText)
+                                    CustomsText(title: formattedString, textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText)
+                                        .padding(.leading)
+                                    
+                                    Spacer()
+                                    Button(action: {
+                                        withAnimation(.easeInOut) {
+                                            isPresented = false
+                                        }
+                                    }) {
+                                        Image(StringConstants.DRTImages.crossImage)
+                                            .resizable()
+                                            .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
+                                            .background(Color.clear)
+                                            .contentShape(Rectangle())
+                                            .padding()
+                                    }
+                                    
                                 }
-                            }) {
-                                Image(StringConstants.DRTImages.crossImage)
-                                    .resizable()
-                                    .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
-                                    .background(Color.clear)
-                                    .contentShape(Rectangle())
-                                    .padding()
-                            }
-                            .padding(.top, 38)
-                        }
-                
-                    
-                        // Merchandise/Ticket switch option
-                        if isMerchandise {
-                            SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanTickets) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    isSwitchingToMerchandise = !isMerchandise
-                                    showConfirmationAlert = true
+                                .padding(.top, 38)
+                                // Merchandise/Ticket switch option
+                                if isMerchandise {
+                                    SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanTickets) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            isSwitchingToMerchandise = !isMerchandise
+                                            showConfirmationAlert = true
+                                        }
+                                    }
+                                } else {
+                                    SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanMerch) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            isSwitchingToMerchandise = !isMerchandise
+                                            showConfirmationAlert = true
+                                        }
+                                    }
                                 }
-                            }
-                        } else {
-                            SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanMerch) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    isSwitchingToMerchandise = !isMerchandise
-                                    showConfirmationAlert = true
+                                
+                                // Settings option
+                                SideMenuCellView(imageName: "setting", title: menuStrings.settings) {
+                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                        showSettingsView = true
+                                    }
                                 }
-                            }
-                        }
-                        
-                        // Settings option
-                        SideMenuCellView(imageName: "setting", title: menuStrings.settings) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showSettingsView = true
-                            }
-                        }
-                        
-                        // Scanning Stats option (only if seat mode)
-                        if !isMerchandise {
-                            SideMenuCellView(imageName: "statics", title: menuStrings.scanningStats) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    showScanningStatsView = true
+                                
+                                // Scanning Stats option (only if seat mode)
+                                if !isMerchandise {
+                                    SideMenuCellView(imageName: "statics", title: menuStrings.scanningStats) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            showScanningStatsView = true
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                        // Go Online/Offline option
-                        if isOfflineMode {
-                            SideMenuCellView(imageName: "online", title: menuStrings.goOnline) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    showGoOnlineView = true
+                                // Go Online/Offline option
+                                if isOfflineMode {
+                                    SideMenuCellView(imageName: "online", title: menuStrings.goOnline) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            showGoOnlineView = true
+                                        }
+                                    }
+                                    
+                                } else {
+                                    SideMenuCellView(imageName: "offline", title: menuStrings.goOffline) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            showGoOfflineView = true
+                                        }
+                                    }
                                 }
-                            }
-                            
-                        } else {
-                            SideMenuCellView(imageName: "offline", title: menuStrings.goOffline) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    showGoOfflineView = true
+                                
+                                // Logout option
+                                SideMenuCellView(imageName: "logout", title: menuStrings.logOut) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showAlert = true
+                                    }
                                 }
+                                // About option
+                                SideMenuCellView(imageName: "information", title: menuStrings.about) {
+                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                        showAboutView = true
+                                    }
+                                }
+                                // DRT Website option
+                                SideMenuCellView(imageName: "settingweb", title: menuStrings.website, showDivider: false) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showWebsiteAlert = true
+                                    }
+                                }
+                                // Alert for opening website
+                                .alert(isPresented: $showWebsiteAlert) {
+                                    Alert(
+                                        title: Text(stringManager.strings.dialogOpenBrowser.description),
+                                        message: Text(""),
+                                        primaryButton: .default(Text( stringManager.strings.dialogOpenBrowser.continueField)) {
+                                            openDRTWebsite()
+                                        },
+                                        secondaryButton: .cancel(Text(stringManager.strings.dialogOpenBrowser.cancel))
+                                    )
+                                }
+                                
                             }
-                        }
-                        
-                        // Logout option
-                        SideMenuCellView(imageName: "logout", title: menuStrings.logOut) {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showAlert = true
-                            }
-                        }
-                        // About option
-                        SideMenuCellView(imageName: "information", title: menuStrings.about) {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                showAboutView = true
-                            }
-                        }
-                        // DRT Website option
-                        SideMenuCellView(imageName: "settingweb", title: menuStrings.website) {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showWebsiteAlert = true
-                            }
-                        }
-                        // Alert for opening website
-                        .alert(isPresented: $showWebsiteAlert) {
-                            Alert(
-                                title: Text(stringManager.strings.dialogOpenBrowser.description),
-                                message: Text(""),
-                                primaryButton: .default(Text( stringManager.strings.dialogOpenBrowser.continueField)) {
-                                    openDRTWebsite()
-                                },
-                                secondaryButton: .cancel(Text(stringManager.strings.dialogOpenBrowser.cancel))
+                            .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400))
+                            .background(Color.primaryBg)
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.secondaryText.opacity(0.5), .clear]),
+                                startPoint: .top,
+                                endPoint: .center
                             )
+                            .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400), height: UIScreen.main.bounds.height*0.1)
                         }
-                        
                     }
-                    .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400))
-                    .background(Color.neutralBg)
                     Spacer()
                 }.onAppear {
                     // Set initial merchandise switch state

@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 import IQAPIClient
+import SDWebImageSwiftUI
 
 // MerchandiseOrderCell displays a merchandise order item with scan functionality and status
 struct MerchandiseOrderCell: View {
@@ -32,14 +33,22 @@ struct MerchandiseOrderCell: View {
                 if merchandiseOrder.iconSrc.lowercased().hasSuffix(".svg") {
                     if let url = URL(string: merchandiseOrder.iconSrc) {
                         ZStack {
-                            SVGWebView(url: url, isLoading: $isLoadingSvgImage)
-                                .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
-                                .onAppear {
-                                    isLoadingSvgImage = true
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        isLoadingSvgImage = false
+                            WebImage(url: url)
+                                .resizable()
+                                .onSuccess { _, _, _ in
+                                    DispatchQueue.main.async {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            isLoadingSvgImage = false
+                                        }
                                     }
                                 }
+                                .onFailure { error in
+                                    print("⚠️ Logo load failed: \(error.localizedDescription)")
+                                }
+                                .onAppear {
+                                    isLoadingSvgImage = true
+                                }
+                                .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                             
                             if isLoadingSvgImage {
                                 ProgressView()

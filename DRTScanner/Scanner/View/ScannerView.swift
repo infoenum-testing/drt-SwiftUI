@@ -156,7 +156,7 @@ struct ScannerView: View, Equatable {
                         }
                         // Bind scanning state
                     )
-//                    .id(isSideMenuPresented)
+                    .id(isSideMenuPresented)
                 }
                 .padding(.bottom,-30)
                 .frame(height: isFullScreen ? UIScreen.main.bounds.height+10 : scanViewHeight.adaptiveForIpadScan)
@@ -1046,6 +1046,10 @@ struct ScannerView: View, Equatable {
 
         // Create new dismiss task
         let delay: Double = isInvaildMode ? 20 : 5
+        if isFullScreen && isInvaildMode {
+            stopScanner()
+            isFullScreen.toggle()
+        }
         let workItem = DispatchWorkItem {
             withAnimation {
                 scanResultEnum = .none

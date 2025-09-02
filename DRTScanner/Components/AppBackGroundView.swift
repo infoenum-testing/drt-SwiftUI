@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct AppBackGroundView: View {
     var width:     CGFloat? = nil
@@ -13,60 +14,47 @@ struct AppBackGroundView: View {
     var maxWidth:  CGFloat? = nil
     var maxHeight: CGFloat? = nil
     var shadow: Bool = false
+    @State private var shouldShowPlaceHolder: Bool = true
     @EnvironmentObject var stringManager: StringManager
-    @State private var Loading:Bool = true
+
     var body: some View {
         ZStack(alignment: .top) {
-                if let url = URL(string: stringManager.strings.backImageSvg) {
-                    SVGWebView(url: url, isLoading: $Loading)
-                        .scaledToFill()
-                        .clipped()
-                        .frame(width:  width,
-                               height: height)
-                        .frame(maxWidth:  maxWidth,
-                               maxHeight: maxHeight)
-                    
-                        .overlay {
-                            if Loading {
-                                Image(StringConstants.DRTImages.backgound)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipped()
-                                    .frame(width:  width,
-                                           height: height)
-                                    .frame(maxWidth:  maxWidth,
-                                           maxHeight: maxHeight)
-                                    .transition(.opacity)
-                                    .animation(.easeInOut(duration: 0.3), value: Loading)
-                            }
-                            if shadow {
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
-                                    startPoint: .top,
-                                    endPoint: .center
-                                )
-                            }
+            if let url = URL(string: stringManager.strings.backImageSvg) {
+                WebImage(url: url)
+                    // attach callbacks **before** other modifiers
+                    .onSuccess { _, _, _ in
+                        DispatchQueue.main.async {
+                            shouldShowPlaceHolder = false
                         }
-                        .transition(.opacity)
-                        .animation(.easeInOut(duration: 0.3), value: Loading)
-                        .background {
+                    }
+                    .onFailure { error in
+                        print("Failed to load background: \(error.localizedDescription)")
+                    }
+                    .resizable()
+                    .scaledToFill()
+                    .clipped()
+                    .frame(width: width, height: height)
+                    .frame(maxWidth: maxWidth, maxHeight: maxHeight)
+                    .overlay {
+                        if shouldShowPlaceHolder {
                             Image(StringConstants.DRTImages.backgound)
                                 .resizable()
                                 .scaledToFill()
                                 .clipped()
-                                .frame(width:  width,
-                                       height: height)
-                                .frame(maxWidth:  maxWidth,
-                                       maxHeight: maxHeight)
                         }
-                }
+                        if shadow {
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
+                                startPoint: .top,
+                                endPoint: .center
+                            )
+                        }
+                    }
+                    .transition(.opacity)
+            }
         }
         .clipped()
-        .frame(width:  width,
-               height: height)
-        .frame(maxWidth:  maxWidth,
-               maxHeight: maxHeight)
+        .frame(width: width, height: height)
+        .frame(maxWidth: maxWidth, maxHeight: maxHeight)
     }
 }
-
-
