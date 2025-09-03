@@ -22,10 +22,6 @@ class InactivityManager: ObservableObject {
         observeTimeoutChanges()
     }
 
-    func start() {
-        resetTimer()
-    }
-
     func resetTimer() {
         timer?.invalidate()
 
@@ -88,6 +84,6 @@ class InactivityManager: ObservableObject {
     }
 
     @objc private func appDidBecomeActive() {
-        start()
+        resetTimer()
     }
 }

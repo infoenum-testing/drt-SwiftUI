@@ -17,7 +17,7 @@ struct DRTScannerApp: App {
     let persistenceController = PersistenceController.shared
     @StateObject var stringManager = StringManager.shared
     @StateObject var network = NetworkMonitor.shared
-    @StateObject private var inactivityManager = InactivityManager.shared
+    @StateObject var inactivityManager = InactivityManager.shared
     @State private var sizeData: SizeData = .empty
     
     init() {
@@ -42,7 +42,7 @@ struct DRTScannerApp: App {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .detectGlobalTaps(disabled: false)
             .onAppear {
-                InactivityManager.shared.start()
+                InactivityManager.shared.resetTimer()
                 stringManager.loadStrings()
             }
         }

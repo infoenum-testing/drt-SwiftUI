@@ -124,6 +124,7 @@ struct LookupOrderResultView: View {
                                             lookupByOrderResultViewModel: viewModel,
                                             showAlert: $stringManager.isShowAlert
                                         )
+                                      
                                     }
                                 }
                                 .padding(.bottom)

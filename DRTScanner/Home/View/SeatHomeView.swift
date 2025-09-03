@@ -69,6 +69,9 @@ struct SeatHomeView: View {
     @State private var scanResult: ScanResult = .none
     @State private var scannerController: ScannerViewController =  ScannerViewController()
     let controller = ScannerViewController()
+    @State private var countdownTimer: Timer?
+    @State private var dismissWorkItem: DispatchWorkItem?
+
     
     // Computes the dynamic cell height based on device and mode
     private var dynamicCellHeight: CGFloat {
@@ -154,7 +157,9 @@ struct SeatHomeView: View {
                                         scanResultEnum: $scanResult,
                                         showOfflineAlert:  $showOfflineAlert,
                                         isSideMenuPresented: $isSideMenuPresented,
-                                        scannerController: $scannerController)
+                                        scannerController: $scannerController,
+                                        countdownTimer: $countdownTimer,
+                                        dismissWorkItem: $dismissWorkItem)
                             
                             .frame(width: UIScreen.main.bounds.width)
                             .frame(maxHeight: isFullScreen ? .infinity : nil)
@@ -333,13 +338,13 @@ struct SeatHomeView: View {
         .onChange(of: isSideMenuPresented) { newValue in
             if newValue {
                 isScanningCell = false
-//                scnanerReset.shouldResetScanner = false
-//                if scannerController.captureSession?.isRunning ?? false {
-//                    scannerController.stopScanning()
-//                }
+                scnanerReset.shouldResetScanner = false
+                if scannerController.captureSession?.isRunning ?? false {
+                    scannerController.stopScanning()
+                }
             } else {
                 isScanningCell = true
-//                scnanerReset.shouldResetScanner = true
+                scnanerReset.shouldResetScanner = true
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {

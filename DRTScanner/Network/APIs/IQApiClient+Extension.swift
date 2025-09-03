@@ -143,7 +143,7 @@ extension IQAPIClient {
     
     /// Scans merchandise QR codes.
     @discardableResult
-    static func scanProductQrCode(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<[String: Any], Error>) -> Void) -> DataRequest? {
+    static func scanProductQrCode(code: String, qr: [String], completionHandler: @Sendable @escaping (_ result: Swift.Result<MarchedResponse, Error>) -> Void) -> DataRequest? {
         let deviceName = DeviceManager.shared.getDeviceName()
         let path = "https://api.drttix.com/scanner-v3/merch/?c=\(code)&devicename=\(deviceName)"
         let lanCode = StringManager.shared.returnLangCode()

@@ -12,7 +12,6 @@ struct UIKitToggle: UIViewRepresentable {
     @Binding var isOn: Bool
     var onColor: UIColor = .systemGreen
     var offColor: UIColor = .lightGray
-    var onValueChanged: ((Bool) -> Void)
 
     func makeUIView(context: Context) -> UISwitch {
         let uiSwitch = UISwitch()
@@ -46,7 +45,6 @@ struct UIKitToggle: UIViewRepresentable {
         
         @objc func valueChanged(_ sender: UISwitch) {
             parent.isOn = sender.isOn
-            parent.onValueChanged(sender.isOn)
         }
     }
 }

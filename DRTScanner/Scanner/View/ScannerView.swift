@@ -92,8 +92,10 @@ struct ScannerView: View, Equatable {
     @Binding var isSideMenuPresented: Bool
     
     let controller: ScannerViewController
-    @State private var dismissWorkItem: DispatchWorkItem? = nil
+    @Binding var dismissWorkItem: DispatchWorkItem?
     @State private var hasMoveToInactive: Bool = false
+    @Binding var countdownTimer: Timer?
+    
     static func == (lhs: ScannerView, rhs: ScannerView) -> Bool {
         return lhs.controller == rhs.controller
     }
@@ -114,7 +116,9 @@ struct ScannerView: View, Equatable {
          scanResultEnum: Binding<ScanResult>,
          showOfflineAlert: Binding<Bool>,
          isSideMenuPresented: Binding<Bool>,
-         scannerController: Binding<ScannerViewController>) {
+         scannerController: Binding<ScannerViewController>,
+         countdownTimer : Binding<Timer?>,
+         dismissWorkItem: Binding<DispatchWorkItem?>) {
         _linePosition = State(initialValue: 0)
         self._seat = seat
         _scannerLineAnimation = scannerLineAnimation
@@ -132,6 +136,8 @@ struct ScannerView: View, Equatable {
         _scanResultEnum = scanResultEnum
         _isSideMenuPresented = isSideMenuPresented
         _scannerController = scannerController
+        _countdownTimer = countdownTimer
+        _dismissWorkItem = dismissWorkItem
     }
     
     // Main view body for the scanner UI, handles camera, overlays, and user interactions
@@ -290,6 +296,12 @@ struct ScannerView: View, Equatable {
                         // Full screen toggle button
                         Button {
                             withAnimation {
+                                if !isFullScreen {
+//                                    countdownTimer.invalidate()
+                                    
+                                    // Perform the dismiss here
+                                    scanResultEnum = .none
+                                }
                                 resetScanner()
                                 isFullScreen.toggle()
                             }
@@ -935,21 +947,11 @@ struct ScannerView: View, Equatable {
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let responseData):
-                        if let responseDict = responseData as? [String: Any] {
-                            let message = responseDict["message"] as? String ?? ""
-                            let ts: String
-                            if let tsString = responseDict["tsScanned"] as? String {
-                                ts = tsString
-                            } else if let tsString = responseDict["tsScanned"] as? Double {
-                                ts = String(tsString)
-                            } else {
-                                ts = ""
-                            }
-                            
-                            let isValid = responseDict["valid"] as? Bool ?? false
-                            
-                            let name = responseDict["name"] as? String ?? ""
-                            let variantName = responseDict["variantName"] as? String ?? ""
+                        let message = responseData.message
+                        let ts: String = String(responseData.tsScanned)
+                        let isValid = responseData.valid
+                        let name = responseData.name
+                        let variantName = responseData.variantName ?? ""
                             
                             if message.contains("Previously scanned") {
                                 scanResultEnum = .preScannedMerch(orderName: name,
@@ -959,13 +961,12 @@ struct ScannerView: View, Equatable {
                                 dismissPopUp(scannerResult: .previouslyScanned, isInvaildMode: false)
                             } else if isValid {
                                 scanResultEnum = .validMerch(orderName: name, variantName: variantName)
-                                dismissPopUp(scannerResult: .valid, isInvaildMode: true)
+                                dismissPopUp(scannerResult: .valid, isInvaildMode: false)
                             } else {
                                 // ❗ Show error message if valid is false
                                 scanResultEnum = .invalidTicket(message: message)
                                 dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                             }
-                        }
                         
                     case .failure(let error):
                         // ❗ Show error if API call failed entirely
@@ -1038,30 +1039,42 @@ struct ScannerView: View, Equatable {
     }
     //MARK: dismised scaned popup
 
-    func dismissPopUp(scannerResult: ScannerResult, isInvaildMode: Bool) {
+    func dismissPopUp(scannerResult: ScannerResult, isInvaildMode: Bool){
         scannerViewModel.playScanFeedback(scannerResult: scannerResult, haptic: shouldPlayHapticNew)
 
-        // Cancel any existing scheduled dismiss
+        // Cancel any existing timer
+        countdownTimer?.invalidate()
         dismissWorkItem?.cancel()
 
-        // Create new dismiss task
-        let delay: Double = isInvaildMode ? 20 : 5
-        if isFullScreen && isInvaildMode {
-            stopScanner()
-            isFullScreen.toggle()
-        }
+        var remainingTime = isInvaildMode ? 20 : 5
+        print("Starting countdown: \(remainingTime) seconds")
         let workItem = DispatchWorkItem {
-            withAnimation {
-                scanResultEnum = .none
+            if isFullScreen && isInvaildMode {
+                stopScanner()
+                isFullScreen.toggle()
             }
         }
-
         dismissWorkItem = workItem
 
         // Schedule the latest dismiss
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: workItem)
+
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            remainingTime -= 1
+
+            if remainingTime > 0 {
+                print("Remaining: \(remainingTime) seconds")
+            } else {
+                print("Countdown finished!")
+                timer.invalidate()
+
+                // Perform the dismiss here
+                withAnimation {
+                    scanResultEnum = .none
+                }
+            }
+        }
 
         isScanning = false
     }
-    
 }

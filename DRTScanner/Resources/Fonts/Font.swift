@@ -67,7 +67,10 @@ extension UIDevice {
     }
     
     static var isLandscape: Bool {
-        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation.isLandscape ?? false
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+            return false
+        }
+        return scene.interfaceOrientation.isLandscape
     }
     
     static var isNonNotchIphone: Bool {

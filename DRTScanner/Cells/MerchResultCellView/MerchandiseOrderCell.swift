@@ -27,102 +27,107 @@ struct MerchandiseOrderCell: View {
     @Binding var showAlert: Bool
     
     var body: some View {
-        HStack(spacing: 15) {
-            VStack {
-                // Display SVG or image for merchandise icon
-                if merchandiseOrder.iconSrc.lowercased().hasSuffix(".svg") {
-                    if let url = URL(string: merchandiseOrder.iconSrc) {
-                        ZStack {
-                            WebImage(url: url)
-                                .resizable()
-                                .onSuccess { _, _, _ in
-                                    DispatchQueue.main.async {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            isLoadingSvgImage = false
+        VStack {
+            HStack(spacing: 15) {
+                VStack {
+                    // Display SVG or image for merchandise icon
+                    if merchandiseOrder.iconSrc.lowercased().hasSuffix(".svg") {
+                        if let url = URL(string: merchandiseOrder.iconSrc) {
+                            ZStack {
+                                WebImage(url: url)
+                                    .resizable()
+                                    .onSuccess { _, _, _ in
+                                        DispatchQueue.main.async {
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                isLoadingSvgImage = false
+                                            }
                                         }
                                     }
+                                    .onFailure { error in
+                                        print("⚠️ Logo load failed: \(error.localizedDescription)")
+                                    }
+                                    .onAppear {
+                                        isLoadingSvgImage = true
+                                    }
+                                    .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
+                                
+                                if isLoadingSvgImage {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+                                        .transition(.opacity)
                                 }
-                                .onFailure { error in
-                                    print("⚠️ Logo load failed: \(error.localizedDescription)")
-                                }
-                                .onAppear {
-                                    isLoadingSvgImage = true
-                                }
-                                .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
-                            
-                            if isLoadingSvgImage {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                    .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                                    .transition(.opacity)
                             }
+                        } else {
+                            Color.clear.frame(width: 70, height: 70)
                         }
                     } else {
-                        Color.clear.frame(width: 70, height: 70)
-                    }
-                } else {
-                    AsyncImage(url: URL(string: merchandiseOrder.iconSrc)) { phase in
-                        switch phase {
-                        case .success(let image): image.resizable()
-                        case .failure(_): Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red)
-                        default: ProgressView().frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
+                        AsyncImage(url: URL(string: merchandiseOrder.iconSrc)) { phase in
+                            switch phase {
+                            case .success(let image): image.resizable()
+                            case .failure(_): Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red)
+                            default: ProgressView().frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
+                            }
                         }
+                        .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
                     }
-                    .frame(width: 70.adaptiveForIpad, height: 70.adaptiveForIpad)
+                    
+                    // Display quantity
+                    CustomsText(title: "\(merchandiseOrder.qty)", textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText)
+                        .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
+                        .background(Color.secondaryBg)
+                        .clipShape(Circle())
+                        .padding(.top, -20)
+                        .padding(.leading, 20)
                 }
                 
-                // Display quantity
-                CustomsText(title: "\(merchandiseOrder.qty)", textFont: .verlagBookAdaptive(size: 20), foregroundColour: .primaryText)
-                    .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
-                    .background(Color.secondaryBg)
-                    .clipShape(Circle())
-                    .padding(.top, -20)
-                    .padding(.leading, 20)
-            }
-            
-            HStack(alignment: .center, spacing: 5) {
-                // Display merchandise name and variant
-                CustomsText(title: merchandiseOrder.name, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
-                CustomsText(title: merchandiseOrder.variantName, textFont: .verlagBookAdaptive(size: 15), foregroundColour: .neutralText)
+                HStack(alignment: .center, spacing: 5) {
+                    // Display merchandise name and variant
+                    CustomsText(title: merchandiseOrder.name, textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
+                    CustomsText(title: merchandiseOrder.variantName, textFont: .verlagBookAdaptive(size: 15), foregroundColour: .neutralText)
+                    Spacer()
+                }
+                
                 Spacer()
-            }
-            
-            Spacer()
-            
-            // Scan button and status
-            Button(action: {
-                if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
-                    withAnimation {
-                        updateMerchWithScannedQrCode()
+                
+                // Scan button and status
+                Button(action: {
+                    if merchandiseOrder.qty != merchandiseOrder.qtyScanned {
+                        withAnimation {
+                            updateMerchWithScannedQrCode()
+                        }
+                    }
+                }) {
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
+                            .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+                    }
+                    else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {
+                        Image(StringConstants.DRTImages.greenCheckImage)
+                            .resizable()
+                            .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+                            .transition(.scale)
+                    } else {
+                        Image(StringConstants.DRTImages.scanNow)
+                            .resizable()
+                            .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
                     }
                 }
-            }) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                }
-                else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {
-                    Image(StringConstants.DRTImages.greenCheckImage)
-                        .resizable()
-                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                        .transition(.scale)
-                } else {
-                    Image(StringConstants.DRTImages.scanNow)
-                        .resizable()
-                        .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                }
+                .padding(.trailing, 10)
             }
-            .padding(.trailing, 10)
-        }
-        .frame(height: 130.adaptiveForIpad)
-        .onAppear {
-            loadScannedTime()
-            isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned
-        }
-        .onChange(of: merchandiseOrder.qtyScanned) { newValue in
-            print("qtyScanned updated to \(newValue)")
-            isScanned = merchandiseOrder.qty == newValue
+            .frame(height: 130.adaptiveForIpad)
+            .onAppear {
+                loadScannedTime()
+                isScanned = merchandiseOrder.qty == merchandiseOrder.qtyScanned
+            }
+            .onChange(of: merchandiseOrder.qtyScanned) { newValue in
+                print("qtyScanned updated to \(newValue)")
+                isScanned = merchandiseOrder.qty == newValue
+            }
+            Rectangle()
+                .fill(Color.colorButtonText)
+                .frame(width: UIScreen.main.bounds.width, height: 1)
         }
     }
     
@@ -149,11 +154,11 @@ struct MerchandiseOrderCell: View {
                     
                     switch result {
                     case .success(let jsonResponse):
-                        let valid = jsonResponse["valid"] as? Bool ?? false
-                        let message = jsonResponse["message"] as? String ?? "Unknown error"
-                        let scannedAt = jsonResponse["tsScanned"] as? String
-                        let newQty = jsonResponse["qty"] as? Int ?? merchandiseOrder.qty
-                        let newQtyScanned = jsonResponse["qtyScanned"] as? Int ?? merchandiseOrder.qtyScanned
+                        let valid = jsonResponse.valid
+                        let message = jsonResponse.message
+                        let scannedAt = String(jsonResponse.tsScanned)
+                        let newQty = jsonResponse.qty
+                        let newQtyScanned = jsonResponse.qtyScanned
                         
                         if !valid {
                             lookupByOrderResultViewModel.errorMessage = message
@@ -163,7 +168,7 @@ struct MerchandiseOrderCell: View {
                         merchandiseOrder.objectWillChange.send()
                         merchandiseOrder.qty = newQty
                         merchandiseOrder.qtyScanned = newQtyScanned
-                        merchandiseOrder.date_Scanned = scannedAt ?? MerchandiseOrder.dateFormatter.string(from: Date())
+                        merchandiseOrder.date_Scanned = scannedAt
                         isScanned = merchandiseOrder.qty ==  merchandiseOrder.qtyScanned
                         
                     case .failure(let error):

@@ -19,6 +19,16 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack (alignment: .trailing){
+            VStack{
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.secondaryText.opacity(0.5), .clear]),
+                    startPoint: .top,
+                    endPoint: .center
+                )
+                .frame(width:UIScreen.main.bounds.width * 0.9, height: UIScreen.main.bounds.height*0.2, alignment: .leading)
+                Spacer()
+            }
+            .background(Color.primaryBg)
             VStack {
                 Spacer()
                 HStack {
@@ -41,7 +51,7 @@ struct SettingsView: View {
                     }
                     .padding(.top, 20)
                 }
-                .background(Color.primaryBg)
+                .background(Color.clear)
                 .padding(.vertical)
                 .padding(.leading)
                 
@@ -54,13 +64,12 @@ struct SettingsView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.primaryBg)
+                
             }
             .detectGlobalTaps(disabled: selectedTimerIndex != nil)
             
             .frame(width: UIScreen.main.bounds.width * 0.9, alignment: .leading)
-            .background(Color.primaryBg)
-            .padding(.top, -30)
+            .background(Color.clear)
             // Overlay for time picker modal
             ZStack {
                 Color.black.opacity(selectedTimerIndex != nil ? 0.7 : 0)
@@ -78,7 +87,6 @@ struct SettingsView: View {
                         }
                     }
             }
-            .padding(.top,-30)
         }
     }
     
@@ -97,14 +105,20 @@ struct SettingsView: View {
                     
                     // Toggle for boolean settings, button for timer settings
                     if let toggleBinding = setting.toggleBinding {
-                        UIKitToggle(isOn: toggleBinding, onColor: UIColor(.previous), offColor: UIColor(.neutralText)) {_ in
-                            toggleBinding.wrappedValue.toggle()
-                        }
-                        .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.5 : 1.0)
-                        .padding(3)
-                        .onTapGesture {
-                            toggleBinding.wrappedValue.toggle()
-                        }
+                        Toggle("", isOn: toggleBinding)
+                            .labelsHidden()
+                            .tint(.previous)
+                            .scaleEffect(UIDevice.current.userInterfaceIdiom == .pad ? 1.5 : 1.0)
+                            .background(
+                                Capsule()
+                                    .fill(Color.neutralText) // Background color behind toggle
+                            )
+                            .padding(3)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                toggleBinding.wrappedValue.toggle()
+                            }
+
                     } else {
                         Button(action: { selectedTimerIndex = IdentifiableIndex(id: index) }) {
                             Text(setting.value ?? "")

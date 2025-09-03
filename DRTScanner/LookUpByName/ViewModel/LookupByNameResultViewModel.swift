@@ -9,6 +9,7 @@ import SwiftUI
 import IQAPIClient
 import CoreData
 
+@MainActor
 /// ViewModel for performing lookup by buyer name, supporting both online and offline modes.
 class LookupByNameResultViewModel: ObservableObject {
     @Published var orders: [OrdersNewApi] = []

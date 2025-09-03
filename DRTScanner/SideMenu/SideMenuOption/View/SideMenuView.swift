@@ -40,7 +40,14 @@ struct SideMenuView: View {
                     HStack {
                         Spacer()
                         ZStack(alignment: .top) {
-                            VStack(spacing: 5) {
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.secondaryText.opacity(0.5), .clear]),
+                                startPoint: .top,
+                                endPoint: .center
+                            )
+                            .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400), height: UIScreen.main.bounds.height*0.2)
+                            
+                            VStack(spacing: 0) {
                                 // Close button
                                 HStack(alignment: .bottom) {
                                     let modeText = stringManager.strings.settings.mode
@@ -59,11 +66,12 @@ struct SideMenuView: View {
                                             .frame(width: 25.adaptiveForIpad, height: 25.adaptiveForIpad)
                                             .background(Color.clear)
                                             .contentShape(Rectangle())
-                                            .padding()
+                                            .padding([.horizontal,.top])
                                     }
-                                    
+                                    .padding(.top, 38)
                                 }
-                                .padding(.top, 38)
+                                .padding(.bottom, 5)
+                                
                                 // Merchandise/Ticket switch option
                                 if isMerchandise {
                                     SideMenuCellView(imageName: "scan_seat", title: menuStrings.scanTickets) {
@@ -144,15 +152,11 @@ struct SideMenuView: View {
                                 
                             }
                             .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400))
-                            .background(Color.primaryBg)
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.secondaryText.opacity(0.5), .clear]),
-                                startPoint: .top,
-                                endPoint: .center
-                            )
-                            .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? UIScreen.main.bounds.width * 0.8 : min(geometry.size.width * 0.8, 400), height: UIScreen.main.bounds.height*0.1)
+                            
                         }
+                        .background(Color.primaryBg)
                     }
+                    
                     Spacer()
                 }.onAppear {
                     // Set initial merchandise switch state
@@ -177,7 +181,6 @@ struct SideMenuView: View {
             // Settings view presentation
             withAnimation(.easeInOut(duration: 0.3)) {
                 SettingsView(isPresented: $showSettingsView)
-                    .padding(.top, 30)
             }
         }
         // Go Online view presentation
