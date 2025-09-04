@@ -133,7 +133,7 @@ struct LookupOrderResultView: View {
                         }
                     }
                 } else {
-                    // Seat section
+                    //MARK:  Seat section
                     if viewModel.isLoading {
                         Text(viewModel.isLoading ? stringManager.strings.searchResults.loading : "")
                             .foregroundColor(Color.primaryText)

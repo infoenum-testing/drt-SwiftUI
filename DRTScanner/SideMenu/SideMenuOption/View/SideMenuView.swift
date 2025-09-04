@@ -22,7 +22,6 @@ struct SideMenuView: View {
     @State private var showConfirmationAlert = false
     @State private var showWebsiteAlert = false
     @State var seatTMerchedext = ""
-    @State var onlineOfflineText = ""
     // AppStorage properties for persistent mode flags
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("isMerchandise") private var isMerchandise: Bool = false
@@ -50,10 +49,14 @@ struct SideMenuView: View {
                             VStack(spacing: 0) {
                                 // Close button
                                 HStack(alignment: .bottom) {
-                                    let modeText = stringManager.strings.settings.mode
-                                    let formattedString = String(format: modeText, seatTMerchedext, onlineOfflineText)
+                                    let modeText = stringManager.strings.settings.mode.replacingOccurrences(of: " (%@)", with: "") 
+                                    let formattedString = String(format: modeText, seatTMerchedext)
                                     CustomsText(title: formattedString, textFont: .verlagBookAdaptive(size: 18), foregroundColour: .primaryText)
                                         .padding(.leading)
+                                    
+                                    Image(systemName: isOfflineMode ? "icloud.slash" : "wifi" )
+                                        .renderingMode(.template)
+                                        .foregroundColor(.primaryText)
                                     
                                     Spacer()
                                     Button(action: {
@@ -166,13 +169,9 @@ struct SideMenuView: View {
             }
             .onAppear {
                 seatTMerchedext = isMerchandise ? stringManager.strings.switchMode.merchandise : stringManager.strings.switchMode.seat
-                onlineOfflineText = isOfflineMode ? stringManager.strings.settings.offline : stringManager.strings.settings.online
             }
             .onChange(of: isMerchandise) { _ in
                 seatTMerchedext = isMerchandise ? stringManager.strings.switchMode.merchandise : stringManager.strings.switchMode.seat
-            }
-            .onChange(of: isOfflineMode) { _ in
-                onlineOfflineText = isOfflineMode ? stringManager.strings.settings.online : stringManager.strings.settings.offline
             }
             .onTapGesture {
                 isPresented = false

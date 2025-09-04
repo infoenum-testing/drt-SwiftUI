@@ -44,41 +44,24 @@ struct SeatCell: View {
     var body: some View {
         VStack {
             HStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    if isScannedFirst {
-                        let stringLabel = String(format: stringManager.strings.orderDetail.scanned, "")
-                        CustomsText(title: "\(stringLabel)\n\(stringManager.strings.orderDetail.justNow)", textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
-                    } else if isScanned {
-                        if let scanTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
-                            CustomsText(title: getScanLabel(from: scanTime), textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
-                        }
-                    } else {
-                        CustomsText(title: stringManager.strings.orderDetail.notYetScanned, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
-                    }
-                }
-                    HStack(alignment: .center) {
-                        HStack(alignment: .bottom, spacing: 2) {
-                            CustomsText(title: stringManager.strings.orderDetail.section, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
-                            
-                            CustomsText(title: "\(seat.section)", textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
-                          
-                        }
-                        Spacer()
-                        HStack(alignment: .bottom, spacing: 2) {
-                            CustomsText(title: stringManager.strings.orderDetail.row, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
-                                .padding(.bottom, 1.adaptiveForIpad)
-                            
-                            CustomsText(title: "\(seat.row)", textFont: .verlagBoldAdaptive(size: 20), foregroundColour: .primaryBg)
-                        }
-                        Spacer()
-                        HStack(alignment: .bottom, spacing: 2) {
-                            CustomsText(title: stringManager.strings.orderDetail.seat, textFont: .verlagBoldAdaptive(size: 15), foregroundColour: .primaryBg)
-                            
-                            CustomsText(title: seat.seat, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryBg)
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        if isScannedFirst {
+                            let stringLabel = String(format: stringManager.strings.orderDetail.scanned, "")
+                            CustomsText(title: "\(stringLabel)\n\(stringManager.strings.orderDetail.justNow)", textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
+                        } else if isScanned {
+                            if let scanTime = seat.tsScanned?.toDateFromMillisecondsTimestamp() {
+                                CustomsText(title: getScanLabel(from: scanTime), textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
+                            }
+                        } else {
+                            CustomsText(title: stringManager.strings.orderDetail.notYetScanned, textFont: .verlagBoldAdaptive(size: 18), foregroundColour: .primaryBg)
                         }
                     }
+                    
+                    CustomsText(title: ShowSeat(setion: seat.section, row: seat.row, seat: seat.seat), textFont: .verlagBoldAdaptive(size: 24), foregroundColour: .primaryBg)
+                    
                 }
+                Spacer()
                 ZStack {
                     if isLoading {
                         ProgressView()
@@ -110,6 +93,12 @@ struct SeatCell: View {
             Divider()
         }
         .edgesIgnoringSafeArea(.leading)
+    }
+    
+    // show setion-Row-Seat
+    
+    private func ShowSeat(setion: String, row: String, seat: String)-> String {
+        return "\(setion) - \(row) - \(seat)"
     }
     
     /// Updates seat as scanned, saving locally or sending to API depending on mode

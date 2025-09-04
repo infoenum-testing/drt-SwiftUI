@@ -95,7 +95,7 @@ struct SeatHomeView: View {
                         VStack(spacing:0) {
                             // Top row: empty space, logo, and side menu button
                             ZStack {
-                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader())
                                 HStack {
                                     Text("")
                                         .frame(width: 25, height: 25)
