@@ -12,6 +12,8 @@ struct MerchandiseScanView: View {
     let variantName: String
     let name: String
     let backGround:Color
+    let action: ()-> Void
+
     var body: some View {
         VStack {
             Image("circle_and_check_icon")
@@ -36,5 +38,8 @@ struct MerchandiseScanView: View {
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
+        .onTapGesture {
+            action()
+        }
     }
 }

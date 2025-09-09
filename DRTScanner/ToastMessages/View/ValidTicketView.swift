@@ -12,6 +12,8 @@ struct ValidTicketView: View {
     let orderNumber: String
     let isGoldenTicket: Bool
     let backGround: Color
+    let action: ()-> Void
+    
     var body: some View {
         VStack(spacing: 15) {
             Image("circle_and_check_icon")
@@ -37,5 +39,8 @@ struct ValidTicketView: View {
         .frame(height: UIDevice.isIpad ? (UIDevice.isLandscape ? UIScreen.main.bounds.height*0.485 : resultSheetHeightForIpad()) : resultSheetHeightForIphone())
         .background(isGoldenTicket ? Color.colorGoldenTicket : backGround)
         .transition(.opacity)
+        .onTapGesture {
+            action()
+        }
     }
 }

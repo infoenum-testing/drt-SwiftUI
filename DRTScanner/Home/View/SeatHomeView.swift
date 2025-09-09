@@ -238,42 +238,60 @@ struct SeatHomeView: View {
                                     ValidTicketView(orderName: orderName,
                                                     orderNumber: orderNumber,
                                                     isGoldenTicket: isGoldenTicket,
-                                                    backGround: Color.valid)
+                                                    backGround: Color.valid){
+                                        dissmisspopUp()
+                                    }
                                     
                                 case .preScannedTicket(let orderName, let orderNumber, let scannedTime, let tsScannedDate):
                                     PreviouslyScannedTicketView(orderName: orderName,
                                                                 orderNumber: orderNumber,
                                                                 scannedTime: scannedTime,
                                                                 tsScannedDate: tsScannedDate,
-                                                                backGround: Color.previous)
+                                                                backGround: Color.previous) {
+                                        dissmisspopUp()
+                                    }
                                     
                                     
                                 case .invalidTicket(let message):
                                     InvalidTicketView(message: message,
-                                                      backGround: Color.invalid)
+                                                      backGround: Color.invalid) {
+                                        dissmisspopUp()
+                                    }
                                     
                                 case .validMerch(let orderName, let variantName):
                                     MerchandiseScanView(variantName: variantName,
                                                         name: orderName,
-                                                        backGround: Color.valid)
+                                                        backGround: Color.valid) {
+                                        dissmisspopUp()
+                                    }
                                     
                                 case .preScannedMerch(let orderName, let variantName, let scannedTime, let tsScannedDate):
                                     PreviousMerchandiseScanView(name: orderName,
                                                                 variantName: variantName,
                                                                 message: scannedTime,
                                                                 tsScannedDate: tsScannedDate,
-                                                                backGround: Color.previous)
+                                                                backGround: Color.previous) {
+                                        dissmisspopUp()
+                                    }
                                     
                                 case .incorrectMerchMode:
-                                    InvalidMerchandiseTicketView(backGround: Color.invalid)
+                                    InvalidMerchandiseTicketView(backGround: Color.invalid) {
+                                        if !isFullScreen {
+                                            dissmisspopUp()
+                                        }
+                                    }
                                     
                                 case .incorrectTicketMode:
-                                    InvalidSeatTicketView(backGround: Color.invalid)
-                                    
-                                case .none:
-                                    EmptyView() // nothing scanned yet
+                                    InvalidSeatTicketView(backGround: Color.invalid) {
+                                        if !isFullScreen {
+                                            dissmisspopUp()
+                                        }
+                                    }
+                                        
+                                    case .none:
+                                        EmptyView() // nothing scanned yet
+                                    }
                                 }
-                            }
                         }
                     }
                     .overlay {
@@ -394,5 +412,13 @@ struct SeatHomeView: View {
             isScanningCell = true
             scnanerReset.shouldResetScanner = true
         }
+    }
+    
+    func dissmisspopUp(){
+        withAnimation {
+            scanResult = .none
+        }
+        countdownTimer?.invalidate()
+        dismissWorkItem?.cancel()
     }
 }

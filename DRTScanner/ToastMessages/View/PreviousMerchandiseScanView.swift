@@ -14,6 +14,8 @@ struct PreviousMerchandiseScanView: View {
     let tsScannedDate: String
     @EnvironmentObject var stringManager: StringManager
     let backGround:Color
+    let action: ()-> Void
+
     var body: some View {
         VStack(spacing: 20) {
             Image("circle_and_!_icon")
@@ -50,6 +52,9 @@ struct PreviousMerchandiseScanView: View {
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
-    }       
+        .onTapGesture {
+            action()
+        }
+    }
 }
 

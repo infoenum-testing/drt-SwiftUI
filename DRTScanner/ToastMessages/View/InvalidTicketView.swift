@@ -11,6 +11,8 @@ import SwiftUI
 struct InvalidTicketView: View {
     let message: String
     let backGround:Color
+    let action: ()-> Void
+
     var body: some View {
         VStack {
             Image("circle_and_cross_icon")
@@ -33,5 +35,8 @@ struct InvalidTicketView: View {
         .background(backGround)
         .ignoresSafeArea(edges: .bottom)
         .transition(.opacity)
+        .onTapGesture {
+            action()
+        }
     }
 }
