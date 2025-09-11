@@ -107,6 +107,25 @@ struct LandingView: View {
                                     .padding(.bottom, 20)
                                     .opacity(animateButtons ? 1 : 0)
                                     .animation(.easeInOut(duration: 0.5).delay(0.3), value: animateButtons)
+
+                                // Seat scan button
+                                Button(action: {
+                                    //   isUserLoggedIn = true
+                                    isMerchandise = false
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showSeatView = true
+                                    }
+                                }) {
+                                    CustomsText(title: stringManager.strings.switchMode.seat, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryText)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.secondaryBg)
+                                        .cornerRadius(12)
+                                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
+                                }
+                                .padding(.horizontal)
+                                .opacity(animateButtons ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.6).delay(0.7), value: animateButtons)
                                 
                                 // Merchandise scan button
                                 Button(action: {
@@ -127,24 +146,6 @@ struct LandingView: View {
                                 .padding(.bottom, 10)
                                 .opacity(animateButtons ? 1 : 0)
                                 .animation(.easeInOut(duration: 0.6).delay(0.5), value: animateButtons)
-                                
-                                // Seat scan button
-                                Button(action: {
-                                    //   isUserLoggedIn = true
-                                    isMerchandise = false
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showSeatView = true
-                                    }
-                                }) {
-                                    CustomsText(title: stringManager.strings.switchMode.seat, textFont: .verlagBoldAdaptive(size: 22), foregroundColour: .primaryText)
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(Color.secondaryBg)
-                                        .cornerRadius(12)
-                                        .shadow(color: .black.opacity(0.25), radius: 4, x: 0, y: 5)
-                                }.padding(.horizontal)
-                                    .opacity(animateButtons ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.6).delay(0.7), value: animateButtons)
                             }
                             .onAppear {
                                 viewModel.getShowDetailsIfNeeded()

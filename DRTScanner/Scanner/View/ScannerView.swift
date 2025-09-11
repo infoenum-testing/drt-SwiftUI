@@ -163,6 +163,26 @@ struct ScannerView: View, Equatable {
                         // Bind scanning state
                     )
                     .id(isSideMenuPresented)
+                    .background(.black.opacity(0.000001))
+                    .gesture(
+                        LongPressGesture(minimumDuration: 0.3) // how long to press before trigger
+                            .onEnded { _ in
+                                if !isFlashOn {
+                                    isFlashOn = true
+                                    toggleTorch(status: true) // Turn ON
+                                }
+                            }
+                    )
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 0)
+                            .onEnded { _ in
+                                if isFlashOn {
+                                    isFlashOn = false
+                                    toggleTorch(status: false) // Turn OFF
+                                }
+                            }
+                    )
+
                 }
                 .padding(.bottom,-30)
                 .frame(height: isFullScreen ? UIScreen.main.bounds.height+10 : scanViewHeight.adaptiveForIpadScan)
@@ -221,35 +241,35 @@ struct ScannerView: View, Equatable {
                             }
                         }
                         .frame(width: dragAreaSize.width, height: dragAreaSize.height)
-                            .background(.black.opacity(0.000001))
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { value in
-                                        let location = value.location
-                                        if isInsideBounds(location) {
-                                            if !isFlashOn {
-                                                isFlashOn = true
-                                                toggleTorch(status: true) // Turn on flashlight
-                                            }
-                                        } else {
-                                            if isFlashOn {
-                                                isFlashOn = false
-                                                toggleTorch(status: false) // Turn off flashlight
-                                                flashAutoOffTimer?.invalidate()
-                                            }
+                        .background(.black.opacity(0.000001))
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    let location = value.location
+                                    if isInsideBounds(location) {
+                                        if !isFlashOn {
+                                            isFlashOn = true
+                                            toggleTorch(status: true) // Turn on flashlight
                                         }
-                                        startFlashInactivityTimer()
-                                        startInactivityTimer()
-                                    }
-                                    .onEnded { _ in
+                                    } else {
                                         if isFlashOn {
                                             isFlashOn = false
-                                            toggleTorch(status: false)
+                                            toggleTorch(status: false) // Turn off flashlight
                                             flashAutoOffTimer?.invalidate()
                                         }
-                                        startFlashInactivityTimer()
                                     }
-                            )
+                                    startFlashInactivityTimer()
+                                    startInactivityTimer()
+                                }
+                                .onEnded { _ in
+                                    if isFlashOn {
+                                        isFlashOn = false
+                                        toggleTorch(status: false)
+                                        flashAutoOffTimer?.invalidate()
+                                    }
+                                    startFlashInactivityTimer()
+                                }
+                        )
                     }
                     .padding(.top, isFullScreen ? 20 : 0)
                     
