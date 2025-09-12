@@ -95,7 +95,7 @@ struct SeatHomeView: View {
                         VStack(spacing:0) {
                             // Top row: empty space, logo, and side menu button
                             ZStack {
-                                AppBackGroundView(width:UIScreen.main.bounds.width , height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader())
+                                AppBackGroundView(width: UIScreen.main.bounds.width+5, height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader())
                                 HStack {
                                     Text("")
                                         .frame(width: 25, height: 25)
@@ -122,7 +122,7 @@ struct SeatHomeView: View {
                                 .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 0 : topSafeAreaPaddingHeader() - 10)
                             }
                             .clipped()
-                            .frame(width: UIScreen.main.bounds.width,height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
+                            .frame(width: UIScreen.main.bounds.width, height: UIDevice.current.userInterfaceIdiom == .pad ? (UIDevice.isLandscape ? 60.adaptiveForIpad : 80.adaptiveForIpad + topSafeAreaPaddingHeader() - 15) : 90.adaptiveForIpad + topSafeAreaPaddingHeader() - 15)
                             .padding(.top,-10)
                             
                             // Bottom row: show name
@@ -349,6 +349,11 @@ struct SeatHomeView: View {
         }
         .onChange(of: showLookupAlertBySeat) { newValue in
             checkToResetCamera(newValue: newValue)
+        }
+        .onChange(of: isMerchandise) {  newValue in
+                showLookupAlert = false
+                showLookupAlertByName = false
+                showLookupAlertBySeat = false
         }
         .sideMenuViewModify(isPresented: $isSideMenuPresented) {
             SideMenuView(isPresented: $isSideMenuPresented, showGoOfflineView: $showGoOfflineView, showScanningStatsView: $showScanningStatsView, showAboutView: $showAboutView, showAlert: $showAlert)

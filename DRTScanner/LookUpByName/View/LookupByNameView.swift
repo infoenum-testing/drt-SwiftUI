@@ -21,7 +21,7 @@ struct LookupByNameView: View {
     @State private var order: [OrdersNewApi]?
     @State private var isOKButtonClicked: Bool = false
     @State private var isSearching: Bool = false
-
+    @FocusState var isTextFieldFocused: Bool
     @StateObject var viewModel = LookupByNameResultViewModel(
         managedObjectContext: PersistenceController.shared.container.viewContext
     )
@@ -47,6 +47,7 @@ struct LookupByNameView: View {
                 HStack(alignment: .center) {
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.3)) {
+                            isTextFieldFocused = false
                             isPresented = false
                         }
                     }) {
@@ -79,6 +80,7 @@ struct LookupByNameView: View {
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                         .padding(.all, 10)
+                        .focused($isTextFieldFocused)
                         .onChange(of: inputText) { newValue in
                             // Allow only alphabets (a-z, A-Z) and spaces
                             let filtered = newValue.filter { $0.isLetter || $0.isWhitespace }
@@ -146,6 +148,11 @@ struct LookupByNameView: View {
                             errorMessage: nil
                         )
                         .transition(.move(edge: .trailing))
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    isTextFieldFocused = true
                 }
             }
         }.hideKeyboardOnTap()

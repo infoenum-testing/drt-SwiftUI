@@ -942,6 +942,11 @@ struct ScannerView: View, Equatable {
                         }
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
+                    } else if let message = responseData.message, !message.isEmpty {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            lookupByOrderResultViewModel.errorMessage = message
+                            showOfflineAlert = true
+                        }
                     } else {
                         scanResultEnum = .invalidTicket(message: invalidMessage)
                         dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
