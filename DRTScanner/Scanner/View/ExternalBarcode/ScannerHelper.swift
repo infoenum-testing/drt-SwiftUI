@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SwiftUICore
+import SwiftUI
 
 @ViewBuilder
 func statsRow(title: String, value: Int) -> some View {

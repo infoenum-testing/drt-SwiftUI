@@ -157,8 +157,6 @@ struct MerchandiseOrderCell: View {
                         let valid = jsonResponse.valid
                         let message = jsonResponse.message
                         let scannedAt = String(jsonResponse.tsScanned)
-                        let newQty = jsonResponse.qty
-                        let newQtyScanned = jsonResponse.qtyScanned
                         
                         if !valid {
                             lookupByOrderResultViewModel.errorMessage = message
@@ -166,8 +164,12 @@ struct MerchandiseOrderCell: View {
                             return
                         }
                         merchandiseOrder.objectWillChange.send()
-                        merchandiseOrder.qty = newQty
-                        merchandiseOrder.qtyScanned = newQtyScanned
+                        if let qty = jsonResponse.qty {
+                            merchandiseOrder.qty = qty
+                        }
+                        if let qtyScanned = jsonResponse.qtyScanned {
+                            merchandiseOrder.qtyScanned = qtyScanned
+                        }
                         merchandiseOrder.date_Scanned = scannedAt
                         isScanned = merchandiseOrder.qty ==  merchandiseOrder.qtyScanned
                         

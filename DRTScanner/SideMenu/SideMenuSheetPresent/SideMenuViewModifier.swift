@@ -5,7 +5,7 @@
 //  Created by IE Mac 05 on 10/02/25.
 //
 
-import SwiftUICore
+import SwiftUI
 import UIKit
 
 struct SideMenuViewModifier<AlertContent: View>: ViewModifier {

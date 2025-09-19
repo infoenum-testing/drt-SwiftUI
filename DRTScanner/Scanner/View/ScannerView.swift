@@ -943,10 +943,8 @@ struct ScannerView: View, Equatable {
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     } else if let message = responseData.message, !message.isEmpty {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            lookupByOrderResultViewModel.errorMessage = message
-                            showOfflineAlert = true
-                        }
+                        scanResultEnum = .invalidTicket(message: message)
+                        dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
                     } else {
                         scanResultEnum = .invalidTicket(message: invalidMessage)
                         dismissPopUp(scannerResult: .invalid, isInvaildMode: false)
@@ -975,7 +973,7 @@ struct ScannerView: View, Equatable {
                         let message = responseData.message
                         let ts: String = String(responseData.tsScanned)
                         let isValid = responseData.valid
-                        let name = responseData.name
+                        let name = responseData.name ?? ""
                         let variantName = responseData.variantName ?? ""
                             
                             if message.contains("Previously scanned") {

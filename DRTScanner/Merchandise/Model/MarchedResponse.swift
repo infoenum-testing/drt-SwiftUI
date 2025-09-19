@@ -8,15 +8,15 @@
 
 
 struct MarchedResponse: Codable {
-    let iconSrc: String
+    let iconSrc: String?
     let tsScanned: Int64
     let valid: Bool
     let dateScanned: String?
-    let qtyScanned: Int
+    let qtyScanned: Int?
     let message: String
-    let name: String
-    let variantName: String?   
-    let qty: Int
+    let name: String?
+    let variantName: String?
+    let qty: Int?
 
     enum CodingKeys: String, CodingKey {
         case iconSrc, tsScanned, valid, dateScanned, qtyScanned, message, name, variantName, qty
@@ -25,14 +25,14 @@ struct MarchedResponse: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        iconSrc = try container.decode(String.self, forKey: .iconSrc)
+        iconSrc = try container.decodeIfPresent(String.self, forKey: .iconSrc)
         valid = try container.decode(Bool.self, forKey: .valid)
         dateScanned = try? container.decodeIfPresent(String.self, forKey: .dateScanned)
-        qtyScanned = try container.decode(Int.self, forKey: .qtyScanned)
+        qtyScanned = try container.decodeIfPresent(Int.self, forKey: .qtyScanned)
         message = try container.decode(String.self, forKey: .message)
-        name = try container.decode(String.self, forKey: .name)
+        name = try container.decodeIfPresent(String.self, forKey: .name)
         variantName = try? container.decodeIfPresent(String.self, forKey: .variantName)
-        qty = try container.decode(Int.self, forKey: .qty)
+        qty = try container.decodeIfPresent(Int.self, forKey: .qty)
 
         // tsScanned can be Int / Double / String
         if let intValue = try? container.decode(Int64.self, forKey: .tsScanned) {

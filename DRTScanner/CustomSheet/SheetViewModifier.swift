@@ -5,7 +5,7 @@
 //  Created by IE Mac 05 on 07/02/25.
 //
 
-import SwiftUICore
+import SwiftUI
 
 struct SheetViewModifier<AlertContent: View>: ViewModifier {
     @Binding var isPresented: Bool
