@@ -309,7 +309,7 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
                     self.isScanningBinding?.wrappedValue = false
                     self.onScan?(payload)
 
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         self.boundingBoxLayer.isHidden = true
                         self.didJustScan = false
                         self.isScanningBinding?.wrappedValue = true

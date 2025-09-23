@@ -371,19 +371,13 @@ struct SeatHomeView: View {
             }
         }
         .customAlertGoOffline(isPresented: $showGoOfflineView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
                 GoOfflineView(isPresented: $showGoOfflineView, showOfflineAlert: $showOfflineAlert, showAlertText: $showAlertText, showOfflineSuccessAlert: $showOfflineSuccessAlert, viewModel: viewModel)
-            }
         }
         .customAlert(isPresented: $showScanningStatsView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
                 ScanningStatsView(isPresented: $showScanningStatsView, context: PersistenceController.shared.container.viewContext)
-            }
         }
         .customAlert(isPresented: $showAboutView) {
-            withAnimation(.easeInOut(duration: 0.3)) {
                 AboutView(isPresented: $showAboutView)
-            }
         }
         .onChange(of: UIDevice.isLandscape, perform: { newValue in
             isLoading = true

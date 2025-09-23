@@ -409,7 +409,8 @@ struct ScannerView: View, Equatable {
                         }
                         .padding(.bottom, -30)
                 }
-            }.onAppear {
+            }
+            .onAppear {
                 Task {
                     await viewModel.fetchStats() // Fetch scan stats on appear
                 }
@@ -795,7 +796,7 @@ struct ScannerView: View, Equatable {
                 print("✅ Suppression window expired for: \(cleanedQR)")
             }
         }
-        
+        lastScanTimes.removeAll() // first remove all qr code then enter new one
         // Record new scan time
         lastScanTimes[cleanedQR] = now
         return true
@@ -871,6 +872,7 @@ struct ScannerView: View, Equatable {
                         try viewContext.save()
                         scanResultEnum = .validTicket(orderName: seatEntity.order?.buyerName ?? "Blocked Seat", orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", isGoldenTicket: false)
                         dismissPopUp(scannerResult: .valid, isInvaildMode: false)
+                        lastScanTimes.removeAll() // first remove all qr code then enter new one
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     }
@@ -908,6 +910,7 @@ struct ScannerView: View, Equatable {
                         try viewContext.save()
                         scanResultEnum = .validTicket(orderName: seatEntity.order?.buyerName ?? StringManager.shared.strings.offline.blockedTicket, orderNumber: seatEntity.orderId.map(String.init) ?? "N/A", isGoldenTicket: false)
                         dismissPopUp(scannerResult: .valid, isInvaildMode: false)
+                        lastScanTimes.removeAll() // first remove all qr code then enter new one
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     }
@@ -940,6 +943,7 @@ struct ScannerView: View, Equatable {
                         Task {
                             await viewModel.fetchStats()
                         }
+                        lastScanTimes.removeAll() // first remove all qr code then enter new one
                         lastScanTimes[cleanedQR] = Date()
                         suppressedOnce.remove(cleanedQR)
                     } else if let message = responseData.message, !message.isEmpty {
@@ -1028,6 +1032,7 @@ struct ScannerView: View, Equatable {
                             Task {
                                 await viewModel.fetchStats()
                             }
+                            lastScanTimes.removeAll() // first remove all qr code then enter new one
                             lastScanTimes[cleanedQR] = Date()
                             suppressedOnce.remove(cleanedQR)
                         } else if scanResponse.message?.lowercased() == "previously scanned".lowercased() {

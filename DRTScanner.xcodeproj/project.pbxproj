@@ -10,6 +10,7 @@
 		6D059AA92E65E05C0082B6B7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AA82E65E05C0082B6B7 /* SDWebImageSwiftUI */; };
 		6D059AAC2E65E4660082B6B7 /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AAB2E65E4660082B6B7 /* SDWebImageSVGCoder */; };
 		6D5234432E68294B00E7D540 /* MarchedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5234422E68294B00E7D540 /* MarchedResponse.swift */; };
+		6D7CEF7B2E82CB7300520BFF /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 6D7CEF7A2E82CB7300520BFF /* Shimmer */; };
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
 		E94FBD252E49E60C00712245 /* BlinkingCodeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */; };
 		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
@@ -366,6 +367,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D7CEF7B2E82CB7300520BFF /* Shimmer in Frameworks */,
 				6D059AAC2E65E4660082B6B7 /* SDWebImageSVGCoder in Frameworks */,
 				6D059AA92E65E05C0082B6B7 /* SDWebImageSwiftUI in Frameworks */,
 				A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */,
@@ -1350,6 +1352,7 @@
 			packageReferences = (
 				6D059AA72E65E05C0082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				6D059AAA2E65E4660082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */,
+				6D7CEF792E82CB7300520BFF /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			productRefGroup = 98E3FC752D539E9300DB8EF6 /* Products */;
 			projectDirPath = "";
@@ -1841,6 +1844,14 @@
 				minimumVersion = 1.8.0;
 			};
 		};
+		6D7CEF792E82CB7300520BFF /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1853,6 +1864,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6D059AAA2E65E4660082B6B7 /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */;
 			productName = SDWebImageSVGCoder;
+		};
+		6D7CEF7A2E82CB7300520BFF /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D7CEF792E82CB7300520BFF /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
 		};
 /* End XCSwiftPackageProductDependency section */
 
