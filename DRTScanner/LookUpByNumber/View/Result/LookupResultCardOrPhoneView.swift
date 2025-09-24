@@ -69,8 +69,6 @@ struct LookupResultCardOrPhoneView: View {
                         .foregroundStyle(Color.neutralText)
                         .font(.verlagBlackAdaptive(size: 25))
                         .padding(.trailing, 20)
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                 }
                 
                 // Show result count or "No orders found"
@@ -88,7 +86,18 @@ struct LookupResultCardOrPhoneView: View {
             
             // Orders List or Empty View
             VStack {
-                if orders.isEmpty {
+                if isLoading {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(0..<8, id: \.self) { _ in
+                                LookUpCellShimmerView()
+                                .background(Color.primaryText)
+                            }
+                        }
+                    }
+                    .padding(0)
+                   
+                } else if orders.isEmpty {
                     Spacer() // Empty space if no orders found
                 } else {
                     ScrollView {

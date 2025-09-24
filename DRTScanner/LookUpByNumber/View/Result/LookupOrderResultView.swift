@@ -50,9 +50,6 @@ struct LookupOrderResultView: View {
                     if viewModel.isLoading {
                         CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                             .padding(.trailing, 20)
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                            .padding(.trailing, 5)
                     } else {
                         if let buyerName = viewModel.buyerName {
                             CustomsText(title: buyerName.uppercased(), textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
@@ -84,10 +81,15 @@ struct LookupOrderResultView: View {
                 if let isMerchandise, isMerchandise {
                     if isOfflineMode {
                         if isLoadingMerch {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                .padding()
-                            Spacer()
+                            ScrollView {
+                                LazyVStack {
+                                    ForEach(0..<8) { order in
+                                        MerchandiseOrderShimmerView()
+                                    }
+                                }
+                                .padding(.bottom)
+                            }
+                            .padding(0)
                         } else if !products.isEmpty {
                             ScrollView {
                                 LazyVStack {
@@ -108,14 +110,17 @@ struct LookupOrderResultView: View {
                             Spacer()
                         }
                     } else {
-                        
                         if isLoadingMerch {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                .padding()
-                            Spacer()
-                        }
-                        else {
+                                ScrollView {
+                                    LazyVStack {
+                                        ForEach(0..<8) { order in
+                                            MerchandiseOrderShimmerView()
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                    .padding(.horizontal)
+                                }
+                        } else if !merchOrders.isEmpty {
                             ScrollView {
                                 LazyVStack {
                                     ForEach(merchOrders) { order in
@@ -130,19 +135,25 @@ struct LookupOrderResultView: View {
                                 .padding(.bottom)
                                 .padding(.horizontal)
                             }
+                        } else {
+                            Text(stringManager.strings.searchResults.nomerchandiseFound)
+                                .foregroundColor(Color.neutralText)
+                            Spacer()
                         }
                     }
                 } else {
                     //MARK:  Seat section
                     if viewModel.isLoading {
-                        Text(viewModel.isLoading ? stringManager.strings.searchResults.loading : "")
-                            .foregroundColor(Color.primaryText)
-                            .font(.verlagBlackAdaptive(size: 25))
-                            .padding(.trailing, 20)
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                            .padding(.trailing, 5)
-                        Spacer()
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(0..<8, id: \.self) { _ in
+                                    SeatCellShimmerView()
+                                        .background(Color.primaryText)
+                                }
+                            }
+                            .padding(.bottom)
+                            .padding(.horizontal)
+                        }
                     } else {
                         ScrollView {
                             LazyVStack {

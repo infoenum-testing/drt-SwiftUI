@@ -18,7 +18,7 @@ struct LookupByNameResultView: View {
     @State private var selectedOrder: OrdersNewApi? // Selected order object
     @State private var navigateToOrderResult = false // Controls navigation to order result view
     @AppStorage("showCode") private var savedShowCode: String? // Saved show code from app storage
-    @State private var showTextAfterDelay = false // Controls delayed text display (not used in this snippet)
+    @State private var showTextAfterDelay = false
     @EnvironmentObject var stringManager: StringManager
     
     var body: some View {
@@ -42,9 +42,6 @@ struct LookupByNameResultView: View {
                 if viewModel.isLoading {
                     CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
                         .padding(.trailing, 20)
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .padding(.trailing, 5)
                 }
                 // Display total results or no orders found
                 if !viewModel.isLoading {
@@ -58,7 +55,17 @@ struct LookupByNameResultView: View {
                 .background(Color.neutralBg)
             VStack {
                 // If no orders, show spacer; else, show list of orders
-                if viewModel.orders.isEmpty {
+                if viewModel.isLoading {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(0..<8, id: \.self) { _ in
+                                LookUpCellShimmerView()
+                            }.background(Color.primaryText)
+                        }
+                        .padding(.bottom)
+                    }
+                    .padding(0)
+                } else if viewModel.orders.isEmpty {
                     Spacer()
                 } else {
                     ScrollView {

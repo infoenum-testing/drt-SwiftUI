@@ -36,7 +36,6 @@ struct LookupByNumbersView: View {
     // State for button click effects and loading
     @State private var isOKButtonClicked: Bool = false
     @State private var clickedButton: String? = nil
-    @State private var isLoading: Bool = false
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var stringManager: StringManager
     
@@ -208,19 +207,6 @@ struct LookupByNumbersView: View {
                 }
                 .transition(.move(edge: .trailing))
             }
-            // Loading overlay when fetching data
-            if isLoading {
-                ZStack {
-                    Color.black.opacity(0.1)
-                        .edgesIgnoringSafeArea(.all)
-                        .onTapGesture { }
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .font(.title)
-                        .padding()
-                }
-            }
         }
     }
     
@@ -233,10 +219,8 @@ struct LookupByNumbersView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self.isOKButtonClicked.toggle()
                 }
-                isLoading = true
                 Task {
                     DispatchQueue.main.async {
-                        self.isLoading = false // Stop loading
                         withAnimation {
                             self.showResultView = true
                         }

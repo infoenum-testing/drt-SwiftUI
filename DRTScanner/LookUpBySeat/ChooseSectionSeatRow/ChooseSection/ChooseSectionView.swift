@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct ChooseSectionView: View {
-    @State private var isLoading = false
     @State private var sectionsTitle: String = "SECTION"
     @Binding var isPresented: Bool
     @Binding var selectedSeat: String
@@ -32,17 +31,11 @@ struct ChooseSectionView: View {
                 
                 Spacer()
                 
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .frame(width: 20, height: 20)
-                } else {
-                    Text(stringManager.strings.seat.section)
-                        .font(.verlagBlackAdaptive(size: 30))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.neutralText)
-                        .padding(.trailing, 50)
-                }
+                Text(stringManager.strings.seat.section)
+                    .font(.verlagBlackAdaptive(size: 30))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.neutralText)
+                    .padding(.trailing, 50)
                 
                 Spacer()
             }
@@ -54,11 +47,7 @@ struct ChooseSectionView: View {
             }
         }
         .background(Color.primaryText)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                isLoading = false
-            }
-        }
+        
     }
 }
 

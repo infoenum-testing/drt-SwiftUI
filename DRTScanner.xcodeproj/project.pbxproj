@@ -10,7 +10,10 @@
 		6D059AA92E65E05C0082B6B7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AA82E65E05C0082B6B7 /* SDWebImageSwiftUI */; };
 		6D059AAC2E65E4660082B6B7 /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 6D059AAB2E65E4660082B6B7 /* SDWebImageSVGCoder */; };
 		6D5234432E68294B00E7D540 /* MarchedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5234422E68294B00E7D540 /* MarchedResponse.swift */; };
+		6D78C5672E83F9CF0078A4EF /* MerchandiseOrderShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D78C5662E83F9CF0078A4EF /* MerchandiseOrderShimmerView.swift */; };
 		6D7CEF7B2E82CB7300520BFF /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 6D7CEF7A2E82CB7300520BFF /* Shimmer */; };
+		6DD0DB962E83E2E0005F6490 /* SeatCellShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0DB952E83E2E0005F6490 /* SeatCellShimmerView.swift */; };
+		6DD0DB982E83EC94005F6490 /* LookUpCellShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0DB972E83EC94005F6490 /* LookUpCellShimmerView.swift */; };
 		A28F0BE19538B6D2649DC5A0 /* Pods_DRTScanner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */; };
 		E94FBD252E49E60C00712245 /* BlinkingCodeDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94FBD242E49E60C00712245 /* BlinkingCodeDisplay.swift */; };
 		E992D1622E379E9C004F249D /* fail.wav in Resources */ = {isa = PBXBuildFile; fileRef = E992D1612E379E9C004F249D /* fail.wav */; };
@@ -185,6 +188,9 @@
 
 /* Begin PBXFileReference section */
 		6D5234422E68294B00E7D540 /* MarchedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarchedResponse.swift; sourceTree = "<group>"; };
+		6D78C5662E83F9CF0078A4EF /* MerchandiseOrderShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchandiseOrderShimmerView.swift; sourceTree = "<group>"; };
+		6DD0DB952E83E2E0005F6490 /* SeatCellShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeatCellShimmerView.swift; sourceTree = "<group>"; };
+		6DD0DB972E83EC94005F6490 /* LookUpCellShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookUpCellShimmerView.swift; sourceTree = "<group>"; };
 		98E3FC742D539E9300DB8EF6 /* DRTScanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRTScanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFCA3F50E14FFB8DB1A2F950 /* Pods-DRTScanner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DRTScanner.debug.xcconfig"; path = "Target Support Files/Pods-DRTScanner/Pods-DRTScanner.debug.xcconfig"; sourceTree = "<group>"; };
 		E0E2BC4C41AD567FDAC1C9B8 /* Pods_DRTScanner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DRTScanner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -433,6 +439,7 @@
 			isa = PBXGroup;
 			children = (
 				E997FBA62E29486F00D9EC06 /* MerchandiseOrderCell.swift */,
+				6D78C5662E83F9CF0078A4EF /* MerchandiseOrderShimmerView.swift */,
 			);
 			path = MerchResultCellView;
 			sourceTree = "<group>";
@@ -441,6 +448,7 @@
 			isa = PBXGroup;
 			children = (
 				E997FBA82E29486F00D9EC06 /* LookupCellView.swift */,
+				6DD0DB972E83EC94005F6490 /* LookUpCellShimmerView.swift */,
 			);
 			path = NameCCPhoneResultCellView;
 			sourceTree = "<group>";
@@ -449,6 +457,7 @@
 			isa = PBXGroup;
 			children = (
 				E997FBAA2E29486F00D9EC06 /* SeatCell.swift */,
+				6DD0DB952E83E2E0005F6490 /* SeatCellShimmerView.swift */,
 			);
 			path = OrderResultCellView;
 			sourceTree = "<group>";
@@ -1438,6 +1447,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E997FCA22E29486F00D9EC06 /* AlertViewModifier.swift in Sources */,
+				6D78C5672E83F9CF0078A4EF /* MerchandiseOrderShimmerView.swift in Sources */,
 				E997FCA32E29486F00D9EC06 /* AlertViewModifierGoOfflineView.swift in Sources */,
 				E997FCA42E29486F00D9EC06 /* CustomCellView.swift in Sources */,
 				E997FCA52E29486F00D9EC06 /* MerchandiseOrderCell.swift in Sources */,
@@ -1466,6 +1476,7 @@
 				E997FCBC2E29486F00D9EC06 /* Stats+CoreDataClass.swift in Sources */,
 				E997FCBD2E29486F00D9EC06 /* Stats+CoreDataProperties.swift in Sources */,
 				E997FCBE2E29486F00D9EC06 /* Persistence.swift in Sources */,
+				6DD0DB962E83E2E0005F6490 /* SeatCellShimmerView.swift in Sources */,
 				E997FCBF2E29486F00D9EC06 /* Color+Extension.swift in Sources */,
 				E997FCC02E29486F00D9EC06 /* Date+Extension.swift in Sources */,
 				E997FCC12E29486F00D9EC06 /* String+Extension.swift in Sources */,
@@ -1475,6 +1486,7 @@
 				E997FCC52E29486F00D9EC06 /* KeyboardObserver.swift in Sources */,
 				E997FCC62E29486F00D9EC06 /* KeyboardUtility.swift in Sources */,
 				E997FCC72E29486F00D9EC06 /* KeychainManager.swift in Sources */,
+				6DD0DB982E83EC94005F6490 /* LookUpCellShimmerView.swift in Sources */,
 				E997FCC82E29486F00D9EC06 /* SizeData.swift in Sources */,
 				E997FCC92E29486F00D9EC06 /* StringConstants.swift in Sources */,
 				E997FCCA2E29486F00D9EC06 /* StringManager.swift in Sources */,

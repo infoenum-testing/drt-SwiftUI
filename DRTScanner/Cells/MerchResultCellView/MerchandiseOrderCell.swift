@@ -102,8 +102,7 @@ struct MerchandiseOrderCell: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
                             .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
-                    }
-                    else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {
+                    } else if merchandiseOrder.qty == merchandiseOrder.qtyScanned {
                         Image(StringConstants.DRTImages.greenCheckImage)
                             .resizable()
                             .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)

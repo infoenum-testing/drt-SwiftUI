@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ChooseRowView: View {
-    @State private var isLoading = false
     @State private var RowTitle: String = "ROW"
     @Binding var isPresented: Bool
     @Binding var selectedSeat: String
@@ -33,16 +32,10 @@ struct ChooseRowView: View {
                 
                 Spacer()
                 
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .frame(width: 20, height: 20)
-                } else {
                     Text(stringManager.strings.seat.row)
                         .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(Color.neutralText)
                         .padding(.trailing, 50)
-                }
                 
                 Spacer()
             }
@@ -53,11 +46,6 @@ struct ChooseRowView: View {
             ChooseRowSubView(selectedSeat: $selectedSeat, isPresent: $isPresented, selectedSection: $selectedSection, selectedRow: $selectedRow)
         }
         .background(Color.primaryText)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                isLoading = false
-            }
-        }
     }
 }
 

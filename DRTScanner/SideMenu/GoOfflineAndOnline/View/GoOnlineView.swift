@@ -38,10 +38,6 @@ struct GoOnlineView: View {
                             .padding()
                         if !showErrorMessage {
                             VStack {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                                    .scaleEffect(1.0)
-                                
                                 ProgressView(value: progress, total: 1.0)
                                     .progressViewStyle(LinearProgressViewStyle(tint: Color.primaryText))
                                     .background(Color.neutralBg)

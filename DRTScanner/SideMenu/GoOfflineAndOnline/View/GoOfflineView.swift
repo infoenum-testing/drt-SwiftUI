@@ -76,10 +76,6 @@ struct GoOfflineView: View {
                 
                 if isSyncing {
                     VStack(spacing: 8) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                            .scaleEffect(1.0)
-                        
                         Text(downloadLabel)
                             .font(.verlagBoldAdaptive(size: 18))
                             .foregroundColor(Color.primaryText)

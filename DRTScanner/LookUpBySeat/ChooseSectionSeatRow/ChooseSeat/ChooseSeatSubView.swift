@@ -27,34 +27,64 @@ struct ChooseSeatSubView: View {
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     // AppStorage for the show code
     @AppStorage("showCode") private var savedShowCode: String?
+    @State private var shouldShowLoading: Bool = false
+    @State private var shouldShowView: Bool = false
     
     var body: some View {
         VStack {
             // List of available seats
-            List(seatSelect, id: \.self) { seat in
-                ChooseSeatCell(seatLabel: seat)
-                    .frame(height: 80)
-                    .listRowBackground(Color.primaryText)
-                    .onTapGesture {
-                        // When a seat is tapped, update the selected seat and dismiss the view
-                        withAnimation {
-                            selectedSeat = seat
-                            isPresent = false
+            if shouldShowLoading {
+                List(1...8, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.neutralText.opacity(0.2))
+                        .frame(height: 80)
+                        .listRowBackground(Color.primaryText)
+                        .shimmering(
+                            active: true,
+                            gradient: Gradient(colors: [
+                                Color.primaryText.opacity(0.5),
+                                Color.primaryText,
+                                Color.primaryText.opacity(0.5)
+                            ])
+                        )
+                }
+                .listStyle(.plain)
+                .background(Color.primaryText)
+            } else if seatSelect.isEmpty {
+                Spacer()
+                CustomsText(title: "No seat found", textFont: .verlagBookAdaptive(size: 20), foregroundColour: Color.neutralText)
+                Spacer()
+            } else {
+                List(seatSelect, id: \.self) { seat in
+                    ChooseSeatCell(seatLabel: seat)
+                        .frame(height: 80)
+                        .listRowBackground(Color.primaryText)
+                        .onTapGesture {
+                            // When a seat is tapped, update the selected seat and dismiss the view
+                            withAnimation {
+                                selectedSeat = seat
+                                isPresent = false
+                            }
                         }
-                    }
-                    .listRowBackground(Color.primaryText)
-                Divider()
-                    .listRowSeparator(.hidden)
+                    Divider()
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .background(Color.primaryText)
             }
-            .listStyle(.plain)
-            .background(Color.primaryText)
         }
         .background(Color.primaryText)
+        .opacity(shouldShowView ? 1 : 0)
         .onAppear {
+            shouldShowView = false
             // Fetch seats when the view appears, using Core Data if offline mode is enabled
             if isOfflineMode {
+                shouldShowView = true
                 fetchSeatsCoreData(for: selectedSection, row: selectedRow)
             } else {
+                DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                    shouldShowView = true
+                }
                 fetchSeats(for: selectedSection, row: selectedRow)
             }
         }
@@ -62,11 +92,13 @@ struct ChooseSeatSubView: View {
     
     // Fetch seats from the API for the given section and row
     private func fetchSeats(for section: String, row: String) {
+        shouldShowLoading = true
         IQAPIClient.getSeats(code: savedShowCode ?? "", section: section, row: row) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let seats):
                     // Extract seat numbers from the API response
+                    shouldShowLoading = false
                     seatSelect = seats.compactMap {
                         if let seatNumber = $0["seat"] as? Int {
                             return "\(seatNumber)"

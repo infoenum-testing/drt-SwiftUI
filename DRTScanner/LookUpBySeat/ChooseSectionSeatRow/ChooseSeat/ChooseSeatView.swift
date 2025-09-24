@@ -33,17 +33,10 @@ struct ChooseSeatView: View {
                 
                 Spacer()
                 
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.neutralText))
-                        .frame(width: 20, height: 20)
-                } else {
                     Text(stringManager.strings.seat.seat)
                         .font(.verlagBlackAdaptive(size: 30))
                         .foregroundColor(.neutralText)
                         .padding(.trailing, 50)
-                }
-                
                 Spacer()
             }
             .padding(.horizontal,15.adaptiveForIpad)
@@ -54,11 +47,7 @@ struct ChooseSeatView: View {
         }
         .frame(maxHeight: .infinity)
         .background(Color.primaryText)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                isLoading = false
-            }
-        }
+        
     }
 }
 

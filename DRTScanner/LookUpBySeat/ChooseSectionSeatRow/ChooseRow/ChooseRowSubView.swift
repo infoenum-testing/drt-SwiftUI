@@ -8,6 +8,7 @@
 import SwiftUI
 import IQAPIClient
 import CoreData
+import Shimmer
 
 struct ChooseRowSubView: View {
     @State private var rowSelect: [String] = []
@@ -18,37 +19,66 @@ struct ChooseRowSubView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("isOfflineMode") private var isOfflineMode: Bool = false
     @AppStorage("showCode") private var savedShowCode: String?
-    
+    @State private var shouldShowLoading: Bool = false
+    @State private var shouldShowView: Bool = false
     var body: some View {
         // Main view body: displays a list of rows for seat selection
         VStack {
-            List(rowSelect, id: \.self) { seat in
-                ChooseRowCell(row: seat)
-                    .frame(height: 80)
-                    .listRowBackground(Color.primaryText)
-                    .onTapGesture {
-                        // When a seat is tapped, update selectedSeat and selectedRow, and dismiss the view
-                        withAnimation {
-                            selectedSeat = seat
-                            selectedRow = seat
-                            isPresent = false
+            if rowSelect.isEmpty && shouldShowLoading {
+                List(1...8, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.neutralText.opacity(0.2))
+                        .frame(height: 80)
+                        .listRowBackground(Color.primaryText)
+                        .shimmering(
+                            active: true,
+                            gradient: Gradient(colors: [
+                                Color.primaryText.opacity(0.5),
+                                Color.primaryText,
+                                Color.primaryText.opacity(0.5)
+                            ])
+                        )
+                }
+                .listStyle(.plain)
+                .background(Color.primaryText)
+            } else if rowSelect.isEmpty {
+                Spacer()
+                CustomsText(title: "No seat found", textFont: .verlagBookAdaptive(size: 20), foregroundColour: Color.neutralText)
+                Spacer()
+            }  else {
+                List(rowSelect, id: \.self) { seat in
+                    ChooseRowCell(row: seat)
+                        .frame(height: 80)
+                        .listRowBackground(Color.primaryText)
+                        .onTapGesture {
+                            // When a seat is tapped, update selectedSeat and selectedRow, and dismiss the view
+                            withAnimation {
+                                selectedSeat = seat
+                                selectedRow = seat
+                                isPresent = false
+                            }
                         }
-                    }
-                    .listRowBackground(Color.primaryText)
-                Divider()
-                    .listRowSeparator(.hidden)
+                    Divider()
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .background(Color.primaryText)
             }
-            .listStyle(.plain)
-            .background(Color.primaryText)
         }
         .background(Color.primaryText)
+        .opacity(shouldShowView ? 1 : 0)
         .onAppear {
+            shouldShowView = false
             // On appear, fetch rows either from Core Data (offline) or API (online)
             if isOfflineMode {
+                shouldShowView = true
                 fetchRowsCoreData(for: selectedSection)
                 return
             }
             else {
+                DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                    shouldShowView = true
+                }
                 fetchRows(for: selectedSection)
             }
         }
@@ -56,8 +86,10 @@ struct ChooseRowSubView: View {
     
     // Fetch rows from API for the given section
     private func fetchRows(for section: String) {
+        shouldShowLoading = true
         IQAPIClient.getRow(code: savedShowCode ?? "", section: section) { result in
                DispatchQueue.main.async {
+                   shouldShowLoading = false
                    switch result {
                    case .success(let row):
                        rowSelect = row.compactMap { $0["row"] as? String }
