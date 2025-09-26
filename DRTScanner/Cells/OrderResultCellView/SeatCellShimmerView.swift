@@ -43,7 +43,7 @@ struct SeatCellShimmerView: View {
                 ZStack {
                     Circle()
                         .fill(Color.neutralText.opacity(0.2))
-                        .frame(width: 20.adaptiveForIpad, height: 20.adaptiveForIpad)
+                        .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                         .listRowBackground(Color.primaryText)
                         .shimmering(
                             active: true,

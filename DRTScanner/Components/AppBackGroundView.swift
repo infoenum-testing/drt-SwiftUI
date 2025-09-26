@@ -16,10 +16,11 @@ struct AppBackGroundView: View {
     var shadow: Bool = false
     @State private var shouldShowPlaceHolder: Bool = true
     @EnvironmentObject var stringManager: StringManager
-
+    @State private var url: String = ""
+    
     var body: some View {
         ZStack(alignment: .top) {
-            if let url = URL(string: stringManager.strings.backImageSvg) {
+            if let url = URL(string: url) {
                 WebImage(url: url)
                     // attach callbacks **before** other modifiers
                     .onSuccess { _, _, _ in
@@ -56,5 +57,12 @@ struct AppBackGroundView: View {
         .clipped()
         .frame(width: width, height: height)
         .frame(maxWidth: maxWidth, maxHeight: maxHeight)
+        .onAppear {
+            if !String.backgroundHref.isEmpty {
+                url = String.backgroundHref
+            } else {
+                url = stringManager.strings.backImageSvg
+            }
+        }
     }
 }

@@ -368,15 +368,20 @@ struct ScannerView: View, Equatable {
                                         .font(.verlagBookAdaptive(size: 25))
                                         .foregroundColor(Color.primaryText)
                                         .padding(.top, -40)
-                                    Image("scan__cirle_icon")
-                                        .resizable()
-                                    //  .scaleEffect(x: -1, y: 1)
-                                        .scaledToFit()
-                                        .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad)
-                                        .onTapGesture {
-                                            stopLineAnimation()
-                                            resetScanner()
-                                        }
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.black.opacity(0.1))
+                                            .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad, alignment: .center)
+                                        Image("Scan_icon")
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 40.adaptiveForIpad, height: 40.adaptiveForIpad)
+                                        
+                                    }
+                                    .onTapGesture {
+                                        stopLineAnimation()
+                                        resetScanner()
+                                    }
                                     Spacer()
                                 }
                             )

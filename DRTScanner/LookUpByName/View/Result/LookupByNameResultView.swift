@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Shimmer
 
 // View to display lookup results by name
 struct LookupByNameResultView: View {
@@ -39,14 +40,21 @@ struct LookupByNameResultView: View {
                 
                 Spacer()
                 // Loading indicator and text
-                if viewModel.isLoading {
-                    CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.secondaryText)
+                        .frame(width: 180.adaptiveForIpad, height: 30.adaptiveForIpad)
+                        .shimmering(active: true, gradient: Gradient(colors: [Color.neutralText.opacity(0.3),
+                                                                              Color.neutralText,
+                                                                              Color.neutralText.opacity(0.3)])
+                        )
                         .padding(.trailing, 20)
-                }
-                // Display total results or no orders found
-                if !viewModel.isLoading {
-                    CustomsText(title: viewModel.orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(viewModel.orders.count)", textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
-                        .padding(.trailing, 20)
+                        .opacity(viewModel.isLoading ? 1 : 0)
+                    // Display total results or no orders found
+                    if !viewModel.isLoading {
+                        CustomsText(title: viewModel.orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(viewModel.orders.count)", textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
+                            .padding(.trailing, 20)
+                    }
                 }
                 Spacer()
             }

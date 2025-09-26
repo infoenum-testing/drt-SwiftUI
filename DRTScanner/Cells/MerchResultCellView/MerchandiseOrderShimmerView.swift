@@ -43,7 +43,7 @@ struct MerchandiseOrderShimmerView: View {
                 // Scan button and status
                 Circle()
                     .fill(Color.neutralText.opacity(0.2))
-                    .frame(width: 50.adaptiveForIpad, height: 50.adaptiveForIpad)
+                    .frame(width: 30.adaptiveForIpad, height: 30.adaptiveForIpad)
                     .listRowBackground(Color.primaryText)
                     .shimmering( active: true,
                                  gradient: Gradient(colors: [ Color.primaryText.opacity(0.5),

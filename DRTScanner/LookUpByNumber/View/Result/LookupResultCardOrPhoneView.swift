@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Shimmer
 
 /// View for displaying lookup results either by Credit Card or Phone Number.
 struct LookupResultCardOrPhoneView: View {
@@ -62,21 +63,24 @@ struct LookupResultCardOrPhoneView: View {
                 }
                 
                 Spacer()
-                
-                // Show loading text & spinner
-                if isLoading {
-                    Text(stringManager.strings.searchResults.loading)
-                        .foregroundStyle(Color.neutralText)
-                        .font(.verlagBlackAdaptive(size: 25))
-                        .padding(.trailing, 20)
-                }
-                
-                // Show result count or "No orders found"
-                if !isLoading {
-                    Text(orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(orders.count)")
-                        .foregroundStyle(Color.neutralText)
-                        .font(.verlagBlackAdaptive(size: 25))
-                        .padding(.trailing, 20)
+                ZStack {
+                    // Show loading text & spinner
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.secondaryText)
+                        .frame(width: 180.adaptiveForIpad, height: 30.adaptiveForIpad)
+                        .shimmering(active: true, gradient: Gradient(colors: [Color.neutralText.opacity(0.3),
+                                                                              Color.neutralText,
+                                                                              Color.neutralText.opacity(0.3)])
+                        )
+                        .opacity(isLoading ? 1 : 0)
+                    
+                    // Show result count or "No orders found"
+                    if !isLoading {
+                        Text(orders.isEmpty ? stringManager.strings.searchResults.resultNotFound : (stringManager.strings.searchResults.totalResults) + " \(orders.count)")
+                            .foregroundStyle(Color.neutralText)
+                            .font(.verlagBlackAdaptive(size: 25))
+                            .padding(.trailing, 20)
+                    }
                 }
                 Spacer()
             }

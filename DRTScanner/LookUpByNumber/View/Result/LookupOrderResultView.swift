@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreData
+import Shimmer
 
 // View to display the result of looking up an order by order number
 struct LookupOrderResultView: View {
@@ -47,16 +48,24 @@ struct LookupOrderResultView: View {
                 
                 Spacer()
                 VStack(spacing: 10.adaptiveForIpad) {
-                    if viewModel.isLoading {
-                        CustomsText(title: stringManager.strings.searchResults.loading, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.secondaryText)
+                            .frame(width: 180.adaptiveForIpad, height: 30.adaptiveForIpad)
+                            .shimmering(active: true, gradient: Gradient(colors: [Color.neutralText.opacity(0.3),
+                                                                                  Color.neutralText,
+                                                                                  Color.neutralText.opacity(0.3)])
+                            )
                             .padding(.trailing, 20)
-                    } else {
-                        if let buyerName = viewModel.buyerName {
-                            CustomsText(title: buyerName.uppercased(), textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
-                                .padding(.trailing, 20)
-                        } else {
-                            CustomsText(title: stringManager.strings.searchResults.resultNotFound, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
-                                .padding(.trailing, 20)
+                            .opacity(viewModel.isLoading ? 1 : 0)
+                        if !viewModel.isLoading {
+                            if let buyerName = viewModel.buyerName {
+                                CustomsText(title: buyerName.uppercased(), textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
+                                    .padding(.trailing, 20)
+                            } else {
+                                CustomsText(title: stringManager.strings.searchResults.resultNotFound, textFont: .verlagBlackAdaptive(size: 25), foregroundColour: .neutralText)
+                                    .padding(.trailing, 20)
+                            }
                         }
                     }
                     if !viewModel.isLoading {
@@ -68,6 +77,7 @@ struct LookupOrderResultView: View {
                             }
                         }
                     }
+                    
                 }
                 Spacer()
                 

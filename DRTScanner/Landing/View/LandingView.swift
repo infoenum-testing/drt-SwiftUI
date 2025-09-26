@@ -37,9 +37,10 @@ struct LandingView: View {
         ScrollView {
             ZStack {
                 AppBackGroundView(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 10)
+                    .id(viewModel.isLoading)
                 if isUserLoggedIn {
                     VStack {
-                        LinearGradient(
+                        LinearGradient( 
                             gradient: Gradient(colors: [Color.black.opacity(0.3), .clear]),
                             startPoint: .top,
                             endPoint: .center
@@ -248,7 +249,6 @@ struct LandingView: View {
                             }
                         })
                         .background(Color.clear)
-                        //  .padding([.trailing, .leading], 50)
                         
                     }.edgesIgnoringSafeArea(.bottom)
                     

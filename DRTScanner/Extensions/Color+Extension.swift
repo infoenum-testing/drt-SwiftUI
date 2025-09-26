@@ -77,3 +77,34 @@ extension Color {
     
     
 }
+
+extension String {
+    private static var palette: SkinModel {
+        ColorManager.shared.skin ?? SkinModel(
+            colorValid:       "",
+            colorNeutralText: "",
+            colorNeutralBg:   "",
+            color1Text:       "",
+            backgroundHref:   "",
+            colorInvalid:     "",
+            colorPrevious:    "",
+            color2Bg:         "",
+            color1Bg:         "",
+            color2Text:       "",
+            logoHref:         "",
+            colorButtonBg:    "",
+            colorButtonText:  "",
+            colorGoldenTicket:"",
+            colorGrayText:    ""
+        )
+    }
+    
+    static var backgroundHref: String {
+        palette.backgroundHref
+    }
+    
+    static var logoHref: String {
+        palette.logoHref
+    }
+}
+
