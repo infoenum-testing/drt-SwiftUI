@@ -146,9 +146,9 @@ struct LookupByNumbersView: View {
                                                     Image("order_number_unclicked_btn")
                                                         .renderingMode(.template )
                                                         .resizable()
-                                                        .foregroundColor(.colorButtonBg)
                                                 } else {
-                                                    Image(isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn")
+                                                    Image("order_number_unclicked_btn")
+                                                        .renderingMode(.template )
                                                         .resizable()
                                                 }
                                             } else {
@@ -162,6 +162,7 @@ struct LookupByNumbersView: View {
                                                 .frame(maxWidth: .infinity)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .background( isOKButtonEnabled ? Color.secondaryBg : Color.colorButtonBg)
                                         .onTapGesture {
                                             handleButtonTap(button)
                                         }

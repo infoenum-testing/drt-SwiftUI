@@ -370,7 +370,7 @@ struct ScannerView: View, Equatable {
                                         .padding(.top, -40)
                                     ZStack {
                                         Circle()
-                                            .fill(Color.black.opacity(0.1))
+                                            .fill(Color.scannerBackGround)
                                             .frame(width: 100.adaptiveForIpad, height: 100.adaptiveForIpad, alignment: .center)
                                         Image("Scan_icon")
                                             .resizable()

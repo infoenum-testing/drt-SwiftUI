@@ -24,7 +24,9 @@ struct SkinModel: Codable {
     let colorButtonText: String
     let colorGoldenTicket: String
     let colorGrayText: String
-    private enum CodingKeys: String, CodingKey {
+    let color1Shade: String
+    
+   private enum CodingKeys: String, CodingKey {
         case colorValid = "colorValid"
         case colorNeutralText = "colorNeutralText"
         case colorNeutralBg = "colorNeutralBg"
@@ -40,6 +42,7 @@ struct SkinModel: Codable {
         case colorButtonText = "colorButtonText"
         case colorGoldenTicket = "colorGoldenTicket"
         case colorGrayText = "colorGrayText"
+        case color1Shade = "color1Shade"
     }
 }
 
@@ -60,7 +63,8 @@ extension SkinModel {
             let colorButtonBg = skin.colorButtonBg,
             let colorButtonText = skin.colorButtonText,
             let colorGoldenTicket = skin.colorGoldenTicket,
-            let colorGrayText = skin.colorGrayText
+            let colorGrayText = skin.colorGrayText,
+            let color1Shade = skin.color1Shade
         else {
             return nil
         }
@@ -80,5 +84,6 @@ extension SkinModel {
         self.colorButtonText = colorButtonText
         self.colorGoldenTicket = colorGoldenTicket
         self.colorGrayText = colorGrayText
+        self.color1Shade = color1Shade
     }
 }

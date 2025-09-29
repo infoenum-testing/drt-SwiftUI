@@ -31,5 +31,6 @@ extension Skin {
     @NSManaged public var colorButtonText: String?
     @NSManaged public var colorGoldenTicket: String?
     @NSManaged public var colorGrayText: String?
+    @NSManaged public var color1Shade: String?
 
 }

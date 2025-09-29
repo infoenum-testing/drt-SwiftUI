@@ -373,6 +373,7 @@ class DRTDatabaseManager {
         skin.colorGoldenTicket = skinModel.colorGoldenTicket
         skin.colorButtonText = skinModel.colorButtonText
         skin.colorGrayText = skinModel.colorGrayText
+        skin.color1Shade = skinModel.color1Shade
         
         do {
             try context.save()

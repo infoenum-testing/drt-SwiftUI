@@ -19,7 +19,6 @@ struct ShowCodeView: View {
         VStack {
             GeometryReader { geometry in
                 ZStack {
-                    
                     // MARK: - QR Scanner View
                     if viewModel.isScannerVisible {
                         CameraScannerView(
@@ -161,16 +160,15 @@ struct ShowCodeView: View {
                             .frame(maxHeight: .infinity)
                             
                             ZStack {
-                                Image(viewModel.isOKButtonEnabled ?
-                                      (viewModel.isOKButtonClicked ? "order_number_clicked_btn" : "order_number_unclicked_btn") :
-                                        "order_number_unclicked_btn")
-                                .resizable()
-                                
+                                Image("order_number_unclicked_btn")
+                                    .renderingMode(.template )
+                                    .resizable()
                                 Text("OK")
                                     .font(.verlagBoldAdaptive(size: 50))
                                     .foregroundColor(.primaryText )
                             }
                             .frame(height: UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad)
+                            .background(Color.secondaryBg)
                             .padding(.top, -20)
                             .onTapGesture {
                                 viewModel.okayButtonAction(onCodeEntered: onCodeEntered) {

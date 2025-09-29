@@ -240,17 +240,6 @@ struct LandingView: View {
                             AppBackGroundView(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * 0.4,shadow: true)
                         }
                     }
-                    // Show code entry sheet // for login time
-                    .customAlert(isPresented: $showSheet) {
-                        ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
-                            showCode = code
-                            Task {
-                                await viewModel.validateCode(code, context: context)
-                            }
-                        })
-                        .background(Color.clear)
-                        
-                    }.edgesIgnoringSafeArea(.bottom)
                     
                     // Invalid code alert
                         .customAlert(isPresented: $viewModel.showAlert) {
@@ -297,6 +286,17 @@ struct LandingView: View {
                 }
             }
             .ignoresSafeArea(.keyboard)
+            // Show code entry sheet // for login time
+            .customAlert(isPresented: $showSheet) {
+                ShowCodeView(showSheet: $showSheet, onCodeEntered: { code in
+                    showCode = code
+                    Task {
+                        await viewModel.validateCode(code, context: context)
+                    }
+                })
+                .background(Color.clear)
+                
+            }.edgesIgnoringSafeArea(.bottom)
         }
         .scrollDisabled(true)
         .ignoresSafeArea(edges: .top)

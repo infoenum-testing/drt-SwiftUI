@@ -55,7 +55,7 @@ struct LogoutView:View {
                                         showAlert = false
                                         showSeatView = false
                                         deviceScanCount = 0
-                                        DRTDatabaseManager.shared.deleteSkin()
+                                        //DRTDatabaseManager.shared.deleteSkin()
                                     }
                                 }
                         }

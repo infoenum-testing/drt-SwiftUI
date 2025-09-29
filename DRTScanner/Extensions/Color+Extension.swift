@@ -51,7 +51,8 @@ extension Color {
         colorButtonBg:     "CBCBCB",
         colorButtonText:   "B3B3B3",
         colorGoldenTicket:  "FFD700",
-        colorGrayText:      "B3B3B3"
+        colorGrayText:      "B3B3B3",
+        color1Shade:        ""
     )}
     
     static var valid:            Color { Color(hex: palette.colorValid) }
@@ -75,6 +76,8 @@ extension Color {
     static var colorGoldenTicket:   Color { Color(hex: palette.colorGoldenTicket) }
     static var colorGrayText:       Color { Color(hex: palette.colorGrayText) }
     
+    static var scannerBackGround :       Color { Color(hex: palette.color1Shade) }
+    
     
 }
 
@@ -94,8 +97,9 @@ extension String {
             logoHref:         "",
             colorButtonBg:    "",
             colorButtonText:  "",
-            colorGoldenTicket:"",
-            colorGrayText:    ""
+            colorGoldenTicket: "",
+            colorGrayText:    "",
+            color1Shade:       ""
         )
     }
     
