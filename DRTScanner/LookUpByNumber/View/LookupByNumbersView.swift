@@ -141,17 +141,7 @@ struct LookupByNumbersView: View {
                                 HStack(spacing: 0) {
                                     ForEach(row, id: \.self) { button in
                                         ZStack {
-                                            if button == StringManager.shared.strings.home.ok {
-                                                if !isOKButtonEnabled {
-                                                    Image("order_number_unclicked_btn")
-                                                        .renderingMode(.template )
-                                                        .resizable()
-                                                } else {
-                                                    Image("order_number_unclicked_btn")
-                                                        .renderingMode(.template )
-                                                        .resizable()
-                                                }
-                                            } else {
+                                            if button != StringManager.shared.strings.home.ok {
                                                 Image(clickedButton == button ? "lookupby_letters_clicked_btn" : "lookupby_letters_unclicked_btn")
                                                     .resizable()
                                             }

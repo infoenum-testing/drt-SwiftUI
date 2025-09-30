@@ -42,11 +42,13 @@ struct ChooseSectionSubView: View {
                 }
                 .listStyle(.plain)
                 .background(Color.primaryText)
-            } else if seatLabels.isEmpty {
-                Spacer()
-                CustomsText(title: "No seat found", textFont: .verlagBookAdaptive(size: 20), foregroundColour: Color.neutralText)
-                Spacer()
-            } else {
+            }
+//            else if seatLabels.isEmpty {
+//                Spacer()
+//                CustomsText(title: "No seat found", textFont: .verlagBookAdaptive(size: 20), foregroundColour: Color.neutralText)
+//                Spacer()
+//            }
+            else {
                 List(seatLabels, id: \.self) { seat in
                     ChooseSectionCell(seatLabel: seat)
                         .frame(height: 80)

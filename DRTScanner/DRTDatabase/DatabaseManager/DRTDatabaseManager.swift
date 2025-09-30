@@ -420,7 +420,7 @@ class DRTDatabaseManager {
             ]
             
             // Call API to upload data
-            IQAPIClient.uploadAllOfflineData(code: self.savedShowCode ?? "36060-5E56", data: postData) { result in
+            IQAPIClient.uploadAllOfflineData(code: self.savedShowCode ?? "", data: postData) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let response):

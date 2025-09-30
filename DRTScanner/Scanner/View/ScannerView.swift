@@ -281,6 +281,7 @@ struct ScannerView: View, Equatable {
                             // Button to activate external scanner input
                             Button {
                                 DispatchQueue.main.async {
+                                    isScanningCell = false
                                     externalScannerAction()
                                     isCustomColorVisible = true
                                     isInputActive = true

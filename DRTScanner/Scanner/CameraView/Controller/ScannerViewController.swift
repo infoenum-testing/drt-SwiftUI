@@ -23,17 +23,20 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
 
     private var scheduledFlashWorkItem: DispatchWorkItem?
     private var isScanningEnabled = true
-    private var didJustScan = false
     private(set) var isScanning = false
 
     private var boundingBoxLayer = CAShapeLayer()
     private var flashAutoOffTimer: Timer?
     private var isFlashOn = false
     private var scanningWatchdogTimer: Timer?
-
+    
+    private var lastScannedValue: String?
+    
     private var lastProcessedFrameTime: Date = .distantPast
     private let frameProcessingInterval: TimeInterval = 0.2 // throttle frames
-
+    private let scanCooldown: TimeInterval = 1.0 // prevent duplicate scans within 1s
+    private var lastScanTime: Date = .distantPast
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAutoFlash), name: .enableAutoFlash, object: nil)
@@ -286,14 +289,20 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
         guard now.timeIntervalSince(lastProcessedFrameTime) > frameProcessingInterval else { return }
         lastProcessedFrameTime = now
 
-        guard isScanningBinding?.wrappedValue ?? true, !didJustScan,
+        guard isScanningBinding?.wrappedValue ?? true,
               let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         let request = VNDetectBarcodesRequest { request, error in
             guard error == nil,
                   let results = request.results as? [VNBarcodeObservation],
                   let bestResult = results.first,
-                  let payload = bestResult.payloadStringValue else { return }
+                  let payload = bestResult.payloadStringValue else {
+                DispatchQueue.main.async {
+                    // no barcode → hide bounding box
+                    self.boundingBoxLayer.isHidden = true
+                }
+                return
+            }
 
             DispatchQueue.main.async {
                 guard let previewLayer = self.previewLayer else { return }
@@ -305,14 +314,13 @@ class ScannerViewController: UIViewController, AVCaptureVideoDataOutputSampleBuf
                     self.drawBoundingBox(for: bestResult)
                     if self.autoEnableFlashTimeout { self.turnFlashOn() }
 
-                    self.didJustScan = true
-                    self.isScanningBinding?.wrappedValue = false
-                    self.onScan?(payload)
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    if payload != self.lastScannedValue || now.timeIntervalSince(self.lastScanTime) > self.scanCooldown {
+                        self.lastScannedValue = payload
+                        self.lastScanTime = now
+                        self.onScan?(payload)
+                    } else {
+                        // no barcode → hide bounding box
                         self.boundingBoxLayer.isHidden = true
-                        self.didJustScan = false
-                        self.isScanningBinding?.wrappedValue = true
                     }
                 }
             }
