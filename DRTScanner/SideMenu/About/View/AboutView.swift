@@ -14,7 +14,7 @@ struct AboutView: View {
     static let urlString = "www.Drttix.com"
     @EnvironmentObject var stringManager: StringManager
     let height = UIDevice.current.userInterfaceIdiom == .pad ? UIDevice.isLandscape ? 0.6 : 0.5 : 0.5
-    
+    @State var shouldShowLogo: Bool = false
     var body: some View {
         ZStack(alignment: .top) {
             // Background image
@@ -23,9 +23,15 @@ struct AboutView: View {
             // Main content
             VStack(spacing: 20) {
                 Spacer()// Leave space for the close button
-                
-                AppLogoView(width:  120.adaptiveForIpad, height: 65.adaptiveForIpad)
-                
+                if shouldShowLogo {
+                    AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
+                        .scaleEffect(shouldShowLogo ? 1.0 : 0.95)
+                        .animation(.easeInOut(duration: 0.4), value: shouldShowLogo)
+                } else {
+                    VStack{}
+                        .frame(width:  120.adaptiveForIpad, height: 65.adaptiveForIpad)
+                        .foregroundColor(.clear)
+                }
                 VStack(spacing: 16) {
                     Text(stringManager.strings.mission)
                         .font(.verlagBoldAdaptive(size: 16))
@@ -83,6 +89,15 @@ struct AboutView: View {
             .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 50 : topSafeAreaPaddingHeader())
         }
         .frame(width: UIScreen.main.bounds.width,height: UIScreen.main.bounds.height * height)
+        .onAppear {
+            Task {
+                
+            }
+            Task {
+                try? await Task.sleep(nanoseconds: 400_000_000) // 0.3 sec
+                shouldShowLogo = true
+            }
+        }
     }
     
     func openWebsite() {
