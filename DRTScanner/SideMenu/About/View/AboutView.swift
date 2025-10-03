@@ -23,15 +23,11 @@ struct AboutView: View {
             // Main content
             VStack(spacing: 20) {
                 Spacer()// Leave space for the close button
-                if shouldShowLogo {
                     AppLogoView(width: 120.adaptiveForIpad, height: 65.adaptiveForIpad)
-                        .scaleEffect(shouldShowLogo ? 1.0 : 0.95)
+                        .scaleEffect(shouldShowLogo ? 1.0 : 0.85)
                         .animation(.easeInOut(duration: 0.4), value: shouldShowLogo)
-                } else {
-                    VStack{}
-                        .frame(width:  120.adaptiveForIpad, height: 65.adaptiveForIpad)
-                        .foregroundColor(.clear)
-                }
+                        .opacity(shouldShowLogo ? 1 : 0)
+                
                 VStack(spacing: 16) {
                     Text(stringManager.strings.mission)
                         .font(.verlagBoldAdaptive(size: 16))
@@ -94,8 +90,10 @@ struct AboutView: View {
                 
             }
             Task {
-                try? await Task.sleep(nanoseconds: 400_000_000) // 0.3 sec
-                shouldShowLogo = true
+                try? await Task.sleep(nanoseconds: 400_000_000) // 0.4 sec
+                withAnimation {
+                    shouldShowLogo = true
+                }
             }
         }
     }
