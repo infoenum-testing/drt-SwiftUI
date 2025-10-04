@@ -36,7 +36,7 @@ struct AppLogoView: View {
                     .frame(width: width, height: height)
             }
             
-            else if shouldShowLogo {
+           if shouldShowLogo {
                 Image(StringConstants.DRTImages.logo)
                     .resizable()
                     .scaledToFit()

@@ -167,7 +167,7 @@ struct ShowCodeView: View {
                                     .font(.verlagBoldAdaptive(size: 50))
                                     .foregroundColor(.primaryText )
                             }
-                            .frame(height: UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad)
+                            .frame(height: UIDevice.current.userInterfaceIdiom == .pad ? (sizeData.isPortrait ? 100.adaptiveForIpad : 50.adaptiveForIpad) : UIDevice.isNonNotchIphone ? 90 : 120.adaptiveForIpad)
                             .background(Color.secondaryBg)
                             .padding(.top, -20)
                             .onTapGesture {
